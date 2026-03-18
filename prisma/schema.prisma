@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum DebtType {
+  ONE_TIME
+  RECURRING
+}
+
+enum DebtStatus {
+  PENDING
+  PAID
+}
+
+model User {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String
+  email            String            @unique
+  passwordHash     String            @map("password_hash")
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  wallets          Wallet[]
+  expenseCategories ExpenseCategory[]
+  transactions     Transaction[]
+  debts            Debt[]
+
+  @@map("users")
+}
+
+model Wallet {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  name        String
+  isDefault   Boolean       @default(false) @map("is_default")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  debts       Debt[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("wallets")
+}
+
+model ExpenseCategory {
+  id          String         @id @default(uuid()) @db.Uuid
+  userId      String         @map("user_id") @db.Uuid
+  name        String
+  slug        String
+  color       String?
+  isActive    Boolean        @default(true) @map("is_active")
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@map("expense_categories")
+}
+
+model Transaction {
+  id                String           @id @default(uuid()) @db.Uuid
+  userId            String           @map("user_id") @db.Uuid
+  walletId          String           @map("wallet_id") @db.Uuid
+  type              TransactionType
+  amount            Decimal          @db.Decimal(14, 2)
+  description       String
+  notes             String?
+  transactionDate   DateTime         @map("transaction_date") @db.Date
+  expenseCategoryId String?          @map("expense_category_id") @db.Uuid
+  debtId            String?          @unique @map("debt_id") @db.Uuid
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wallet            Wallet           @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id], onDelete: Restrict)
+  debt              Debt?            @relation(fields: [debtId], references: [id], onDelete: SetNull)
+
+  @@index([userId, transactionDate])
+  @@index([walletId, transactionDate])
+  @@index([type, transactionDate])
+  @@index([expenseCategoryId])
+  @@map("transactions")
+}
+
+model Debt {
+  id          String       @id @default(uuid()) @db.Uuid
+  userId      String       @map("user_id") @db.Uuid
+  walletId    String       @map("wallet_id") @db.Uuid
+  description String
+  amount      Decimal      @db.Decimal(14, 2)
+  dueDate     DateTime     @map("due_date") @db.Date
+  type        DebtType
+  status      DebtStatus   @default(PENDING)
+  notes       String?
+  paidAt      DateTime?    @map("paid_at") @db.Timestamptz(6)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wallet      Wallet       @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  transaction Transaction?
+
+  @@index([userId, status, dueDate])
+  @@index([walletId, status, dueDate])
+  @@index([type])
+  @@index([status])
+  @@map("debts")
+}
