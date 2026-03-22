@@ -1,8 +1,7 @@
+import { AUTH_COOKIE_NAME } from '@/modules/auth/constants/auth.constants';
 import { makeSignOutUseCase } from '@/modules/auth/infra/factories/make-sign-out-use-case';
 import { SignOutController } from '@/modules/auth/presentation/http/controllers/sign-out.controller';
 import { NextResponse } from 'next/server';
-
-const ACCESS_TOKEN_COOKIE_NAME = 'fc_access_token';
 
 export async function POST() {
   try {
@@ -19,7 +18,7 @@ export async function POST() {
     );
 
     response.cookies.set({
-      name: ACCESS_TOKEN_COOKIE_NAME,
+      name: AUTH_COOKIE_NAME,
       value: '',
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

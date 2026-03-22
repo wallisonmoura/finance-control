@@ -1,11 +1,10 @@
+import { AUTH_COOKIE_NAME } from '@/modules/auth/constants/auth.constants';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { makeSignInUseCase } from '@/modules/auth/infra/factories/make-sign-in-use-case';
 import { SignInController } from '@/modules/auth/presentation/http/controllers/sign-in.controller';
 import { signInSchema } from '@/modules/auth/presentation/http/schemas/sign-in.schema';
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
-
-const ACCESS_TOKEN_COOKIE_NAME = 'fc_access_token';
 
 export async function POST(request: Request) {
   try {
@@ -25,7 +24,7 @@ export async function POST(request: Request) {
     );
 
     response.cookies.set({
-      name: ACCESS_TOKEN_COOKIE_NAME,
+      name: AUTH_COOKIE_NAME,
       value: output.accessToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

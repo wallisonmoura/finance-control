@@ -1,13 +1,14 @@
-import { SignJWT } from 'jose';
+import { jwtVerify, SignJWT } from 'jose';
 import {
   TokenPayload,
   TokenService,
 } from '../../domain/services/token.service';
+import { AUTH_TOKEN_EXPIRES_IN } from '../../constants/auth.constants';
 
 export class JoseJwtTokenService implements TokenService {
   constructor(
     private readonly secret: string,
-    private readonly expiresIn: string = '7d',
+    private readonly expiresIn: string = AUTH_TOKEN_EXPIRES_IN,
   ) {}
 
   async generateAccessToken(payload: TokenPayload): Promise<string> {
@@ -21,5 +22,20 @@ export class JoseJwtTokenService implements TokenService {
       .setIssuedAt()
       .setExpirationTime(this.expiresIn)
       .sign(secretKey);
+  }
+
+  async verifyAcessToken(token: string): Promise<TokenPayload> {
+    const secretKey = new TextEncoder().encode(this.secret);
+
+    const { payload } = await jwtVerify(token, secretKey);
+
+    if (!payload.sub || !payload.email) {
+      throw new Error('Invalid token payload');
+    }
+
+    return {
+      sub: String(payload.sub),
+      email: String(payload.email),
+    };
   }
 }
