@@ -1,0 +1,46 @@
+### Sign in - sucesso
+POST http://localhost:3000/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "admin@financecontrol.local",
+  "password": "123456"
+}
+
+###
+
+### Sign in - usuário inexistente
+POST http://localhost:3000/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "naoexiste@financecontrol.local",
+  "password": "123456"
+}
+
+###
+
+### Sign in - senha inválida
+POST http://localhost:3000/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "admin@financecontrol.local",
+  "password": "senha-errada"
+}
+
+###
+
+### Sign in - payload inválido
+POST http://localhost:3000/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "email-invalido",
+  "password": ""
+}
+
+###
+
+### Sign out
+POST http://localhost:3000/api/auth/sign-out
