@@ -21,7 +21,7 @@ export class GetCurrentUserController {
     }
 
     try {
-      const payload = await this.tokenService.verifyAcessToken(request.token);
+      const payload = await this.tokenService.verifyAccessToken(request.token);
 
       const output = await this.getCurrentUserUseCase.execute({
         userId: payload.sub,

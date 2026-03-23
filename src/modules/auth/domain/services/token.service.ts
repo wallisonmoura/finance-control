@@ -5,5 +5,5 @@ export interface TokenPayload {
 
 export interface TokenService {
   generateAccessToken(payload: TokenPayload): Promise<string>;
-  verifyAcessToken(token: string): Promise<TokenPayload>;
+  verifyAccessToken(token: string): Promise<TokenPayload>;
 }

@@ -6,13 +6,19 @@ import {
 } from '@/modules/auth/domain/services/token.service';
 import { PrismaUserRepository } from '@/modules/auth/infra/repositories/prisma-user.repository';
 import { BcryptPasswordHasher } from '@/modules/auth/infra/services/bcrypt-password-hasher';
-// import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.service';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { hash } from 'bcryptjs';
 
 class FakeTokenService implements TokenService {
   async generateAccessToken(payload: TokenPayload): Promise<string> {
     return `token-for-${payload.sub}`;
+  }
+
+  async verifyAccessToken(token: string): Promise<TokenPayload> {
+    return {
+      sub: token.replace('token-for-', ''),
+      email: 'fake@email.com',
+    };
   }
 }
 

@@ -21,21 +21,22 @@ describe('PrismaUserRepository', () => {
 
   it('should find a user by email', async () => {
     const passwordHash = await hash('123456', 10);
+    const email = `wallison-find-email-${Date.now()}@email.com`;
 
     const createdUser = await prisma.user.create({
       data: {
         name: 'Wallison',
-        email: 'wallison@email.com',
+        email,
         passwordHash,
       },
     });
 
-    const user = await repository.findByEmail('wallison@email.com');
+    const user = await repository.findByEmail(email);
 
     expect(user).not.toBeNull();
     expect(user?.id).toBe(createdUser.id);
     expect(user?.name).toBe('Wallison');
-    expect(user?.email.getValue()).toBe('wallison@email.com');
+    expect(user?.email.getValue()).toBe(email);
     expect(user?.passwordHash).toBe(passwordHash);
   });
 
@@ -47,11 +48,12 @@ describe('PrismaUserRepository', () => {
 
   it('should find a user by id', async () => {
     const passwordHash = await hash('123456', 10);
+    const email = `wallison-find-id-${Date.now()}@email.com`;
 
     const createdUser = await prisma.user.create({
       data: {
         name: 'Wallison',
-        email: 'wallison@email.com',
+        email,
         passwordHash,
       },
     });
@@ -60,7 +62,7 @@ describe('PrismaUserRepository', () => {
 
     expect(user).not.toBeNull();
     expect(user?.id).toBe(createdUser.id);
-    expect(user?.email.getValue()).toBe('wallison@email.com');
+    expect(user?.email.getValue()).toBe(email);
   });
 
   it('should return null when user is not found by id', async () => {

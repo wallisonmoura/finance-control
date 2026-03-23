@@ -24,7 +24,7 @@ export class JoseJwtTokenService implements TokenService {
       .sign(secretKey);
   }
 
-  async verifyAcessToken(token: string): Promise<TokenPayload> {
+  async verifyAccessToken(token: string): Promise<TokenPayload> {
     const secretKey = new TextEncoder().encode(this.secret);
 
     const { payload } = await jwtVerify(token, secretKey);

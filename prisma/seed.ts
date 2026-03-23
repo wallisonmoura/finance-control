@@ -7,7 +7,7 @@ async function main() {
 
   await prisma.user.upsert({
     where: {
-      email: 'admin@financecontrol.local',
+      email: 'admin@financecontrol.com',
     },
     update: {
       name: 'Admin Local',
@@ -15,7 +15,7 @@ async function main() {
     },
     create: {
       name: 'Admin Local',
-      email: 'admin@financecontrol.local',
+      email: 'admin@financecontrol.com',
       passwordHash,
     },
   });
