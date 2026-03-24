@@ -1,4 +1,5 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
+import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { FinancialEntryRepository } from '@/modules/finance/domain/repositories/financial-entry.repository';
 
 export class InMemoryFinancialEntryRepository implements FinancialEntryRepository {
@@ -6,6 +7,10 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
 
   async findById(id: string): Promise<FinancialEntry | null> {
     return this.entries.find((entry) => entry.id === id) ?? null;
+  }
+
+  async findByUserId(userId: string): Promise<FinancialEntry[]> {
+    return this.entries.filter((entry) => entry.userId === userId);
   }
 
   async create(entry: FinancialEntry): Promise<FinancialEntry> {
@@ -46,13 +51,14 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
     userId: string,
     startDate: Date,
     endDate: Date,
+    type?: FinancialEntryType,
   ): Promise<FinancialEntry[]> {
     return this.entries.filter((entry) => {
-      return (
-        entry.userId === userId &&
-        entry.date >= startDate &&
-        entry.date <= endDate
-      );
+      const isSameUser = entry.userId === userId;
+      const isWithinPeriod = entry.date >= startDate && entry.date <= endDate;
+      const matchesType = type ? entry.type === type : true;
+
+      return isSameUser && isWithinPeriod && matchesType;
     });
   }
 }
