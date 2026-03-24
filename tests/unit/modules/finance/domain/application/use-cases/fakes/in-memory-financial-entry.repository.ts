@@ -40,10 +40,14 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
     date: Date,
   ): Promise<FinancialEntry[]> {
     return this.entries.filter((entry) => {
-      return (
-        entry.userId === userId &&
-        entry.date.toDateString() === date.toDateString()
-      );
+      const sameUser = entry.userId === userId;
+
+      const sameUtcDay =
+        entry.date.getUTCFullYear() === date.getUTCFullYear() &&
+        entry.date.getUTCMonth() === date.getUTCMonth() &&
+        entry.date.getUTCDate() === date.getUTCDate();
+
+      return sameUser && sameUtcDay;
     });
   }
 
