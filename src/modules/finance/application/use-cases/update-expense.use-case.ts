@@ -1,9 +1,9 @@
-import { FinancialEntryType } from '../../enums/financial-entry-type.enum';
-import { ExpenseCategoryNotFoundError } from '../../errors/expense-category-not-found.error';
-import { FinancialEntryNotFoundError } from '../../errors/financial-entry-not-found.error';
-import { UnauthorizedFinancialEntryAccessError } from '../../errors/unauthorized-financial-entry-access.error';
-import { ExpenseCategoryRepository } from '../../repositories/expense-category.repository';
-import { FinancialEntryRepository } from '../../repositories/financial-entry.repository';
+import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
+import { ExpenseCategoryNotFoundError } from '../../domain/errors/expense-category-not-found.error';
+import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
+import { UnauthorizedFinancialEntryAccessError } from '../../domain/errors/unauthorized-financial-entry-access.error';
+import { ExpenseCategoryRepository } from '../../domain/repositories/expense-category.repository';
+import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { FinancialEntryOutput } from '../dtos/financial-entry.output';
 import { UpdateExpenseInput } from '../dtos/update-expense.input';
 

@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { DeleteIncomeUseCase } from '@/modules/finance/domain/application/use-cases/delete-income.use-case';
+import { DeleteIncomeUseCase } from '@/modules/finance/application/use-cases/delete-income.use-case';
 
 describe('DeleteIncomeUseCase', () => {
   it('Deve excluir um ganho com sucesso', async () => {

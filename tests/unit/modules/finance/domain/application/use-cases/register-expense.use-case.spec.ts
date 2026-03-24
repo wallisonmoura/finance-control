@@ -1,7 +1,7 @@
 import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
 import { InMemoryExpenseCategoryRepository } from './fakes/in-memory-expense-category.repository';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
-import { RegisterExpenseUseCase } from '@/modules/finance/domain/application/use-cases/register-expense.use-case';
+import { RegisterExpenseUseCase } from '@/modules/finance/application/use-cases/register-expense.use-case';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 

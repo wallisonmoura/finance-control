@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { UpdateIncomeUseCase } from '@/modules/finance/domain/application/use-cases/update-income.use-case';
+import { UpdateIncomeUseCase } from '@/modules/finance/application/use-cases/update-income.use-case';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 

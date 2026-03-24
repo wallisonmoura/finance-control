@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { GetTransactionHistoryUseCase } from '@/modules/finance/domain/application/use-cases/get-transaction-history.use-case';
+import { GetTransactionHistoryUseCase } from '@/modules/finance/application/use-cases/get-transaction-history.use-case';
 
 describe('GetTransactionHistoryUseCase', () => {
   it('deve retornar lançamentos do período ordenados por data decrescente', async () => {

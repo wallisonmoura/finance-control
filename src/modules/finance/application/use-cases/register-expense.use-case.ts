@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import { FinancialEntry } from '../../entities/financial-entry.entity';
-import { ExpenseCategoryNotFoundError } from '../../errors/expense-category-not-found.error';
-import { ExpenseCategoryRepository } from '../../repositories/expense-category.repository';
-import { FinancialEntryRepository } from '../../repositories/financial-entry.repository';
-import { FinancialEntryOutput } from '../dtos/financial-entry.output';
+import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
+import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
+import { ExpenseCategoryRepository } from '../../domain/repositories/expense-category.repository';
 import { RegisterExpenseInput } from '../dtos/register-expense.input';
-import { FinancialEntryType } from '../../enums/financial-entry-type.enum';
+import { FinancialEntryOutput } from '../dtos/financial-entry.output';
+import { ExpenseCategoryNotFoundError } from '../../domain/errors/expense-category-not-found.error';
+import { FinancialEntry } from '../../domain/entities/financial-entry.entity';
 
 export class RegisterExpenseUseCase {
   constructor(

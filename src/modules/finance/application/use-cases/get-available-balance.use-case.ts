@@ -1,5 +1,5 @@
-import { FinancialEntryType } from '../../enums/financial-entry-type.enum';
-import { FinancialEntryRepository } from '../../repositories/financial-entry.repository';
+import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
+import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { AvailableBalanceOutput } from '../dtos/available-balance.output';
 import { GetAvailableBalanceInput } from '../dtos/get-available-balance.input';
 

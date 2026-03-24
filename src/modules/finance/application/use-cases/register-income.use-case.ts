@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import { FinancialEntry } from '../../entities/financial-entry.entity';
-import { FinancialEntryRepository } from '../../repositories/financial-entry.repository';
+import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
+import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { FinancialEntryOutput } from '../dtos/financial-entry.output';
 import { RegisterIncomeInput } from '../dtos/register-income.input';
-import { FinancialEntryType } from '../../enums/financial-entry-type.enum';
+import { FinancialEntry } from '../../domain/entities/financial-entry.entity';
 
 export class RegisterIncomeUseCase {
   constructor(

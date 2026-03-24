@@ -3,7 +3,7 @@ import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-en
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { InMemoryExpenseCategoryRepository } from './fakes/in-memory-expense-category.repository';
 import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
-import { UpdateExpenseUseCase } from '@/modules/finance/domain/application/use-cases/update-expense.use-case';
+import { UpdateExpenseUseCase } from '@/modules/finance/application/use-cases/update-expense.use-case';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 
 describe('UpdateExpenseUseCase', () => {

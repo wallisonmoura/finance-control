@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { GetDailyTransactionsUseCase } from '@/modules/finance/domain/application/use-cases/get-daily-transactions.use-case';
+import { GetDailyTransactionsUseCase } from '@/modules/finance/application/use-cases/get-daily-transactions.use-case';
 
 describe('GetDailyTransactionsUseCase', () => {
   it('Deve retornar os lançamentos do dia com total e lucro diário', async () => {

@@ -1,4 +1,4 @@
-import { RegisterIncomeUseCase } from '@/modules/finance/domain/application/use-cases/register-income.use-case';
+import { RegisterIncomeUseCase } from '@/modules/finance/application/use-cases/register-income.use-case';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { InvalidFinancialEntryAmountError } from '@/modules/finance/domain/errors/invalid-financial-entry-amount.error';

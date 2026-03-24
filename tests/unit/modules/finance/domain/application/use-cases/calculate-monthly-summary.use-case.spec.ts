@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { CalculateMonthlySummaryUseCase } from '@/modules/finance/domain/application/use-cases/calculate-monthly-summary.use-case';
+import { CalculateMonthlySummaryUseCase } from '@/modules/finance/application/use-cases/calculate-monthly-summary.use-case';
 
 describe('CalculateMonthlySummaryUseCase', () => {
   it('deve calcular corretamente o resumo do mês e ano informados', async () => {

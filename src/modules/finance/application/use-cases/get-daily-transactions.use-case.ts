@@ -1,5 +1,5 @@
-import { FinancialEntryType } from '../../enums/financial-entry-type.enum';
-import { FinancialEntryRepository } from '../../repositories/financial-entry.repository';
+import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
+import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { DailyTransactionsOutput } from '../dtos/daily-transactions.output';
 import { GetDailyTransactionsInput } from '../dtos/get-daily-transactions.input';
 

@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { DeleteExpenseUseCase } from '@/modules/finance/domain/application/use-cases/delete-expense.use-case';
+import { DeleteExpenseUseCase } from '@/modules/finance/application/use-cases/delete-expense.use-case';
 
 describe('DeleteExpenseUseCase', () => {
   it('Deve excluir uma despesa com sucesso', async () => {

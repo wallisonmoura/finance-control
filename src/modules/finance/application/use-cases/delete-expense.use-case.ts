@@ -1,7 +1,7 @@
-import { FinancialEntryType } from '../../enums/financial-entry-type.enum';
-import { FinancialEntryNotFoundError } from '../../errors/financial-entry-not-found.error';
-import { UnauthorizedFinancialEntryAccessError } from '../../errors/unauthorized-financial-entry-access.error';
-import { FinancialEntryRepository } from '../../repositories/financial-entry.repository';
+import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
+import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
+import { UnauthorizedFinancialEntryAccessError } from '../../domain/errors/unauthorized-financial-entry-access.error';
+import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { DeleteExpenseInput } from '../dtos/delete-expense.input';
 
 export class DeleteExpenseUseCase {

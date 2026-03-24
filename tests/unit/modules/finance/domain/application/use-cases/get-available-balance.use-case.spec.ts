@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { GetAvailableBalanceUseCase } from '@/modules/finance/domain/application/use-cases/get-available-balance.use-case';
+import { GetAvailableBalanceUseCase } from '@/modules/finance/application/use-cases/get-available-balance.use-case';
 
 describe('GetAvailableBalanceUseCase', () => {
   it('deve calcular o saldo disponível do usuário', async () => {

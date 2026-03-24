@@ -1,7 +1,7 @@
 import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
-import { CalculateDailyProfitUseCase } from '@/modules/finance/domain/application/use-cases/calculate-daily-profit.use-case';
+import { CalculateDailyProfitUseCase } from '@/modules/finance/application/use-cases/calculate-daily-profit.use-case';
 
 describe('CalculateDailyProfitUseCase', () => {
   it('deve calcular lucro diário positivo', async () => {
