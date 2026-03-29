@@ -1,31 +1,39 @@
 # Finance Control
 
-Sistema web de controle financeiro operacional, pensado inicialmente para uso pessoal, com foco em registros rápidos no celular, organização financeira do dia a dia e evolução futura sem reestruturações profundas.
-
-O projeto nasce para substituir o uso de planilhas por uma aplicação web responsiva, otimizada para uso mobile, capaz de registrar ganhos, gastos e dívidas, além de calcular saldo, lucro diário e resumo mensal automaticamente.
+Sistema web de controle financeiro operacional, construído para substituir o uso de planilhas por uma aplicação web responsiva, com foco em uso mobile, registros rápidos do dia a dia e evolução segura ao longo do tempo. O projeto foi concebido como um **monólito modular** em **Next.js**, seguindo **Clean Architecture** e **Hexagonal Architecture**, para manter o domínio desacoplado da infraestrutura e evitar overengineering no MVP.
 
 ## Objetivo
 
-O **Finance Control** tem como objetivo centralizar a operação financeira diária em um único ambiente, reduzindo atrito no lançamento de informações e eliminando cálculos manuais que hoje existem em planilhas. Entre os objetivos do sistema estão:
+O objetivo do **Finance Control** é centralizar a operação financeira diária em um único ambiente, reduzindo atrito no lançamento de informações e eliminando cálculos manuais hoje feitos em planilhas. O escopo inicial do MVP contempla:
 
-- registrar ganhos diários
-- registrar gastos operacionais
-- acompanhar saldo disponível
-- controlar dívidas
-- visualizar resultado diário e mensal
-- automatizar cálculos financeiros recorrentes
+- registro de ganhos diários
+- registro de gastos operacionais
+- categorização de gastos
+- visualização de saldo disponível
+- cálculo automático de lucro diário
+- cálculo automático de resumo mensal
+- controle de dívidas
 
-Esse direcionamento faz parte do escopo inicial do MVP e foi definido para priorizar simplicidade, praticidade e uso em dispositivos móveis.
+Esses objetivos refletem diretamente a visão inicial do produto e o foco em simplicidade, praticidade e uso em dispositivos móveis.
 
 ## Problema que o projeto resolve
 
-Atualmente, o controle financeiro é feito em planilhas, o que gera limitações importantes no uso diário, especialmente em smartphones. Entre os principais problemas estão a baixa usabilidade em dispositivos móveis, a dependência de computador para atualizações e o risco de erros em consolidações e cálculos manuais.
+Atualmente, o controle financeiro é feito em planilhas, o que traz limitações relevantes no uso diário, especialmente no celular. Entre os principais problemas estão:
 
-## Escopo inicial do MVP
+- baixa usabilidade em smartphones
+- dependência de computador para atualizações
+- cálculos manuais em algumas etapas
+- risco de erro na consolidação de dados
+- ausência de uma interface otimizada para registros rápidos
 
-A primeira versão do sistema foi pensada para substituir completamente a planilha atual, cobrindo as funcionalidades essenciais:
+A proposta do sistema é substituir esse fluxo por uma aplicação web mais prática, organizada e adequada ao uso móvel.
 
-- registro de ganhos diários
+## Escopo do MVP
+
+A primeira versão do sistema foi definida para substituir a planilha atual cobrindo as funcionalidades essenciais:
+
+- autenticação de usuário
+- registro de ganhos
 - registro de gastos
 - categorização de gastos
 - controle de dívidas
@@ -37,12 +45,7 @@ O MVP prioriza clareza, confiabilidade e velocidade de uso.
 
 ## Arquitetura
 
-O sistema segue uma abordagem de **monólito modular**, com base em:
-
-- **Clean Architecture**
-- **Hexagonal Architecture (Ports and Adapters)**
-
-A separação principal do sistema é:
+O sistema segue uma abordagem de **monólito modular**, organizado por domínio e por camadas:
 
 ```txt
 Presentation → Application → Domain ← Infrastructure
@@ -52,19 +55,19 @@ Presentation → Application → Domain ← Infrastructure
 
 #### Domain
 
-Camada central do sistema. Contém entidades, value objects, regras de negócio e contratos de repositório. Não depende de framework, ORM ou infraestrutura.
+Camada central do sistema. Contém entidades, value objects, regras de negócio e contratos de repositório. Não depende de framework, ORM ou detalhes de infraestrutura.
 
 #### Application
 
-Responsável por orquestrar os casos de uso do sistema. Depende apenas do domínio e não conhece detalhes técnicos de banco, Next.js ou Prisma.
+Responsável por orquestrar os casos de uso. Depende apenas do domínio e não conhece Next.js, Prisma ou React.
 
 #### Infrastructure
 
-Implementa adapters concretos, como repositórios com Prisma, serviços técnicos e integrações externas.
+Implementa adapters concretos, como repositórios com Prisma, serviços técnicos e integrações.
 
 #### Presentation
 
-Responsável pela interface, rotas, formulários, páginas e interação com o usuário. Não deve concentrar regra de negócio.
+Responsável por páginas, rotas, formulários, componentes e entrada/saída HTTP. Não deve concentrar regra de negócio.
 
 ## Organização por módulos
 
@@ -88,7 +91,7 @@ Essa estrutura foi definida para facilitar manutenção, escalabilidade e isolam
 
 ## Stack principal
 
-A base tecnológica do projeto é:
+A base tecnológica do projeto é composta por:
 
 - **Next.js**
 - **TypeScript**
@@ -99,13 +102,13 @@ A base tecnológica do projeto é:
 - **Zod**
 - **Jest**
 
-Na fase inicial, o backend fica integrado ao próprio Next.js por meio de **Route Handlers** e, quando necessário, **Server Actions**, evitando complexidade desnecessária para o MVP.
+Na fase inicial, o backend fica integrado ao próprio Next.js por meio de **Route Handlers** e proteção de rotas via `proxy.ts`, mantendo simplicidade para o MVP.
 
 ## Modelagem de dados
 
-A modelagem inicial do banco foi planejada para suportar o MVP sem persistir dados derivados como saldo, lucro diário ou resumo mensal. Esses valores devem ser sempre calculados sob demanda a partir dos lançamentos e das dívidas pendentes.
+A modelagem inicial foi planejada para suportar o MVP sem persistir dados derivados como saldo, lucro diário ou resumo mensal. Esses valores devem ser calculados sob demanda a partir dos lançamentos e, quando aplicável, das dívidas pendentes.
 
-As principais entidades persistidas são:
+Principais entidades persistidas:
 
 - `users`
 - `wallets`
@@ -124,7 +127,7 @@ As principais entidades persistidas são:
 
 ## Regras de negócio essenciais
 
-Algumas diretrizes do domínio são centrais no projeto:
+Alguns princípios do domínio são centrais no projeto:
 
 - **fonte única da verdade**: saldo, lucro e resumos são derivados dos registros
 - **consistência automática**: criar, editar ou excluir lançamentos deve refletir nos cálculos
@@ -132,7 +135,7 @@ Algumas diretrizes do domínio são centrais no projeto:
 - **sem regra de negócio na interface**
 - **sem regra de negócio na infraestrutura**
 
-Esses princípios garantem previsibilidade e reduzem risco de inconsistência funcional.
+Esses princípios são a base do comportamento funcional do sistema.
 
 ## Estrutura sugerida do projeto
 
@@ -167,11 +170,11 @@ finance-control/
         └── infra/database/prisma/client.ts
 ```
 
-Essa organização é a base recomendada para manter o projeto modular e evolutivo.
-
 ## Estado atual do projeto
 
-Baseado na documentação consolidada do projeto, a base técnica inicial já contempla:
+Baseado na documentação consolidada e no andamento recente do desenvolvimento, o projeto se encontra neste ponto:
+
+### Base técnica concluída
 
 - projeto Next.js criado
 - Docker Compose configurado
@@ -181,7 +184,32 @@ Baseado na documentação consolidada do projeto, a base técnica inicial já co
 - migration inicial executada
 - banco validado
 
-Além disso, o desenvolvimento segue a estratégia de implementação por módulos e por fases, usando este projeto como um monólito modular evolutivo. fileciteturn0file6
+### Módulo Auth
+
+Backend do módulo **Auth** já estruturado e validado no projeto, com:
+
+- camadas `domain`, `application`, `infra` e `presentation`
+- autenticação real com banco
+- geração de token
+- cookie `httpOnly`
+- rotas de autenticação
+- endpoint de sessão atual
+- proteção inicial de rotas com `proxy.ts`
+- testes unitários e de integração
+
+### Módulo Finance
+
+O módulo **Finance** já avançou além da modelagem inicial e está em implementação incremental do backend:
+
+- Fase 1 concluída: domínio, aplicação, contratos e testes unitários
+- Fase 2 concluída: mappers Prisma e repositórios concretos
+- Fase 3 em andamento/validação operacional: factories, controllers, rotas de comandos e integração com autenticação
+
+### Próximos módulos
+
+- `debts`: planejado após consolidação do backend principal de `finance`
+- `UI`: ficará para etapa posterior
+- `PWA`: previsto após a aplicação principal estar funcional
 
 ## Estratégia de implementação
 
@@ -197,14 +225,14 @@ Cada módulo evolui em fases:
 
 ### Fase 1
 
-- domain
-- application
+- `domain`
+- `application`
 - contratos de repositório
 - testes unitários
 
 ### Fase 2
 
-- infra com Prisma
+- `infra` com Prisma
 - rotas
 - testes de integração
 - testes com Rest Client
@@ -221,6 +249,7 @@ Esse fluxo foi definido para consolidar primeiro o núcleo de regras e casos de 
 
 - autenticar usuário
 - encerrar sessão
+- consultar sessão atual
 
 ### Finance
 
@@ -243,8 +272,6 @@ Esse fluxo foi definido para consolidar primeiro o núcleo de regras e casos de 
 - consultar dívidas pendentes
 - marcar dívida como paga
 
-fileciteturn0file2
-
 ## Como rodar o projeto localmente
 
 ### 1. Instalar dependências
@@ -266,8 +293,6 @@ Crie um arquivo `.env` com:
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/finance_control?schema=public"
 ```
-
-Esse é o formato adotado na base inicial do projeto.
 
 ### 4. Executar migrations
 
@@ -330,6 +355,6 @@ A arquitetura já foi pensada para suportar, sem refatorações profundas:
 
 ## Observações finais
 
-Este projeto prioriza uma abordagem pragmática: simples no MVP, organizada desde o início e pronta para crescer com segurança.
+O **Finance Control** prioriza uma abordagem pragmática: simples no MVP, organizada desde o início e pronta para crescer com segurança.
 
-O objetivo não é apenas criar uma aplicação funcional, mas manter uma base técnica limpa, previsível e consistente com os princípios de arquitetura definidos para o **Finance Control**.
+O objetivo não é apenas criar uma aplicação funcional, mas manter uma base técnica limpa, previsível e consistente com os princípios arquiteturais definidos para o projeto.
