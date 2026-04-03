@@ -2,6 +2,8 @@
 @email = admin@financecontrol.com
 @password = 123456
 
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImZlZWQ1ZTU0LWYzNzQtNGJjYy1iZWQxLWM0MDNlMDhjN2E5NCIsImlhdCI6MTc3NDc1ODU4MywiZXhwIjoxNzc1MzYzMzgzfQ.VEFH_PaUktnvUka0uTjNFNAOOt4wkitWs2PB1axujpY
+
 ### Sign in - sucesso
 POST {{baseUrl}}/api/auth/sign-in
 Content-Type: application/json
@@ -60,7 +62,7 @@ GET {{baseUrl}}/api/auth/me
 ### Get current user - autenticado com cookie manual
 # Use apenas se seu REST Client não persistir cookies.
 GET {{baseUrl}}/api/auth/me
-Cookie: fc_access_token=eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmxvY2FsIiwic3ViIjoiNmNiZjkxNGQtZGY3ZC00YWZiLWFkOTMtMDc3YmMyMjcxMTUwIiwiaWF0IjoxNzc0MTU4NjY4LCJleHAiOjE3NzQ3NjM0Njh9.5JVHKAmKTJKwbkkFvGH6ySY26_aziB9xb61yrftpaD0
+Cookie: fc_access_token={{authToken}}
 
 ###
 

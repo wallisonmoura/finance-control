@@ -1,0 +1,151 @@
+@baseUrl = http://localhost:3000
+@authCookieName = fc_access_token
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImZlZWQ1ZTU0LWYzNzQtNGJjYy1iZWQxLWM0MDNlMDhjN2E5NCIsImlhdCI6MTc3NDc1ODU4MywiZXhwIjoxNzc1MzYzMzgzfQ.VEFH_PaUktnvUka0uTjNFNAOOt4wkitWs2PB1axujpY
+
+@categoryId = c2972188-838b-411b-8363-d9faa86f1c75
+@incomeId = 1749afc0-a995-46e0-b32b-242047be8a1c
+@expenseId = 9f702949-13ac-47e5-8228-217a22e7901d
+
+### ----------------------------------------------------------------------
+### FINANCE - INCOMES
+### ----------------------------------------------------------------------
+
+### Criar receita
+POST {{baseUrl}}/api/finance/incomes
+Content-Type: application/json
+Cookie: fc_access_token={{authToken}}
+
+{
+  "amount": 250.00,
+  "description": "Corrida Uber manhã",
+  "date": "2026-03-29",
+  "notes": "Pagamento em dinheiro"
+}
+
+###
+
+### Atualizar receita
+PUT {{baseUrl}}/api/finance/incomes/{{incomeId}}
+Content-Type: application/json
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 300.00,
+  "description": "Corrida Uber ajustada",
+  "date": "2026-03-29",
+  "notes": "Valor corrigido"
+}
+
+###
+
+### Excluir receita
+DELETE {{baseUrl}}/api/finance/incomes/{{incomeId}}
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### ----------------------------------------------------------------------
+### FINANCE - EXPENSES
+### ----------------------------------------------------------------------
+
+### Criar despesa
+POST {{baseUrl}}/api/finance/expenses
+Content-Type: application/json
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 75.50,
+  "description": "Combustível",
+  "date": "2026-03-29",
+  "categoryId": "{{categoryId}}",
+  "notes": "Abastecimento do turno da manhã"
+}
+
+###
+
+### Atualizar despesa
+PUT {{baseUrl}}/api/finance/expenses/{{expenseId}}
+Content-Type: application/json
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 82.00,
+  "description": "Combustível ajustado",
+  "date": "2026-03-29",
+  "categoryId": "{{categoryId}}",
+  "notes": "Valor atualizado após conferência"
+}
+
+###
+
+### Excluir despesa
+DELETE {{baseUrl}}/api/finance/expenses/{{expenseId}}
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### ----------------------------------------------------------------------
+### CENÁRIOS ÚTEIS DE APOIO
+### ----------------------------------------------------------------------
+
+### Criar receita sem autenticação
+POST {{baseUrl}}/api/finance/incomes
+Content-Type: application/json
+
+{
+  "amount": 120.00,
+  "description": "Receita sem token",
+  "date": "2026-03-29",
+  "notes": "Deve retornar 401"
+}
+
+###
+
+### Criar despesa com payload inválido
+POST {{baseUrl}}/api/finance/expenses
+Content-Type: application/json
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": -10,
+  "description": "",
+  "date": "2026-99-99",
+  "categoryId": "categoria-invalida",
+  "notes": "Deve retornar erro de validação"
+}
+
+###
+
+### Atualizar receita com id inválido
+PUT {{baseUrl}}/api/finance/incomes/id-invalido
+Content-Type: application/json
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 300.00,
+  "description": "Receita teste id inválido",
+  "date": "2026-03-29",
+  "notes": "Teste"
+}
+
+###
+
+### Atualizar despesa com categoryId inválido
+PUT {{baseUrl}}/api/finance/expenses/{{expenseId}}
+Content-Type: application/json
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 50.00,
+  "description": "Despesa com categoria inválida",
+  "date": "2026-03-29",
+  "categoryId": "categoria-invalida",
+  "notes": "Deve falhar"
+}
+
+###
+
+### Excluir despesa sem autenticação
+DELETE {{baseUrl}}/api/finance/expenses/{{expenseId}}
+
+###
