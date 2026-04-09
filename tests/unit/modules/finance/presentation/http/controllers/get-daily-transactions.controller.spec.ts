@@ -1,0 +1,96 @@
+import { DailyTransactionsOutput } from '@/modules/finance/application/dtos/daily-transactions.output';
+import { GetDailyTransactionsUseCase } from '@/modules/finance/application/use-cases/get-daily-transactions.use-case';
+import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
+import { GetDailyTransactionsController } from '@/modules/finance/presentation/http/controllers/get-daily-transactions.controller';
+
+describe('GetDailyTransactionsController', () => {
+  let useCase: jest.Mocked<GetDailyTransactionsUseCase>;
+  let controller: GetDailyTransactionsController;
+
+  beforeEach(() => {
+    useCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<GetDailyTransactionsUseCase>;
+
+    controller = new GetDailyTransactionsController(useCase);
+  });
+
+  it('deve retornar status 200 com as movimentações do dia', async () => {
+    const output: DailyTransactionsOutput = {
+      date: new Date(2026, 3, 6),
+      entries: [
+        {
+          id: 'entry-1',
+          userId: 'user-123',
+          type: FinancialEntryType.INCOME,
+          amount: 200,
+          description: 'Corrida Uber',
+          date: new Date(2026, 3, 6),
+          categoryId: null,
+          notes: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 'entry-2',
+          userId: 'user-123',
+          type: FinancialEntryType.EXPENSE,
+          amount: 50,
+          description: 'Combustível',
+          date: new Date(2026, 3, 6),
+          categoryId: 'cat-1',
+          notes: 'Posto X',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      totalIncome: 200,
+      totalExpense: 50,
+      dailyProfit: 150,
+    };
+
+    useCase.execute.mockResolvedValue(output);
+
+    const response = await controller.handle({
+      userId: 'user-123',
+      query: {
+        date: '2026-04-06',
+      },
+    });
+
+    expect(useCase.execute).toHaveBeenCalledTimes(1);
+
+    const input = useCase.execute.mock.calls[0][0];
+
+    expect(input.userId).toBe('user-123');
+    expect(input.date).toBeInstanceOf(Date);
+    expect(input.date.getFullYear()).toBe(2026);
+    expect(input.date.getMonth()).toBe(3);
+    expect(input.date.getDate()).toBe(6);
+
+    expect(response).toEqual({
+      statusCode: 200,
+      body: output,
+    });
+  });
+
+  it('deve lançar erro quando faltar a data', async () => {
+    await expect(
+      controller.handle({
+        userId: 'user-123',
+        query: {},
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('deve lançar erro quando a data estiver em formato inválido', async () => {
+    await expect(
+      controller.handle({
+        userId: 'user-123',
+        query: {
+          date: '06-04-2026',
+        },
+      }),
+    ).rejects.toThrow();
+  });
+});
