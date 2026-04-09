@@ -11,8 +11,8 @@ export class CalculateMonthlySummaryUseCase {
   async execute(
     input: CalculateMonthlySummaryInput,
   ): Promise<MonthlySummaryOutput> {
-    const startDate = new Date(input.year, input.month - 1, 1, 0, 0, 0, 0);
-    const endDate = new Date(input.year, input.month, 0, 23, 59, 59, 999);
+    const startDate = new Date(input.year, input.month - 1, 1);
+    const endDate = new Date(input.year, input.month, 1);
 
     const entries = await this.financialEntryRepository.findByUserIdAndPeriod(
       input.userId,
