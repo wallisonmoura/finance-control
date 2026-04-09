@@ -116,7 +116,7 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
         userId,
         transactionDate: {
           gte: startDate,
-          lte: endDate,
+          lt: endDate,
         },
         ...(type
           ? {
