@@ -1,0 +1,51 @@
+import { RegisterDebtUseCase } from '@/modules/debts/application/use-cases/register-debt.use-case';
+import { InMemoryDebtRepository } from './fakes/in-memory-debt.repository';
+import { DebtType } from '@/modules/debts/domain/enum/debt-type.enum';
+import { DebtStatus } from '@/modules/debts/domain/enum/debt-status.enum';
+
+describe('RegisterDebtUseCase', () => {
+  let debtRepository: InMemoryDebtRepository;
+  let sut: RegisterDebtUseCase;
+
+  beforeEach(() => {
+    debtRepository = new InMemoryDebtRepository();
+    sut = new RegisterDebtUseCase(debtRepository);
+  });
+
+  it('deve cadastrar uma dívida pendente com sucesso', async () => {
+    const dueDate = new Date('2026-04-20');
+
+    const output = await sut.execute({
+      userId: 'user-1',
+      description: 'Parcela do carro',
+      amount: 850,
+      dueDate,
+      type: DebtType.ONE_TIME,
+      notes: 'Abril',
+    });
+
+    expect(output.id).toBeDefined();
+    expect(output.userId).toBe('user-1');
+    expect(output.description).toBe('Parcela do carro');
+    expect(output.amount).toBe(850);
+    expect(output.dueDate).toEqual(dueDate);
+    expect(output.type).toBe(DebtType.ONE_TIME);
+    expect(output.status).toBe(DebtStatus.PENDING);
+    expect(output.notes).toBe('Abril');
+    expect(output.paidAt).toBeNull();
+
+    expect(debtRepository.items).toHaveLength(1);
+  });
+
+  it('deve cadastrar com notes null quando não informado', async () => {
+    const output = await sut.execute({
+      userId: 'user-1',
+      description: 'Conta de energia',
+      amount: 120,
+      dueDate: new Date('2026-04-25'),
+      type: DebtType.RECURRING,
+    });
+
+    expect(output.notes).toBeNull();
+  });
+});
