@@ -33,6 +33,9 @@ async function main() {
         userId: user.id,
         name: 'Carteira Principal',
         isDefault: true,
+        bankBalance: 0,
+        cashBalance: 0,
+        receivableBalance: 0,
       },
     });
   }

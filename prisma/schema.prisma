@@ -22,32 +22,35 @@ enum DebtStatus {
 }
 
 model User {
-  id               String            @id @default(uuid()) @db.Uuid
-  name             String
-  email            String            @unique
-  passwordHash     String            @map("password_hash")
-  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                String            @id @default(uuid()) @db.Uuid
+  name              String
+  email             String            @unique
+  passwordHash      String            @map("password_hash")
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  wallets          Wallet[]
+  wallets           Wallet[]
   expenseCategories ExpenseCategory[]
-  transactions     Transaction[]
-  debts            Debt[]
+  transactions      Transaction[]
+  debts             Debt[]
 
   @@map("users")
 }
 
 model Wallet {
-  id          String        @id @default(uuid()) @db.Uuid
-  userId      String        @map("user_id") @db.Uuid
-  name        String
-  isDefault   Boolean       @default(false) @map("is_default")
-  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  name              String
+  isDefault         Boolean       @default(false) @map("is_default")
+  bankBalance       Decimal       @default(0) @map("bank_balance") @db.Decimal(14, 2)
+  cashBalance       Decimal       @default(0) @map("cash_balance") @db.Decimal(14, 2)
+  receivableBalance Decimal       @default(0) @map("receivable_balance") @db.Decimal(14, 2)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions Transaction[]
-  debts       Debt[]
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions      Transaction[]
+  debts             Debt[]
 
   @@unique([userId, name])
   @@index([userId])
@@ -55,17 +58,17 @@ model Wallet {
 }
 
 model ExpenseCategory {
-  id          String         @id @default(uuid()) @db.Uuid
-  userId      String         @map("user_id") @db.Uuid
-  name        String
-  slug        String
-  color       String?
-  isActive    Boolean        @default(true) @map("is_active")
-  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                String         @id @default(uuid()) @db.Uuid
+  userId            String         @map("user_id") @db.Uuid
+  name              String
+  slug              String
+  color             String?
+  isActive          Boolean        @default(true) @map("is_active")
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions Transaction[]
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions      Transaction[]
 
   @@unique([userId, slug])
   @@index([userId])
