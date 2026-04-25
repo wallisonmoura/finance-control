@@ -4,6 +4,9 @@ type CreateTestWalletInput = {
   userId: string;
   name?: string;
   isDefault?: boolean;
+  bankBalance?: number;
+  cashBalance?: number;
+  receivableBalance?: number;
 };
 
 export async function createTestWallet(input: CreateTestWalletInput) {
@@ -12,6 +15,9 @@ export async function createTestWallet(input: CreateTestWalletInput) {
       userId: input.userId,
       name: input.name ?? 'Carteira Teste',
       isDefault: input.isDefault ?? true,
+      bankBalance: input.bankBalance ?? 0,
+      cashBalance: input.cashBalance ?? 0,
+      receivableBalance: input.receivableBalance ?? 0,
     },
   });
 }

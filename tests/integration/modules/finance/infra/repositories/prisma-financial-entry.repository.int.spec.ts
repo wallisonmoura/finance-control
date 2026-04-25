@@ -1,4 +1,3 @@
-import { FinancialEntry } from '@/modules/finance/domain/entities/financial-entry.entity';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
 import { DefaultWalletNotFoundError } from '@/modules/finance/infra/errors/default-wallet-not-found.error';
