@@ -3,37 +3,35 @@ import {
   FinanceHttpPresenter,
   FinancialEntryHttpResponse,
 } from '../presenters/finance-http.presenter';
-import { Controller, HttpResponse } from './http.types';
 import {
   registerExpenseSchema,
   RegisterExpenseSchemaData,
 } from '../schemas/register-expense.schema';
 import { RegisterExpenseInput } from '@/modules/finance/application/dtos/register-expense.input';
 import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financial-entry.output';
-
-interface RegisterExpenseControllerRequest {
-  userId: string;
-  body: unknown;
-}
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
+import { Controller } from '@/shared/presentation/http/controller';
 
 export class RegisterExpenseController implements Controller<
-  RegisterExpenseControllerRequest,
+  HttpRequest,
   FinancialEntryHttpResponse
 > {
   constructor(
     private readonly registerExpenseUseCase: RegisterExpenseUseCase,
   ) {}
 
-  async handle({
-    userId,
-    body,
-  }: RegisterExpenseControllerRequest): Promise<
-    HttpResponse<FinancialEntryHttpResponse>
-  > {
-    const data: RegisterExpenseSchemaData = registerExpenseSchema.parse(body);
+  async handle(
+    request: HttpRequest,
+  ): Promise<HttpResponse<FinancialEntryHttpResponse>> {
+    const data: RegisterExpenseSchemaData = registerExpenseSchema.parse(
+      request.body,
+    );
 
     const input: RegisterExpenseInput = {
-      userId,
+      userId: request.userId!,
       amount: data.amount,
       description: data.description,
       date: new Date(`${data.date}T00:00:00.000Z`),

@@ -3,40 +3,34 @@ import {
   FinanceHttpPresenter,
   FinancialEntryHttpResponse,
 } from '../presenters/finance-http.presenter';
-import { Controller, HttpResponse } from './http.types';
 import {
   updateExpenseSchema,
   UpdateExpenseSchemaData,
 } from '../schemas/update-expense.schema';
 import { UpdateExpenseInput } from '@/modules/finance/application/dtos/update-expense.input';
 import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financial-entry.output';
-
-interface UpdateExpenseControllerRequest {
-  userId: string;
-  params: {
-    id: string;
-  };
-  body: unknown;
-}
+import { Controller } from '@/shared/presentation/http/controller';
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
 
 export class UpdateExpenseController implements Controller<
-  UpdateExpenseControllerRequest,
+  HttpRequest,
   FinancialEntryHttpResponse
 > {
   constructor(private readonly updateExpenseUseCase: UpdateExpenseUseCase) {}
 
-  async handle({
-    userId,
-    params,
-    body,
-  }: UpdateExpenseControllerRequest): Promise<
-    HttpResponse<FinancialEntryHttpResponse>
-  > {
-    const data: UpdateExpenseSchemaData = updateExpenseSchema.parse(body);
+  async handle(
+    request: HttpRequest,
+  ): Promise<HttpResponse<FinancialEntryHttpResponse>> {
+    const data: UpdateExpenseSchemaData = updateExpenseSchema.parse(
+      request.body,
+    );
 
     const input: UpdateExpenseInput = {
-      id: params.id,
-      userId,
+      id: request.params!.id,
+      userId: request.userId!,
       amount: data.amount,
       description: data.description,
       date: new Date(`${data.date}T00:00:00.000Z`),

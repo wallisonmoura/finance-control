@@ -2,11 +2,11 @@ import { prisma } from '@/shared/infra/database/prisma/client';
 import { FinancialEntry } from '../../domain/entities/financial-entry.entity';
 import { PrismaFinancialEntryMapper } from '../mappers/prisma-financial-entry.mapper';
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
-import { PrismaWalletRepository } from './prisma-wallet.repository';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { TransactionType } from '@prisma/client';
 import { DefaultWalletNotFoundError } from '../errors/default-wallet-not-found.error';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
+import { PrismaWalletRepository } from '@/modules/wallet/infra/repositories/prisma-wallet.repository';
 
 export class PrismaFinancialEntryRepository implements FinancialEntryRepository {
   constructor(
@@ -35,9 +35,7 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
   }
 
   async create(entry: FinancialEntry): Promise<FinancialEntry> {
-    const wallet = await this.walletRepository.findDefaultByUserId(
-      entry.userId,
-    );
+    const wallet = await this.walletRepository.findByUserId(entry.userId);
 
     if (!wallet) {
       throw new DefaultWalletNotFoundError();

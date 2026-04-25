@@ -1,27 +1,18 @@
 import { DeleteIncomeUseCase } from '@/modules/finance/application/use-cases/delete-income.use-case';
-import { Controller, HttpResponse } from './http.types';
 import { DeleteIncomeInput } from '@/modules/finance/application/dtos/delete-income.input';
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
+import { Controller } from '@/shared/presentation/http/controller';
 
-interface DeleteIncomeControllerRequest {
-  userId: string;
-  params: {
-    id: string;
-  };
-}
-
-export class DeleteIncomeController implements Controller<
-  DeleteIncomeControllerRequest,
-  null
-> {
+export class DeleteIncomeController implements Controller<HttpRequest, null> {
   constructor(private readonly deleteIncomeUseCase: DeleteIncomeUseCase) {}
 
-  async handle({
-    userId,
-    params,
-  }: DeleteIncomeControllerRequest): Promise<HttpResponse<null>> {
+  async handle(request: HttpRequest): Promise<HttpResponse<null>> {
     const input: DeleteIncomeInput = {
-      id: params.id,
-      userId,
+      id: request.params!.id,
+      userId: request.userId!,
     };
 
     await this.deleteIncomeUseCase.execute(input);

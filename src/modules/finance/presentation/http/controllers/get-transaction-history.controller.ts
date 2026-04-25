@@ -1,24 +1,16 @@
 import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/transaction-history.output';
-import { Controller, HttpResponse } from './http.types';
-import {
-  GetTransactionHistoryQuery,
-  getTransactionHistoryQuerySchema,
-} from '../schemas/get-transaction-history-query.schema';
+import { getTransactionHistoryQuerySchema } from '../schemas/get-transaction-history-query.schema';
 import { GetTransactionHistoryUseCase } from '@/modules/finance/application/use-cases/get-transaction-history.use-case';
 import { GetTransactionHistoryInput } from '@/modules/finance/application/dtos/get-transaction-history.input';
 import { parseDateFromQuery } from '../schemas/shared/parse-date-from-query';
-
-type GetTransactionHistoryControllerRequest = {
-  userId: string;
-  query: {
-    startDate?: string;
-    endDate?: string;
-    type?: string;
-  };
-};
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
+import { Controller } from '@/shared/presentation/http/controller';
 
 export class GetTransactionHistoryController implements Controller<
-  GetTransactionHistoryControllerRequest,
+  HttpRequest,
   TransactionHistoryOutput
 > {
   constructor(
@@ -26,12 +18,12 @@ export class GetTransactionHistoryController implements Controller<
   ) {}
 
   async handle(
-    request: GetTransactionHistoryControllerRequest,
+    request: HttpRequest,
   ): Promise<HttpResponse<TransactionHistoryOutput>> {
     const query = getTransactionHistoryQuerySchema.parse(request.query);
 
     const input: GetTransactionHistoryInput = {
-      userId: request.userId,
+      userId: request.userId!,
       startDate: parseDateFromQuery(query.startDate),
       endDate: parseDateFromQuery(query.endDate),
       type: query.type,

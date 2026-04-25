@@ -1,27 +1,18 @@
 import { DeleteExpenseUseCase } from '@/modules/finance/application/use-cases/delete-expense.use-case';
-import { Controller, HttpResponse } from './http.types';
 import { DeleteExpenseInput } from '@/modules/finance/application/dtos/delete-expense.input';
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
+import { Controller } from '@/shared/presentation/http/controller';
 
-interface DeleteExpenseControllerRequest {
-  userId: string;
-  params: {
-    id: string;
-  };
-}
-
-export class DeleteExpenseController implements Controller<
-  DeleteExpenseControllerRequest,
-  null
-> {
+export class DeleteExpenseController implements Controller<HttpRequest, null> {
   constructor(private readonly deleteExpenseUseCase: DeleteExpenseUseCase) {}
 
-  async handle({
-    userId,
-    params,
-  }: DeleteExpenseControllerRequest): Promise<HttpResponse<null>> {
+  async handle(request: HttpRequest): Promise<HttpResponse<null>> {
     const input: DeleteExpenseInput = {
-      id: params.id,
-      userId,
+      id: request.params!.id,
+      userId: request.userId!,
     };
 
     await this.deleteExpenseUseCase.execute(input);

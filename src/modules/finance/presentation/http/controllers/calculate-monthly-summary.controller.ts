@@ -1,19 +1,15 @@
 import { MonthlySummaryOutput } from '@/modules/finance/application/dtos/monthly-summary.output';
 import { calculateMonthlySummaryQuerySchema } from '../schemas/calculate-monthly-summary-query.schema';
-import { Controller, HttpResponse } from './http.types';
 import { CalculateMonthlySummaryUseCase } from '@/modules/finance/application/use-cases/calculate-monthly-summary.use-case';
 import { CalculateMonthlySummaryInput } from '@/modules/finance/application/dtos/calculate-monthly-summary.input';
-
-type CalculateMonthlySummaryControllerRequest = {
-  userId: string;
-  query: {
-    year?: string;
-    month?: string;
-  };
-};
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
+import { Controller } from '@/shared/presentation/http/controller';
 
 export class CalculateMonthlySummaryController implements Controller<
-  CalculateMonthlySummaryControllerRequest,
+  HttpRequest,
   MonthlySummaryOutput
 > {
   constructor(
@@ -21,12 +17,12 @@ export class CalculateMonthlySummaryController implements Controller<
   ) {}
 
   async handle(
-    request: CalculateMonthlySummaryControllerRequest,
+    request: HttpRequest,
   ): Promise<HttpResponse<MonthlySummaryOutput>> {
     const query = calculateMonthlySummaryQuerySchema.parse(request.query);
 
     const input: CalculateMonthlySummaryInput = {
-      userId: request.userId,
+      userId: request.userId!,
       year: Number(query.year),
       month: Number(query.month),
     };

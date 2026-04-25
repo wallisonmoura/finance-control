@@ -1,22 +1,16 @@
 import { GetDailyTransactionsUseCase } from '@/modules/finance/application/use-cases/get-daily-transactions.use-case';
-import {
-  GetDailyTransactionsQuery,
-  getDailyTransactionsQuerySchema,
-} from '../schemas/get-daily-transactions-query.schema';
-import { Controller, HttpResponse } from './http.types';
+import { getDailyTransactionsQuerySchema } from '../schemas/get-daily-transactions-query.schema';
 import { DailyTransactionsOutput } from '@/modules/finance/application/dtos/daily-transactions.output';
 import { GetDailyTransactionsInput } from '@/modules/finance/application/dtos/get-daily-transactions.input';
 import { parseDateFromQuery } from '../schemas/shared/parse-date-from-query';
-
-type GetDailyTransactionsControllerRequest = {
-  userId: string;
-  query: {
-    date?: string;
-  };
-};
+import {
+  HttpRequest,
+  HttpResponse,
+} from '@/shared/presentation/http/http.types';
+import { Controller } from '@/shared/presentation/http/controller';
 
 export class GetDailyTransactionsController implements Controller<
-  GetDailyTransactionsControllerRequest,
+  HttpRequest,
   DailyTransactionsOutput
 > {
   constructor(
@@ -24,12 +18,12 @@ export class GetDailyTransactionsController implements Controller<
   ) {}
 
   async handle(
-    request: GetDailyTransactionsControllerRequest,
+    request: HttpRequest,
   ): Promise<HttpResponse<DailyTransactionsOutput>> {
     const query = getDailyTransactionsQuerySchema.parse(request.query);
 
     const input: GetDailyTransactionsInput = {
-      userId: request.userId,
+      userId: request.userId!,
       date: parseDateFromQuery(query.date),
     };
 
