@@ -3,7 +3,8 @@ export interface RegisterDebtPaymentFinancialEffectInput {
   userId: string;
   amount: number;
   description: string;
-  paymentDate: Date;
+  paidAt: Date;
+  expenseCategoryId: string;
 }
 
 export interface DebtPaymentFinancialEffectPort {
