@@ -1,7 +1,7 @@
 import { RegisterDebtUseCase } from '@/modules/debts/application/use-cases/register-debt.use-case';
 import { InMemoryDebtRepository } from './fakes/in-memory-debt.repository';
-import { DebtType } from '@/modules/debts/domain/enum/debt-type.enum';
-import { DebtStatus } from '@/modules/debts/domain/enum/debt-status.enum';
+import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
+import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 
 describe('RegisterDebtUseCase', () => {
   let debtRepository: InMemoryDebtRepository;
@@ -33,6 +33,7 @@ describe('RegisterDebtUseCase', () => {
     expect(output.status).toBe(DebtStatus.PENDING);
     expect(output.notes).toBe('Abril');
     expect(output.paidAt).toBeNull();
+    expect(output.paymentSource).toBeNull();
 
     expect(debtRepository.items).toHaveLength(1);
   });
@@ -47,5 +48,7 @@ describe('RegisterDebtUseCase', () => {
     });
 
     expect(output.notes).toBeNull();
+    expect(output.paidAt).toBeNull();
+    expect(output.paymentSource).toBeNull();
   });
 });
