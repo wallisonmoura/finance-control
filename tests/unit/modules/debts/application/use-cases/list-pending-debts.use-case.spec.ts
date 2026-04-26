@@ -1,8 +1,9 @@
 import { ListPendingDebtsUseCase } from '@/modules/debts/application/use-cases/list-pending-debts.use-case';
 import { InMemoryDebtRepository } from './fakes/in-memory-debt.repository';
 import { Debt } from '@/modules/debts/domain/entities/debt.entity';
-import { DebtType } from '@/modules/debts/domain/enum/debt-type.enum';
-import { DebtStatus } from '@/modules/debts/domain/enum/debt-status.enum';
+import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
+import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
+import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 
 describe('ListPendingUseCase', () => {
   let debtRepository: InMemoryDebtRepository;
@@ -25,6 +26,7 @@ describe('ListPendingUseCase', () => {
         status: DebtStatus.PENDING,
         notes: null,
         paidAt: null,
+        paymentSource: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
@@ -41,6 +43,7 @@ describe('ListPendingUseCase', () => {
         status: DebtStatus.PENDING,
         notes: null,
         paidAt: null,
+        paymentSource: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
@@ -57,6 +60,7 @@ describe('ListPendingUseCase', () => {
         status: DebtStatus.PAID,
         notes: null,
         paidAt: new Date('2026-04-04'),
+        paymentSource: DebtPaymentSource.BANK,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
