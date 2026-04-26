@@ -21,18 +21,24 @@ enum DebtStatus {
   PAID
 }
 
-model User {
-  id                String            @id @default(uuid()) @db.Uuid
-  name              String
-  email             String            @unique
-  passwordHash      String            @map("password_hash")
-  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+enum DebtPaymentSource {
+  BANK
+  CASH
+  RECEIVABLE
+}
 
-  wallets           Wallet[]
-  expenseCategories ExpenseCategory[]
-  transactions      Transaction[]
-  debts             Debt[]
+model User {
+  id                 String            @id @default(uuid()) @db.Uuid
+  name               String
+  email              String            @unique
+  passwordHash       String            @map("password_hash")
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  wallets            Wallet[]
+  expenseCategories  ExpenseCategory[]
+  transactions       Transaction[]
+  debts              Debt[]
 
   @@map("users")
 }
@@ -58,17 +64,17 @@ model Wallet {
 }
 
 model ExpenseCategory {
-  id                String         @id @default(uuid()) @db.Uuid
-  userId            String         @map("user_id") @db.Uuid
-  name              String
-  slug              String
-  color             String?
-  isActive          Boolean        @default(true) @map("is_active")
-  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  name          String
+  slug          String
+  color         String?
+  isActive      Boolean       @default(true) @map("is_active")
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions      Transaction[]
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
 
   @@unique([userId, slug])
   @@index([userId])
@@ -102,22 +108,23 @@ model Transaction {
 }
 
 model Debt {
-  id          String       @id @default(uuid()) @db.Uuid
-  userId      String       @map("user_id") @db.Uuid
-  walletId    String       @map("wallet_id") @db.Uuid
-  description String
-  amount      Decimal      @db.Decimal(14, 2)
-  dueDate     DateTime     @map("due_date") @db.Date
-  type        DebtType
-  status      DebtStatus   @default(PENDING)
-  notes       String?
-  paidAt      DateTime?    @map("paid_at") @db.Timestamptz(6)
-  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id            String             @id @default(uuid()) @db.Uuid
+  userId        String             @map("user_id") @db.Uuid
+  walletId      String             @map("wallet_id") @db.Uuid
+  description   String
+  amount        Decimal            @db.Decimal(14, 2)
+  dueDate       DateTime           @map("due_date") @db.Date
+  type          DebtType
+  status        DebtStatus         @default(PENDING)
+  notes         String?
+  paidAt        DateTime?          @map("paid_at") @db.Timestamptz(6)
+  paymentSource DebtPaymentSource? @map("payment_source")
+  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  wallet      Wallet       @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  transaction Transaction?
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wallet        Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  transaction   Transaction?
 
   @@index([userId, status, dueDate])
   @@index([walletId, status, dueDate])
