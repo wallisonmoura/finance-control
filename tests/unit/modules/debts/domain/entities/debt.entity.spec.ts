@@ -1,10 +1,13 @@
 import { Debt } from '@/modules/debts/domain/entities/debt.entity';
-import { DebtStatus } from '@/modules/debts/domain/enum/debt-status.enum';
-import { DebtType } from '@/modules/debts/domain/enum/debt-type.enum';
+import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
+import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
+import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
 import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/invalid-debt-description.error';
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
+import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
+import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 
 describe('Debt entity', () => {
   const baseProps = {
@@ -17,6 +20,7 @@ describe('Debt entity', () => {
     status: DebtStatus.PENDING,
     notes: null,
     paidAt: null,
+    paymentSource: null,
     createdAt: new Date('2026-04-01T10:00:00.000Z'),
     updatedAt: new Date('2026-04-01T10:00:00.000Z'),
   };
@@ -33,6 +37,7 @@ describe('Debt entity', () => {
     expect(debt.status).toBe(DebtStatus.PENDING);
     expect(debt.notes).toBeNull();
     expect(debt.paidAt).toBeNull();
+    expect(debt.paymentSource).toBeNull();
   });
 
   it('deve lançar erro quando a descrição estiver vazia', () => {
@@ -80,6 +85,46 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtDueDateError);
   });
 
+  it('deve lançar erro quando uma dívida pendente possuir paidAt', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        paidAt: new Date('2026-04-18'),
+      }),
+    ).toThrow(InvalidDebtPendingStateError);
+  });
+
+  it('deve lançar erro quando uma dívida pendente possuir paymentSource', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        paymentSource: DebtPaymentSource.BANK,
+      }),
+    ).toThrow(InvalidDebtPendingStateError);
+  });
+
+  it('deve lançar erro quando uma dívida paga não possuir paidAt', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        status: DebtStatus.PAID,
+        paidAt: null,
+        paymentSource: DebtPaymentSource.BANK,
+      }),
+    ).toThrow(InvalidDebtPaidStateError);
+  });
+
+  it('deve lançar erro quando uma dívida paga não possuir paymentSource', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        status: DebtStatus.PAID,
+        paidAt: new Date('2026-04-18'),
+        paymentSource: null,
+      }),
+    ).toThrow(InvalidDebtPaidStateError);
+  });
+
   it('deve retornar true para isPending quando a dívida estiver pendente', () => {
     const debt = Debt.create({
       ...baseProps,
@@ -95,6 +140,7 @@ describe('Debt entity', () => {
       ...baseProps,
       status: DebtStatus.PAID,
       paidAt: new Date('2026-04-18'),
+      paymentSource: DebtPaymentSource.CASH,
     });
 
     expect(debt.isPaid()).toBe(true);
@@ -119,6 +165,7 @@ describe('Debt entity', () => {
     expect(updatedDebt.notes).toBe('Ajustada');
     expect(updatedDebt.status).toBe(DebtStatus.PENDING);
     expect(updatedDebt.paidAt).toBeNull();
+    expect(updatedDebt.paymentSource).toBeNull();
     expect(updatedDebt.updatedAt.getTime()).toBeGreaterThan(
       debt.updatedAt.getTime(),
     );
@@ -129,6 +176,7 @@ describe('Debt entity', () => {
       ...baseProps,
       status: DebtStatus.PAID,
       paidAt: new Date('2026-04-18'),
+      paymentSource: DebtPaymentSource.BANK,
     });
 
     expect(() =>
@@ -160,23 +208,18 @@ describe('Debt entity', () => {
 
   it('deve marcar uma dívida pendente como paga', () => {
     const debt = Debt.create(baseProps);
-    const paymentDate = new Date('2026-04-18');
+    const paidAt = new Date('2026-04-18');
 
-    const paidDebt = debt.markAsPaid(paymentDate);
+    const paidDebt = debt.markAsPaid({
+      paidAt,
+      paymentSource: DebtPaymentSource.RECEIVABLE,
+    });
 
     expect(paidDebt.status).toBe(DebtStatus.PAID);
-    expect(paidDebt.paidAt).toEqual(paymentDate);
+    expect(paidDebt.paidAt).toEqual(paidAt);
+    expect(paidDebt.paymentSource).toBe(DebtPaymentSource.RECEIVABLE);
     expect(paidDebt.isPaid()).toBe(true);
     expect(paidDebt.isPending()).toBe(false);
-  });
-
-  it('deve usar a data atual ao marcar como paga sem informar paymentDate', () => {
-    const debt = Debt.create(baseProps);
-
-    const paidDebt = debt.markAsPaid();
-
-    expect(paidDebt.status).toBe(DebtStatus.PAID);
-    expect(paidDebt.paidAt).toBeInstanceOf(Date);
   });
 
   it('deve lançar erro ao tentar pagar uma dívida já paga', () => {
@@ -184,9 +227,15 @@ describe('Debt entity', () => {
       ...baseProps,
       status: DebtStatus.PAID,
       paidAt: new Date('2026-04-18'),
+      paymentSource: DebtPaymentSource.CASH,
     });
 
-    expect(() => debt.markAsPaid()).toThrow(DebtAlreadyPaidError);
+    expect(() =>
+      debt.markAsPaid({
+        paidAt: new Date('2026-04-19'),
+        paymentSource: DebtPaymentSource.BANK,
+      }),
+    ).toThrow(DebtAlreadyPaidError);
   });
 
   it('deve retornar os dados corretamente no toJSON', () => {
@@ -202,6 +251,7 @@ describe('Debt entity', () => {
       status: DebtStatus.PENDING,
       notes: null,
       paidAt: null,
+      paymentSource: null,
       createdAt: new Date('2026-04-01T10:00:00.000Z'),
       updatedAt: new Date('2026-04-01T10:00:00.000Z'),
     });
