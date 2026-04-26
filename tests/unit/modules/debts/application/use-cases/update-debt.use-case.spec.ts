@@ -1,10 +1,11 @@
 import { UpdateDebtUseCase } from '@/modules/debts/application/use-cases/update-debt.use-case';
 import { InMemoryDebtRepository } from './fakes/in-memory-debt.repository';
 import { Debt } from '@/modules/debts/domain/entities/debt.entity';
-import { DebtType } from '@/modules/debts/domain/enum/debt-type.enum';
-import { DebtStatus } from '@/modules/debts/domain/enum/debt-status.enum';
+import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
+import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
+import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 
 describe('UpdateDebtUseCase', () => {
   let debtRepository: InMemoryDebtRepository;
@@ -26,6 +27,7 @@ describe('UpdateDebtUseCase', () => {
       status: DebtStatus.PENDING,
       notes: null,
       paidAt: null,
+      paymentSource: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -44,6 +46,7 @@ describe('UpdateDebtUseCase', () => {
     expect(output.description).toBe('Conta atualizada');
     expect(output.amount).toBe(150);
     expect(output.notes).toBe('Ajuste');
+    expect(output.paymentSource).toBeNull();
   });
 
   it('deve lançar erro quando a dívida não existir', async () => {
@@ -67,6 +70,7 @@ describe('UpdateDebtUseCase', () => {
       status: DebtStatus.PENDING,
       notes: null,
       paidAt: null,
+      paymentSource: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -93,6 +97,7 @@ describe('UpdateDebtUseCase', () => {
       status: DebtStatus.PAID,
       notes: null,
       paidAt: new Date('2026-04-09'),
+      paymentSource: DebtPaymentSource.BANK,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
