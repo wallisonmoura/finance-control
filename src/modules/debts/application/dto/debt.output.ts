@@ -1,5 +1,6 @@
-import { DebtStatus } from '../../domain/enum/debt-status.enum';
-import { DebtType } from '../../domain/enum/debt-type.enum';
+import { DebtPaymentSource } from '../../domain/enums/debt-payment-source.enum';
+import { DebtStatus } from '../../domain/enums/debt-status.enum';
+import { DebtType } from '../../domain/enums/debt-type.enum';
 
 export interface DebtOutput {
   id: string;
@@ -11,6 +12,7 @@ export interface DebtOutput {
   status: DebtStatus;
   notes: string | null;
   paidAt: Date | null;
+  paymentSource: DebtPaymentSource | null;
   createdAt: Date;
   updatedAt: Date;
 }

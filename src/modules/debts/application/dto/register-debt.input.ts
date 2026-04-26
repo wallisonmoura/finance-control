@@ -1,4 +1,4 @@
-import { DebtType } from '../../domain/enum/debt-type.enum';
+import { DebtType } from '../../domain/enums/debt-type.enum';
 
 export interface RegisterDebtInput {
   userId: string;

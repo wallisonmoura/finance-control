@@ -1,5 +1,9 @@
+import { DebtPaymentSource } from '../../domain/enums/debt-payment-source.enum';
+
 export interface PayDebtInput {
   userId: string;
   id: string;
-  paymentDate?: Date;
+  paidAt: Date;
+  expenseCategoryId: string;
+  paymentSource: DebtPaymentSource;
 }
