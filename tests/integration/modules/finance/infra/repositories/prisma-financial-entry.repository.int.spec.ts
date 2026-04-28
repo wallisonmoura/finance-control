@@ -1,6 +1,6 @@
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
-import { DefaultWalletNotFoundError } from '@/modules/finance/infra/errors/default-wallet-not-found.error';
+import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { PrismaFinancialEntryRepository } from '@/modules/finance/infra/repositories/prisma-financial-entry.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { createTestExpenseCategory } from 'tests/helpers/database/create-test-expense-category';
@@ -12,13 +12,23 @@ import { makeTestFinancialEntryEntity } from 'tests/helpers/database/make-test-f
 describe('PrismaFinancialEntryRepository', () => {
   let repository: PrismaFinancialEntryRepository;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     repository = new PrismaFinancialEntryRepository();
+  });
 
+  beforeEach(async () => {
     await prisma.transaction.deleteMany();
     await prisma.expenseCategory.deleteMany();
     await prisma.wallet.deleteMany();
     await prisma.user.deleteMany();
+  });
+
+  afterAll(async () => {
+    await prisma.transaction.deleteMany();
+    await prisma.expenseCategory.deleteMany();
+    await prisma.wallet.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.$disconnect();
   });
 
   describe('create', () => {

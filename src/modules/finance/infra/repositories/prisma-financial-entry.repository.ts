@@ -4,7 +4,7 @@ import { PrismaFinancialEntryMapper } from '../mappers/prisma-financial-entry.ma
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { TransactionType } from '@prisma/client';
-import { DefaultWalletNotFoundError } from '../errors/default-wallet-not-found.error';
+import { DefaultWalletNotFoundError } from '../../../../shared/infra/errors/default-wallet-not-found.error';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
 import { PrismaWalletRepository } from '@/modules/wallet/infra/repositories/prisma-wallet.repository';
 
