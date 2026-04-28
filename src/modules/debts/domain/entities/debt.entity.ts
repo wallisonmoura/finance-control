@@ -87,7 +87,7 @@ export class Debt {
       amount: data.amount ?? this.props.amount,
       dueDate: data.dueDate ?? this.props.dueDate,
       type: data.type ?? this.props.type,
-      notes: data.notes ?? this.props.notes,
+      notes: data.notes !== undefined ? data.notes : this.props.notes,
       updatedAt: new Date(),
     });
   }
