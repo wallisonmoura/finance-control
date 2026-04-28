@@ -1,7 +1,7 @@
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
-import { DefaultWalletNotFoundError } from '@/modules/finance/infra/errors/default-wallet-not-found.error';
+import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
