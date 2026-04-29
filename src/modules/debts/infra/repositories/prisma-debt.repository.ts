@@ -1,13 +1,18 @@
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { DebtStatus as PrismaDebtStatus } from '@prisma/client';
+import { PrismaClient, DebtStatus as PrismaDebtStatus } from '@prisma/client';
 import { Debt } from '../../domain/entities/debt.entity';
 import { PrismaDebtMapper } from '../mappers/prisma-debt.mapper';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
+import { PrismaTransactionClient } from '@/shared/infra/database/prisma/prisma-transaction-client';
+
+type PrismaClientOrTransaction = PrismaClient | PrismaTransactionClient;
 
 export class PrismaDebtRepository implements DebtRepository {
+  constructor(private readonly client: PrismaClientOrTransaction = prisma) {}
+
   async findById(id: string): Promise<Debt | null> {
-    const debt = await prisma.debt.findUnique({
+    const debt = await this.client.debt.findUnique({
       where: {
         id,
       },
@@ -21,7 +26,7 @@ export class PrismaDebtRepository implements DebtRepository {
   }
 
   async findByUserId(userId: string): Promise<Debt[]> {
-    const debts = await prisma.debt.findMany({
+    const debts = await this.client.debt.findMany({
       where: {
         userId,
       },
@@ -39,7 +44,7 @@ export class PrismaDebtRepository implements DebtRepository {
   }
 
   async findPendingByUserId(userId: string): Promise<Debt[]> {
-    const debts = await prisma.debt.findMany({
+    const debts = await this.client.debt.findMany({
       where: {
         userId,
         status: PrismaDebtStatus.PENDING,
@@ -60,7 +65,7 @@ export class PrismaDebtRepository implements DebtRepository {
   async create(debt: Debt): Promise<Debt> {
     const data = debt.toJSON();
 
-    const wallet = await prisma.wallet.findFirst({
+    const wallet = await this.client.wallet.findFirst({
       where: {
         userId: data.userId,
         isDefault: true,
@@ -74,7 +79,7 @@ export class PrismaDebtRepository implements DebtRepository {
       throw new DefaultWalletNotFoundError();
     }
 
-    const createdDebt = await prisma.debt.create({
+    const createdDebt = await this.client.debt.create({
       data: PrismaDebtMapper.toPrismaCreate(debt, wallet.id),
     });
 
@@ -84,7 +89,7 @@ export class PrismaDebtRepository implements DebtRepository {
   async update(debt: Debt): Promise<Debt> {
     const data = debt.toJSON();
 
-    const updatedDebt = await prisma.debt.update({
+    const updatedDebt = await this.client.debt.update({
       where: {
         id: data.id,
       },
@@ -95,7 +100,7 @@ export class PrismaDebtRepository implements DebtRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await prisma.debt.delete({
+    await this.client.debt.delete({
       where: {
         id,
       },
