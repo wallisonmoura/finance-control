@@ -2,7 +2,7 @@
 @email = admin@financecontrol.com
 @password = 123456
 
-@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImU4ZDJjMzRkLTZlN2MtNDFmMS05NWEwLWE5YjVlNmFiOWVhOSIsImlhdCI6MTc3NTc1OTY2MiwiZXhwIjoxNzc2MzY0NDYyfQ.WhSqAdWKlYcJSDnUtKrCXcO2URrGU9XTYayWxNgiOjI
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImM2NmY3ZTViLTc4YWMtNGM5Ny1iNzBhLWIxNjRmZWUzM2MxMiIsImlhdCI6MTc3NzUyODczOSwiZXhwIjoxNzc4MTMzNTM5fQ.HvofKOj0h4hQjg-nnjG7GJN4NZDqmo8c7muLwcAABFI
 
 ### Sign in - sucesso
 POST {{baseUrl}}/api/auth/sign-in

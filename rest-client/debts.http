@@ -1,0 +1,250 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@authCookieName = fc_access_token
+
+# Atualize este token após fazer sign-in em auth.http
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImM2NmY3ZTViLTc4YWMtNGM5Ny1iNzBhLWIxNjRmZWUzM2MxMiIsImlhdCI6MTc3NzYxMTEyNSwiZXhwIjoxNzc4MjE1OTI1fQ._3XRSbbrwF6Id5KuOKOaHzVGn88nbMjhkjo8UWlFeco
+
+# Preencha depois de criar uma dívida
+@debtId = 10c81e26-a791-4c60-83c4-0f2c4a7b6671
+
+# Use o id da categoria Parcelas, Outros ou Combustível
+@expenseCategoryId = cb220428-2e30-493a-b3a5-1760ac20506b
+
+### ----------------------------------------------------------------------
+### DEBTS - SETUP DE APOIO
+### ----------------------------------------------------------------------
+
+### Atualizar Wallet antes de pagar dívida
+# Necessário porque o pagamento debita BANK, CASH ou RECEIVABLE.
+PUT {{baseUrl}}/api/wallet
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "bankBalance": 1500,
+  "cashBalance": 200,
+  "receivableBalance": 450
+}
+
+###
+
+### Consultar Wallet antes do pagamento
+GET {{baseUrl}}/api/wallet
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### ----------------------------------------------------------------------
+### DEBTS - CREATE / LIST
+### ----------------------------------------------------------------------
+
+### Criar dívida
+# @name createDebt
+POST {{baseUrl}}/api/debts
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 300,
+  "description": "Parcela do cartão NUBANK",
+  "dueDate": "2026-05-10",
+  "type": "ONE_TIME",
+  "notes": "Teste manual do módulo Debts"
+}
+
+###
+
+### Listar dívidas
+GET {{baseUrl}}/api/debts
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### Listar dívidas pendentes
+GET {{baseUrl}}/api/debts/pending
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### ----------------------------------------------------------------------
+### DEBTS - UPDATE
+### ----------------------------------------------------------------------
+
+### Atualizar dívida
+PUT {{baseUrl}}/api/debts/{{debtId}}
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 350.00,
+  "description": "Parcela do cartão NUBANK atualizado",
+  "dueDate": "2026-05-12",
+  "type": "ONE_TIME",
+  "notes": "Valor corrigido"
+}
+
+###
+
+### ----------------------------------------------------------------------
+### DEBTS - PAY
+### ----------------------------------------------------------------------
+
+### Pagar dívida com BANK
+PATCH {{baseUrl}}/api/debts/{{debtId}}/pay
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "paidAt": "2026-05-12",
+  "expenseCategoryId": "{{expenseCategoryId}}",
+  "paymentSource": "BANK"
+}
+
+###
+
+### Pagar dívida com CASH
+# Use apenas com uma dívida ainda PENDING.
+PATCH {{baseUrl}}/api/debts/{{debtId}}/pay
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "paidAt": "2026-05-12",
+  "expenseCategoryId": "{{expenseCategoryId}}",
+  "paymentSource": "CASH"
+}
+
+###
+
+### Pagar dívida com RECEIVABLE
+# Use apenas com uma dívida ainda PENDING.
+PATCH {{baseUrl}}/api/debts/{{debtId}}/pay
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "paidAt": "2026-05-12",
+  "expenseCategoryId": "{{expenseCategoryId}}",
+  "paymentSource": "RECEIVABLE"
+}
+
+###
+
+### Listar pendentes após pagamento
+GET {{baseUrl}}/api/debts/pending
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### Consultar Wallet após pagamento
+GET {{baseUrl}}/api/wallet
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### Consultar histórico Finance após pagamento
+GET {{baseUrl}}/api/finance/history?startDate=2026-05-01&endDate=2026-05-31&type=EXPENSE
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### ----------------------------------------------------------------------
+### DEBTS - DELETE
+### ----------------------------------------------------------------------
+
+### Excluir dívida
+# Preferencialmente teste com dívida PENDING.
+DELETE {{baseUrl}}/api/debts/{{debtId}}
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### ----------------------------------------------------------------------
+### DEBTS - CENÁRIOS DE ERRO
+### ----------------------------------------------------------------------
+
+### Criar dívida sem autenticação
+POST {{baseUrl}}/api/debts
+Content-Type: {{contentType}}
+
+{
+  "amount": 100,
+  "description": "Dívida sem token",
+  "dueDate": "2026-05-10",
+  "type": "ONE_TIME",
+  "notes": "Deve retornar 401"
+}
+
+###
+
+### Criar dívida com payload inválido
+POST {{baseUrl}}/api/debts
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": -10,
+  "description": "",
+  "dueDate": "2026-99-99",
+  "type": "INVALID",
+  "notes": "Deve retornar erro de validação"
+}
+
+###
+
+### Atualizar dívida com id inválido
+PUT {{baseUrl}}/api/debts/id-invalido
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "amount": 175.50,
+  "description": "Dívida com id inválido",
+  "dueDate": "2026-05-12",
+  "type": "ONE_TIME",
+  "notes": "Deve retornar erro de validação"
+}
+
+###
+
+### Pagar dívida com paymentSource inválido
+PATCH {{baseUrl}}/api/debts/{{debtId}}/pay
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "paidAt": "2026-05-12",
+  "expenseCategoryId": "{{expenseCategoryId}}",
+  "paymentSource": "PIX"
+}
+
+###
+
+### Pagar dívida com categoria inválida
+PATCH {{baseUrl}}/api/debts/{{debtId}}/pay
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "paidAt": "2026-05-12",
+  "expenseCategoryId": "categoria-invalida",
+  "paymentSource": "BANK"
+}
+
+###
+
+### Pagar dívida sem autenticação
+PATCH {{baseUrl}}/api/debts/{{debtId}}/pay
+Content-Type: {{contentType}}
+
+{
+  "paidAt": "2026-05-12",
+  "expenseCategoryId": "{{expenseCategoryId}}",
+  "paymentSource": "BANK"
+}
+
+###
+
+### Excluir dívida sem autenticação
+DELETE {{baseUrl}}/api/debts/{{debtId}}

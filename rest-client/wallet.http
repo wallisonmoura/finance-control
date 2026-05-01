@@ -1,18 +1,19 @@
 @baseUrl = http://localhost:3000
 @contentType = application/json
+@authCookieName = fc_access_token
 
 @authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6IjQ3YTExZjNiLTQ0MDItNDRhMi05NjBkLTU0YmViNDZjZTlhMyIsImlhdCI6MTc3NzA4NTIwMywiZXhwIjoxNzc3NjkwMDAzfQ.cDxZeLZ4758H_xHIKFPZMGRH9QquptczkJVTH94oeqc
 
 ###
 # @name getWallet
 GET {{baseUrl}}/api/wallet
-Cookie: Cookie: fc_access_token={{authToken}}
+Cookie: {{authCookieName}}={{authToken}}
 
 ###
 # @name updateWallet
 PUT {{baseUrl}}/api/wallet
 Content-Type: {{contentType}}
-Cookie: Cookie: fc_access_token={{authToken}}
+Cookie: {{authCookieName}}={{authToken}}
 
 {
   "bankBalance": 1500,
@@ -23,18 +24,18 @@ Cookie: Cookie: fc_access_token={{authToken}}
 ###
 # @name getWalletAfterUpdate
 GET {{baseUrl}}/api/wallet
-Cookie: Cookie: fc_access_token={{authToken}}
+Cookie: {{authCookieName}}={{authToken}}
 
 ###
 # @name getWalletSummary
 GET {{baseUrl}}/api/wallet/summary
-Cookie: Cookie: fc_access_token={{authToken}}
+Cookie: {{authCookieName}}={{authToken}}
 
 ###
 # @name updateWalletInvalid
 PUT {{baseUrl}}/api/wallet
 Content-Type: {{contentType}}
-Cookie: Cookie: fc_access_token={{authToken}}
+Cookie: {{authCookieName}}={{authToken}}
 
 {
   "bankBalance": -1,
