@@ -40,24 +40,49 @@ async function main() {
     });
   }
 
-  await prisma.expenseCategory.upsert({
-    where: {
-      userId_slug: {
-        userId: user.id,
-        slug: 'combustivel',
-      },
-    },
-    update: {
-      name: 'Combustível',
-      isActive: true,
-    },
-    create: {
-      userId: user.id,
+  const categories = [
+    {
       name: 'Combustível',
       slug: 'combustivel',
-      isActive: true,
     },
-  });
+    {
+      name: 'Parcelas',
+      slug: 'parcelas',
+    },
+    {
+      name: 'Alimentação',
+      slug: 'alimentacao',
+    },
+    {
+      name: 'Manutenção',
+      slug: 'manutencao',
+    },
+    {
+      name: 'Outros',
+      slug: 'outros',
+    },
+  ];
+
+  for (const category of categories) {
+    await prisma.expenseCategory.upsert({
+      where: {
+        userId_slug: {
+          userId: user.id,
+          slug: category.slug,
+        },
+      },
+      update: {
+        name: category.name,
+        isActive: true,
+      },
+      create: {
+        userId: user.id,
+        name: category.name,
+        slug: category.slug,
+        isActive: true,
+      },
+    });
+  }
 }
 
 main()
