@@ -4,8 +4,13 @@ import { PrismaDebtRepository } from '../repositories/prisma-debt.repository';
 import { PrismaDebtPaymentFinancialEffectAdapter } from '../services/prisma-debt-payment-financial-effect.adapter';
 import { PrismaDebtPaymentWalletEffectAdapter } from '../services/prisma-debt-payment-wallet-effect.adapter';
 import { PayDebtUseCase } from '../../application/use-cases/pay-debt.use-case';
+import { DebtOutput } from '../../application/dto/debt.output';
 
-export function makePayDebtUseCase() {
+type TransactionalPayDebtUseCase = {
+  execute(input: PayDebtInput): Promise<DebtOutput>;
+};
+
+export function makePayDebtUseCase(): TransactionalPayDebtUseCase {
   return {
     async execute(input: PayDebtInput) {
       return prisma.$transaction(async (tx) => {
