@@ -3,14 +3,13 @@
 @authCookieName = fc_access_token
 
 # Atualize este token após fazer sign-in em auth.http
-@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImM2NmY3ZTViLTc4YWMtNGM5Ny1iNzBhLWIxNjRmZWUzM2MxMiIsImlhdCI6MTc3NzYxMTEyNSwiZXhwIjoxNzc4MjE1OTI1fQ._3XRSbbrwF6Id5KuOKOaHzVGn88nbMjhkjo8UWlFeco
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImNjZWE1ZTk1LTBkNTgtNDAzYy1iYjY3LTkyOTRjNTJjZTExMyIsImlhdCI6MTc3NzY5MjU3NywiZXhwIjoxNzc4Mjk3Mzc3fQ.M1LMtPu_x-OZXcC_IDKdZyVemigKUuUP6Z_ewHq9SnE
 
 # Preencha depois de criar uma dívida
-@debtId = 10c81e26-a791-4c60-83c4-0f2c4a7b6671
+@debtId = 2cb86b6b-1158-48a9-96e0-44b4cc81da83
 
 # Use o id da categoria Parcelas, Outros ou Combustível
-@expenseCategoryId = cb220428-2e30-493a-b3a5-1760ac20506b
-
+@expenseCategoryId = 720eded5-dac0-4186-b9d2-1f59c7bdc37e
 ### ----------------------------------------------------------------------
 ### DEBTS - SETUP DE APOIO
 ### ----------------------------------------------------------------------
@@ -47,7 +46,7 @@ Cookie: {{authCookieName}}={{authToken}}
 
 {
   "amount": 300,
-  "description": "Parcela do cartão NUBANK",
+  "description": "Nova divida cartão NUBANK",
   "dueDate": "2026-05-10",
   "type": "ONE_TIME",
   "notes": "Teste manual do módulo Debts"
