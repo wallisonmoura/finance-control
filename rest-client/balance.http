@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@authCookieName = fc_access_token
+
+# Atualize este token após fazer sign-in em auth.http
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImNjZWE1ZTk1LTBkNTgtNDAzYy1iYjY3LTkyOTRjNTJjZTExMyIsImlhdCI6MTc3NzY5MjU3NywiZXhwIjoxNzc4Mjk3Mzc3fQ.M1LMtPu_x-OZXcC_IDKdZyVemigKUuUP6Z_ewHq9SnE
+
+### Balance Summary - Consultar resumo de saldo
+GET {{baseUrl}}/api/balance/summary
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+### Balance Summary - Não autenticado
+GET {{baseUrl}}/api/balance/summary
+Content-Type: {{contentType}}
