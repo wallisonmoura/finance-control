@@ -63,6 +63,10 @@ export class FinancialEntry {
     if (this.props.type === FinancialEntryType.INCOME) {
       this.props.categoryId = null;
     }
+
+    if (this.props.type === FinancialEntryType.INCOME) {
+      this.props.categoryId = null;
+    }
   }
 
   get id(): string {
@@ -129,7 +133,7 @@ export class FinancialEntry {
         this.props.type === FinancialEntryType.INCOME
           ? null
           : (data.categoryId ?? this.props.categoryId),
-      notes: data.notes ?? this.props.notes,
+      notes: data.notes !== undefined ? data.notes : this.props.notes,
       updatedAt: new Date(),
     });
   }
