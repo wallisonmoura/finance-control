@@ -6,6 +6,7 @@ import {
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { Prisma, PrismaClient, TransactionType } from '@prisma/client';
 import { PrismaTransactionClient } from '@/shared/infra/database/prisma/prisma-transaction-client';
+import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 
 type PrismaClientOrTransaction = PrismaClient | PrismaTransactionClient;
 
@@ -41,7 +42,7 @@ export class PrismaDebtPaymentFinancialEffectAdapter implements DebtPaymentFinan
     });
 
     if (!expenseCategory) {
-      throw new Error('Expense category not found.');
+      throw new ExpenseCategoryNotFoundError();
     }
 
     await this.client.transaction.create({
