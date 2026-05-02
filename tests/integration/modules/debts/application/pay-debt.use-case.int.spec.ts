@@ -6,7 +6,7 @@ import { prisma } from '@/shared/infra/database/prisma/client';
 import { createTestExpenseCategory } from 'tests/helpers/database/create-test-expense-category';
 import { createTestUser } from 'tests/helpers/database/create-test-user';
 import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
-import { createTestDebt } from 'tests/helpers/database/make-test-debt-entity';
+import { createTestDebt } from 'tests/helpers/database/create-test-debt';
 
 describe('PayDebtUseCase Integration', () => {
   beforeEach(async () => {
