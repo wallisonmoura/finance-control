@@ -138,8 +138,6 @@ export function toErrorNextResponse(error: unknown) {
     );
   }
 
-  console.error('[HTTP_ERROR]', error);
-
   return NextResponse.json(
     {
       message: 'Erro interno do servidor.',
