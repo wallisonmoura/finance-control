@@ -126,4 +126,30 @@ describe('PUT /api/wallet', () => {
 
     expect(response.status).toBe(401);
   });
+
+  it('deve retornar 404 quando tentar atualizar wallet inexistente do usuário autenticado', async () => {
+    const user = await createTestUser();
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest('http://localhost:3000/api/wallet', {
+      method: 'PUT',
+      body: JSON.stringify({
+        bankBalance: 100,
+        cashBalance: 200,
+        receivableBalance: 300,
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+
+    const response = await PUT(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(body).toEqual({
+      message: `Wallet not found for user "${user.id}".`,
+    });
+  });
 });

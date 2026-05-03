@@ -61,4 +61,53 @@ describe('POST /api/auth/sign-in', () => {
     expect(response.status).toBe(401);
     expect(body).toHaveProperty('message');
   });
+
+  it('deve retornar 400 quando o payload for inválido', async () => {
+    const request = new NextRequest('http://localhost:3000/api/auth/sign-in', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: 'email-invalido',
+        password: '',
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body).toEqual({
+      message: 'Dados de entrada inválidos',
+      issues: expect.any(Array),
+    });
+  });
+
+  it('deve retornar 500 quando ocorrer erro inesperado no sign-in', async () => {
+    const execute = jest.fn().mockRejectedValue(new Error('Unexpected error'));
+
+    (makeSignInUseCase as jest.Mock).mockReturnValue({
+      execute,
+    });
+
+    const request = new NextRequest('http://localhost:3000/api/auth/sign-in', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: 'admin@financecontrol.com',
+        password: '123456',
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body).toEqual({
+      message: 'Erro interno do servidor',
+    });
+  });
 });

@@ -28,6 +28,15 @@ describe('POST /api/finance/expenses', () => {
     await prisma.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await prisma.transaction.deleteMany();
+    await prisma.expenseCategory.deleteMany();
+    await prisma.wallet.deleteMany();
+    await prisma.user.deleteMany();
+
+    await prisma.$disconnect();
+  });
+
   it('deve criar uma expense com sucesso para usuário autenticado', async () => {
     const user = await createTestUser();
     await createTestWallet({

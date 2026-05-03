@@ -82,4 +82,25 @@ describe('GET /api/wallet/summary', () => {
 
     expect(response.status).toBe(401);
   });
+
+  it('deve retornar 404 quando o usuário autenticado não possuir wallet', async () => {
+    const user = await createTestUser();
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/wallet/summary',
+      {
+        method: 'GET',
+      },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(body).toEqual({
+      message: `Wallet not found for user "${user.id}".`,
+    });
+  });
 });

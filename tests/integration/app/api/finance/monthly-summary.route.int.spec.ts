@@ -13,12 +13,12 @@ jest.mock(
   }),
 );
 
-describe('GET /api/finance/monthly-summary', () => {
-  const mockedGetAuthenticatedUserIdFromRequest =
-    getAuthenticatedUserIdFromRequest as jest.MockedFunction<
-      typeof getAuthenticatedUserIdFromRequest
-    >;
+const mockedGetAuthenticatedUserIdFromRequest =
+  getAuthenticatedUserIdFromRequest as jest.MockedFunction<
+    typeof getAuthenticatedUserIdFromRequest
+  >;
 
+describe('GET /api/finance/monthly-summary', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 

@@ -131,4 +131,29 @@ describe('POST /api/debts', () => {
     expect(body.message).toBe('Erro de validação.');
     expect(body.issues).toBeDefined();
   });
+
+  it('deve retornar 400 quando o payload de cadastro for inválido', async () => {
+    const user = await createTestUser();
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest('http://localhost:3000/api/debts', {
+      method: 'POST',
+      body: JSON.stringify({
+        description: '',
+        amount: -1,
+        dueDate: 'invalid-date',
+        type: 'INVALID',
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body).toHaveProperty('message');
+  });
 });

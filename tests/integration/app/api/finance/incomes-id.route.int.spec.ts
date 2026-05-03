@@ -27,6 +27,15 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
     await prisma.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await prisma.transaction.deleteMany();
+    await prisma.expenseCategory.deleteMany();
+    await prisma.wallet.deleteMany();
+    await prisma.user.deleteMany();
+
+    await prisma.$disconnect();
+  });
+
   describe('PUT /api/finance/incomes/[id]', () => {
     it('deve atualizar uma income com sucesso', async () => {
       const user = await createTestUser();
