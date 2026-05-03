@@ -28,16 +28,18 @@ describe('Debt entity', () => {
   it('deve criar uma dívida válida com sucesso', () => {
     const debt = Debt.create(baseProps);
 
-    expect(debt.id).toBe('debt-1');
-    expect(debt.userId).toBe('user-1');
-    expect(debt.description).toBe('Parcela do carro');
-    expect(debt.amount).toBe(850);
-    expect(debt.dueDate).toEqual(new Date('2026-04-20'));
-    expect(debt.type).toBe(DebtType.ONE_TIME);
-    expect(debt.status).toBe(DebtStatus.PENDING);
-    expect(debt.notes).toBeNull();
+    expect(debt.id).toBe(baseProps.id);
+    expect(debt.userId).toBe(baseProps.userId);
+    expect(debt.description).toBe(baseProps.description);
+    expect(debt.amount).toBe(baseProps.amount);
+    expect(debt.dueDate).toEqual(baseProps.dueDate);
+    expect(debt.type).toBe(baseProps.type);
+    expect(debt.status).toBe(baseProps.status);
+    expect(debt.notes).toBe(baseProps.notes);
     expect(debt.paidAt).toBeNull();
     expect(debt.paymentSource).toBeNull();
+    expect(debt.createdAt).toEqual(baseProps.createdAt);
+    expect(debt.updatedAt).toEqual(baseProps.updatedAt);
   });
 
   it('deve lançar erro quando a descrição estiver vazia', () => {
@@ -255,5 +257,23 @@ describe('Debt entity', () => {
       createdAt: new Date('2026-04-01T10:00:00.000Z'),
       updatedAt: new Date('2026-04-01T10:00:00.000Z'),
     });
+  });
+
+  it('deve falhar ao criar dívida sem userId', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        userId: '',
+      }),
+    ).toThrow('User id is required.');
+  });
+
+  it('deve falhar ao criar dívida com userId contendo apenas espaços', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        userId: '   ',
+      }),
+    ).toThrow('User id is required.');
   });
 });

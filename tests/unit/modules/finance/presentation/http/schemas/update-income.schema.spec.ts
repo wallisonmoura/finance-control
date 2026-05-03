@@ -153,4 +153,19 @@ describe('updateIncomeSchema', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it('deve rejeitar description que não seja string', () => {
+    const result = updateIncomeSchema.safeParse({
+      ...validPayload,
+      description: 123,
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Descrição deve ser uma string.',
+      );
+    }
+  });
 });
