@@ -49,10 +49,10 @@ export function proxy(request: NextRequest) {
       );
     }
 
-    const signInUrl = new URL('/sign-in', request.url);
-    signInUrl.searchParams.set('redirectTo', pathname);
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirectTo', pathname);
 
-    return NextResponse.redirect(signInUrl);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
