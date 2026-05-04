@@ -10,10 +10,6 @@ export const AUTH_INVALID_TOKEN_MESSAGE = 'Token inválido';
 
 export const AUTH_USER_NOT_FOUND_MESSAGE = 'Usuário autenticado não encontrado';
 
-export const AUTH_PUBLIC_API_PATHS = [
-  '/api/auth/sign-in',
-  '/api/auth/sign-out',
-  '/api/auth/me',
-];
+export const AUTH_PUBLIC_API_PATHS = ['/api/auth/sign-in'];
 
-export const AUTH_PUBLIC_PAGE_PATHS = ['/sign-in', '/login'];
+export const AUTH_PUBLIC_PAGE_PATHS = ['/login'];
