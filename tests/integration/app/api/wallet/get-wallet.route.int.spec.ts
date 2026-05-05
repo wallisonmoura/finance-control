@@ -2,8 +2,8 @@ import { GET } from '@/app/api/wallet/route';
 import { getAuthenticatedUserIdFromRequest } from '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { NextRequest } from 'next/server';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
 
 jest.mock(
   '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request',

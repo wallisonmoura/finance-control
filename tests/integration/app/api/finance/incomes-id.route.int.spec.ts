@@ -2,9 +2,9 @@ import { DELETE, PUT } from '@/app/api/finance/incomes/[id]/route';
 import { getAuthenticatedUserIdFromRequest } from '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { NextRequest } from 'next/server';
-import { createTestFinancialEntry } from 'tests/helpers/database/create-test-financial-entry';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
+import { createTestFinancialEntry } from '../../../../helpers/database/create-test-financial-entry';
 
 jest.mock(
   '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request',

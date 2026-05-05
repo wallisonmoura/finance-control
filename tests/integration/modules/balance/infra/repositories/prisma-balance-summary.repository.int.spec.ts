@@ -1,11 +1,11 @@
+import { PrismaBalanceSummaryRepository } from '@/modules/balance/infra/repositories/prisma-balance-summary.repository';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
-import { createTestDebt } from 'tests/helpers/database/create-test-debt';
-import { PrismaBalanceSummaryRepository } from 'tests/unit/modules/balance/infra/repositories/prisma-balance-summary.repository';
+import { createTestUser } from '../../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../../helpers/database/create-test-wallet';
+import { createTestDebt } from '../../../../../helpers/database/create-test-debt';
 
 describe('PrismaBalanceSummaryRepository', () => {
   let sut: PrismaBalanceSummaryRepository;

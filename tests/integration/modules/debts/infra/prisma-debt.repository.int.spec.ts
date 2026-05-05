@@ -4,12 +4,12 @@ import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { PrismaDebtRepository } from '@/modules/debts/infra/repositories/prisma-debt.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { makeTestDebtEntity } from 'tests/helpers/database/make-test-debt-entity';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
-import { createTestDebt } from 'tests/helpers/database/create-test-debt';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
+import { makeTestDebtEntity } from '../../../../helpers/database/make-test-debt-entity';
+import { createTestDebt } from '../../../../helpers/database/create-test-debt';
 
 describe('PrismaDebtRepository', () => {
   let repository: PrismaDebtRepository;

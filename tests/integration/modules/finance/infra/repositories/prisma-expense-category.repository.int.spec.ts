@@ -1,7 +1,7 @@
 import { PrismaExpenseCategoryRepository } from '@/modules/finance/infra/repositories/prisma-expense-category.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { createTestExpenseCategory } from 'tests/helpers/database/create-test-expense-category';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
+import { createTestUser } from '../../../../../helpers/database/create-test-user';
+import { createTestExpenseCategory } from '../../../../../helpers/database/create-test-expense-category';
 
 describe('PrismaExpenseCategoryRepository', () => {
   let repository: PrismaExpenseCategoryRepository;

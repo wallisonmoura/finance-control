@@ -1,8 +1,8 @@
 import { Wallet } from '@/modules/wallet/domain/entities/wallet.entity';
 import { PrismaWalletRepository } from '@/modules/wallet/infra/repositories/prisma-wallet.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
 
 describe('PrismaWalletRepository', () => {
   let repository: PrismaWalletRepository;

@@ -3,10 +3,10 @@ import { PrismaDebtPaymentFinancialEffectAdapter } from '@/modules/debts/infra/s
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { TransactionType } from '@prisma/client';
-import { createTestExpenseCategory } from 'tests/helpers/database/create-test-expense-category';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
-import { createTestDebt } from 'tests/helpers/database/create-test-debt';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
+import { createTestExpenseCategory } from '../../../../helpers/database/create-test-expense-category';
+import { createTestDebt } from '../../../../helpers/database/create-test-debt';
 
 describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
   let adapter: PrismaDebtPaymentFinancialEffectAdapter;

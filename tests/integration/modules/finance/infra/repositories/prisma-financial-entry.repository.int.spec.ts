@@ -3,11 +3,11 @@ import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/fin
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { PrismaFinancialEntryRepository } from '@/modules/finance/infra/repositories/prisma-financial-entry.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { createTestExpenseCategory } from 'tests/helpers/database/create-test-expense-category';
-import { createTestFinancialEntry } from 'tests/helpers/database/create-test-financial-entry';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
-import { makeTestFinancialEntryEntity } from 'tests/helpers/database/make-test-financial-entry-entity';
+import { createTestUser } from '../../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../../helpers/database/create-test-wallet';
+import { makeTestFinancialEntryEntity } from '../../../../../helpers/database/make-test-financial-entry-entity';
+import { createTestExpenseCategory } from '../../../../../helpers/database/create-test-expense-category';
+import { createTestFinancialEntry } from '../../../../../helpers/database/create-test-financial-entry';
 
 describe('PrismaFinancialEntryRepository', () => {
   let repository: PrismaFinancialEntryRepository;

@@ -3,9 +3,9 @@ import { getAuthenticatedUserIdFromRequest } from '@/modules/auth/presentation/h
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { NextRequest } from 'next/server';
-import { createTestDebt } from 'tests/helpers/database/create-test-debt';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
+import { createTestDebt } from '../../../../helpers/database/create-test-debt';
 
 jest.mock(
   '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request',

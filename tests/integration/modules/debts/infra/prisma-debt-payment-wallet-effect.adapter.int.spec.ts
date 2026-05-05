@@ -3,8 +3,8 @@ import { PrismaDebtPaymentWalletEffectAdapter } from '@/modules/debts/infra/serv
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
 
 describe('PrismaDebtPaymentWalletEffectAdapter', () => {
   let adapter: PrismaDebtPaymentWalletEffectAdapter;

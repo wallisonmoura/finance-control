@@ -3,10 +3,10 @@ import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { makePayDebtUseCase } from '@/modules/debts/infra/factories/make-pay-debt-use-case';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { createTestExpenseCategory } from 'tests/helpers/database/create-test-expense-category';
-import { createTestUser } from 'tests/helpers/database/create-test-user';
-import { createTestWallet } from 'tests/helpers/database/create-test-wallet';
-import { createTestDebt } from 'tests/helpers/database/create-test-debt';
+import { createTestUser } from '../../../../helpers/database/create-test-user';
+import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
+import { createTestExpenseCategory } from '../../../../helpers/database/create-test-expense-category';
+import { createTestDebt } from '../../../../helpers/database/create-test-debt';
 
 describe('PayDebtUseCase Integration', () => {
   beforeEach(async () => {
