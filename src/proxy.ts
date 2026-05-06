@@ -49,8 +49,10 @@ export function proxy(request: NextRequest) {
       );
     }
 
+    const redirectTo = pathname === '/' ? '/dashboard' : pathname;
+
     const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirectTo', pathname);
+    loginUrl.searchParams.set('redirectTo', redirectTo);
 
     return NextResponse.redirect(loginUrl);
   }
