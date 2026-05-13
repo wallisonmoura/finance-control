@@ -1,12 +1,5 @@
-import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { FinancePageContent } from '@/modules/finance/presentation/ui/components/finance-page-content';
 
 export default function FinancePage() {
-  return (
-    <div className='space-y-4'>
-      <PageTitle
-        title='Finance'
-        description='Gerencie receitas, despesas e histórico operacional.'
-      />
-    </div>
-  );
+  return <FinancePageContent />;
 }
