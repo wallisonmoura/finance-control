@@ -1,6 +1,8 @@
 import {
+  deleteIncome,
   getFinanceHistory,
   registerIncome,
+  updateIncome,
 } from '@/modules/finance/presentation/ui/services/finance-api.service';
 
 describe('finance-api.service', () => {
@@ -185,6 +187,177 @@ describe('finance-api.service', () => {
 
     expect(response).toEqual({
       error: 'Invalid date range.',
+    });
+  });
+
+  it('should update an income successfully', async () => {
+    const income = {
+      id: 'income-id',
+      userId: 'user-id',
+      type: 'INCOME',
+      amount: 450,
+      description: 'Corrida Atualizada',
+      date: '2026-04-11',
+      categoryId: null,
+      notes: 'Pagamento atualizado',
+      createdAt: '2026-05-07T19:43:27.751Z',
+      updatedAt: '2026-05-07T20:43:27.751Z',
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => income,
+    });
+
+    const response = await updateIncome('income-id', {
+      amount: 450,
+      description: 'Corrida Atualizada',
+      date: '2026-04-11',
+      notes: 'Pagamento atualizado',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/incomes/income-id', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 450,
+        description: 'Corrida Atualizada',
+        date: '2026-04-11',
+        notes: 'Pagamento atualizado',
+      }),
+    });
+
+    expect(response).toEqual({
+      data: income,
+    });
+  });
+
+  it('should return an error when update income fails with message', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        message: 'Income not found.',
+      }),
+    });
+
+    const response = await updateIncome('income-id', {
+      amount: 450,
+      description: 'Corrida Atualizada',
+      date: '2026-04-11',
+      notes: null,
+    });
+
+    expect(response).toEqual({
+      error: 'Income not found.',
+    });
+  });
+
+  it('should return an error when update income fails with error field', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        error: 'Invalid income data.',
+      }),
+    });
+
+    const response = await updateIncome('income-id', {
+      amount: 450,
+      description: 'Corrida Atualizada',
+      date: '2026-04-11',
+      notes: null,
+    });
+
+    expect(response).toEqual({
+      error: 'Invalid income data.',
+    });
+  });
+
+  it('should return a default error when update income fails with invalid json', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => {
+        throw new Error('Invalid JSON');
+      },
+    });
+
+    const response = await updateIncome('income-id', {
+      amount: 450,
+      description: 'Corrida Atualizada',
+      date: '2026-04-11',
+      notes: null,
+    });
+
+    expect(response).toEqual({
+      error: 'Não foi possível concluir a operação.',
+    });
+  });
+
+  it('should delete an income successfully', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+    });
+
+    const response = await deleteIncome('income-id');
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/incomes/income-id', {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    expect(response).toEqual({
+      data: undefined,
+    });
+  });
+
+  it('should return an error when delete income fails with message', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        message: 'Income not found.',
+      }),
+    });
+
+    const response = await deleteIncome('income-id');
+
+    expect(response).toEqual({
+      error: 'Income not found.',
+    });
+  });
+
+  it('should return an error when delete income fails with error field', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        error: 'Cannot delete income.',
+      }),
+    });
+
+    const response = await deleteIncome('income-id');
+
+    expect(response).toEqual({
+      error: 'Cannot delete income.',
+    });
+  });
+
+  it('should return a default error when delete income fails with invalid json', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => {
+        throw new Error('Invalid JSON');
+      },
+    });
+
+    const response = await deleteIncome('income-id');
+
+    expect(response).toEqual({
+      error: 'Não foi possível concluir a operação.',
     });
   });
 });

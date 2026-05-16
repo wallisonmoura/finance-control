@@ -4,6 +4,7 @@ import {
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
   RegisterIncomeUiInput,
+  UpdateIncomeUiInput,
 } from '../types/finance-ui.types';
 
 type ApiErrorResponse = {
@@ -45,6 +46,53 @@ export async function registerIncome(
   const data = (await response.json()) as FinanceEntryUi;
 
   return { data };
+}
+
+export async function updateIncome(
+  id: string,
+  input: UpdateIncomeUiInput,
+): Promise<FinanceApiResponse<FinanceEntryUi>> {
+  const response = await fetch(`/api/finance/incomes/${id}`, {
+    method: 'PUT',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  const data = (await response.json()) as FinanceEntryUi;
+
+  return { data };
+}
+
+export async function deleteIncome(
+  id: string,
+): Promise<FinanceApiResponse<void>> {
+  const response = await fetch(`/api/finance/incomes/${id}`, {
+    method: 'DELETE',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  return {
+    data: undefined,
+  };
 }
 
 export async function getFinanceHistory(

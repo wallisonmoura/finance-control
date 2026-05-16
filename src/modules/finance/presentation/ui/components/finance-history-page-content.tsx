@@ -1,45 +1,36 @@
 'use client';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+
 import { useFinanceHistory } from '../hooks/use-finance-history';
-import { IncomeForm } from './income-form';
+import { FinanceHistoryFilters } from './finance-history-filters';
 import { FinanceHistoryList } from './finance-history-list';
 import { FinanceHistorySummary } from './finance-history-summary';
 
-function getCurrentMonthFilters() {
-  const now = new Date();
-
-  const year = now.getFullYear();
-  const month = now.getMonth();
-
-  const startDate = new Date(year, month, 1).toISOString().slice(0, 10);
-  const endDate = new Date(year, month + 1, 0).toISOString().slice(0, 10);
-
-  return {
-    startDate,
-    endDate,
-  };
-}
-
-export function FinancePageContent() {
+export function FinanceHistoryPageContent() {
   const {
     entries,
     totalIncome,
     totalExpense,
     balance,
+    filters,
     isLoading,
     error,
-    refresh,
-  } = useFinanceHistory(getCurrentMonthFilters());
+    applyFilters,
+  } = useFinanceHistory();
 
   return (
     <div className='space-y-6'>
       <PageTitle
-        title='Financeiro'
-        description='Registre receitas e acompanhe o histórico operacional.'
+        title='Histórico financeiro'
+        description='Consulte receitas e despesas realizadas por período.'
       />
 
-      <IncomeForm onIncomeCreated={refresh} />
+      <FinanceHistoryFilters
+        filters={filters}
+        isLoading={isLoading}
+        onApplyFilters={applyFilters}
+      />
 
       {isLoading && (
         <p className='text-sm text-slate-500'>

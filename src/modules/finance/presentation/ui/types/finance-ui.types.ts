@@ -33,6 +33,13 @@ export type FinanceHistoryUi = {
   balance: number;
 };
 
+export type UpdateIncomeUiInput = {
+  amount: number;
+  description: string;
+  date: string;
+  notes?: string | null;
+};
+
 export type FinanceApiResponse<T> = {
   data?: T;
   error?: string;

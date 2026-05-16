@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getFinanceHistory } from '../services/finance-api.service';
 import {
@@ -8,98 +8,91 @@ import {
   FinanceHistoryUi,
 } from '../types/finance-ui.types';
 
-type UseFinanceHistoryState = {
-  data: FinanceHistoryUi | null;
-  isLoading: boolean;
-  error: string | null;
-};
+type UseFinanceHistoryInitialFilters = Partial<FinanceHistoryFiltersUi>;
 
-export function useFinanceHistory(initialFilters: FinanceHistoryFiltersUi) {
-  const [filters, setFilters] =
-    useState<FinanceHistoryFiltersUi>(initialFilters);
+function getCurrentMonthFilters(
+  initialFilters?: UseFinanceHistoryInitialFilters,
+): FinanceHistoryFiltersUi {
+  const now = new Date();
 
-  const [state, setState] = useState<UseFinanceHistoryState>({
-    data: null,
-    isLoading: true,
-    error: null,
-  });
+  const year = now.getFullYear();
+  const month = now.getMonth();
 
-  const loadHistory = useCallback(async () => {
-    setState((current) => ({
-      ...current,
-      isLoading: true,
-      error: null,
-    }));
+  const startDate = new Date(Date.UTC(year, month, 1))
+    .toISOString()
+    .slice(0, 10);
 
-    const response = await getFinanceHistory(filters);
-
-    if (response.error) {
-      setState({
-        data: null,
-        isLoading: false,
-        error: response.error,
-      });
-
-      return;
-    }
-
-    setState({
-      data: response.data ?? null,
-      isLoading: false,
-      error: null,
-    });
-  }, [filters]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function load() {
-      setState((current) => ({
-        ...current,
-        isLoading: true,
-        error: null,
-      }));
-
-      const response = await getFinanceHistory(filters);
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (response.error) {
-        setState({
-          data: null,
-          isLoading: false,
-          error: response.error,
-        });
-
-        return;
-      }
-
-      setState({
-        data: response.data ?? null,
-        isLoading: false,
-        error: null,
-      });
-    }
-
-    load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [filters]);
+  const endDate = new Date(Date.UTC(year, month + 1, 0))
+    .toISOString()
+    .slice(0, 10);
 
   return {
-    data: state.data,
-    entries: state.data?.entries ?? [],
-    totalIncome: state.data?.totalIncome ?? 0,
-    totalExpense: state.data?.totalExpense ?? 0,
-    balance: state.data?.balance ?? 0,
-    isLoading: state.isLoading,
-    error: state.error,
+    startDate,
+    endDate,
+    ...initialFilters,
+  };
+}
+
+export function useFinanceHistory(
+  initialFilters?: UseFinanceHistoryInitialFilters,
+) {
+  const [filters, setFilters] = useState<FinanceHistoryFiltersUi>(() =>
+    getCurrentMonthFilters(initialFilters),
+  );
+
+  const [data, setData] = useState<FinanceHistoryUi | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadHistory = useCallback(
+    async (nextFilters: FinanceHistoryFiltersUi) => {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await getFinanceHistory(nextFilters);
+
+      if (response.error) {
+        setError(response.error);
+        setData(null);
+        setIsLoading(false);
+        return;
+      }
+
+      setData(response.data ?? null);
+      setIsLoading(false);
+    },
+    [],
+  );
+
+  const applyFilters = useCallback(
+    async (nextFilters: FinanceHistoryFiltersUi) => {
+      setFilters(nextFilters);
+      await loadHistory(nextFilters);
+    },
+    [loadHistory],
+  );
+
+  const refresh = useCallback(async () => {
+    await loadHistory(filters);
+  }, [filters, loadHistory]);
+
+  useEffect(() => {
+    void loadHistory(filters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const entries = useMemo(() => data?.entries ?? [], [data]);
+
+  return {
+    data,
+    entries,
+    totalIncome: data?.totalIncome ?? 0,
+    totalExpense: data?.totalExpense ?? 0,
+    balance: data?.balance ?? 0,
     filters,
-    setFilters,
-    refresh: loadHistory,
+    isLoading,
+    error,
+    applyFilters,
+    refresh,
   };
 }

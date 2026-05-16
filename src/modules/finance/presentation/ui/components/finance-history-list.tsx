@@ -1,66 +1,117 @@
+import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
-import { FinanceEntryUi } from '../types/finance-ui.types';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
+
+import { FinanceEntryUi } from '../types/finance-ui.types';
 
 type FinanceHistoryListProps = {
   entries: FinanceEntryUi[];
+  onEditIncome?: (entry: FinanceEntryUi) => void;
+  onDeleteIncome?: (entry: FinanceEntryUi) => void;
+  deletingIncomeId?: string | null;
 };
 
-function formatEntryDate(date: string) {
+function formatDate(date: string) {
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'UTC',
   }).format(new Date(date));
 }
 
-export function FinanceHistoryList({ entries }: FinanceHistoryListProps) {
+function getEntryTypeLabel(type: FinanceEntryUi['type']) {
+  return type === 'INCOME' ? 'Receita' : 'Despesa';
+}
+
+export function FinanceHistoryList({
+  entries,
+  onEditIncome,
+  onDeleteIncome,
+  deletingIncomeId = null,
+}: FinanceHistoryListProps) {
   if (entries.length === 0) {
     return (
       <Card>
         <p className='text-sm text-slate-500'>
-          Nenhum lançamento encontrado para o período selecionado.
+          Nenhum lançamento encontrado para o período.
         </p>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <div className='space-y-4'>
-        <div>
-          <h2 className='text-lg text-black font-semibold'>Histórico</h2>
-          <p className='text-sm text-slate-500'>
-            Receitas e despesas realizadas no período.
-          </p>
-        </div>
+    <div className='space-y-3' aria-label='Histórico financeiro'>
+      {entries.map((entry) => {
+        const canManageIncome =
+          entry.type === 'INCOME' && (onEditIncome || onDeleteIncome);
 
-        <ul className='divide-y divide-slate-200'>
-          {entries.map((entry) => (
-            <li
-              key={entry.id}
-              className='flex items-start justify-between gap-4 py-3'
-            >
-              <div className='min-w-0'>
-                <p className='truncate font-medium text-slate-900'>
-                  {entry.description}
-                </p>
+        const isDeleting = deletingIncomeId === entry.id;
 
-                <p className='text-sm text-slate-500'>
-                  {entry.type === 'INCOME' ? 'Receita' : 'Despesa'} ·{' '}
-                  {formatEntryDate(entry.date)}
-                </p>
+        return (
+          <Card key={entry.id}>
+            <div className='space-y-4'>
+              <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
+                <div>
+                  <div className='flex flex-wrap items-center gap-2'>
+                    <span className='text-sm font-medium text-slate-500'>
+                      {getEntryTypeLabel(entry.type)}
+                    </span>
 
-                {entry.notes && (
-                  <p className='mt-1 text-sm text-slate-500'>{entry.notes}</p>
-                )}
+                    <span className='rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600'>
+                      {formatDate(entry.date)}
+                    </span>
+                  </div>
+
+                  <h3 className='mt-2 text-base font-semibold text-slate-900'>
+                    {entry.description}
+                  </h3>
+
+                  {entry.notes && (
+                    <p className='mt-1 text-sm text-slate-500'>{entry.notes}</p>
+                  )}
+
+                  {entry.categoryId && (
+                    <p className='mt-1 text-xs text-slate-400'>
+                      Categoria: {entry.categoryId}
+                    </p>
+                  )}
+                </div>
+
+                <MoneyDisplay
+                  value={entry.amount}
+                  className={
+                    entry.type === 'INCOME'
+                      ? 'text-lg font-semibold text-emerald-700'
+                      : 'text-lg font-semibold text-red-700'
+                  }
+                />
               </div>
 
-              <div className='shrink-0 text-right'>
-                <MoneyDisplay value={entry.amount} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </Card>
+              {canManageIncome && (
+                <div className='flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3'>
+                  {onEditIncome && (
+                    <Button
+                      type='button'
+                      onClick={() => onEditIncome(entry)}
+                      disabled={isDeleting}
+                    >
+                      Editar
+                    </Button>
+                  )}
+
+                  {onDeleteIncome && (
+                    <Button
+                      type='button'
+                      onClick={() => onDeleteIncome(entry)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? 'Excluindo...' : 'Excluir'}
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
