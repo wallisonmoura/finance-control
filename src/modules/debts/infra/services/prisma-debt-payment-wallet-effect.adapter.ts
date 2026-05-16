@@ -23,9 +23,6 @@ export class PrismaDebtPaymentWalletEffectAdapter implements DebtPaymentWalletEf
       },
       select: {
         id: true,
-        bankBalance: true,
-        cashBalance: true,
-        receivableBalance: true,
       },
     });
 
@@ -36,52 +33,67 @@ export class PrismaDebtPaymentWalletEffectAdapter implements DebtPaymentWalletEf
     const amount = new Prisma.Decimal(input.amount);
 
     if (input.paymentSource === DebtPaymentSource.BANK) {
-      if (wallet.bankBalance.lessThan(amount)) {
-        throw new InsufficientWalletBalanceError();
-      }
-
-      await this.client.wallet.update({
+      const result = await this.client.wallet.updateMany({
         where: {
           id: wallet.id,
+          bankBalance: {
+            gte: amount,
+          },
         },
         data: {
-          bankBalance: wallet.bankBalance.minus(amount),
+          bankBalance: {
+            decrement: amount,
+          },
         },
       });
+
+      if (result.count === 0) {
+        throw new InsufficientWalletBalanceError();
+      }
 
       return;
     }
 
     if (input.paymentSource === DebtPaymentSource.CASH) {
-      if (wallet.cashBalance.lessThan(amount)) {
-        throw new InsufficientWalletBalanceError();
-      }
-
-      await this.client.wallet.update({
+      const result = await this.client.wallet.updateMany({
         where: {
           id: wallet.id,
+          cashBalance: {
+            gte: amount,
+          },
         },
         data: {
-          cashBalance: wallet.cashBalance.minus(amount),
+          cashBalance: {
+            decrement: amount,
+          },
         },
       });
+
+      if (result.count === 0) {
+        throw new InsufficientWalletBalanceError();
+      }
 
       return;
     }
 
     if (input.paymentSource === DebtPaymentSource.RECEIVABLE) {
-      if (wallet.receivableBalance.lessThan(amount)) {
-        throw new InsufficientWalletBalanceError();
-      }
-
-      await this.client.wallet.update({
+      const result = await this.client.wallet.updateMany({
         where: {
           id: wallet.id,
+          receivableBalance: {
+            gte: amount,
+          },
         },
         data: {
-          receivableBalance: wallet.receivableBalance.minus(amount),
+          receivableBalance: {
+            decrement: amount,
+          },
         },
       });
+
+      if (result.count === 0) {
+        throw new InsufficientWalletBalanceError();
+      }
 
       return;
     }
