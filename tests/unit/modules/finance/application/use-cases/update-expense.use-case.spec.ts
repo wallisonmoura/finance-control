@@ -242,7 +242,7 @@ describe('UpdateExpenseUseCase', () => {
         date: new Date('2026-03-24'),
         categoryId: 'category-2',
       }),
-    ).rejects.toThrow('Financial entry is not an expense.');
+    ).rejects.toThrow(FinancialEntryNotFoundError);
 
     const found = await financialEntryRepository.findById('income-1');
 

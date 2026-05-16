@@ -193,7 +193,7 @@ describe('UpdateIncomeUseCase', () => {
         description: 'Tentativa de atualizar despesa como ganho',
         date: new Date('2026-03-24'),
       }),
-    ).rejects.toThrow('Financial entry is not an income.');
+    ).rejects.toThrow(FinancialEntryNotFoundError);
 
     const found = await financialEntryRepository.findById('expense-1');
 

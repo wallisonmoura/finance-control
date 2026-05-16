@@ -63,10 +63,6 @@ export class FinancialEntry {
     if (this.props.type === FinancialEntryType.INCOME) {
       this.props.categoryId = null;
     }
-
-    if (this.props.type === FinancialEntryType.INCOME) {
-      this.props.categoryId = null;
-    }
   }
 
   get id(): string {

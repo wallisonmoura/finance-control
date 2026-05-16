@@ -8,6 +8,7 @@ export class PrismaWalletRepository implements WalletRepository {
     const wallet = await prisma.wallet.findFirst({
       where: {
         userId,
+        isDefault: true,
       },
     });
 

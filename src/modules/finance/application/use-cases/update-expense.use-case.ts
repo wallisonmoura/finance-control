@@ -25,7 +25,7 @@ export class UpdateExpenseUseCase {
     }
 
     if (entry.type !== FinancialEntryType.EXPENSE) {
-      throw new Error('Financial entry is not an expense.');
+      throw new FinancialEntryNotFoundError();
     }
 
     const category = await this.expenseCategoryRepository.findById(

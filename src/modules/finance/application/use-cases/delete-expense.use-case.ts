@@ -21,7 +21,7 @@ export class DeleteExpenseUseCase {
     }
 
     if (entry.type !== FinancialEntryType.EXPENSE) {
-      throw new Error('Financial entry is not an expense.');
+      throw new FinancialEntryNotFoundError();
     }
 
     await this.financialEntryRepository.delete(entry.id);

@@ -22,7 +22,7 @@ export class UpdateIncomeUseCase {
     }
 
     if (entry.type !== FinancialEntryType.INCOME) {
-      throw new Error('Financial entry is not an income.');
+      throw new FinancialEntryNotFoundError();
     }
 
     const updatedEntry = entry.update({

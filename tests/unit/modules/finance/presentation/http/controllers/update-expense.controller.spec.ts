@@ -3,6 +3,8 @@ import { UpdateExpenseController } from '@/modules/finance/presentation/http/con
 import { ZodError } from 'zod';
 
 describe('UpdateExpenseController', () => {
+  const expenseId = '550e8400-e29b-41d4-a716-446655440002';
+
   let execute: jest.Mock;
   let useCase: Pick<UpdateExpenseUseCase, 'execute'>;
   let controller: UpdateExpenseController;
@@ -19,7 +21,7 @@ describe('UpdateExpenseController', () => {
 
   it('deve chamar o use case com input correto e retornar 200', async () => {
     execute.mockResolvedValue({
-      id: 'expense-id',
+      id: expenseId,
       userId: 'user-id',
       type: 'EXPENSE',
       amount: 90,
@@ -34,7 +36,7 @@ describe('UpdateExpenseController', () => {
     const response = await controller.handle({
       userId: 'user-id',
       params: {
-        id: 'expense-id',
+        id: expenseId,
       },
       body: {
         amount: 90,
@@ -46,7 +48,7 @@ describe('UpdateExpenseController', () => {
     });
 
     expect(execute).toHaveBeenCalledWith({
-      id: 'expense-id',
+      id: expenseId,
       userId: 'user-id',
       amount: 90,
       description: 'Despesa atualizada',
@@ -57,7 +59,7 @@ describe('UpdateExpenseController', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toMatchObject({
-      id: 'expense-id',
+      id: expenseId,
       type: 'EXPENSE',
       amount: 90,
       description: 'Despesa atualizada',
@@ -69,7 +71,7 @@ describe('UpdateExpenseController', () => {
       controller.handle({
         userId: 'user-id',
         params: {
-          id: 'expense-id',
+          id: expenseId,
         },
         body: {
           amount: 0,

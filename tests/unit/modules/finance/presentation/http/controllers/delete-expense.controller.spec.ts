@@ -2,6 +2,8 @@ import { DeleteExpenseUseCase } from '@/modules/finance/application/use-cases/de
 import { DeleteExpenseController } from '@/modules/finance/presentation/http/controllers/delete-expense.controller';
 
 describe('DeleteExpenseController', () => {
+  const expenseId = '550e8400-e29b-41d4-a716-446655440002';
+
   let execute: jest.Mock;
   let useCase: Pick<DeleteExpenseUseCase, 'execute'>;
   let controller: DeleteExpenseController;
@@ -20,12 +22,12 @@ describe('DeleteExpenseController', () => {
     const response = await controller.handle({
       userId: 'user-id',
       params: {
-        id: 'expense-id',
+        id: expenseId,
       },
     });
 
     expect(execute).toHaveBeenCalledWith({
-      id: 'expense-id',
+      id: expenseId,
       userId: 'user-id',
     });
 

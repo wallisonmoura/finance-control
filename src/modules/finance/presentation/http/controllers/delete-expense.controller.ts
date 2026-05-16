@@ -5,13 +5,16 @@ import {
   HttpResponse,
 } from '@/shared/presentation/http/http.types';
 import { Controller } from '@/shared/presentation/http/controller';
+import { financialEntryIdParamSchema } from '../schemas/financial-entry-id-param.schema';
 
 export class DeleteExpenseController implements Controller<HttpRequest, null> {
   constructor(private readonly deleteExpenseUseCase: DeleteExpenseUseCase) {}
 
   async handle(request: HttpRequest): Promise<HttpResponse<null>> {
+    const params = financialEntryIdParamSchema.parse(request.params);
+
     const input: DeleteExpenseInput = {
-      id: request.params!.id,
+      id: params.id,
       userId: request.userId!,
     };
 

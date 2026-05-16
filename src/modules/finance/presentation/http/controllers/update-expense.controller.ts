@@ -7,6 +7,7 @@ import {
   updateExpenseSchema,
   UpdateExpenseSchemaData,
 } from '../schemas/update-expense.schema';
+import { financialEntryIdParamSchema } from '../schemas/financial-entry-id-param.schema';
 import { UpdateExpenseInput } from '@/modules/finance/application/dtos/update-expense.input';
 import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financial-entry.output';
 import { Controller } from '@/shared/presentation/http/controller';
@@ -24,12 +25,13 @@ export class UpdateExpenseController implements Controller<
   async handle(
     request: HttpRequest,
   ): Promise<HttpResponse<FinancialEntryHttpResponse>> {
+    const params = financialEntryIdParamSchema.parse(request.params);
     const data: UpdateExpenseSchemaData = updateExpenseSchema.parse(
       request.body,
     );
 
     const input: UpdateExpenseInput = {
-      id: request.params!.id,
+      id: params.id,
       userId: request.userId!,
       amount: data.amount,
       description: data.description,

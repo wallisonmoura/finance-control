@@ -3,6 +3,8 @@ import { UpdateIncomeController } from '@/modules/finance/presentation/http/cont
 import { ZodError } from 'zod';
 
 describe('UpdateIncomeController', () => {
+  const incomeId = '550e8400-e29b-41d4-a716-446655440001';
+
   let execute: jest.Mock;
   let useCase: Pick<UpdateIncomeUseCase, 'execute'>;
   let controller: UpdateIncomeController;
@@ -19,7 +21,7 @@ describe('UpdateIncomeController', () => {
 
   it('deve chamar o use case com input correto e retornar 200', async () => {
     execute.mockResolvedValue({
-      id: 'income-id',
+      id: incomeId,
       userId: 'user-id',
       type: 'INCOME',
       amount: 180,
@@ -34,7 +36,7 @@ describe('UpdateIncomeController', () => {
     const response = await controller.handle({
       userId: 'user-id',
       params: {
-        id: 'income-id',
+        id: incomeId,
       },
       body: {
         amount: 180,
@@ -45,7 +47,7 @@ describe('UpdateIncomeController', () => {
     });
 
     expect(execute).toHaveBeenCalledWith({
-      id: 'income-id',
+      id: incomeId,
       userId: 'user-id',
       amount: 180,
       description: 'Receita atualizada',
@@ -55,7 +57,7 @@ describe('UpdateIncomeController', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toMatchObject({
-      id: 'income-id',
+      id: incomeId,
       type: 'INCOME',
       amount: 180,
       description: 'Receita atualizada',
@@ -67,7 +69,7 @@ describe('UpdateIncomeController', () => {
       controller.handle({
         userId: 'user-id',
         params: {
-          id: 'income-id',
+          id: incomeId,
         },
         body: {
           amount: 0,

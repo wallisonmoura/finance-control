@@ -1,24 +1,26 @@
 import { z } from 'zod';
 
-export const updateWalletBalancesBodySchema = z.object({
-  bankBalance: z.coerce
+function walletBalanceSchema(field: string) {
+  return z.coerce
     .number({
-      error: 'bankBalance must be a valid number',
+      error: `${field} must be a valid number`,
     })
-    .min(0, 'bankBalance must be greater than or equal to 0'),
+    .min(0, `${field} must be greater than or equal to 0`)
+    .refine((value) => Number.isInteger(value * 100), {
+      error: `${field} must have at most 2 decimal places`,
+    })
+    .refine((value) => value <= 999999999999.99, {
+      error: `${field} exceeds the allowed limit`,
+    });
+}
 
-  cashBalance: z.coerce
-    .number({
-      error: 'cashBalance must be a valid number',
-    })
-    .min(0, 'cashBalance must be greater than or equal to 0'),
-
-  receivableBalance: z.coerce
-    .number({
-      error: 'receivableBalance must be a valid number',
-    })
-    .min(0, 'receivableBalance must be greater than or equal to 0'),
-});
+export const updateWalletBalancesBodySchema = z
+  .object({
+    bankBalance: walletBalanceSchema('bankBalance'),
+    cashBalance: walletBalanceSchema('cashBalance'),
+    receivableBalance: walletBalanceSchema('receivableBalance'),
+  })
+  .strict();
 
 export type UpdateWalletBalancesBodySchema = z.infer<
   typeof updateWalletBalancesBodySchema

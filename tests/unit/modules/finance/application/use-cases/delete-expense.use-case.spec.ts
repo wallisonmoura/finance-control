@@ -108,7 +108,7 @@ describe('DeleteExpenseUseCase', () => {
         id: 'income-1',
         userId: 'user-1',
       }),
-    ).rejects.toThrow('Financial entry is not an expense.');
+    ).rejects.toThrow(FinancialEntryNotFoundError);
 
     const found = await repository.findById('income-1');
 

@@ -21,7 +21,7 @@ export class DeleteIncomeUseCase {
     }
 
     if (entry.type !== FinancialEntryType.INCOME) {
-      throw new Error('Financial entry is not an income.');
+      throw new FinancialEntryNotFoundError();
     }
 
     await this.financialEntryRepository.delete(entry.id);
