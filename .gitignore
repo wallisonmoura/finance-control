@@ -44,3 +44,6 @@ next-env.d.ts
 /app/generated/prisma
 
 .swc
+
+docs/
+AGENTS.md
