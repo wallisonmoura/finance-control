@@ -10,6 +10,7 @@ import { useFinanceHistory } from '../hooks/use-finance-history';
 import { deleteExpense } from '../services/finance-api.service';
 import { FinanceEntryUi } from '../types/finance-ui.types';
 import { ExpenseForm } from './expense-form';
+import { FinanceBackLink } from './finance-back-link';
 import { FinanceHistoryList } from './finance-history-list';
 
 export function FinanceExpensesPageContent() {
@@ -89,6 +90,8 @@ export function FinanceExpensesPageContent() {
 
   return (
     <div className='space-y-6'>
+      <FinanceBackLink />
+
       <PageTitle
         title='Despesas'
         description='Registre, acompanhe e gerencie suas despesas realizadas.'

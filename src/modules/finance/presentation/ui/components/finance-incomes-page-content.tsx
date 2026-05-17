@@ -8,6 +8,7 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { useFinanceHistory } from '../hooks/use-finance-history';
 import { deleteIncome } from '../services/finance-api.service';
 import { FinanceEntryUi } from '../types/finance-ui.types';
+import { FinanceBackLink } from './finance-back-link';
 import { FinanceHistoryList } from './finance-history-list';
 import { IncomeForm } from './income-form';
 
@@ -80,6 +81,8 @@ export function FinanceIncomesPageContent() {
 
   return (
     <div className='space-y-6'>
+      <FinanceBackLink />
+
       <PageTitle
         title='Receitas'
         description='Registre, acompanhe e gerencie suas receitas realizadas.'

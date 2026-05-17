@@ -82,6 +82,9 @@ describe('FinanceExpensesPageContent', () => {
     expect(screen.getByText('Despesas')).toBeInTheDocument();
     expect(screen.getByText('Combustivel')).toBeInTheDocument();
     expect(
+      screen.getByRole('link', { name: 'Voltar para financeiro' }),
+    ).toHaveAttribute('href', '/finance');
+    expect(
       screen.getByRole('button', { name: 'Nova despesa' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();

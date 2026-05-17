@@ -47,6 +47,21 @@ export type ExpenseCategoryUi = {
   slug: string;
 };
 
+export type DailyProfitUi = {
+  date: string;
+  totalIncome: number;
+  totalExpense: number;
+  profit: number;
+};
+
+export type MonthlySummaryUi = {
+  month: number;
+  year: number;
+  totalIncome: number;
+  totalExpense: number;
+  result: number;
+};
+
 export type UpdateIncomeUiInput = {
   amount: number;
   description: string;

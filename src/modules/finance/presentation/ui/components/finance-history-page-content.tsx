@@ -15,6 +15,7 @@ import {
   FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
 } from '../types/finance-ui.types';
+import { FinanceBackLink } from './finance-back-link';
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -108,6 +109,8 @@ export function FinanceHistoryPageContent() {
 
   return (
     <div className='space-y-6'>
+      <FinanceBackLink />
+
       <PageTitle
         title='Histórico financeiro'
         description='Consulte receitas e despesas realizadas por período.'

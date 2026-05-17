@@ -61,6 +61,9 @@ describe('FinanceHistoryPageContent', () => {
 
     expect(screen.getByText('Histórico financeiro')).toBeInTheDocument();
     expect(
+      screen.getByRole('link', { name: 'Voltar para financeiro' }),
+    ).toHaveAttribute('href', '/finance');
+    expect(
       screen.getByText('Carregando histórico financeiro...'),
     ).toBeInTheDocument();
   });

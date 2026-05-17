@@ -65,6 +65,9 @@ describe('FinanceIncomesPageContent', () => {
 
     expect(screen.getByText('Receitas')).toBeInTheDocument();
     expect(screen.getByText('ganho uber')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Voltar para financeiro' }),
+    ).toHaveAttribute('href', '/finance');
 
     expect(
       screen.getByRole('button', { name: 'Nova receita' }),
