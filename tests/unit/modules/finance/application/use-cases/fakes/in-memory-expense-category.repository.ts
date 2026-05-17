@@ -11,4 +11,10 @@ export class InMemoryExpenseCategoryRepository implements ExpenseCategoryReposit
   async findByUserId(userId: string): Promise<ExpenseCategory[]> {
     return this.categories.filter((category) => category.userId === userId);
   }
+
+  async findActiveByUserId(userId: string): Promise<ExpenseCategory[]> {
+    return this.categories.filter(
+      (category) => category.userId === userId && category.isActive,
+    );
+  }
 }

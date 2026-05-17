@@ -46,16 +46,56 @@ async function main() {
       slug: 'combustivel',
     },
     {
-      name: 'Parcelas',
-      slug: 'parcelas',
-    },
-    {
       name: 'Alimentação',
       slug: 'alimentacao',
     },
     {
       name: 'Manutenção',
       slug: 'manutencao',
+    },
+    {
+      name: 'Transporte',
+      slug: 'transporte',
+    },
+    {
+      name: 'Moradia / Aluguel',
+      slug: 'moradia-aluguel',
+    },
+    {
+      name: 'Energia',
+      slug: 'energia',
+    },
+    {
+      name: 'Água',
+      slug: 'agua',
+    },
+    {
+      name: 'Internet / Telefone',
+      slug: 'internet-telefone',
+    },
+    {
+      name: 'Compras / Insumos',
+      slug: 'compras-insumos',
+    },
+    {
+      name: 'Taxas / Impostos',
+      slug: 'taxas-impostos',
+    },
+    {
+      name: 'Equipamentos',
+      slug: 'equipamentos',
+    },
+    {
+      name: 'Marketing',
+      slug: 'marketing',
+    },
+    {
+      name: 'Saúde',
+      slug: 'saude',
+    },
+    {
+      name: 'Parcelas',
+      slug: 'parcelas',
     },
     {
       name: 'Outros',

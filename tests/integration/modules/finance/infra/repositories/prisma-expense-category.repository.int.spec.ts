@@ -103,4 +103,37 @@ describe('PrismaExpenseCategoryRepository', () => {
       expect(categories).toEqual([]);
     });
   });
+
+  describe('findActiveByUserId', () => {
+    it('deve retornar apenas categorias ativas do usuario informado', async () => {
+      const user = await createTestUser({
+        email: 'active-category-user-1@test.com',
+      });
+      const otherUser = await createTestUser({
+        email: 'active-category-user-2@test.com',
+      });
+
+      await createTestExpenseCategory({
+        userId: user.id,
+        name: 'Combustivel',
+        slug: 'combustivel',
+      });
+      await createTestExpenseCategory({
+        userId: user.id,
+        name: 'Inativa',
+        slug: 'inativa',
+        isActive: false,
+      });
+      await createTestExpenseCategory({
+        userId: otherUser.id,
+        name: 'Outro usuario',
+        slug: 'outro-usuario',
+      });
+
+      const categories = await repository.findActiveByUserId(user.id);
+
+      expect(categories).toHaveLength(1);
+      expect(categories[0].name).toBe('Combustivel');
+    });
+  });
 });

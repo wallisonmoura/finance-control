@@ -24,4 +24,16 @@ export class PrismaExpenseCategoryRepository implements ExpenseCategoryRepositor
 
     return categories.map(PrismaExpenseCategoryMapper.toDomain);
   }
+
+  async findActiveByUserId(userId: string): Promise<ExpenseCategory[]> {
+    const categories = await prisma.expenseCategory.findMany({
+      where: {
+        userId,
+        isActive: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    return categories.map(PrismaExpenseCategoryMapper.toDomain);
+  }
 }
