@@ -13,8 +13,8 @@ describe('FinanceOverviewPageContent', () => {
     expect(screen.getByText('Histórico')).toBeInTheDocument();
     expect(screen.getByText('Resumo')).toBeInTheDocument();
 
-    expect(screen.getAllByText('Acessar')).toHaveLength(2);
-    expect(screen.getAllByText('Em breve')).toHaveLength(2);
+    expect(screen.getAllByText('Acessar')).toHaveLength(3);
+    expect(screen.getAllByText('Em breve')).toHaveLength(1);
   });
 
   it('should render links to available finance sections', () => {
@@ -23,6 +23,7 @@ describe('FinanceOverviewPageContent', () => {
     const links = screen.getAllByRole('link', { name: 'Acessar' });
 
     expect(links[0]).toHaveAttribute('href', '/finance/incomes');
-    expect(links[1]).toHaveAttribute('href', '/finance/history');
+    expect(links[1]).toHaveAttribute('href', '/finance/expenses');
+    expect(links[2]).toHaveAttribute('href', '/finance/history');
   });
 });

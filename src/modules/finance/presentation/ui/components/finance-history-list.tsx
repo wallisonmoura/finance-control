@@ -8,7 +8,10 @@ type FinanceHistoryListProps = {
   entries: FinanceEntryUi[];
   onEditIncome?: (entry: FinanceEntryUi) => void;
   onDeleteIncome?: (entry: FinanceEntryUi) => void;
+  onEditExpense?: (entry: FinanceEntryUi) => void;
+  onDeleteExpense?: (entry: FinanceEntryUi) => void;
   deletingIncomeId?: string | null;
+  deletingExpenseId?: string | null;
 };
 
 function formatDate(date: string) {
@@ -25,7 +28,10 @@ export function FinanceHistoryList({
   entries,
   onEditIncome,
   onDeleteIncome,
+  onEditExpense,
+  onDeleteExpense,
   deletingIncomeId = null,
+  deletingExpenseId = null,
 }: FinanceHistoryListProps) {
   if (entries.length === 0) {
     return (
@@ -42,8 +48,11 @@ export function FinanceHistoryList({
       {entries.map((entry) => {
         const canManageIncome =
           entry.type === 'INCOME' && (onEditIncome || onDeleteIncome);
+        const canManageExpense =
+          entry.type === 'EXPENSE' && (onEditExpense || onDeleteExpense);
 
-        const isDeleting = deletingIncomeId === entry.id;
+        const isDeleting =
+          deletingIncomeId === entry.id || deletingExpenseId === entry.id;
 
         return (
           <Card key={entry.id}>
@@ -85,9 +94,9 @@ export function FinanceHistoryList({
                 />
               </div>
 
-              {canManageIncome && (
+              {(canManageIncome || canManageExpense) && (
                 <div className='flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3'>
-                  {onEditIncome && (
+                  {canManageIncome && onEditIncome && (
                     <Button
                       type='button'
                       onClick={() => onEditIncome(entry)}
@@ -97,10 +106,30 @@ export function FinanceHistoryList({
                     </Button>
                   )}
 
-                  {onDeleteIncome && (
+                  {canManageIncome && onDeleteIncome && (
                     <Button
                       type='button'
                       onClick={() => onDeleteIncome(entry)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? 'Excluindo...' : 'Excluir'}
+                    </Button>
+                  )}
+
+                  {canManageExpense && onEditExpense && (
+                    <Button
+                      type='button'
+                      onClick={() => onEditExpense(entry)}
+                      disabled={isDeleting}
+                    >
+                      Editar
+                    </Button>
+                  )}
+
+                  {canManageExpense && onDeleteExpense && (
+                    <Button
+                      type='button'
+                      onClick={() => onDeleteExpense(entry)}
                       disabled={isDeleting}
                     >
                       {isDeleting ? 'Excluindo...' : 'Excluir'}

@@ -13,7 +13,6 @@ const financeLinks = [
     title: 'Despesas',
     description: 'Gerencie saídas financeiras realizadas por categoria.',
     href: '/finance/expenses',
-    disabled: true,
   },
   {
     title: 'Histórico',

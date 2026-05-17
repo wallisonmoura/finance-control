@@ -1,7 +1,11 @@
 import {
+  deleteExpense,
   deleteIncome,
+  getExpenseCategories,
   getFinanceHistory,
+  registerExpense,
   registerIncome,
+  updateExpense,
   updateIncome,
 } from '@/modules/finance/presentation/ui/services/finance-api.service';
 
@@ -100,6 +104,54 @@ describe('finance-api.service', () => {
     });
   });
 
+  it('should register an expense successfully', async () => {
+    const expense = {
+      id: 'expense-id',
+      userId: 'user-id',
+      type: 'EXPENSE',
+      amount: 120,
+      description: 'Combustivel',
+      date: '2026-05-16',
+      categoryId: 'category-id',
+      notes: null,
+      createdAt: '2026-05-16T00:00:00.000Z',
+      updatedAt: '2026-05-16T00:00:00.000Z',
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => expense,
+    });
+
+    const response = await registerExpense({
+      amount: 120,
+      description: 'Combustivel',
+      date: '2026-05-16',
+      categoryId: 'category-id',
+      notes: null,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/expenses', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 120,
+        description: 'Combustivel',
+        date: '2026-05-16',
+        categoryId: 'category-id',
+        notes: null,
+      }),
+    });
+
+    expect(response).toEqual({
+      data: expense,
+    });
+  });
+
   it('should get finance history successfully', async () => {
     const history = {
       entries: [
@@ -190,6 +242,50 @@ describe('finance-api.service', () => {
     });
   });
 
+  it('should get expense categories successfully', async () => {
+    const categories = [
+      {
+        id: 'category-id',
+        name: 'Combustivel',
+        slug: 'combustivel',
+      },
+    ];
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    const response = await getExpenseCategories();
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/expense-categories', {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    expect(response).toEqual({
+      data: categories,
+    });
+  });
+
+  it('should return an error when get expense categories fails', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        message: 'Unauthorized.',
+      }),
+    });
+
+    const response = await getExpenseCategories();
+
+    expect(response).toEqual({
+      error: 'Unauthorized.',
+    });
+  });
+
   it('should update an income successfully', async () => {
     const income = {
       id: 'income-id',
@@ -233,6 +329,54 @@ describe('finance-api.service', () => {
 
     expect(response).toEqual({
       data: income,
+    });
+  });
+
+  it('should update an expense successfully', async () => {
+    const expense = {
+      id: 'expense-id',
+      userId: 'user-id',
+      type: 'EXPENSE',
+      amount: 140,
+      description: 'Combustivel atualizado',
+      date: '2026-05-16',
+      categoryId: 'category-id',
+      notes: null,
+      createdAt: '2026-05-16T00:00:00.000Z',
+      updatedAt: '2026-05-16T00:00:00.000Z',
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => expense,
+    });
+
+    const response = await updateExpense('expense-id', {
+      amount: 140,
+      description: 'Combustivel atualizado',
+      date: '2026-05-16',
+      categoryId: 'category-id',
+      notes: null,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/expenses/expense-id', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 140,
+        description: 'Combustivel atualizado',
+        date: '2026-05-16',
+        categoryId: 'category-id',
+        notes: null,
+      }),
+    });
+
+    expect(response).toEqual({
+      data: expense,
     });
   });
 
@@ -304,6 +448,26 @@ describe('finance-api.service', () => {
     const response = await deleteIncome('income-id');
 
     expect(fetchMock).toHaveBeenCalledWith('/api/finance/incomes/income-id', {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    expect(response).toEqual({
+      data: undefined,
+    });
+  });
+
+  it('should delete an expense successfully', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+    });
+
+    const response = await deleteExpense('expense-id');
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/expenses/expense-id', {
       method: 'DELETE',
       credentials: 'same-origin',
       headers: {

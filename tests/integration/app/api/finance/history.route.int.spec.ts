@@ -102,6 +102,52 @@ describe('GET /api/finance/history', () => {
     ).toBe(true);
   });
 
+  it('deve incluir lançamentos realizados no próprio endDate informado', async () => {
+    const user = await createTestUser({
+      email: 'history-inclusive-end-date@test.com',
+    });
+    const wallet = await createTestWallet({
+      userId: user.id,
+      isDefault: true,
+    });
+
+    await prisma.transaction.createMany({
+      data: [
+        {
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'INCOME',
+          amount: 360,
+          description: 'Receita no fim do período',
+          transactionDate: new Date(2026, 4, 16, 15, 30),
+        },
+        {
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'INCOME',
+          amount: 100,
+          description: 'Receita fora do período',
+          transactionDate: new Date(2026, 4, 17),
+        },
+      ],
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/finance/history?startDate=2026-05-01&endDate=2026-05-16',
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.totalIncome).toBe(360);
+    expect(body.entries).toHaveLength(1);
+    expect(body.entries[0].description).toBe('Receita no fim do período');
+  });
+
   it('deve retornar o histórico filtrado por type', async () => {
     const user = await createTestUser({
       email: 'history-type@test.com',

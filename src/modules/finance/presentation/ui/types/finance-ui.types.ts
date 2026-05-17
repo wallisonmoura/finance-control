@@ -20,6 +20,14 @@ export type RegisterIncomeUiInput = {
   notes?: string | null;
 };
 
+export type RegisterExpenseUiInput = {
+  amount: number;
+  description: string;
+  date: string;
+  categoryId: string;
+  notes?: string | null;
+};
+
 export type FinanceHistoryFiltersUi = {
   startDate: string;
   endDate: string;
@@ -33,10 +41,24 @@ export type FinanceHistoryUi = {
   balance: number;
 };
 
+export type ExpenseCategoryUi = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
 export type UpdateIncomeUiInput = {
   amount: number;
   description: string;
   date: string;
+  notes?: string | null;
+};
+
+export type UpdateExpenseUiInput = {
+  amount: number;
+  description: string;
+  date: string;
+  categoryId: string;
   notes?: string | null;
 };
 

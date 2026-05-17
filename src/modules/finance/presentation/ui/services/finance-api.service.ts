@@ -1,9 +1,12 @@
 import {
+  ExpenseCategoryUi,
   FinanceApiResponse,
   FinanceEntryUi,
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
+  RegisterExpenseUiInput,
   RegisterIncomeUiInput,
+  UpdateExpenseUiInput,
   UpdateIncomeUiInput,
 } from '../types/finance-ui.types';
 
@@ -28,6 +31,30 @@ export async function registerIncome(
   input: RegisterIncomeUiInput,
 ): Promise<FinanceApiResponse<FinanceEntryUi>> {
   const response = await fetch('/api/finance/incomes', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  const data = (await response.json()) as FinanceEntryUi;
+
+  return { data };
+}
+
+export async function registerExpense(
+  input: RegisterExpenseUiInput,
+): Promise<FinanceApiResponse<FinanceEntryUi>> {
+  const response = await fetch('/api/finance/expenses', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -73,10 +100,57 @@ export async function updateIncome(
   return { data };
 }
 
+export async function updateExpense(
+  id: string,
+  input: UpdateExpenseUiInput,
+): Promise<FinanceApiResponse<FinanceEntryUi>> {
+  const response = await fetch(`/api/finance/expenses/${id}`, {
+    method: 'PUT',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  const data = (await response.json()) as FinanceEntryUi;
+
+  return { data };
+}
+
 export async function deleteIncome(
   id: string,
 ): Promise<FinanceApiResponse<void>> {
   const response = await fetch(`/api/finance/incomes/${id}`, {
+    method: 'DELETE',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  return {
+    data: undefined,
+  };
+}
+
+export async function deleteExpense(
+  id: string,
+): Promise<FinanceApiResponse<void>> {
+  const response = await fetch(`/api/finance/expenses/${id}`, {
     method: 'DELETE',
     credentials: 'same-origin',
     headers: {
@@ -125,6 +199,28 @@ export async function getFinanceHistory(
   }
 
   const data = (await response.json()) as FinanceHistoryUi;
+
+  return { data };
+}
+
+export async function getExpenseCategories(): Promise<
+  FinanceApiResponse<ExpenseCategoryUi[]>
+> {
+  const response = await fetch('/api/finance/expense-categories', {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  const data = (await response.json()) as ExpenseCategoryUi[];
 
   return { data };
 }
