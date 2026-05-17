@@ -23,7 +23,6 @@ const financeLinks = [
     title: 'Resumo',
     description: 'Acompanhe indicadores operacionais financeiros.',
     href: '/finance/summary',
-    disabled: true,
   },
 ];
 

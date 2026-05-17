@@ -1,9 +1,11 @@
 import {
+  DailyProfitUi,
   ExpenseCategoryUi,
   FinanceApiResponse,
   FinanceEntryUi,
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
+  MonthlySummaryUi,
   RegisterExpenseUiInput,
   RegisterIncomeUiInput,
   UpdateExpenseUiInput,
@@ -221,6 +223,66 @@ export async function getExpenseCategories(): Promise<
   }
 
   const data = (await response.json()) as ExpenseCategoryUi[];
+
+  return { data };
+}
+
+export async function getDailyProfit(
+  date: string,
+): Promise<FinanceApiResponse<DailyProfitUi>> {
+  const searchParams = new URLSearchParams({
+    date,
+  });
+
+  const response = await fetch(
+    `/api/finance/daily-profit?${searchParams.toString()}`,
+    {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  const data = (await response.json()) as DailyProfitUi;
+
+  return { data };
+}
+
+export async function getMonthlySummary(input: {
+  year: number;
+  month: number;
+}): Promise<FinanceApiResponse<MonthlySummaryUi>> {
+  const searchParams = new URLSearchParams({
+    year: String(input.year),
+    month: String(input.month),
+  });
+
+  const response = await fetch(
+    `/api/finance/monthly-summary?${searchParams.toString()}`,
+    {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    return {
+      error: await parseErrorResponse(response),
+    };
+  }
+
+  const data = (await response.json()) as MonthlySummaryUi;
 
   return { data };
 }

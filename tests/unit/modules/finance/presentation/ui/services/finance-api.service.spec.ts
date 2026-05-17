@@ -1,8 +1,10 @@
 import {
   deleteExpense,
   deleteIncome,
+  getDailyProfit,
   getExpenseCategories,
   getFinanceHistory,
+  getMonthlySummary,
   registerExpense,
   registerIncome,
   updateExpense,
@@ -268,6 +270,72 @@ describe('finance-api.service', () => {
 
     expect(response).toEqual({
       data: categories,
+    });
+  });
+
+  it('should get daily profit successfully', async () => {
+    const dailyProfit = {
+      date: '2026-05-17T00:00:00.000Z',
+      totalIncome: 300,
+      totalExpense: 120,
+      profit: 180,
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => dailyProfit,
+    });
+
+    const response = await getDailyProfit('2026-05-17');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/daily-profit?date=2026-05-17',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+
+    expect(response).toEqual({
+      data: dailyProfit,
+    });
+  });
+
+  it('should get monthly summary successfully', async () => {
+    const monthlySummary = {
+      year: 2026,
+      month: 5,
+      totalIncome: 1000,
+      totalExpense: 400,
+      result: 600,
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => monthlySummary,
+    });
+
+    const response = await getMonthlySummary({
+      year: 2026,
+      month: 5,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/monthly-summary?year=2026&month=5',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+
+    expect(response).toEqual({
+      data: monthlySummary,
     });
   });
 
