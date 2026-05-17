@@ -2,7 +2,10 @@ import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/tra
 import { getTransactionHistoryQuerySchema } from '../schemas/get-transaction-history-query.schema';
 import { GetTransactionHistoryUseCase } from '@/modules/finance/application/use-cases/get-transaction-history.use-case';
 import { GetTransactionHistoryInput } from '@/modules/finance/application/dtos/get-transaction-history.input';
-import { parseDateFromQuery } from '../schemas/shared/parse-date-from-query';
+import {
+  parseDateFromQuery,
+  parseExclusiveEndDateFromQuery,
+} from '../schemas/shared/parse-date-from-query';
 import {
   HttpRequest,
   HttpResponse,
@@ -25,7 +28,7 @@ export class GetTransactionHistoryController implements Controller<
     const input: GetTransactionHistoryInput = {
       userId: request.userId!,
       startDate: parseDateFromQuery(query.startDate),
-      endDate: parseDateFromQuery(query.endDate),
+      endDate: parseExclusiveEndDateFromQuery(query.endDate),
       type: query.type,
     };
 

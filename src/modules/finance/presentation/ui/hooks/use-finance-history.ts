@@ -10,7 +10,7 @@ import {
 
 type UseFinanceHistoryInitialFilters = Partial<FinanceHistoryFiltersUi>;
 
-function getCurrentMonthFilters(
+export function getCurrentMonthFilters(
   initialFilters?: UseFinanceHistoryInitialFilters,
 ): FinanceHistoryFiltersUi {
   const now = new Date();

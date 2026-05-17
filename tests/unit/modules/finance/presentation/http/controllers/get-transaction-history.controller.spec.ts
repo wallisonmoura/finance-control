@@ -55,13 +55,9 @@ describe('GetTransactionHistoryController', () => {
     expect(input.startDate).toBeInstanceOf(Date);
     expect(input.endDate).toBeInstanceOf(Date);
 
-    expect(input.startDate.getFullYear()).toBe(2026);
-    expect(input.startDate.getMonth()).toBe(3);
-    expect(input.startDate.getDate()).toBe(1);
+    expect(input.startDate.toISOString()).toBe('2026-04-01T00:00:00.000Z');
 
-    expect(input.endDate.getFullYear()).toBe(2026);
-    expect(input.endDate.getMonth()).toBe(3);
-    expect(input.endDate.getDate()).toBe(30);
+    expect(input.endDate.toISOString()).toBe('2026-05-01T00:00:00.000Z');
 
     expect(input.type).toBe(FinancialEntryType.INCOME);
 

@@ -37,9 +37,7 @@ describe('CalculateDailyProfitController', () => {
 
     expect(input.userId).toBe('user-123');
     expect(input.date).toBeInstanceOf(Date);
-    expect(input.date.getFullYear()).toBe(2026);
-    expect(input.date.getMonth()).toBe(3);
-    expect(input.date.getDate()).toBe(6);
+    expect(input.date.toISOString()).toBe('2026-04-06T00:00:00.000Z');
 
     expect(response).toEqual({
       statusCode: 200,
