@@ -1,12 +1,5 @@
-import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { DebtsPageContent } from '@/modules/debts/presentation/ui/components/debts-page-content';
 
 export default function DebtsPage() {
-  return (
-    <div className='space-y-4'>
-      <PageTitle
-        title='Dívidas'
-        description='Acompanhe compromissos pendentes e quitados.'
-      />
-    </div>
-  );
+  return <DebtsPageContent />;
 }
