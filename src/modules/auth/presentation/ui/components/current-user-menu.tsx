@@ -11,7 +11,7 @@ export function CurrentUserMenu() {
       <div className='text-right'>
         <p className='text-xs text-slate-500'>Usuário</p>
 
-        <p className='max-w-36 truncate text-sm font-medium text-slate-900'>
+        <p className='max-w-40 truncate text-sm font-semibold text-slate-950'>
           {isLoading ? 'Carregando...' : (user?.name ?? 'Usuário')}
         </p>
       </div>

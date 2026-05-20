@@ -8,9 +8,11 @@ type DesktopSidebarProps = {
 
 export function DesktopSidebar({ pathname }: DesktopSidebarProps) {
   return (
-    <aside className='hidden min-h-screen w-64 border-r border-slate-200 bg-white px-4 py-6 md:block'>
-      <div className='mb-8'>
-        <p className='text-lg font-bold text-slate-900'>Finance Control</p>
+    <aside className='sticky top-0 hidden h-screen w-64 shrink-0 border-r border-slate-200/80 bg-white px-4 py-6 md:block'>
+      <div className='mb-8 border-b border-slate-100 pb-5'>
+        <p className='text-lg font-bold tracking-tight text-slate-950'>
+          Finance Control
+        </p>
         <p className='text-xs text-slate-500'>Controle financeiro</p>
       </div>
 
@@ -20,6 +22,7 @@ export function DesktopSidebar({ pathname }: DesktopSidebarProps) {
             key={item.href}
             href={item.href}
             label={item.label}
+            icon={item.icon}
             isActive={isNavigationItemActive(pathname, item.href)}
           />
         ))}

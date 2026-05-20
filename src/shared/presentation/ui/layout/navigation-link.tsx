@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import type { LucideIcon } from 'lucide-react';
 
 type NavigationLinkProps = {
   href: string;
   label: string;
+  icon?: LucideIcon;
   isActive?: boolean;
   onClick?: () => void;
 };
@@ -10,6 +12,7 @@ type NavigationLinkProps = {
 export function NavigationLink({
   href,
   label,
+  icon: Icon,
   isActive = false,
   onClick,
 }: NavigationLinkProps) {
@@ -19,12 +22,13 @@ export function NavigationLink({
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={[
-        'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+        'flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-out',
         isActive
-          ? 'bg-slate-900 text-white'
-          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+          ? 'bg-slate-900 text-white shadow-sm'
+          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
       ].join(' ')}
     >
+      {Icon ? <Icon aria-hidden='true' className='size-4 shrink-0' /> : null}
       {label}
     </Link>
   );

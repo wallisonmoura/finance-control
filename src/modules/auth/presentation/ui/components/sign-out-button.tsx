@@ -23,7 +23,12 @@ export function SignOutButton() {
   }
 
   return (
-    <Button type='button' onClick={handleSignOut} disabled={isLoading}>
+    <Button
+      type='button'
+      onClick={handleSignOut}
+      disabled={isLoading}
+      variant='secondary'
+    >
       {isLoading ? 'Saindo...' : 'Sair'}
     </Button>
   );

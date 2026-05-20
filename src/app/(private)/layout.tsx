@@ -8,12 +8,12 @@ type PrivateLayoutProps = {
 
 export default function PrivateLayout({ children }: PrivateLayoutProps) {
   return (
-    <div className='min-h-screen bg-slate-50 md:flex'>
+    <div className='min-h-screen bg-background md:flex'>
       <PrivateNavigation />
 
       <div className='flex min-h-screen flex-1 flex-col'>
-        <header className='hidden border-b border-slate-200 bg-white px-6 py-4 md:block'>
-          <div className='flex items-center justify-end'>
+        <header className='sticky top-0 z-20 hidden border-b border-slate-200/80 bg-white/95 px-6 py-3 backdrop-blur md:block'>
+          <div className='mx-auto flex max-w-7xl items-center justify-end'>
             <CurrentUserMenu />
           </div>
         </header>
@@ -22,7 +22,9 @@ export default function PrivateLayout({ children }: PrivateLayoutProps) {
           <CurrentUserMenu />
         </div>
 
-        <main className='flex-1 px-4 py-6 md:px-8'>{children}</main>
+        <main className='mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-8'>
+          {children}
+        </main>
       </div>
     </div>
   );
