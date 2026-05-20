@@ -11,6 +11,7 @@ export interface FinancialEntryProps {
   description: string;
   date: Date;
   categoryId?: string | null;
+  debtId?: string | null;
   notes?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -25,6 +26,7 @@ export class FinancialEntry {
     return new FinancialEntry({
       ...props,
       categoryId: props.categoryId ?? null,
+      debtId: props.debtId ?? null,
       notes: props.notes ?? null,
     });
   }
@@ -95,6 +97,14 @@ export class FinancialEntry {
 
   get notes(): string | null {
     return this.props.notes ?? null;
+  }
+
+  get debtId(): string | null {
+    return this.props.debtId ?? null;
+  }
+
+  isLinkedToDebt(): boolean {
+    return Boolean(this.props.debtId);
   }
 
   get createdAt(): Date {

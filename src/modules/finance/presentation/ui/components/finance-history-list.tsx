@@ -24,6 +24,10 @@ function getEntryTypeLabel(type: FinanceEntryUi['type']) {
   return type === 'INCOME' ? 'Receita' : 'Despesa';
 }
 
+function isDebtPaymentExpense(entry: FinanceEntryUi) {
+  return entry.type === 'EXPENSE' && Boolean(entry.debtId);
+}
+
 export function FinanceHistoryList({
   entries,
   onEditIncome,
@@ -49,7 +53,9 @@ export function FinanceHistoryList({
         const canManageIncome =
           entry.type === 'INCOME' && (onEditIncome || onDeleteIncome);
         const canManageExpense =
-          entry.type === 'EXPENSE' && (onEditExpense || onDeleteExpense);
+          entry.type === 'EXPENSE' &&
+          !isDebtPaymentExpense(entry) &&
+          (onEditExpense || onDeleteExpense);
 
         const isDeleting =
           deletingIncomeId === entry.id || deletingExpenseId === entry.id;
@@ -80,6 +86,12 @@ export function FinanceHistoryList({
                   {entry.categoryId && (
                     <p className='mt-1 text-xs text-slate-400'>
                       Categoria: {entry.categoryId}
+                    </p>
+                  )}
+
+                  {isDebtPaymentExpense(entry) && (
+                    <p className='mt-1 text-xs text-slate-400'>
+                      Gerada por pagamento de dívida.
                     </p>
                   )}
                 </div>

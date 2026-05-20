@@ -7,6 +7,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { DeleteExpenseUseCase } from '@/modules/finance/application/use-cases/delete-expense.use-case';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
+import { FinancialEntryLinkedToDebtError } from '@/modules/finance/domain/errors/financial-entry-linked-to-debt.error';
 
 describe('DeleteExpenseUseCase', () => {
   const makeExpense = (
@@ -111,6 +112,28 @@ describe('DeleteExpenseUseCase', () => {
     ).rejects.toThrow(FinancialEntryNotFoundError);
 
     const found = await repository.findById('income-1');
+
+    expect(found).not.toBeNull();
+  });
+
+  it('deve lançar erro quando a despesa estiver vinculada a uma dívida paga', async () => {
+    const repository = new InMemoryFinancialEntryRepository([
+      makeExpense({
+        id: 'expense-1',
+        debtId: 'debt-1',
+      }),
+    ]);
+
+    const useCase = new DeleteExpenseUseCase(repository);
+
+    await expect(
+      useCase.execute({
+        id: 'expense-1',
+        userId: 'user-1',
+      }),
+    ).rejects.toThrow(FinancialEntryLinkedToDebtError);
+
+    const found = await repository.findById('expense-1');
 
     expect(found).not.toBeNull();
   });

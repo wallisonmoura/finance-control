@@ -26,6 +26,7 @@ export class PrismaFinancialEntryMapper {
       description: transaction.description,
       date: transaction.transactionDate,
       categoryId: transaction.expenseCategoryId ?? null,
+      debtId: transaction.debtId ?? null,
       notes: transaction.notes ?? null,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,

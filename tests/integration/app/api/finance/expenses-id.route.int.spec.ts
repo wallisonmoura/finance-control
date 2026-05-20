@@ -6,6 +6,8 @@ import { createTestUser } from '../../../../helpers/database/create-test-user';
 import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
 import { createTestExpenseCategory } from '../../../../helpers/database/create-test-expense-category';
 import { createTestFinancialEntry } from '../../../../helpers/database/create-test-financial-entry';
+import { createTestDebt } from '../../../../helpers/database/create-test-debt';
+import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 
 jest.mock(
   '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request',
@@ -249,6 +251,61 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
 
       expect(response.status).toBe(404);
     });
+
+    it('deve retornar 409 quando a expense estiver vinculada a uma dívida paga', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+
+      const category = await createTestExpenseCategory({
+        userId: user.id,
+      });
+
+      const debt = await createTestDebt({
+        userId: user.id,
+        walletId: wallet.id,
+        status: DebtStatus.PAID,
+      });
+
+      const entry = await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        categoryId: category.id,
+        debtId: debt.id,
+      });
+
+      mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+      const request = new NextRequest(
+        `http://localhost:3000/api/finance/expenses/${entry.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount: 90,
+            description: 'Tentativa de editar pagamento de dívida',
+            date: '2026-04-02',
+            categoryId: category.id,
+          }),
+        },
+      );
+
+      const response = await PUT(request, {
+        params: Promise.resolve({ id: entry.id }),
+      });
+
+      const body = await response.json();
+
+      expect(response.status).toBe(409);
+      expect(body.message).toBe(
+        'Financial entry linked to debt payment cannot be modified.',
+      );
+    });
   });
 
   describe('DELETE /api/finance/expenses/[id]', () => {
@@ -366,6 +423,56 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       });
 
       expect(response.status).toBe(404);
+    });
+
+    it('deve retornar 409 quando a expense estiver vinculada a uma dívida paga', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+
+      const category = await createTestExpenseCategory({
+        userId: user.id,
+      });
+
+      const debt = await createTestDebt({
+        userId: user.id,
+        walletId: wallet.id,
+        status: DebtStatus.PAID,
+      });
+
+      const entry = await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        categoryId: category.id,
+        debtId: debt.id,
+      });
+
+      mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+      const request = new NextRequest(
+        `http://localhost:3000/api/finance/expenses/${entry.id}`,
+        {
+          method: 'DELETE',
+        },
+      );
+
+      const response = await DELETE(request, {
+        params: Promise.resolve({ id: entry.id }),
+      });
+
+      const body = await response.json();
+      const found = await prisma.transaction.findUnique({
+        where: { id: entry.id },
+      });
+
+      expect(response.status).toBe(409);
+      expect(body.message).toBe(
+        'Financial entry linked to debt payment cannot be modified.',
+      );
+      expect(found).not.toBeNull();
     });
   });
 });

@@ -26,6 +26,7 @@ describe('FinanceHttpPresenter', () => {
       description: 'Venda',
       date: '2026-03-23',
       categoryId: null,
+      debtId: null,
       notes: 'observação',
       createdAt: '2026-03-23T10:00:00.000Z',
       updatedAt: '2026-03-23T10:00:00.000Z',

@@ -6,6 +6,7 @@ import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-d
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
+import { FinancialEntryLinkedToDebtError } from '@/modules/finance/domain/errors/financial-entry-linked-to-debt.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
@@ -88,6 +89,15 @@ export function toErrorNextResponse(error: unknown) {
         message: error.message,
       },
       { status: 404 },
+    );
+  }
+
+  if (error instanceof FinancialEntryLinkedToDebtError) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 409 },
     );
   }
 

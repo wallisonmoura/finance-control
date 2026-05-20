@@ -8,6 +8,7 @@ export type FinanceEntryUi = {
   description: string;
   date: string;
   categoryId: string | null;
+  debtId?: string | null;
   notes: string | null;
   createdAt: string;
   updatedAt: string;

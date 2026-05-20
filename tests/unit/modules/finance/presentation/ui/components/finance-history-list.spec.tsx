@@ -112,4 +112,38 @@ describe('FinanceHistoryList', () => {
       screen.queryByRole('button', { name: 'Excluir' }),
     ).not.toBeInTheDocument();
   });
+
+  it('should not render actions for debt payment expense entries', () => {
+    render(
+      <FinanceHistoryList
+        entries={[
+          {
+            id: 'expense-id',
+            userId: 'user-id',
+            type: 'EXPENSE',
+            amount: 50,
+            description: 'Pagamento de dívida: seguro',
+            date: '2026-05-05T00:00:00.000Z',
+            categoryId: 'category-id',
+            debtId: 'debt-id',
+            notes: null,
+            createdAt: '2026-05-07T20:13:50.343Z',
+            updatedAt: '2026-05-07T20:13:50.343Z',
+          },
+        ]}
+        onEditExpense={jest.fn()}
+        onDeleteExpense={jest.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText('Gerada por pagamento de dívida.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Editar' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Excluir' }),
+    ).not.toBeInTheDocument();
+  });
 });

@@ -1,5 +1,6 @@
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { ExpenseCategoryNotFoundError } from '../../domain/errors/expense-category-not-found.error';
+import { FinancialEntryLinkedToDebtError } from '../../domain/errors/financial-entry-linked-to-debt.error';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
 import { UnauthorizedFinancialEntryAccessError } from '../../domain/errors/unauthorized-financial-entry-access.error';
 import { ExpenseCategoryRepository } from '../../domain/repositories/expense-category.repository';
@@ -26,6 +27,10 @@ export class UpdateExpenseUseCase {
 
     if (entry.type !== FinancialEntryType.EXPENSE) {
       throw new FinancialEntryNotFoundError();
+    }
+
+    if (entry.isLinkedToDebt()) {
+      throw new FinancialEntryLinkedToDebtError();
     }
 
     const category = await this.expenseCategoryRepository.findById(

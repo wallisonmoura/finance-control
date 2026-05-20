@@ -9,6 +9,7 @@ type CreateTestFinancialEntryInput = {
   description?: string;
   transactionDate?: Date;
   categoryId?: string | null;
+  debtId?: string | null;
 };
 
 export async function createTestFinancialEntry(
@@ -26,6 +27,7 @@ export async function createTestFinancialEntry(
       description: input.description ?? 'Lançamento de teste',
       transactionDate: input.transactionDate ?? new Date('2026-04-01'),
       expenseCategoryId: input.categoryId ?? null,
+      debtId: input.debtId ?? null,
     },
   });
 }

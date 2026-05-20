@@ -11,6 +11,7 @@ import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/fin
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 import { InvalidFinancialEntryAmountError } from '@/modules/finance/domain/errors/invalid-financial-entry-amount.error';
+import { FinancialEntryLinkedToDebtError } from '@/modules/finance/domain/errors/financial-entry-linked-to-debt.error';
 
 describe('UpdateExpenseUseCase', () => {
   const makeExpense = (
@@ -251,6 +252,41 @@ describe('UpdateExpenseUseCase', () => {
     expect(found?.amount).toBe(100);
     expect(found?.description).toBe('Venda');
     expect(found?.categoryId).toBeNull();
+  });
+
+  it('deve falhar se a despesa estiver vinculada a uma dívida paga', async () => {
+    const financialEntryRepository = new InMemoryFinancialEntryRepository([
+      makeExpense({
+        id: 'expense-1',
+        debtId: 'debt-1',
+      }),
+    ]);
+
+    const expenseCategoryRepository = new InMemoryExpenseCategoryRepository([
+      makeCategory(),
+    ]);
+
+    const useCase = new UpdateExpenseUseCase(
+      financialEntryRepository,
+      expenseCategoryRepository,
+    );
+
+    await expect(
+      useCase.execute({
+        id: 'expense-1',
+        userId: 'user-1',
+        amount: 120,
+        description: 'Tentativa de atualizar pagamento de dívida',
+        date: new Date('2026-03-24'),
+        categoryId: 'category-2',
+      }),
+    ).rejects.toThrow(FinancialEntryLinkedToDebtError);
+
+    const found = await financialEntryRepository.findById('expense-1');
+
+    expect(found?.amount).toBe(80);
+    expect(found?.description).toBe('Combustível');
+    expect(found?.debtId).toBe('debt-1');
   });
 
   it('deve falhar se a categoria não existir', async () => {

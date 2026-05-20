@@ -306,6 +306,7 @@ describe('FinancialEntry', () => {
       ...baseProps,
       type: FinancialEntryType.EXPENSE,
       categoryId: 'category-1',
+      debtId: null,
       notes: 'Fuel',
     });
   });

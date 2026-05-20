@@ -8,6 +8,7 @@ export interface FinancialEntryHttpResponse {
   description: string;
   date: string;
   categoryId: string | null;
+  debtId: string | null;
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -23,6 +24,7 @@ export class FinanceHttpPresenter {
       description: entry.description,
       date: entry.date.toISOString().slice(0, 10),
       categoryId: entry.categoryId ?? null,
+      debtId: entry.debtId ?? null,
       notes: entry.notes ?? null,
       createdAt: entry.createdAt.toISOString(),
       updatedAt: entry.updatedAt.toISOString(),

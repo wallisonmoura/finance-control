@@ -8,6 +8,7 @@ export interface FinancialEntryOutput {
   description: string;
   date: Date;
   categoryId?: string | null;
+  debtId?: string | null;
   notes?: string | null;
   createdAt: Date;
   updatedAt: Date;

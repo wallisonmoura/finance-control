@@ -11,6 +11,7 @@ type MakeTestFinancialEntryEntityInput = {
   description?: string;
   date?: Date;
   categoryId?: string | null;
+  debtId?: string | null;
   notes?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -27,6 +28,7 @@ export function makeTestFinancialEntryEntity(
     description: input.description ?? 'Lançamento de teste',
     date: input.date ?? new Date('2026-04-01T00:00:00.000Z'),
     categoryId: input.categoryId ?? null,
+    debtId: input.debtId ?? null,
     notes: input.notes ?? null,
     createdAt: input.createdAt ?? new Date(),
     updatedAt: input.updatedAt ?? new Date(),
