@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
+import { BackLink } from '@/shared/presentation/ui/components/back-link';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
@@ -34,12 +34,7 @@ export function PendingDebtsPageContent() {
 
   return (
     <div className='space-y-6'>
-      <Link
-        href='/debts'
-        className='inline-flex text-sm font-medium text-slate-600 transition hover:text-slate-950'
-      >
-        Voltar para dívidas
-      </Link>
+      <BackLink href='/debts'>Voltar para dívidas</BackLink>
 
       <PageTitle
         title='Dívidas pendentes'

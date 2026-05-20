@@ -60,19 +60,13 @@ export function DebtOverviewSummary({
       </div>
 
       <div className='flex flex-wrap justify-end gap-2'>
-        <Link
-          href='/debts/pending'
-          className='rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2'
-        >
-          Ver pendentes
-        </Link>
+        <Button asChild variant='secondary'>
+          <Link href='/debts/pending'>Ver pendentes</Link>
+        </Button>
 
-        <Link
-          href='/debts/paid'
-          className='rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2'
-        >
-          Ver pagas
-        </Link>
+        <Button asChild variant='secondary'>
+          <Link href='/debts/paid'>Ver pagas</Link>
+        </Button>
 
         <Button type='button' onClick={onCreateDebt}>
           Nova divida

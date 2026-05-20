@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-
+import { BackLink } from '@/shared/presentation/ui/components/back-link';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useDebts } from '../hooks/use-debts';
@@ -13,12 +12,7 @@ export function PaidDebtsPageContent() {
 
   return (
     <div className='space-y-6'>
-      <Link
-        href='/debts'
-        className='inline-flex text-sm font-medium text-slate-600 transition hover:text-slate-950'
-      >
-        Voltar para dívidas
-      </Link>
+      <BackLink href='/debts'>Voltar para dívidas</BackLink>
 
       <PageTitle
         title='Dívidas pagas'

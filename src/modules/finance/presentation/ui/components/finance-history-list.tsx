@@ -113,6 +113,7 @@ export function FinanceHistoryList({
                       type='button'
                       onClick={() => onEditIncome(entry)}
                       disabled={isDeleting}
+                      variant='secondary'
                     >
                       Editar
                     </Button>
@@ -123,6 +124,7 @@ export function FinanceHistoryList({
                       type='button'
                       onClick={() => onDeleteIncome(entry)}
                       disabled={isDeleting}
+                      variant='danger'
                     >
                       {isDeleting ? 'Excluindo...' : 'Excluir'}
                     </Button>
@@ -133,6 +135,7 @@ export function FinanceHistoryList({
                       type='button'
                       onClick={() => onEditExpense(entry)}
                       disabled={isDeleting}
+                      variant='secondary'
                     >
                       Editar
                     </Button>
@@ -143,6 +146,7 @@ export function FinanceHistoryList({
                       type='button'
                       onClick={() => onDeleteExpense(entry)}
                       disabled={isDeleting}
+                      variant='danger'
                     >
                       {isDeleting ? 'Excluindo...' : 'Excluir'}
                     </Button>

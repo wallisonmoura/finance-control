@@ -1,5 +1,6 @@
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
+import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 
 import { DebtUi } from '../types/debt-ui.types';
@@ -40,11 +41,7 @@ export function DebtList({
   deletingDebtId = null,
 }: DebtListProps) {
   if (debts.length === 0) {
-    return (
-      <Card>
-        <p className='text-sm text-slate-500'>Nenhuma divida encontrada.</p>
-      </Card>
-    );
+    return <EmptyState description='Nenhuma divida encontrada.' />;
   }
 
   return (
@@ -117,6 +114,7 @@ export function DebtList({
                       type='button'
                       onClick={() => onEditDebt(debt)}
                       disabled={isDeleting}
+                      variant='secondary'
                     >
                       Editar
                     </Button>
@@ -127,6 +125,7 @@ export function DebtList({
                       type='button'
                       onClick={() => onDeleteDebt(debt)}
                       disabled={isDeleting}
+                      variant='danger'
                     >
                       {isDeleting ? 'Excluindo...' : 'Excluir'}
                     </Button>
