@@ -1,11 +1,14 @@
 'use client';
 
 import { SyntheticEvent, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
+import { SelectField } from '@/shared/presentation/ui/components/select-field';
+import { TextareaField } from '@/shared/presentation/ui/components/textarea-field';
 
 import { registerDebt, updateDebt } from '../services/debt-api.service';
 import { DebtTypeUi, DebtUi } from '../types/debt-ui.types';
@@ -48,7 +51,6 @@ export function DebtForm({
   const [notes, setNotes] = useState(() => editingDebt?.notes ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   function parseMoneyInput(value: string) {
     return Number(value.replace(',', '.'));
@@ -67,7 +69,6 @@ export function DebtForm({
 
     setIsSubmitting(true);
     setError(null);
-    setSuccessMessage(null);
 
     const input = {
       description,
@@ -90,13 +91,13 @@ export function DebtForm({
     }
 
     if (editingDebt !== null) {
-      setSuccessMessage('Dívida atualizada com sucesso.');
+      toast.success('Dívida atualizada com sucesso.');
       await onDebtUpdated?.();
       return;
     }
 
     resetCreateForm();
-    setSuccessMessage('Dívida cadastrada com sucesso.');
+    toast.success('Dívida cadastrada com sucesso.');
     await onDebtCreated?.();
   }
 
@@ -114,24 +115,17 @@ export function DebtForm({
           </p>
         </div>
 
-        <div className='space-y-1'>
-          <label
-            htmlFor='debt-type'
-            className='block text-sm font-medium text-slate-700'
-          >
-            Tipo
-          </label>
-          <select
-            id='debt-type'
-            name='type'
-            value={type}
-            onChange={(event) => setType(event.target.value as DebtTypeUi)}
-            className='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200'
-          >
-            <option value='ONE_TIME'>Unica</option>
-            <option value='RECURRING'>Recorrente</option>
-          </select>
-        </div>
+        <SelectField
+          id='debt-type'
+          name='type'
+          label='Tipo'
+          value={type}
+          onChange={(event) => setType(event.target.value as DebtTypeUi)}
+          options={[
+            { label: 'Única', value: 'ONE_TIME' },
+            { label: 'Recorrente', value: 'RECURRING' },
+          ]}
+        />
 
         <Input
           id='debt-description'
@@ -163,7 +157,7 @@ export function DebtForm({
           required
         />
 
-        <Input
+        <TextareaField
           id='debt-notes'
           name='notes'
           label='Observacoes'
@@ -172,10 +166,6 @@ export function DebtForm({
         />
 
         {error && <FormErrorMessage message={error} />}
-
-        {successMessage && (
-          <p className='text-sm text-green-700'>{successMessage}</p>
-        )}
 
         <div className='flex flex-wrap gap-2'>
           <Button type='submit' disabled={isSubmitting}>

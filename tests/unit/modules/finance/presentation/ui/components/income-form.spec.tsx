@@ -1,5 +1,6 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 
 import { IncomeForm } from '@/modules/finance/presentation/ui/components/income-form';
 import { registerIncome } from '@/modules/finance/presentation/ui/services/finance-api.service';
@@ -10,6 +11,11 @@ jest.mock(
     registerIncome: jest.fn(),
   }),
 );
+jest.mock('sonner', () => ({
+  toast: {
+    success: jest.fn(),
+  },
+}));
 
 const registerIncomeMock = registerIncome as jest.MockedFunction<
   typeof registerIncome
@@ -60,9 +66,9 @@ describe('IncomeForm', () => {
     });
 
     expect(onIncomeCreated).toHaveBeenCalledTimes(1);
-    expect(
-      screen.getByText('Receita registrada com sucesso.'),
-    ).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith(
+      'Receita registrada com sucesso.',
+    );
   });
 
   it('should send notes as null when notes is empty', async () => {

@@ -1,9 +1,14 @@
 'use client';
 
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Button } from '@/shared/presentation/ui/components/button';
+import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
+import { LoadingState } from '@/shared/presentation/ui/components/loading-state';
 
 import { useWallet } from '../hooks/use-wallet';
 import { WalletSummaryCard } from './wallet-summary-card';
@@ -20,6 +25,12 @@ export function WalletPageContent() {
     updateBalances,
   } = useWallet();
 
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+    }
+  }, [successMessage]);
+
   if (isLoading) {
     return (
       <div className='space-y-6'>
@@ -28,9 +39,7 @@ export function WalletPageContent() {
           description='Visualize e atualize seus saldos-base.'
         />
 
-        <Card>
-          <p className='text-sm text-zinc-500'>Carregando Wallet...</p>
-        </Card>
+        <LoadingState message='Carregando Wallet...' />
       </div>
     );
   }
@@ -64,11 +73,7 @@ export function WalletPageContent() {
           description='Visualize e atualize seus saldos-base.'
         />
 
-        <Card>
-          <p className='text-sm text-zinc-500'>
-            Nenhuma Wallet encontrada para o usuário atual.
-          </p>
-        </Card>
+        <EmptyState description='Nenhuma Wallet encontrada para o usuário atual.' />
       </div>
     );
   }
@@ -79,14 +84,6 @@ export function WalletPageContent() {
         title='Wallet'
         description='Visualize sua posição financeira base e atualize seus saldos reais.'
       />
-
-      {successMessage ? (
-        <Card>
-          <p className='text-sm font-medium text-emerald-700'>
-            {successMessage}
-          </p>
-        </Card>
-      ) : null}
 
       {error ? <FormErrorMessage message={error} /> : null}
 

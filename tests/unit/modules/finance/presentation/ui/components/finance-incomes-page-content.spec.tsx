@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { FinanceIncomesPageContent } from '@/modules/finance/presentation/ui/components/finance-incomes-page-content';
@@ -107,8 +107,6 @@ describe('FinanceIncomesPageContent', () => {
   it('should delete an income when confirmed', async () => {
     const user = userEvent.setup();
 
-    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
-
     deleteIncomeMock.mockResolvedValueOnce({
       data: undefined,
     });
@@ -117,9 +115,16 @@ describe('FinanceIncomesPageContent', () => {
 
     await user.click(screen.getByRole('button', { name: 'Excluir' }));
 
-    expect(window.confirm).toHaveBeenCalledWith(
-      'Deseja excluir a receita "ganho uber"?',
+    const dialog = screen.getByRole('alertdialog');
+
+    expect(
+      within(dialog).getByText('Deseja excluir a receita "ganho uber"?'),
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Excluir' }),
     );
+
     expect(deleteIncomeMock).toHaveBeenCalledWith('income-id');
     expect(refreshMock).toHaveBeenCalled();
   });
@@ -127,11 +132,15 @@ describe('FinanceIncomesPageContent', () => {
   it('should not delete an income when confirmation is cancelled', async () => {
     const user = userEvent.setup();
 
-    jest.spyOn(window, 'confirm').mockReturnValueOnce(false);
-
     render(<FinanceIncomesPageContent />);
 
     await user.click(screen.getByRole('button', { name: 'Excluir' }));
+
+    const dialog = screen.getByRole('alertdialog');
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Cancelar' }),
+    );
 
     expect(deleteIncomeMock).not.toHaveBeenCalled();
     expect(refreshMock).not.toHaveBeenCalled();
@@ -140,8 +149,6 @@ describe('FinanceIncomesPageContent', () => {
   it('should render delete error', async () => {
     const user = userEvent.setup();
 
-    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
-
     deleteIncomeMock.mockResolvedValueOnce({
       error: 'Não foi possível excluir a receita.',
     });
@@ -149,6 +156,12 @@ describe('FinanceIncomesPageContent', () => {
     render(<FinanceIncomesPageContent />);
 
     await user.click(screen.getByRole('button', { name: 'Excluir' }));
+
+    const dialog = screen.getByRole('alertdialog');
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Excluir' }),
+    );
 
     expect(
       await screen.findByText('Não foi possível excluir a receita.'),

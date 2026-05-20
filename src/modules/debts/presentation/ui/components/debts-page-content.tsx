@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
+import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useDebts } from '../hooks/use-debts';
@@ -15,6 +16,7 @@ import { DebtOverviewSummary } from './debt-overview-summary';
 export function DebtsPageContent() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDebt, setEditingDebt] = useState<DebtUi | null>(null);
+  const [debtToDelete, setDebtToDelete] = useState<DebtUi | null>(null);
   const [deletingDebtId, setDeletingDebtId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -46,28 +48,30 @@ export function DebtsPageContent() {
     setIsFormOpen(true);
   }
 
-  async function handleDeleteDebt(debt: DebtUi) {
-    const confirmed = window.confirm(
-      `Deseja excluir a divida "${debt.description}"?`,
-    );
+  function handleDeleteDebt(debt: DebtUi) {
+    setActionError(null);
+    setDebtToDelete(debt);
+  }
 
-    if (!confirmed) {
+  async function handleConfirmDeleteDebt() {
+    if (!debtToDelete) {
       return;
     }
 
     setActionError(null);
-    setDeletingDebtId(debt.id);
+    setDeletingDebtId(debtToDelete.id);
 
-    const response = await deleteDebt(debt.id);
+    const response = await deleteDebt(debtToDelete.id);
 
     setDeletingDebtId(null);
+    setDebtToDelete(null);
 
     if (response.error) {
       setActionError(response.error);
       return;
     }
 
-    if (editingDebt?.id === debt.id) {
+    if (editingDebt?.id === debtToDelete.id) {
       setEditingDebt(null);
       setIsFormOpen(false);
     }
@@ -118,6 +122,20 @@ export function DebtsPageContent() {
           deletingDebtId={deletingDebtId}
         />
       )}
+
+      <ConfirmDialog
+        open={debtToDelete !== null}
+        title='Excluir dívida'
+        description={`Deseja excluir a dívida "${debtToDelete?.description ?? ''}"?`}
+        confirmLabel='Excluir'
+        isConfirming={deletingDebtId === debtToDelete?.id}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDebtToDelete(null);
+          }
+        }}
+        onConfirm={handleConfirmDeleteDebt}
+      />
     </div>
   );
 }

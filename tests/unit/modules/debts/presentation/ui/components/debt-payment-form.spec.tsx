@@ -1,11 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 
 import { DebtPaymentForm } from '@/modules/debts/presentation/ui/components/debt-payment-form';
 import { payDebt } from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   payDebt: jest.fn(),
+}));
+jest.mock('sonner', () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
 }));
 
 const payDebtMock = jest.mocked(payDebt);
@@ -80,6 +87,41 @@ describe('DebtPaymentForm', () => {
     });
 
     expect(onDebtPaid).toHaveBeenCalledTimes(1);
+  });
+
+  it('should show a toast when payment fails', async () => {
+    const user = userEvent.setup();
+    const onDebtPaid = jest.fn();
+
+    payDebtMock.mockResolvedValueOnce({
+      error: 'Insufficient wallet balance.',
+    });
+
+    render(
+      <DebtPaymentForm
+        debt={debt}
+        categories={categories}
+        onDebtPaid={onDebtPaid}
+      />,
+    );
+
+    await user.selectOptions(
+      screen.getByLabelText('Categoria da despesa'),
+      'category-id',
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Confirmar pagamento' }),
+    );
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Insufficient wallet balance.');
+    });
+
+    expect(onDebtPaid).not.toHaveBeenCalled();
+    expect(
+      screen.queryByText('Insufficient wallet balance.'),
+    ).not.toBeInTheDocument();
   });
 
   it('should disable submit when categories fail to load', () => {

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { DebtsPageContent } from '@/modules/debts/presentation/ui/components/debts-page-content';
@@ -103,8 +103,6 @@ describe('DebtsPageContent', () => {
   it('should delete a debt when confirmed', async () => {
     const user = userEvent.setup();
 
-    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
-
     deleteDebtMock.mockResolvedValueOnce({
       data: undefined,
     });
@@ -113,9 +111,16 @@ describe('DebtsPageContent', () => {
 
     await user.click(screen.getByRole('button', { name: 'Excluir' }));
 
-    expect(window.confirm).toHaveBeenCalledWith(
-      'Deseja excluir a divida "Seguro do carro"?',
+    const dialog = screen.getByRole('alertdialog');
+
+    expect(
+      within(dialog).getByText('Deseja excluir a dívida "Seguro do carro"?'),
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Excluir' }),
     );
+
     expect(deleteDebtMock).toHaveBeenCalledWith('debt-id');
     expect(refreshMock).toHaveBeenCalled();
   });

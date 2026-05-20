@@ -1,11 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 
 import { WalletPageContent } from '@/modules/wallet/presentation/ui/components/wallet-page-content';
 import { useWallet } from '@/modules/wallet/presentation/ui/hooks/use-wallet';
 import { WalletUi } from '@/modules/wallet/presentation/ui/types/wallet-ui.types';
 
 jest.mock('@/modules/wallet/presentation/ui/hooks/use-wallet');
+jest.mock('sonner', () => ({
+  toast: {
+    success: jest.fn(),
+  },
+}));
 
 const wallet: WalletUi = {
   id: 'wallet-id',
@@ -116,16 +122,16 @@ describe('WalletPageContent', () => {
     expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450');
   });
 
-  it('deve renderizar mensagem de sucesso quando houver atualização concluída', () => {
+  it('deve exibir toast de sucesso quando houver atualização concluída', () => {
     mockUseWalletState({
       successMessage: 'Saldos da Wallet atualizados com sucesso.',
     });
 
     render(<WalletPageContent />);
 
-    expect(
-      screen.getByText('Saldos da Wallet atualizados com sucesso.'),
-    ).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith(
+      'Saldos da Wallet atualizados com sucesso.',
+    );
   });
 
   it('deve renderizar erro com wallet carregada', () => {

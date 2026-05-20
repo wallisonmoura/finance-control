@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { FinanceExpensesPageContent } from '@/modules/finance/presentation/ui/components/finance-expenses-page-content';
@@ -120,8 +120,6 @@ describe('FinanceExpensesPageContent', () => {
   it('should delete an expense when confirmed', async () => {
     const user = userEvent.setup();
 
-    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
-
     deleteExpenseMock.mockResolvedValueOnce({
       data: undefined,
     });
@@ -130,9 +128,16 @@ describe('FinanceExpensesPageContent', () => {
 
     await user.click(screen.getByRole('button', { name: 'Excluir' }));
 
-    expect(window.confirm).toHaveBeenCalledWith(
-      'Deseja excluir a despesa "Combustivel"?',
+    const dialog = screen.getByRole('alertdialog');
+
+    expect(
+      within(dialog).getByText('Deseja excluir a despesa "Combustivel"?'),
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Excluir' }),
     );
+
     expect(deleteExpenseMock).toHaveBeenCalledWith('expense-id');
     expect(refreshMock).toHaveBeenCalled();
   });

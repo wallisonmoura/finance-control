@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
+import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useFinanceHistory } from '../hooks/use-finance-history';
@@ -15,6 +16,9 @@ import { IncomeForm } from './income-form';
 export function FinanceIncomesPageContent() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingIncome, setEditingIncome] = useState<FinanceEntryUi | null>(
+    null,
+  );
+  const [incomeToDelete, setIncomeToDelete] = useState<FinanceEntryUi | null>(
     null,
   );
   const [deletingIncomeId, setDeletingIncomeId] = useState<string | null>(null);
@@ -50,28 +54,30 @@ export function FinanceIncomesPageContent() {
     setIsFormOpen(true);
   }
 
-  async function handleDeleteIncome(entry: FinanceEntryUi) {
-    const confirmed = window.confirm(
-      `Deseja excluir a receita "${entry.description}"?`,
-    );
+  function handleDeleteIncome(entry: FinanceEntryUi) {
+    setActionError(null);
+    setIncomeToDelete(entry);
+  }
 
-    if (!confirmed) {
+  async function handleConfirmDeleteIncome() {
+    if (!incomeToDelete) {
       return;
     }
 
     setActionError(null);
-    setDeletingIncomeId(entry.id);
+    setDeletingIncomeId(incomeToDelete.id);
 
-    const response = await deleteIncome(entry.id);
+    const response = await deleteIncome(incomeToDelete.id);
 
     setDeletingIncomeId(null);
+    setIncomeToDelete(null);
 
     if (response.error) {
       setActionError(response.error);
       return;
     }
 
-    if (editingIncome?.id === entry.id) {
+    if (editingIncome?.id === incomeToDelete.id) {
       setEditingIncome(null);
       setIsFormOpen(false);
     }
@@ -126,6 +132,20 @@ export function FinanceIncomesPageContent() {
           deletingIncomeId={deletingIncomeId}
         />
       )}
+
+      <ConfirmDialog
+        open={incomeToDelete !== null}
+        title='Excluir receita'
+        description={`Deseja excluir a receita "${incomeToDelete?.description ?? ''}"?`}
+        confirmLabel='Excluir'
+        isConfirming={deletingIncomeId === incomeToDelete?.id}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIncomeToDelete(null);
+          }
+        }}
+        onConfirm={handleConfirmDeleteIncome}
+      />
     </div>
   );
 }

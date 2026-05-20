@@ -1,6 +1,7 @@
 'use client';
 
 import { SyntheticEvent, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -47,7 +48,6 @@ export function IncomeForm({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   function parseMoneyInput(value: string) {
     return Number(value.replace(',', '.'));
@@ -65,7 +65,6 @@ export function IncomeForm({
 
     setIsSubmitting(true);
     setError(null);
-    setSuccessMessage(null);
 
     const parsedAmount = parseMoneyInput(amount);
 
@@ -89,13 +88,13 @@ export function IncomeForm({
     }
 
     if (editingIncome !== null) {
-      setSuccessMessage('Receita atualizada com sucesso.');
+      toast.success('Receita atualizada com sucesso.');
       await onIncomeUpdated?.();
       return;
     }
 
     resetCreateForm();
-    setSuccessMessage('Receita registrada com sucesso.');
+    toast.success('Receita registrada com sucesso.');
     await onIncomeCreated?.();
   }
 
@@ -152,10 +151,6 @@ export function IncomeForm({
         />
 
         {error && <FormErrorMessage message={error} />}
-
-        {successMessage && (
-          <p className='text-sm text-green-700'>{successMessage}</p>
-        )}
 
         <div className='flex flex-wrap gap-2'>
           <Button type='submit' disabled={isSubmitting}>

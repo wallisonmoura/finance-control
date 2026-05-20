@@ -1,11 +1,17 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 
 import { LoginForm } from '@/modules/auth/presentation/ui/components/login-form';
 import { signIn } from '@/modules/auth/presentation/ui/services/auth-api.service';
 
 jest.mock('@/modules/auth/presentation/ui/services/auth-api.service', () => ({
   signIn: jest.fn(),
+}));
+jest.mock('sonner', () => ({
+  toast: {
+    error: jest.fn(),
+  },
 }));
 
 const mockReplace = jest.fn();
@@ -108,7 +114,7 @@ describe('LoginForm', () => {
     expect(mockRefresh).toHaveBeenCalled();
   });
 
-  it('should show error message when sign-in fails', async () => {
+  it('should show error toast when sign-in fails', async () => {
     const user = userEvent.setup();
 
     mockedSignIn.mockResolvedValueOnce({
@@ -130,12 +136,38 @@ describe('LoginForm', () => {
       }),
     );
 
-    expect(
-      await screen.findByText('Credenciais inválidas'),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Credenciais inválidas');
+    });
 
     expect(mockReplace).not.toHaveBeenCalled();
     expect(mockRefresh).not.toHaveBeenCalled();
+  });
+
+  it('should toggle password visibility', async () => {
+    const user = userEvent.setup();
+
+    render(<LoginForm redirectTo='/dashboard' />);
+
+    const passwordInput = screen.getByLabelText(/senha/i);
+
+    expect(passwordInput).toHaveAttribute('type', 'password');
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /mostrar caracteres/i,
+      }),
+    );
+
+    expect(passwordInput).toHaveAttribute('type', 'text');
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /ocultar caracteres/i,
+      }),
+    );
+
+    expect(passwordInput).toHaveAttribute('type', 'password');
   });
 
   it('should show loading state while sign-in is pending', async () => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { SyntheticEvent, useState } from 'react';
+import { toast } from 'sonner';
 
 import { ExpenseCategoryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
@@ -8,6 +9,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
+import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { payDebt } from '../services/debt-api.service';
 import { DebtPaymentSourceUi, DebtUi } from '../types/debt-ui.types';
@@ -38,15 +40,11 @@ export function DebtPaymentForm({
   const [paymentSource, setPaymentSource] =
     useState<DebtPaymentSourceUi>('BANK');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   async function handleSubmit(event: SyntheticEvent) {
     event.preventDefault();
 
     setIsSubmitting(true);
-    setError(null);
-    setSuccessMessage(null);
 
     const response = await payDebt(debt.id, {
       paidAt,
@@ -57,11 +55,11 @@ export function DebtPaymentForm({
     setIsSubmitting(false);
 
     if (response.error) {
-      setError(response.error);
+      toast.error(response.error);
       return;
     }
 
-    setSuccessMessage('Dívida paga com sucesso.');
+    toast.success('Dívida paga com sucesso.');
     await onDebtPaid?.();
   }
 
@@ -83,56 +81,39 @@ export function DebtPaymentForm({
           />
         </div>
 
-        <div className='space-y-1'>
-          <label
-            htmlFor='debt-payment-category'
-            className='block text-sm font-medium text-slate-700'
-          >
-            Categoria da despesa
-          </label>
-          <select
-            id='debt-payment-category'
-            name='expenseCategoryId'
-            value={expenseCategoryId}
-            onChange={(event) => setExpenseCategoryId(event.target.value)}
-            disabled={isLoadingCategories}
-            required
-            className='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100 disabled:text-slate-500'
-          >
-            <option value=''>
-              {isLoadingCategories
-                ? 'Carregando categorias...'
-                : 'Selecione uma categoria'}
-            </option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SelectField
+          id='debt-payment-category'
+          name='expenseCategoryId'
+          label='Categoria da despesa'
+          value={expenseCategoryId}
+          onChange={(event) => setExpenseCategoryId(event.target.value)}
+          disabled={isLoadingCategories}
+          required
+          placeholder={
+            isLoadingCategories
+              ? 'Carregando categorias...'
+              : 'Selecione uma categoria'
+          }
+          options={categories.map((category) => ({
+            label: category.name,
+            value: category.id,
+          }))}
+        />
 
-        <div className='space-y-1'>
-          <label
-            htmlFor='debt-payment-source'
-            className='block text-sm font-medium text-slate-700'
-          >
-            Origem do pagamento
-          </label>
-          <select
-            id='debt-payment-source'
-            name='paymentSource'
-            value={paymentSource}
-            onChange={(event) =>
-              setPaymentSource(event.target.value as DebtPaymentSourceUi)
-            }
-            className='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200'
-          >
-            <option value='BANK'>Banco</option>
-            <option value='CASH'>Dinheiro</option>
-            <option value='RECEIVABLE'>Recebíveis</option>
-          </select>
-        </div>
+        <SelectField
+          id='debt-payment-source'
+          name='paymentSource'
+          label='Origem do pagamento'
+          value={paymentSource}
+          onChange={(event) =>
+            setPaymentSource(event.target.value as DebtPaymentSourceUi)
+          }
+          options={[
+            { label: 'Banco', value: 'BANK' },
+            { label: 'Dinheiro', value: 'CASH' },
+            { label: 'Recebíveis', value: 'RECEIVABLE' },
+          ]}
+        />
 
         <Input
           id='debt-paid-at'
@@ -145,12 +126,6 @@ export function DebtPaymentForm({
         />
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}
-
-        {error && <FormErrorMessage message={error} />}
-
-        {successMessage && (
-          <p className='text-sm text-green-700'>{successMessage}</p>
-        )}
 
         <div className='flex flex-wrap gap-2'>
           <Button type='submit' disabled={cannotSubmit}>
