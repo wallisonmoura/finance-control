@@ -1,3 +1,5 @@
+import { StatusMessage } from './status-message';
+
 type FormErrorMessageProps = {
   message: string | null;
 };
@@ -7,12 +9,5 @@ export function FormErrorMessage({ message }: FormErrorMessageProps) {
     return null;
   }
 
-  return (
-    <p
-      role='alert'
-      className='rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700'
-    >
-      {message}
-    </p>
-  );
+  return <StatusMessage message={message} tone='error' />;
 }

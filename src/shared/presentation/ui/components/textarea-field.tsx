@@ -1,19 +1,19 @@
-import type { InputHTMLAttributes } from 'react';
+import type { TextareaHTMLAttributes } from 'react';
 
 import { Label } from '@/shared/presentation/ui/primitives/label';
-import { Input as PrimitiveInput } from '@/shared/presentation/ui/primitives/input';
+import { Textarea } from '@/shared/presentation/ui/primitives/textarea';
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> & {
+type TextareaFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string;
 };
 
-export function Input({
+export function TextareaField({
   label,
   id,
   name,
   className = '',
   ...props
-}: InputProps) {
+}: TextareaFieldProps) {
   const inputId = id ?? name;
 
   return (
@@ -22,11 +22,11 @@ export function Input({
         {label}
       </Label>
 
-      <PrimitiveInput
+      <Textarea
         id={inputId}
         name={name}
         className={[
-          'h-11 bg-white text-black transition-all duration-200 ease-out',
+          'min-h-24 bg-white text-black transition-all duration-200 ease-out',
           className,
         ].join(' ')}
         {...props}
