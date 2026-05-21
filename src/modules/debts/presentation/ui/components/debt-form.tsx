@@ -1,7 +1,10 @@
 'use client';
 
-import { SyntheticEvent, useState } from 'react';
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -28,6 +31,39 @@ function getTodayDateValue() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function parseMoneyInput(value: string) {
+  return Number(value.replace(',', '.'));
+}
+
+function isBrazilianMoneyInput(value: string) {
+  return /^\d+(,\d{1,2})?$/.test(value);
+}
+
+function getOptionalNotes(notes: string) {
+  const trimmedNotes = notes.trim();
+
+  return trimmedNotes ? { notes: trimmedNotes } : {};
+}
+
+const debtFormSchema = z.object({
+  description: z.string().trim().min(1, 'Informe a descrição.'),
+  amount: z
+    .string()
+    .trim()
+    .min(1, 'Informe o valor.')
+    .refine(isBrazilianMoneyInput, {
+      message: 'Informe um valor com no máximo duas casas decimais.',
+    })
+    .refine((value) => parseMoneyInput(value) > 0, {
+      message: 'Informe um valor maior que zero.',
+    }),
+  dueDate: z.string().min(1, 'Informe o vencimento.'),
+  type: z.enum(['ONE_TIME', 'RECURRING']),
+  notes: z.string(),
+});
+
+type DebtFormValues = z.infer<typeof debtFormSchema>;
+
 export function DebtForm({
   onDebtCreated,
   onDebtUpdated,
@@ -36,54 +72,41 @@ export function DebtForm({
 }: DebtFormProps) {
   const isEditing = Boolean(editingDebt);
 
-  const [description, setDescription] = useState(
-    () => editingDebt?.description ?? '',
-  );
-  const [amount, setAmount] = useState(() =>
-    editingDebt ? String(editingDebt.amount).replace('.', ',') : '',
-  );
-  const [dueDate, setDueDate] = useState(() =>
-    editingDebt ? formatDateInputValue(editingDebt.dueDate) : getTodayDateValue(),
-  );
-  const [type, setType] = useState<DebtTypeUi>(
-    () => editingDebt?.type ?? 'ONE_TIME',
-  );
-  const [notes, setNotes] = useState(() => editingDebt?.notes ?? '');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function parseMoneyInput(value: string) {
-    return Number(value.replace(',', '.'));
-  }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<DebtFormValues>({
+    resolver: zodResolver(debtFormSchema),
+    defaultValues: {
+      amount: editingDebt ? String(editingDebt.amount).replace('.', ',') : '',
+      description: editingDebt?.description ?? '',
+      dueDate: editingDebt
+        ? formatDateInputValue(editingDebt.dueDate)
+        : getTodayDateValue(),
+      type: editingDebt?.type ?? 'ONE_TIME',
+      notes: editingDebt?.notes ?? '',
+    },
+  });
 
-  function resetCreateForm() {
-    setDescription('');
-    setAmount('');
-    setDueDate(getTodayDateValue());
-    setType('ONE_TIME');
-    setNotes('');
-  }
-
-  async function handleSubmit(event: SyntheticEvent) {
-    event.preventDefault();
-
-    setIsSubmitting(true);
+  async function handleDebtSubmit(values: DebtFormValues) {
     setError(null);
 
     const input = {
-      description,
-      amount: parseMoneyInput(amount),
-      dueDate,
-      type,
-      notes: notes.trim() ? notes : null,
+      description: values.description,
+      amount: parseMoneyInput(values.amount),
+      dueDate: values.dueDate,
+      type: values.type as DebtTypeUi,
+      ...getOptionalNotes(values.notes),
     };
 
     const response =
       editingDebt !== null
         ? await updateDebt(editingDebt.id, input)
         : await registerDebt(input);
-
-    setIsSubmitting(false);
 
     if (response.error) {
       setError(response.error);
@@ -96,14 +119,24 @@ export function DebtForm({
       return;
     }
 
-    resetCreateForm();
+    reset({
+      amount: '',
+      description: '',
+      dueDate: getTodayDateValue(),
+      type: 'ONE_TIME',
+      notes: '',
+    });
     toast.success('Dívida cadastrada com sucesso.');
     await onDebtCreated?.();
   }
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form
+        onSubmit={handleSubmit(handleDebtSubmit)}
+        className='space-y-4'
+        noValidate
+      >
         <div>
           <h2 className='text-lg font-semibold text-black'>
             {isEditing ? 'Editar dívida' : 'Cadastrar dívida'}
@@ -117,52 +150,73 @@ export function DebtForm({
 
         <SelectField
           id='debt-type'
-          name='type'
           label='Tipo'
-          value={type}
-          onChange={(event) => setType(event.target.value as DebtTypeUi)}
           options={[
             { label: 'Única', value: 'ONE_TIME' },
             { label: 'Recorrente', value: 'RECURRING' },
           ]}
+          {...register('type')}
         />
 
         <Input
           id='debt-description'
-          name='description'
           label='Descricao'
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby={
+            errors.description ? 'debt-description-error' : undefined
+          }
+          {...register('description')}
         />
+        {errors.description?.message ? (
+          <p
+            id='debt-description-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.description.message}
+          </p>
+        ) : null}
 
         <Input
           id='debt-amount'
-          name='amount'
           label='Valor'
           type='text'
           inputMode='decimal'
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.amount)}
+          aria-describedby={errors.amount ? 'debt-amount-error' : undefined}
+          {...register('amount')}
         />
+        {errors.amount?.message ? (
+          <p
+            id='debt-amount-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.amount.message}
+          </p>
+        ) : null}
 
         <Input
           id='debt-due-date'
-          name='dueDate'
           label='Vencimento'
           type='date'
-          value={dueDate}
-          onChange={(event) => setDueDate(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.dueDate)}
+          aria-describedby={
+            errors.dueDate ? 'debt-due-date-error' : undefined
+          }
+          {...register('dueDate')}
         />
+        {errors.dueDate?.message ? (
+          <p
+            id='debt-due-date-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.dueDate.message}
+          </p>
+        ) : null}
 
         <TextareaField
           id='debt-notes'
-          name='notes'
           label='Observacoes'
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
+          {...register('notes')}
         />
 
         {error && <FormErrorMessage message={error} />}

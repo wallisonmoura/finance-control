@@ -262,14 +262,14 @@ describe('debt-api.service', () => {
     fetchMock.mockResolvedValueOnce({
       ok: false,
       json: async () => ({
-        message: 'Debt not found.',
+        message: 'Dívida não encontrada.',
       }),
     });
 
     const response = await deleteDebt('debt-id');
 
     expect(response).toEqual({
-      error: 'Debt not found.',
+      error: 'Dívida não encontrada.',
     });
   });
 });

@@ -144,6 +144,29 @@ describe('LoginForm', () => {
     expect(mockRefresh).not.toHaveBeenCalled();
   });
 
+  it('should validate fields before submitting credentials', async () => {
+    const user = userEvent.setup();
+
+    render(<LoginForm redirectTo='/dashboard' />);
+
+    await user.type(screen.getByLabelText(/e-mail/i), 'email-invalido');
+    await user.type(screen.getByLabelText(/senha/i), '123456');
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /entrar/i,
+      }),
+    );
+
+    expect(
+      await screen.findByText('Informe um e-mail válido.'),
+    ).toBeInTheDocument();
+
+    expect(mockedSignIn).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
+    expect(mockRefresh).not.toHaveBeenCalled();
+  });
+
   it('should toggle password visibility', async () => {
     const user = userEvent.setup();
 

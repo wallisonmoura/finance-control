@@ -70,7 +70,7 @@ describe('finance-api.service', () => {
     fetchMock.mockResolvedValueOnce({
       ok: false,
       json: async () => ({
-        message: 'Amount must be greater than zero.',
+        message: 'Valor deve ser maior que zero.',
       }),
     });
 
@@ -82,7 +82,7 @@ describe('finance-api.service', () => {
     });
 
     expect(response).toEqual({
-      error: 'Amount must be greater than zero.',
+      error: 'Valor deve ser maior que zero.',
     });
   });
 

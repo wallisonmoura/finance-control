@@ -1,6 +1,9 @@
 'use client';
 
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -29,9 +32,9 @@ const INVALID_AMOUNT_MESSAGE =
 
 function toFormState(wallet: WalletUi): WalletBalancesFormState {
   return {
-    bankBalance: String(wallet.bankBalance),
-    cashBalance: String(wallet.cashBalance),
-    receivableBalance: String(wallet.receivableBalance),
+    bankBalance: String(wallet.bankBalance).replace('.', ','),
+    cashBalance: String(wallet.cashBalance).replace('.', ','),
+    receivableBalance: String(wallet.receivableBalance).replace('.', ','),
   };
 }
 
@@ -44,57 +47,69 @@ function isValidAmount(value: string) {
     return false;
   }
 
+  if (!/^\d+(,\d{1,2})?$/.test(value)) {
+    return false;
+  }
+
   const amount = parseAmount(value);
 
   return Number.isFinite(amount) && amount >= 0;
 }
+
+const amountSchema = z.string().refine(isValidAmount, {
+  message: INVALID_AMOUNT_MESSAGE,
+});
+
+const walletBalancesFormSchema = z.object({
+  bankBalance: amountSchema,
+  cashBalance: amountSchema,
+  receivableBalance: amountSchema,
+});
+
+type WalletBalancesFormValues = z.infer<typeof walletBalancesFormSchema>;
 
 export function WalletBalancesForm({
   wallet,
   isUpdating,
   onSubmit,
 }: WalletBalancesFormProps) {
-  const [formState, setFormState] = useState<WalletBalancesFormState>(() =>
-    toFormState(wallet),
-  );
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<WalletBalancesFormValues>({
+    resolver: zodResolver(walletBalancesFormSchema),
+    defaultValues: toFormState(wallet),
+  });
 
   useEffect(() => {
-    setFormState(toFormState(wallet));
-  }, [wallet]);
+    reset(toFormState(wallet));
+  }, [reset, wallet]);
 
-  function handleChange(field: keyof WalletBalancesFormState, value: string) {
-    setFormState((currentState) => ({
-      ...currentState,
-      [field]: value,
-    }));
-
-    setErrorMessage(null);
-  }
-
-  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const isValid =
-      isValidAmount(formState.bankBalance) &&
-      isValidAmount(formState.cashBalance) &&
-      isValidAmount(formState.receivableBalance);
-
-    if (!isValid) {
-      setErrorMessage(INVALID_AMOUNT_MESSAGE);
-      return;
-    }
-
+  async function handleWalletBalancesSubmit(values: WalletBalancesFormValues) {
     await onSubmit({
-      bankBalance: parseAmount(formState.bankBalance),
-      cashBalance: parseAmount(formState.cashBalance),
-      receivableBalance: parseAmount(formState.receivableBalance),
+      bankBalance: parseAmount(values.bankBalance),
+      cashBalance: parseAmount(values.cashBalance),
+      receivableBalance: parseAmount(values.receivableBalance),
     });
   }
 
+  const errorMessage =
+    errors.bankBalance?.message ??
+    errors.cashBalance?.message ??
+    errors.receivableBalance?.message ??
+    null;
+
+  const cannotSubmit = isUpdating || isSubmitting;
+
   return (
     <Card>
-      <form onSubmit={handleSubmit} className='space-y-5'>
+      <form
+        onSubmit={handleSubmit(handleWalletBalancesSubmit)}
+        className='space-y-5'
+        noValidate
+      >
         <div className='space-y-1'>
           <h2 className='text-lg font-semibold text-zinc-900'>
             Atualizar saldos-base
@@ -113,10 +128,9 @@ export function WalletBalancesForm({
             label='Saldo em Banco'
             type='text'
             inputMode='decimal'
-            value={formState.bankBalance}
-            onChange={(event) =>
-              handleChange('bankBalance', event.target.value)
-            }
+            aria-invalid={Boolean(errors.bankBalance)}
+            aria-describedby={errors.bankBalance ? 'wallet-error' : undefined}
+            {...register('bankBalance')}
           />
 
           <Input
@@ -125,10 +139,9 @@ export function WalletBalancesForm({
             label='Saldo em Dinheiro'
             type='text'
             inputMode='decimal'
-            value={formState.cashBalance}
-            onChange={(event) =>
-              handleChange('cashBalance', event.target.value)
-            }
+            aria-invalid={Boolean(errors.cashBalance)}
+            aria-describedby={errors.cashBalance ? 'wallet-error' : undefined}
+            {...register('cashBalance')}
           />
 
           <Input
@@ -137,17 +150,22 @@ export function WalletBalancesForm({
             label='Valores a Receber'
             type='text'
             inputMode='decimal'
-            value={formState.receivableBalance}
-            onChange={(event) =>
-              handleChange('receivableBalance', event.target.value)
+            aria-invalid={Boolean(errors.receivableBalance)}
+            aria-describedby={
+              errors.receivableBalance ? 'wallet-error' : undefined
             }
+            {...register('receivableBalance')}
           />
         </div>
 
-        {errorMessage && <FormErrorMessage message={errorMessage} />}
+        {errorMessage && (
+          <div id='wallet-error'>
+            <FormErrorMessage message={errorMessage} />
+          </div>
+        )}
 
-        <Button type='submit' disabled={isUpdating}>
-          {isUpdating ? 'Salvando...' : 'Salvar saldos'}
+        <Button type='submit' disabled={cannotSubmit}>
+          {cannotSubmit ? 'Salvando...' : 'Salvar saldos'}
         </Button>
       </form>
     </Card>

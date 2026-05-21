@@ -1,7 +1,10 @@
 'use client';
 
-import { SyntheticEvent, useState } from 'react';
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -22,6 +25,42 @@ function formatDateInputValue(date: string) {
   return date.slice(0, 10);
 }
 
+function getTodayDateValue() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function parseMoneyInput(value: string) {
+  return Number(value.replace(',', '.'));
+}
+
+function isBrazilianMoneyInput(value: string) {
+  return /^\d+(,\d{1,2})?$/.test(value);
+}
+
+function getOptionalNotes(notes: string) {
+  const trimmedNotes = notes.trim();
+
+  return trimmedNotes ? { notes: trimmedNotes } : {};
+}
+
+const incomeFormSchema = z.object({
+  description: z.string().trim().min(1, 'Informe a descrição.'),
+  amount: z
+    .string()
+    .trim()
+    .min(1, 'Informe o valor.')
+    .refine(isBrazilianMoneyInput, {
+      message: 'Informe um valor com no máximo duas casas decimais.',
+    })
+    .refine((value) => parseMoneyInput(value) > 0, {
+      message: 'Informe um valor maior que zero.',
+    }),
+  date: z.string().min(1, 'Informe a data.'),
+  notes: z.string(),
+});
+
+type IncomeFormValues = z.infer<typeof incomeFormSchema>;
+
 export function IncomeForm({
   onIncomeCreated,
   onIncomeUpdated,
@@ -30,57 +69,41 @@ export function IncomeForm({
 }: IncomeFormProps) {
   const isEditing = Boolean(editingIncome);
 
-  const [amount, setAmount] = useState(() =>
-    editingIncome ? String(editingIncome.amount).replace('.', ',') : '',
-  );
-
-  const [description, setDescription] = useState(
-    () => editingIncome?.description ?? '',
-  );
-
-  const [date, setDate] = useState(() =>
-    editingIncome
-      ? formatDateInputValue(editingIncome.date)
-      : new Date().toISOString().slice(0, 10),
-  );
-
-  const [notes, setNotes] = useState(() => editingIncome?.notes ?? '');
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function parseMoneyInput(value: string) {
-    return Number(value.replace(',', '.'));
-  }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<IncomeFormValues>({
+    resolver: zodResolver(incomeFormSchema),
+    defaultValues: {
+      amount: editingIncome
+        ? String(editingIncome.amount).replace('.', ',')
+        : '',
+      description: editingIncome?.description ?? '',
+      date: editingIncome
+        ? formatDateInputValue(editingIncome.date)
+        : getTodayDateValue(),
+      notes: editingIncome?.notes ?? '',
+    },
+  });
 
-  function resetCreateForm() {
-    setAmount('');
-    setDescription('');
-    setDate(new Date().toISOString().slice(0, 10));
-    setNotes('');
-  }
-
-  async function handleSubmit(event: SyntheticEvent) {
-    event.preventDefault();
-
-    setIsSubmitting(true);
+  async function handleIncomeSubmit(values: IncomeFormValues) {
     setError(null);
 
-    const parsedAmount = parseMoneyInput(amount);
-
     const input = {
-      amount: parsedAmount,
-      description,
-      date,
-      notes: notes.trim() ? notes : null,
+      amount: parseMoneyInput(values.amount),
+      description: values.description,
+      date: values.date,
+      ...getOptionalNotes(values.notes),
     };
 
     const response =
       editingIncome !== null
         ? await updateIncome(editingIncome.id, input)
         : await registerIncome(input);
-
-    setIsSubmitting(false);
 
     if (response.error) {
       setError(response.error);
@@ -93,14 +116,23 @@ export function IncomeForm({
       return;
     }
 
-    resetCreateForm();
+    reset({
+      amount: '',
+      description: '',
+      date: getTodayDateValue(),
+      notes: '',
+    });
     toast.success('Receita registrada com sucesso.');
     await onIncomeCreated?.();
   }
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form
+        onSubmit={handleSubmit(handleIncomeSubmit)}
+        className='space-y-4'
+        noValidate
+      >
         <div>
           <h2 className='text-lg font-semibold text-black'>
             {isEditing ? 'Editar receita' : 'Registrar receita'}
@@ -114,41 +146,58 @@ export function IncomeForm({
 
         <Input
           id='income-description'
-          name='description'
           label='Descrição'
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby={
+            errors.description ? 'income-description-error' : undefined
+          }
+          {...register('description')}
         />
+        {errors.description?.message ? (
+          <p
+            id='income-description-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.description.message}
+          </p>
+        ) : null}
 
         <Input
           id='income-amount'
-          name='amount'
           label='Valor'
           type='text'
           inputMode='decimal'
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.amount)}
+          aria-describedby={errors.amount ? 'income-amount-error' : undefined}
+          {...register('amount')}
         />
+        {errors.amount?.message ? (
+          <p
+            id='income-amount-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.amount.message}
+          </p>
+        ) : null}
 
         <Input
           id='income-date'
-          name='date'
           label='Data'
           type='date'
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.date)}
+          aria-describedby={errors.date ? 'income-date-error' : undefined}
+          {...register('date')}
         />
+        {errors.date?.message ? (
+          <p
+            id='income-date-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.date.message}
+          </p>
+        ) : null}
 
-        <Input
-          id='income-notes'
-          name='notes'
-          label='Observações'
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
-        />
+        <Input id='income-notes' label='Observações' {...register('notes')} />
 
         {error && <FormErrorMessage message={error} />}
 

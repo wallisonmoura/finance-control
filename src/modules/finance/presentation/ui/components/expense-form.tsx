@@ -1,7 +1,10 @@
 'use client';
 
-import { SyntheticEvent, useState } from 'react';
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -30,6 +33,43 @@ function formatDateInputValue(date: string) {
   return date.slice(0, 10);
 }
 
+function getTodayDateValue() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function parseMoneyInput(value: string) {
+  return Number(value.replace(',', '.'));
+}
+
+function isBrazilianMoneyInput(value: string) {
+  return /^\d+(,\d{1,2})?$/.test(value);
+}
+
+function getOptionalNotes(notes: string) {
+  const trimmedNotes = notes.trim();
+
+  return trimmedNotes ? { notes: trimmedNotes } : {};
+}
+
+const expenseFormSchema = z.object({
+  categoryId: z.string().min(1, 'Selecione uma categoria.'),
+  description: z.string().trim().min(1, 'Informe a descrição.'),
+  amount: z
+    .string()
+    .trim()
+    .min(1, 'Informe o valor.')
+    .refine(isBrazilianMoneyInput, {
+      message: 'Informe um valor com no máximo duas casas decimais.',
+    })
+    .refine((value) => parseMoneyInput(value) > 0, {
+      message: 'Informe um valor maior que zero.',
+    }),
+  date: z.string().min(1, 'Informe a data.'),
+  notes: z.string(),
+});
+
+type ExpenseFormValues = z.infer<typeof expenseFormSchema>;
+
 export function ExpenseForm({
   categories,
   isLoadingCategories = false,
@@ -41,56 +81,43 @@ export function ExpenseForm({
 }: ExpenseFormProps) {
   const isEditing = Boolean(editingExpense);
 
-  const [amount, setAmount] = useState(() =>
-    editingExpense ? String(editingExpense.amount).replace('.', ',') : '',
-  );
-  const [description, setDescription] = useState(
-    () => editingExpense?.description ?? '',
-  );
-  const [date, setDate] = useState(() =>
-    editingExpense
-      ? formatDateInputValue(editingExpense.date)
-      : new Date().toISOString().slice(0, 10),
-  );
-  const [categoryId, setCategoryId] = useState(
-    () => editingExpense?.categoryId ?? '',
-  );
-  const [notes, setNotes] = useState(() => editingExpense?.notes ?? '');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function parseMoneyInput(value: string) {
-    return Number(value.replace(',', '.'));
-  }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ExpenseFormValues>({
+    resolver: zodResolver(expenseFormSchema),
+    defaultValues: {
+      amount: editingExpense
+        ? String(editingExpense.amount).replace('.', ',')
+        : '',
+      categoryId: editingExpense?.categoryId ?? '',
+      description: editingExpense?.description ?? '',
+      date: editingExpense
+        ? formatDateInputValue(editingExpense.date)
+        : getTodayDateValue(),
+      notes: editingExpense?.notes ?? '',
+    },
+  });
 
-  function resetCreateForm() {
-    setAmount('');
-    setDescription('');
-    setDate(new Date().toISOString().slice(0, 10));
-    setCategoryId('');
-    setNotes('');
-  }
-
-  async function handleSubmit(event: SyntheticEvent) {
-    event.preventDefault();
-
-    setIsSubmitting(true);
+  async function handleExpenseSubmit(values: ExpenseFormValues) {
     setError(null);
 
     const input = {
-      amount: parseMoneyInput(amount),
-      description,
-      date,
-      categoryId,
-      notes: notes.trim() ? notes : null,
+      amount: parseMoneyInput(values.amount),
+      description: values.description,
+      date: values.date,
+      categoryId: values.categoryId,
+      ...getOptionalNotes(values.notes),
     };
 
     const response =
       editingExpense !== null
         ? await updateExpense(editingExpense.id, input)
         : await registerExpense(input);
-
-    setIsSubmitting(false);
 
     if (response.error) {
       setError(response.error);
@@ -103,7 +130,13 @@ export function ExpenseForm({
       return;
     }
 
-    resetCreateForm();
+    reset({
+      amount: '',
+      categoryId: '',
+      description: '',
+      date: getTodayDateValue(),
+      notes: '',
+    });
     toast.success('Despesa registrada com sucesso.');
     await onExpenseCreated?.();
   }
@@ -113,7 +146,11 @@ export function ExpenseForm({
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form
+        onSubmit={handleSubmit(handleExpenseSubmit)}
+        className='space-y-4'
+        noValidate
+      >
         <div>
           <h2 className='text-lg font-semibold text-black'>
             {isEditing ? 'Editar despesa' : 'Registrar despesa'}
@@ -127,12 +164,12 @@ export function ExpenseForm({
 
         <SelectField
           id='expense-category'
-          name='categoryId'
           label='Categoria'
-          value={categoryId}
-          onChange={(event) => setCategoryId(event.target.value)}
           disabled={isLoadingCategories}
-          required
+          aria-invalid={Boolean(errors.categoryId)}
+          aria-describedby={
+            errors.categoryId ? 'expense-category-error' : undefined
+          }
           placeholder={
             isLoadingCategories
               ? 'Carregando categorias...'
@@ -142,44 +179,76 @@ export function ExpenseForm({
             label: category.name,
             value: category.id,
           }))}
+          {...register('categoryId')}
         />
+        {errors.categoryId?.message ? (
+          <p
+            id='expense-category-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.categoryId.message}
+          </p>
+        ) : null}
 
         <Input
           id='expense-description'
-          name='description'
           label='Descricao'
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby={
+            errors.description ? 'expense-description-error' : undefined
+          }
+          {...register('description')}
         />
+        {errors.description?.message ? (
+          <p
+            id='expense-description-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.description.message}
+          </p>
+        ) : null}
 
         <Input
           id='expense-amount'
-          name='amount'
           label='Valor'
           type='text'
           inputMode='decimal'
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.amount)}
+          aria-describedby={
+            errors.amount ? 'expense-amount-error' : undefined
+          }
+          {...register('amount')}
         />
+        {errors.amount?.message ? (
+          <p
+            id='expense-amount-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.amount.message}
+          </p>
+        ) : null}
 
         <Input
           id='expense-date'
-          name='date'
           label='Data'
           type='date'
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.date)}
+          aria-describedby={errors.date ? 'expense-date-error' : undefined}
+          {...register('date')}
         />
+        {errors.date?.message ? (
+          <p
+            id='expense-date-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.date.message}
+          </p>
+        ) : null}
 
         <TextareaField
           id='expense-notes'
-          name='notes'
           label='Observacoes'
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
+          {...register('notes')}
         />
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}

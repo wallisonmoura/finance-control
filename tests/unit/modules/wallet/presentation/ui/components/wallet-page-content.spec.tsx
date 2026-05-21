@@ -67,13 +67,13 @@ describe('WalletPageContent', () => {
 
     mockUseWalletState({
       wallet: null,
-      error: 'Wallet not found.',
+      error: 'Wallet não encontrada.',
       refetch,
     });
 
     render(<WalletPageContent />);
 
-    expect(screen.getByText('Wallet not found.')).toBeInTheDocument();
+    expect(screen.getByText('Wallet não encontrada.')).toBeInTheDocument();
 
     await user.click(
       screen.getByRole('button', {

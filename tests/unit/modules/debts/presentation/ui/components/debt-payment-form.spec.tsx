@@ -94,7 +94,7 @@ describe('DebtPaymentForm', () => {
     const onDebtPaid = jest.fn();
 
     payDebtMock.mockResolvedValueOnce({
-      error: 'Insufficient wallet balance.',
+      error: 'Saldo insuficiente na Wallet.',
     });
 
     render(
@@ -115,12 +115,12 @@ describe('DebtPaymentForm', () => {
     );
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Insufficient wallet balance.');
+      expect(toast.error).toHaveBeenCalledWith('Saldo insuficiente na Wallet.');
     });
 
     expect(onDebtPaid).not.toHaveBeenCalled();
     expect(
-      screen.queryByText('Insufficient wallet balance.'),
+      screen.queryByText('Saldo insuficiente na Wallet.'),
     ).not.toBeInTheDocument();
   });
 

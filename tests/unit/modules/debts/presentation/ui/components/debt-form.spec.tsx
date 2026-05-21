@@ -122,7 +122,6 @@ describe('DebtForm', () => {
         amount: 350,
         dueDate: '2026-05-21',
         type: 'ONE_TIME',
-        notes: null,
       });
     });
 

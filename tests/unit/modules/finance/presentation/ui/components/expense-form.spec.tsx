@@ -131,7 +131,6 @@ describe('ExpenseForm', () => {
         description: 'Combustivel atualizado',
         date: '2026-05-16',
         categoryId: 'category-id',
-        notes: null,
       });
     });
 

@@ -1,10 +1,12 @@
 'use client';
 
-import type { SyntheticEvent } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { signIn } from '@/modules/auth/presentation/ui/services/auth-api.service';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -17,26 +19,32 @@ type LoginFormProps = {
   redirectTo: string;
 };
 
+const loginFormSchema = z.object({
+  email: z.string().trim().pipe(z.email('Informe um e-mail válido.')),
+  password: z.string().min(1, 'Informe sua senha.'),
+});
+
+type LoginFormValues = z.infer<typeof loginFormSchema>;
+
 export function LoginForm({ redirectTo }: LoginFormProps) {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    setIsLoading(true);
-
-    const result = await signIn({
-      email,
-      password,
-    });
-
-    setIsLoading(false);
+  async function handleLoginSubmit(values: LoginFormValues) {
+    const result = await signIn(values);
 
     if (result.error) {
       toast.error(result.error);
@@ -49,7 +57,11 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
 
   return (
     <Card className='w-full border-slate-700 bg-white p-6 shadow-2xl shadow-slate-950/30 sm:p-8'>
-      <form onSubmit={handleSubmit} className='space-y-5'>
+      <form
+        onSubmit={handleSubmit(handleLoginSubmit)}
+        className='space-y-5'
+        noValidate
+      >
         <PageTitle
           title='Entrar'
           description='Acesse sua conta para continuar.'
@@ -68,16 +80,21 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
 
             <Input
               id='email'
-              name='email'
               type='email'
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
               placeholder='seu@email.com'
               autoComplete='email'
-              required
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? 'email-error' : undefined}
               className='h-11 bg-white pl-10 text-black'
+              {...register('email')}
             />
           </div>
+
+          {errors.email?.message ? (
+            <p id='email-error' className='text-sm font-medium text-red-600'>
+              {errors.email.message}
+            </p>
+          ) : null}
         </div>
 
         <div className='space-y-1.5'>
@@ -93,14 +110,15 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
 
             <Input
               id='password'
-              name='password'
               type={isPasswordVisible ? 'text' : 'password'}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
               placeholder='Sua senha'
               autoComplete='current-password'
-              required
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={
+                errors.password ? 'password-error' : undefined
+              }
               className='h-11 bg-white px-10 text-black'
+              {...register('password')}
             />
 
             <button
@@ -118,10 +136,16 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               )}
             </button>
           </div>
+
+          {errors.password?.message ? (
+            <p id='password-error' className='text-sm font-medium text-red-600'>
+              {errors.password.message}
+            </p>
+          ) : null}
         </div>
 
-        <Button type='submit' disabled={isLoading} className='w-full'>
-          {isLoading ? 'Entrando...' : 'Entrar'}
+        <Button type='submit' disabled={isSubmitting} className='w-full'>
+          {isSubmitting ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
     </Card>

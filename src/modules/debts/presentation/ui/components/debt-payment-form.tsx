@@ -1,7 +1,9 @@
 'use client';
 
-import { SyntheticEvent, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { ExpenseCategoryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
@@ -27,6 +29,14 @@ function getTodayDateValue() {
   return new Date().toISOString().slice(0, 10);
 }
 
+const debtPaymentFormSchema = z.object({
+  expenseCategoryId: z.string().min(1, 'Selecione uma categoria.'),
+  paymentSource: z.enum(['BANK', 'CASH', 'RECEIVABLE']),
+  paidAt: z.string().min(1, 'Informe a data do pagamento.'),
+});
+
+type DebtPaymentFormValues = z.infer<typeof debtPaymentFormSchema>;
+
 export function DebtPaymentForm({
   debt,
   categories,
@@ -35,24 +45,25 @@ export function DebtPaymentForm({
   onDebtPaid,
   onCancel,
 }: DebtPaymentFormProps) {
-  const [paidAt, setPaidAt] = useState(getTodayDateValue);
-  const [expenseCategoryId, setExpenseCategoryId] = useState('');
-  const [paymentSource, setPaymentSource] =
-    useState<DebtPaymentSourceUi>('BANK');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<DebtPaymentFormValues>({
+    resolver: zodResolver(debtPaymentFormSchema),
+    defaultValues: {
+      expenseCategoryId: '',
+      paymentSource: 'BANK',
+      paidAt: getTodayDateValue(),
+    },
+  });
 
-  async function handleSubmit(event: SyntheticEvent) {
-    event.preventDefault();
-
-    setIsSubmitting(true);
-
+  async function handleDebtPaymentSubmit(values: DebtPaymentFormValues) {
     const response = await payDebt(debt.id, {
-      paidAt,
-      expenseCategoryId,
-      paymentSource,
+      paidAt: values.paidAt,
+      expenseCategoryId: values.expenseCategoryId,
+      paymentSource: values.paymentSource as DebtPaymentSourceUi,
     });
-
-    setIsSubmitting(false);
 
     if (response.error) {
       toast.error(response.error);
@@ -68,7 +79,11 @@ export function DebtPaymentForm({
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form
+        onSubmit={handleSubmit(handleDebtPaymentSubmit)}
+        className='space-y-4'
+        noValidate
+      >
         <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between'>
           <div>
             <h2 className='text-lg font-semibold text-black'>Pagar dívida</h2>
@@ -83,12 +98,14 @@ export function DebtPaymentForm({
 
         <SelectField
           id='debt-payment-category'
-          name='expenseCategoryId'
           label='Categoria da despesa'
-          value={expenseCategoryId}
-          onChange={(event) => setExpenseCategoryId(event.target.value)}
           disabled={isLoadingCategories}
-          required
+          aria-invalid={Boolean(errors.expenseCategoryId)}
+          aria-describedby={
+            errors.expenseCategoryId
+              ? 'debt-payment-category-error'
+              : undefined
+          }
           placeholder={
             isLoadingCategories
               ? 'Carregando categorias...'
@@ -98,32 +115,46 @@ export function DebtPaymentForm({
             label: category.name,
             value: category.id,
           }))}
+          {...register('expenseCategoryId')}
         />
+        {errors.expenseCategoryId?.message ? (
+          <p
+            id='debt-payment-category-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.expenseCategoryId.message}
+          </p>
+        ) : null}
 
         <SelectField
           id='debt-payment-source'
-          name='paymentSource'
           label='Origem do pagamento'
-          value={paymentSource}
-          onChange={(event) =>
-            setPaymentSource(event.target.value as DebtPaymentSourceUi)
-          }
           options={[
             { label: 'Banco', value: 'BANK' },
             { label: 'Dinheiro', value: 'CASH' },
             { label: 'Recebíveis', value: 'RECEIVABLE' },
           ]}
+          {...register('paymentSource')}
         />
 
         <Input
           id='debt-paid-at'
-          name='paidAt'
           label='Data do pagamento'
           type='date'
-          value={paidAt}
-          onChange={(event) => setPaidAt(event.target.value)}
-          required
+          aria-invalid={Boolean(errors.paidAt)}
+          aria-describedby={
+            errors.paidAt ? 'debt-payment-paid-at-error' : undefined
+          }
+          {...register('paidAt')}
         />
+        {errors.paidAt?.message ? (
+          <p
+            id='debt-payment-paid-at-error'
+            className='text-sm font-medium text-red-600'
+          >
+            {errors.paidAt.message}
+          </p>
+        ) : null}
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}
 

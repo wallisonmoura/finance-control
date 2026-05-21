@@ -71,7 +71,7 @@ describe('IncomeForm', () => {
     );
   });
 
-  it('should send notes as null when notes is empty', async () => {
+  it('should omit notes when notes is empty', async () => {
     const user = userEvent.setup();
 
     registerIncomeMock.mockResolvedValueOnce({
@@ -104,17 +104,12 @@ describe('IncomeForm', () => {
         amount: 100,
         description: 'Corrida',
         date: '2026-04-10',
-        notes: null,
       });
     });
   });
 
-  it('should render an error message when register income fails', async () => {
+  it('should validate amount before submitting', async () => {
     const user = userEvent.setup();
-
-    registerIncomeMock.mockResolvedValueOnce({
-      error: 'Amount must be greater than zero.',
-    });
 
     render(<IncomeForm />);
 
@@ -127,7 +122,31 @@ describe('IncomeForm', () => {
     await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
 
     expect(
-      await screen.findByText('Amount must be greater than zero.'),
+      await screen.findByText('Informe um valor maior que zero.'),
+    ).toBeInTheDocument();
+
+    expect(registerIncomeMock).not.toHaveBeenCalled();
+  });
+
+  it('should render an error message when register income fails', async () => {
+    const user = userEvent.setup();
+
+    registerIncomeMock.mockResolvedValueOnce({
+      error: 'Não foi possível registrar a receita.',
+    });
+
+    render(<IncomeForm />);
+
+    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '100');
+    await user.clear(screen.getByLabelText('Data'));
+    await user.type(screen.getByLabelText('Data'), '2026-04-10');
+
+    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+
+    expect(
+      await screen.findByText('Não foi possível registrar a receita.'),
     ).toBeInTheDocument();
   });
 

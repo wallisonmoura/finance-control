@@ -52,14 +52,14 @@ describe('wallet-api.service', () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => ({
-          message: 'Wallet not found.',
+          message: 'Wallet não encontrada.',
         }),
       } as Response);
 
       const response = await getWallet();
 
       expect(response).toEqual({
-        error: 'Wallet not found.',
+        error: 'Wallet não encontrada.',
       });
     });
 
