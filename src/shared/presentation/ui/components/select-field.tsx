@@ -9,7 +9,7 @@ type SelectFieldOption = {
 type SelectFieldProps = SelectHTMLAttributes<HTMLSelectElement> & {
   id: string;
   label: string;
-  value: string;
+  value?: string;
   placeholder?: string;
   options: SelectFieldOption[];
 };
