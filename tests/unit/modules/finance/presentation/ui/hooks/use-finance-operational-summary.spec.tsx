@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useFinanceOperationalSummary } from '@/modules/finance/presentation/ui/hooks/use-finance-operational-summary';
 import {
@@ -10,6 +10,19 @@ jest.mock('@/modules/finance/presentation/ui/services/finance-api.service');
 
 const getFinanceHistoryMock = jest.mocked(getFinanceHistory);
 const getMonthlySummaryMock = jest.mocked(getMonthlySummary);
+
+function createDeferred<T>() {
+  let resolve!: (value: T) => void;
+
+  const promise = new Promise<T>((promiseResolve) => {
+    resolve = promiseResolve;
+  });
+
+  return {
+    promise,
+    resolve,
+  };
+}
 
 describe('useFinanceOperationalSummary', () => {
   beforeEach(() => {
@@ -93,7 +106,7 @@ describe('useFinanceOperationalSummary', () => {
 
   it('should expose error when summary loading fails', async () => {
     getMonthlySummaryMock.mockResolvedValueOnce({
-      error: 'Nao foi possivel carregar resumo mensal.',
+      error: 'Não foi possível carregar resumo mensal.',
     });
     getFinanceHistoryMock.mockResolvedValueOnce({
       data: {
@@ -116,9 +129,98 @@ describe('useFinanceOperationalSummary', () => {
     });
 
     expect(result.current.error).toBe(
-      'Nao foi possivel carregar resumo mensal.',
+      'Não foi possível carregar resumo mensal.',
     );
     expect(result.current.monthlySummary).toBeNull();
     expect(result.current.dailyRows).toEqual([]);
+  });
+
+  it('should ignore stale summary responses when filters change quickly', async () => {
+    const staleMonthlyResponse = createDeferred<{
+      data: {
+        year: number;
+        month: number;
+        totalIncome: number;
+        totalExpense: number;
+        result: number;
+      };
+    }>();
+    const staleHistoryResponse = createDeferred<{
+      data: {
+        entries: [];
+        totalIncome: number;
+        totalExpense: number;
+        balance: number;
+      };
+    }>();
+
+    getMonthlySummaryMock
+      .mockReturnValueOnce(staleMonthlyResponse.promise)
+      .mockResolvedValueOnce({
+        data: {
+          year: 2026,
+          month: 4,
+          totalIncome: 0,
+          totalExpense: 0,
+          result: 0,
+        },
+      });
+
+    getFinanceHistoryMock
+      .mockReturnValueOnce(staleHistoryResponse.promise)
+      .mockResolvedValueOnce({
+        data: {
+          entries: [],
+          totalIncome: 0,
+          totalExpense: 0,
+          balance: 0,
+        },
+      });
+
+    const { result } = renderHook(() =>
+      useFinanceOperationalSummary({
+        year: 2026,
+        month: 5,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.applyFilters({
+        year: 2026,
+        month: 4,
+      });
+    });
+
+    expect(result.current.monthlySummary).toMatchObject({
+      year: 2026,
+      month: 4,
+      totalIncome: 0,
+    });
+
+    await act(async () => {
+      staleMonthlyResponse.resolve({
+        data: {
+          year: 2026,
+          month: 5,
+          totalIncome: 1000,
+          totalExpense: 400,
+          result: 600,
+        },
+      });
+      staleHistoryResponse.resolve({
+        data: {
+          entries: [],
+          totalIncome: 1000,
+          totalExpense: 400,
+          balance: 600,
+        },
+      });
+    });
+
+    expect(result.current.monthlySummary).toMatchObject({
+      year: 2026,
+      month: 4,
+      totalIncome: 0,
+    });
   });
 });

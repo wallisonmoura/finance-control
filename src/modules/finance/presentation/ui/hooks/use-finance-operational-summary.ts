@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   getFinanceHistory,
@@ -103,9 +103,13 @@ export function useFinanceOperationalSummary(
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
 
   const loadSummary = useCallback(
     async (nextFilters: FinanceOperationalSummaryFilters) => {
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
+
       setIsLoading(true);
       setError(null);
 
@@ -122,13 +126,17 @@ export function useFinanceOperationalSummary(
         }),
       ]);
 
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
       if (monthlyResponse.error || historyResponse.error) {
         setMonthlySummary(null);
         setDailyRows([]);
         setError(
           monthlyResponse.error ??
             historyResponse.error ??
-            'Nao foi possivel carregar o resumo financeiro.',
+            'Não foi possível carregar o resumo financeiro.',
         );
         setIsLoading(false);
         return;
@@ -154,47 +162,10 @@ export function useFinanceOperationalSummary(
   }, [filters, loadSummary]);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialSummary() {
-      const period = getMonthPeriod(filters);
-
-      const [monthlyResponse, historyResponse] = await Promise.all([
-        getMonthlySummary({
-          year: filters.year,
-          month: filters.month,
-        }),
-        getFinanceHistory({
-          startDate: period.startDate,
-          endDate: period.endDate,
-        }),
-      ]);
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (monthlyResponse.error || historyResponse.error) {
-        setMonthlySummary(null);
-        setDailyRows([]);
-        setError(
-          monthlyResponse.error ??
-            historyResponse.error ??
-            'Nao foi possivel carregar o resumo financeiro.',
-        );
-        setIsLoading(false);
-        return;
-      }
-
-      setMonthlySummary(monthlyResponse.data ?? null);
-      setDailyRows(buildDailyRows(filters, historyResponse.data?.entries ?? []));
-      setIsLoading(false);
-    }
-
-    void loadInitialSummary();
+    void loadSummary(filters);
 
     return () => {
-      isMounted = false;
+      requestIdRef.current += 1;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

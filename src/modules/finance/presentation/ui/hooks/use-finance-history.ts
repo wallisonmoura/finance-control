@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { getFinanceHistory } from '../services/finance-api.service';
 import {
@@ -43,13 +43,21 @@ export function useFinanceHistory(
   const [data, setData] = useState<FinanceHistoryUi | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
 
   const loadHistory = useCallback(
     async (nextFilters: FinanceHistoryFiltersUi) => {
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
+
       setIsLoading(true);
       setError(null);
 
       const response = await getFinanceHistory(nextFilters);
+
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
 
       if (response.error) {
         setError(response.error);
@@ -78,6 +86,10 @@ export function useFinanceHistory(
 
   useEffect(() => {
     void loadHistory(filters);
+
+    return () => {
+      requestIdRef.current += 1;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
