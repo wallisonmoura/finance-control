@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CreditCard, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -96,75 +97,83 @@ export function DebtPaymentForm({
           />
         </div>
 
-        <SelectField
-          id='debt-payment-category'
-          label='Categoria da despesa'
-          disabled={isLoadingCategories}
-          aria-invalid={Boolean(errors.expenseCategoryId)}
-          aria-describedby={
-            errors.expenseCategoryId
-              ? 'debt-payment-category-error'
-              : undefined
-          }
-          placeholder={
-            isLoadingCategories
-              ? 'Carregando categorias...'
-              : 'Selecione uma categoria'
-          }
-          options={categories.map((category) => ({
-            label: category.name,
-            value: category.id,
-          }))}
-          {...register('expenseCategoryId')}
-        />
-        {errors.expenseCategoryId?.message ? (
-          <p
-            id='debt-payment-category-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.expenseCategoryId.message}
-          </p>
-        ) : null}
+        <div className='grid gap-4 lg:grid-cols-3'>
+          <div>
+            <SelectField
+              id='debt-payment-category'
+              label='Categoria da despesa'
+              disabled={isLoadingCategories}
+              aria-invalid={Boolean(errors.expenseCategoryId)}
+              aria-describedby={
+                errors.expenseCategoryId
+                  ? 'debt-payment-category-error'
+                  : undefined
+              }
+              placeholder={
+                isLoadingCategories
+                  ? 'Carregando categorias...'
+                  : 'Selecione uma categoria'
+              }
+              options={categories.map((category) => ({
+                label: category.name,
+                value: category.id,
+              }))}
+              {...register('expenseCategoryId')}
+            />
+            {errors.expenseCategoryId?.message ? (
+              <p
+                id='debt-payment-category-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.expenseCategoryId.message}
+              </p>
+            ) : null}
+          </div>
 
-        <SelectField
-          id='debt-payment-source'
-          label='Origem do pagamento'
-          options={[
-            { label: 'Banco', value: 'BANK' },
-            { label: 'Dinheiro', value: 'CASH' },
-            { label: 'Recebíveis', value: 'RECEIVABLE' },
-          ]}
-          {...register('paymentSource')}
-        />
+          <SelectField
+            id='debt-payment-source'
+            label='Origem do pagamento'
+            options={[
+              { label: 'Banco', value: 'BANK' },
+              { label: 'Dinheiro', value: 'CASH' },
+              { label: 'Recebíveis', value: 'RECEIVABLE' },
+            ]}
+            {...register('paymentSource')}
+          />
 
-        <Input
-          id='debt-paid-at'
-          label='Data do pagamento'
-          type='date'
-          aria-invalid={Boolean(errors.paidAt)}
-          aria-describedby={
-            errors.paidAt ? 'debt-payment-paid-at-error' : undefined
-          }
-          {...register('paidAt')}
-        />
-        {errors.paidAt?.message ? (
-          <p
-            id='debt-payment-paid-at-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.paidAt.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='debt-paid-at'
+              label='Data do pagamento'
+              type='date'
+              aria-invalid={Boolean(errors.paidAt)}
+              aria-describedby={
+                errors.paidAt ? 'debt-payment-paid-at-error' : undefined
+              }
+              {...register('paidAt')}
+            />
+            {errors.paidAt?.message ? (
+              <p
+                id='debt-payment-paid-at-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.paidAt.message}
+              </p>
+            ) : null}
+          </div>
+        </div>
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}
 
-        <div className='flex flex-wrap gap-2'>
+        <div className='grid gap-2 sm:flex sm:flex-wrap'>
           <Button type='submit' disabled={cannotSubmit}>
+            <CreditCard aria-hidden='true' className='size-4' />
             {isSubmitting ? 'Pagando...' : 'Confirmar pagamento'}
           </Button>
 
           {onCancel && (
             <Button type='button' onClick={onCancel} disabled={isSubmitting}>
+              <X aria-hidden='true' className='size-4' />
               Cancelar
             </Button>
           )}

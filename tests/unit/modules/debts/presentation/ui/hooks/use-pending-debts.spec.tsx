@@ -48,7 +48,7 @@ describe('usePendingDebts', () => {
 
   it('should expose error when loading pending debts fails', async () => {
     getPendingDebtsMock.mockResolvedValueOnce({
-      error: 'Nao foi possivel carregar dividas pendentes.',
+      error: 'Não foi possível carregar dívidas pendentes.',
     });
 
     const { result } = renderHook(() => usePendingDebts());
@@ -59,7 +59,7 @@ describe('usePendingDebts', () => {
 
     expect(result.current.debts).toEqual([]);
     expect(result.current.error).toBe(
-      'Nao foi possivel carregar dividas pendentes.',
+      'Não foi possível carregar dívidas pendentes.',
     );
   });
 });

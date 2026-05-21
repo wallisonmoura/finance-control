@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
-import { Button } from '@/shared/presentation/ui/components/button';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { usePendingDebts } from '../hooks/use-pending-debts';
@@ -38,16 +37,8 @@ export function PendingDebtsPageContent() {
 
       <PageTitle
         title='Dívidas pendentes'
-        description='Pague dívidas pendentes gerando a despesa financeira e atualizando a wallet.'
+        description='Pague dívidas pendentes gerando a despesa financeira e atualizando a Wallet.'
       />
-
-      {payingDebt ? (
-        <div className='flex justify-end'>
-          <Button type='button' onClick={handleCancelPayment}>
-            Cancelar
-          </Button>
-        </div>
-      ) : null}
 
       {payingDebt && (
         <DebtPaymentForm
@@ -61,7 +52,9 @@ export function PendingDebtsPageContent() {
         />
       )}
 
-      {isLoading && <p className='text-sm text-slate-500'>Carregando dividas...</p>}
+      {isLoading && (
+        <p className='text-sm text-slate-500'>Carregando dívidas...</p>
+      )}
 
       {error && <p className='text-sm text-red-600'>{error}</p>}
 

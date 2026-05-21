@@ -16,10 +16,10 @@ async function parseErrorResponse(response: Response): Promise<string> {
     const body = (await response.json()) as ApiErrorResponse;
 
     return (
-      body.message || body.error || 'Nao foi possivel concluir a operacao.'
+      body.message || body.error || 'Não foi possível concluir a operação.'
     );
   } catch {
-    return 'Nao foi possivel concluir a operacao.';
+    return 'Não foi possível concluir a operação.';
   }
 }
 

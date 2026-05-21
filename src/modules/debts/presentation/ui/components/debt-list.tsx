@@ -1,3 +1,5 @@
+import { CreditCard, Pencil, Trash2 } from 'lucide-react';
+
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
@@ -20,7 +22,7 @@ function formatDate(date: string) {
 }
 
 function getDebtTypeLabel(type: DebtUi['type']) {
-  return type === 'ONE_TIME' ? 'Unica' : 'Recorrente';
+  return type === 'ONE_TIME' ? 'Única' : 'Recorrente';
 }
 
 function getDebtStatusLabel(status: DebtUi['status']) {
@@ -41,11 +43,11 @@ export function DebtList({
   deletingDebtId = null,
 }: DebtListProps) {
   if (debts.length === 0) {
-    return <EmptyState description='Nenhuma divida encontrada.' />;
+    return <EmptyState description='Nenhuma dívida encontrada.' />;
   }
 
   return (
-    <div className='space-y-3' aria-label='Lista de dividas'>
+    <div className='space-y-3' aria-label='Lista de dívidas'>
       {debts.map((debt) => {
         const canManageDebt =
           debt.status === 'PENDING' &&
@@ -56,7 +58,7 @@ export function DebtList({
           <Card key={debt.id}>
             <div className='space-y-4'>
               <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
-                <div>
+                <div className='min-w-0'>
                   <div className='flex flex-wrap items-center gap-2'>
                     <span
                       className={[
@@ -76,12 +78,14 @@ export function DebtList({
                     </span>
                   </div>
 
-                  <h3 className='mt-2 text-base font-semibold text-slate-900'>
+                  <h3 className='mt-2 break-words text-base font-semibold text-slate-900'>
                     {debt.description}
                   </h3>
 
                   {debt.notes && (
-                    <p className='mt-1 text-sm text-slate-500'>{debt.notes}</p>
+                    <p className='mt-1 break-words text-sm text-slate-500'>
+                      {debt.notes}
+                    </p>
                   )}
 
                   {debt.paidAt && (
@@ -93,18 +97,20 @@ export function DebtList({
 
                 <MoneyDisplay
                   value={debt.amount}
-                  className='text-lg font-semibold text-red-700'
+                  className='text-lg font-semibold text-red-700 sm:text-right'
                 />
               </div>
 
               {canManageDebt && (
-                <div className='flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3'>
+                <div className='grid gap-2 border-t border-slate-100 pt-3 sm:flex sm:flex-wrap sm:justify-end'>
                   {onPayDebt && (
                     <Button
                       type='button'
                       onClick={() => onPayDebt(debt)}
                       disabled={isDeleting}
+                      className='w-full sm:w-auto'
                     >
+                      <CreditCard aria-hidden='true' className='size-4' />
                       Pagar
                     </Button>
                   )}
@@ -115,7 +121,9 @@ export function DebtList({
                       onClick={() => onEditDebt(debt)}
                       disabled={isDeleting}
                       variant='secondary'
+                      className='w-full sm:w-auto'
                     >
+                      <Pencil aria-hidden='true' className='size-4' />
                       Editar
                     </Button>
                   )}
@@ -126,7 +134,9 @@ export function DebtList({
                       onClick={() => onDeleteDebt(debt)}
                       disabled={isDeleting}
                       variant='danger'
+                      className='w-full sm:w-auto'
                     >
+                      <Trash2 aria-hidden='true' className='size-4' />
                       {isDeleting ? 'Excluindo...' : 'Excluir'}
                     </Button>
                   )}

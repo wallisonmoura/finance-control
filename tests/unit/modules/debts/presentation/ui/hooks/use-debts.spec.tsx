@@ -48,7 +48,7 @@ describe('useDebts', () => {
 
   it('should expose error when loading debts fails', async () => {
     getDebtsMock.mockResolvedValueOnce({
-      error: 'Nao foi possivel carregar dividas.',
+      error: 'Não foi possível carregar dívidas.',
     });
 
     const { result } = renderHook(() => useDebts());
@@ -58,6 +58,6 @@ describe('useDebts', () => {
     });
 
     expect(result.current.debts).toEqual([]);
-    expect(result.current.error).toBe('Nao foi possivel carregar dividas.');
+    expect(result.current.error).toBe('Não foi possível carregar dívidas.');
   });
 });

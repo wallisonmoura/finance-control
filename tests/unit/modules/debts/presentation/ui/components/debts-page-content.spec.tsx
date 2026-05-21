@@ -71,7 +71,7 @@ describe('DebtsPageContent', () => {
       'href',
       '/debts/paid',
     );
-    expect(screen.getByRole('button', { name: 'Nova divida' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Nova dívida' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Excluir' })).toBeInTheDocument();
   });
@@ -81,7 +81,7 @@ describe('DebtsPageContent', () => {
 
     render(<DebtsPageContent />);
 
-    await user.click(screen.getByRole('button', { name: 'Nova divida' }));
+    await user.click(screen.getByRole('button', { name: 'Nova dívida' }));
 
     expect(screen.getByRole('heading', { name: 'Cadastrar dívida' })).toBeInTheDocument();
     expect(screen.getByLabelText('Tipo')).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('DebtsPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Editar' }));
 
     expect(screen.getByText('Editar dívida')).toBeInTheDocument();
-    expect(screen.getByLabelText('Descricao')).toHaveValue('Seguro do carro');
+    expect(screen.getByLabelText('Descrição')).toHaveValue('Seguro do carro');
     expect(screen.getByDisplayValue('300')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Parcela unica')).toBeInTheDocument();
   });

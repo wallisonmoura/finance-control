@@ -44,14 +44,14 @@ describe('DebtForm', () => {
     render(<DebtForm onDebtCreated={onDebtCreated} />);
 
     await user.selectOptions(screen.getByLabelText('Tipo'), 'ONE_TIME');
-    await user.type(screen.getByLabelText('Descricao'), 'Seguro do carro');
+    await user.type(screen.getByLabelText('Descrição'), 'Seguro do carro');
     await user.clear(screen.getByLabelText('Valor'));
     await user.type(screen.getByLabelText('Valor'), '300,50');
     await user.clear(screen.getByLabelText('Vencimento'));
     await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
-    await user.type(screen.getByLabelText('Observacoes'), 'Parcela unica');
+    await user.type(screen.getByLabelText('Observações'), 'Parcela unica');
 
-    await user.click(screen.getByRole('button', { name: 'Cadastrar divida' }));
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
 
     await waitFor(() => {
       expect(registerDebtMock).toHaveBeenCalledWith({
@@ -107,14 +107,14 @@ describe('DebtForm', () => {
       />,
     );
 
-    await user.clear(screen.getByLabelText('Descricao'));
-    await user.type(screen.getByLabelText('Descricao'), 'Seguro atualizado');
+    await user.clear(screen.getByLabelText('Descrição'));
+    await user.type(screen.getByLabelText('Descrição'), 'Seguro atualizado');
     await user.clear(screen.getByLabelText('Valor'));
     await user.type(screen.getByLabelText('Valor'), '350');
     await user.clear(screen.getByLabelText('Vencimento'));
     await user.type(screen.getByLabelText('Vencimento'), '2026-05-21');
 
-    await user.click(screen.getByRole('button', { name: 'Salvar alteracoes' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar alterações' }));
 
     await waitFor(() => {
       expect(updateDebtMock).toHaveBeenCalledWith('debt-id', {

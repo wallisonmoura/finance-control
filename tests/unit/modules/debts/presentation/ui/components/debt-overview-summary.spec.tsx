@@ -60,7 +60,7 @@ describe('DebtOverviewSummary', () => {
 
     render(<DebtOverviewSummary debts={debts} onCreateDebt={onCreateDebt} />);
 
-    await user.click(screen.getByRole('button', { name: 'Nova divida' }));
+    await user.click(screen.getByRole('button', { name: 'Nova dívida' }));
 
     expect(onCreateDebt).toHaveBeenCalledTimes(1);
   });

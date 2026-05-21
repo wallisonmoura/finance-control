@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { Button } from '@/shared/presentation/ui/components/button';
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
@@ -91,14 +90,6 @@ export function DebtsPageContent() {
       )}
 
       {isFormOpen && (
-        <div className='flex justify-end'>
-          <Button type='button' onClick={handleCancelForm}>
-            Cancelar
-          </Button>
-        </div>
-      )}
-
-      {isFormOpen && (
         <DebtForm
           key={editingDebt?.id ?? 'create-debt'}
           editingDebt={editingDebt}
@@ -108,7 +99,9 @@ export function DebtsPageContent() {
         />
       )}
 
-      {isLoading && <p className='text-sm text-slate-500'>Carregando dividas...</p>}
+      {isLoading && (
+        <p className='text-sm text-slate-500'>Carregando dívidas...</p>
+      )}
 
       {error && <p className='text-sm text-red-600'>{error}</p>}
 

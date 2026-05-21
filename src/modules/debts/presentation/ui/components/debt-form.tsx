@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Save, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -148,92 +149,104 @@ export function DebtForm({
           </p>
         </div>
 
-        <SelectField
-          id='debt-type'
-          label='Tipo'
-          options={[
-            { label: 'Única', value: 'ONE_TIME' },
-            { label: 'Recorrente', value: 'RECURRING' },
-          ]}
-          {...register('type')}
-        />
+        <div className='grid gap-4 md:grid-cols-2'>
+          <SelectField
+            id='debt-type'
+            label='Tipo'
+            options={[
+              { label: 'Única', value: 'ONE_TIME' },
+              { label: 'Recorrente', value: 'RECURRING' },
+            ]}
+            {...register('type')}
+          />
 
-        <Input
-          id='debt-description'
-          label='Descricao'
-          aria-invalid={Boolean(errors.description)}
-          aria-describedby={
-            errors.description ? 'debt-description-error' : undefined
-          }
-          {...register('description')}
-        />
-        {errors.description?.message ? (
-          <p
-            id='debt-description-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.description.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='debt-due-date'
+              label='Vencimento'
+              type='date'
+              aria-invalid={Boolean(errors.dueDate)}
+              aria-describedby={
+                errors.dueDate ? 'debt-due-date-error' : undefined
+              }
+              {...register('dueDate')}
+            />
+            {errors.dueDate?.message ? (
+              <p
+                id='debt-due-date-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.dueDate.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='debt-amount'
-          label='Valor'
-          type='text'
-          inputMode='decimal'
-          aria-invalid={Boolean(errors.amount)}
-          aria-describedby={errors.amount ? 'debt-amount-error' : undefined}
-          {...register('amount')}
-        />
-        {errors.amount?.message ? (
-          <p
-            id='debt-amount-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.amount.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='debt-description'
+              label='Descrição'
+              aria-invalid={Boolean(errors.description)}
+              aria-describedby={
+                errors.description ? 'debt-description-error' : undefined
+              }
+              {...register('description')}
+            />
+            {errors.description?.message ? (
+              <p
+                id='debt-description-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.description.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='debt-due-date'
-          label='Vencimento'
-          type='date'
-          aria-invalid={Boolean(errors.dueDate)}
-          aria-describedby={
-            errors.dueDate ? 'debt-due-date-error' : undefined
-          }
-          {...register('dueDate')}
-        />
-        {errors.dueDate?.message ? (
-          <p
-            id='debt-due-date-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.dueDate.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='debt-amount'
+              label='Valor'
+              type='text'
+              inputMode='decimal'
+              aria-invalid={Boolean(errors.amount)}
+              aria-describedby={errors.amount ? 'debt-amount-error' : undefined}
+              {...register('amount')}
+            />
+            {errors.amount?.message ? (
+              <p
+                id='debt-amount-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.amount.message}
+              </p>
+            ) : null}
+          </div>
 
-        <TextareaField
-          id='debt-notes'
-          label='Observacoes'
-          {...register('notes')}
-        />
+          <div className='md:col-span-2'>
+            <TextareaField
+              id='debt-notes'
+              label='Observações'
+              {...register('notes')}
+            />
+          </div>
+        </div>
 
         {error && <FormErrorMessage message={error} />}
 
-        <div className='flex flex-wrap gap-2'>
+        <div className='grid gap-2 sm:flex sm:flex-wrap'>
           <Button type='submit' disabled={isSubmitting}>
+            <Save aria-hidden='true' className='size-4' />
             {isSubmitting
               ? isEditing
                 ? 'Salvando...'
                 : 'Cadastrando...'
               : isEditing
-                ? 'Salvar alteracoes'
-                : 'Cadastrar divida'}
+                ? 'Salvar alterações'
+                : 'Cadastrar dívida'}
           </Button>
 
           {onCancel && (
             <Button type='button' onClick={onCancel} disabled={isSubmitting}>
+              <X aria-hidden='true' className='size-4' />
               Cancelar
             </Button>
           )}

@@ -129,12 +129,12 @@ describe('DebtPaymentForm', () => {
       <DebtPaymentForm
         debt={debt}
         categories={[]}
-        categoriesError='Nao foi possivel carregar categorias.'
+        categoriesError='Não foi possível carregar categorias.'
       />,
     );
 
     expect(
-      screen.getByText('Nao foi possivel carregar categorias.'),
+      screen.getByText('Não foi possível carregar categorias.'),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Confirmar pagamento' }),

@@ -11,7 +11,7 @@ const pendingDebt = {
   dueDate: '2026-05-20T00:00:00.000Z',
   type: 'ONE_TIME' as const,
   status: 'PENDING' as const,
-  notes: 'Parcela unica',
+  notes: 'Parcela única',
   paidAt: null,
   paymentSource: null,
   createdAt: '2026-05-16T00:00:00.000Z',
@@ -73,6 +73,6 @@ describe('DebtList', () => {
   it('should render empty state', () => {
     render(<DebtList debts={[]} />);
 
-    expect(screen.getByText('Nenhuma divida encontrada.')).toBeInTheDocument();
+    expect(screen.getByText('Nenhuma dívida encontrada.')).toBeInTheDocument();
   });
 });
