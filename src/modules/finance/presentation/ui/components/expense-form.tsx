@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Save, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -158,116 +159,130 @@ export function ExpenseForm({
           <p className='text-sm text-slate-500'>
             {isEditing
               ? 'Atualize os dados da despesa selecionada.'
-              : 'Registre uma saida real ja ocorrida.'}
+              : 'Registre uma saída real já ocorrida.'}
           </p>
         </div>
 
-        <SelectField
-          id='expense-category'
-          label='Categoria'
-          disabled={isLoadingCategories}
-          aria-invalid={Boolean(errors.categoryId)}
-          aria-describedby={
-            errors.categoryId ? 'expense-category-error' : undefined
-          }
-          placeholder={
-            isLoadingCategories
-              ? 'Carregando categorias...'
-              : 'Selecione uma categoria'
-          }
-          options={categories.map((category) => ({
-            label: category.name,
-            value: category.id,
-          }))}
-          {...register('categoryId')}
-        />
-        {errors.categoryId?.message ? (
-          <p
-            id='expense-category-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.categoryId.message}
-          </p>
-        ) : null}
+        <div className='grid gap-4 md:grid-cols-2'>
+          <div>
+            <SelectField
+              id='expense-category'
+              label='Categoria'
+              disabled={isLoadingCategories}
+              aria-invalid={Boolean(errors.categoryId)}
+              aria-describedby={
+                errors.categoryId ? 'expense-category-error' : undefined
+              }
+              placeholder={
+                isLoadingCategories
+                  ? 'Carregando categorias...'
+                  : 'Selecione uma categoria'
+              }
+              options={categories.map((category) => ({
+                label: category.name,
+                value: category.id,
+              }))}
+              {...register('categoryId')}
+            />
+            {errors.categoryId?.message ? (
+              <p
+                id='expense-category-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.categoryId.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='expense-description'
-          label='Descricao'
-          aria-invalid={Boolean(errors.description)}
-          aria-describedby={
-            errors.description ? 'expense-description-error' : undefined
-          }
-          {...register('description')}
-        />
-        {errors.description?.message ? (
-          <p
-            id='expense-description-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.description.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='expense-date'
+              label='Data'
+              type='date'
+              aria-invalid={Boolean(errors.date)}
+              aria-describedby={errors.date ? 'expense-date-error' : undefined}
+              {...register('date')}
+            />
+            {errors.date?.message ? (
+              <p
+                id='expense-date-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.date.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='expense-amount'
-          label='Valor'
-          type='text'
-          inputMode='decimal'
-          aria-invalid={Boolean(errors.amount)}
-          aria-describedby={
-            errors.amount ? 'expense-amount-error' : undefined
-          }
-          {...register('amount')}
-        />
-        {errors.amount?.message ? (
-          <p
-            id='expense-amount-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.amount.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='expense-description'
+              label='Descrição'
+              aria-invalid={Boolean(errors.description)}
+              aria-describedby={
+                errors.description ? 'expense-description-error' : undefined
+              }
+              {...register('description')}
+            />
+            {errors.description?.message ? (
+              <p
+                id='expense-description-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.description.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='expense-date'
-          label='Data'
-          type='date'
-          aria-invalid={Boolean(errors.date)}
-          aria-describedby={errors.date ? 'expense-date-error' : undefined}
-          {...register('date')}
-        />
-        {errors.date?.message ? (
-          <p
-            id='expense-date-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.date.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='expense-amount'
+              label='Valor'
+              type='text'
+              inputMode='decimal'
+              aria-invalid={Boolean(errors.amount)}
+              aria-describedby={
+                errors.amount ? 'expense-amount-error' : undefined
+              }
+              {...register('amount')}
+            />
+            {errors.amount?.message ? (
+              <p
+                id='expense-amount-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.amount.message}
+              </p>
+            ) : null}
+          </div>
 
-        <TextareaField
-          id='expense-notes'
-          label='Observacoes'
-          {...register('notes')}
-        />
+          <div className='md:col-span-2'>
+            <TextareaField
+              id='expense-notes'
+              label='Observações'
+              {...register('notes')}
+            />
+          </div>
+        </div>
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}
 
         {error && <FormErrorMessage message={error} />}
 
-        <div className='flex flex-wrap gap-2'>
+        <div className='grid gap-2 sm:flex sm:flex-wrap'>
           <Button type='submit' disabled={cannotSubmit}>
+            <Save aria-hidden='true' className='size-4' />
             {isSubmitting
               ? isEditing
                 ? 'Salvando...'
                 : 'Registrando...'
               : isEditing
-                ? 'Salvar alteracoes'
+                ? 'Salvar alterações'
                 : 'Registrar despesa'}
           </Button>
 
           {onCancel && (
             <Button type='button' onClick={onCancel} disabled={isSubmitting}>
+              <X aria-hidden='true' className='size-4' />
               Cancelar
             </Button>
           )}

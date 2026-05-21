@@ -88,7 +88,7 @@ describe('FinanceIncomesPageContent', () => {
       screen.getByRole('heading', { name: 'Registrar receita' }),
     ).toBeInTheDocument();
 
-    expect(screen.getAllByRole('button', { name: 'Cancelar' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'Cancelar' })).toHaveLength(1);
   });
 
   it('should open edit income form', async () => {

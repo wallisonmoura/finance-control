@@ -39,7 +39,7 @@ describe('useExpenseCategories', () => {
 
   it('should expose error when loading categories fails', async () => {
     getExpenseCategoriesMock.mockResolvedValueOnce({
-      error: 'Nao foi possivel carregar categorias.',
+      error: 'Não foi possível carregar categorias.',
     });
 
     const { result } = renderHook(() => useExpenseCategories());
@@ -49,6 +49,6 @@ describe('useExpenseCategories', () => {
     });
 
     expect(result.current.categories).toEqual([]);
-    expect(result.current.error).toBe('Nao foi possivel carregar categorias.');
+    expect(result.current.error).toBe('Não foi possível carregar categorias.');
   });
 });

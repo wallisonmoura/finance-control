@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
@@ -94,17 +95,14 @@ export function FinanceIncomesPageContent() {
         description='Registre, acompanhe e gerencie suas receitas realizadas.'
       />
 
-      <div className='flex justify-end'>
-        {!isFormOpen ? (
+      {!isFormOpen && (
+        <div className='flex justify-end'>
           <Button type='button' onClick={handleOpenCreateForm}>
+            <Plus aria-hidden='true' className='size-4' />
             Nova receita
           </Button>
-        ) : (
-          <Button type='button' onClick={handleCancelForm}>
-            Cancelar
-          </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {isFormOpen && (
         <IncomeForm

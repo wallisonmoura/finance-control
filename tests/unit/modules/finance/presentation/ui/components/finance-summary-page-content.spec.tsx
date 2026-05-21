@@ -166,7 +166,7 @@ describe('FinanceSummaryPageContent', () => {
       monthlySummary: null,
       dailyRows: [],
       isLoading: false,
-      error: 'Nao foi possivel carregar resumo.',
+      error: 'Não foi possível carregar resumo.',
       applyFilters,
       refresh: jest.fn(),
     });
@@ -174,7 +174,7 @@ describe('FinanceSummaryPageContent', () => {
     render(<FinanceSummaryPageContent />);
 
     expect(
-      screen.getByText('Nao foi possivel carregar resumo.'),
+      screen.getByText('Não foi possível carregar resumo.'),
     ).toBeInTheDocument();
   });
 });

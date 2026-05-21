@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Save, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -144,65 +145,78 @@ export function IncomeForm({
           </p>
         </div>
 
-        <Input
-          id='income-description'
-          label='Descrição'
-          aria-invalid={Boolean(errors.description)}
-          aria-describedby={
-            errors.description ? 'income-description-error' : undefined
-          }
-          {...register('description')}
-        />
-        {errors.description?.message ? (
-          <p
-            id='income-description-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.description.message}
-          </p>
-        ) : null}
+        <div className='grid gap-4 md:grid-cols-2'>
+          <div className='md:col-span-2'>
+            <Input
+              id='income-description'
+              label='Descrição'
+              aria-invalid={Boolean(errors.description)}
+              aria-describedby={
+                errors.description ? 'income-description-error' : undefined
+              }
+              {...register('description')}
+            />
+            {errors.description?.message ? (
+              <p
+                id='income-description-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.description.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='income-amount'
-          label='Valor'
-          type='text'
-          inputMode='decimal'
-          aria-invalid={Boolean(errors.amount)}
-          aria-describedby={errors.amount ? 'income-amount-error' : undefined}
-          {...register('amount')}
-        />
-        {errors.amount?.message ? (
-          <p
-            id='income-amount-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.amount.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='income-amount'
+              label='Valor'
+              type='text'
+              inputMode='decimal'
+              aria-invalid={Boolean(errors.amount)}
+              aria-describedby={
+                errors.amount ? 'income-amount-error' : undefined
+              }
+              {...register('amount')}
+            />
+            {errors.amount?.message ? (
+              <p
+                id='income-amount-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.amount.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input
-          id='income-date'
-          label='Data'
-          type='date'
-          aria-invalid={Boolean(errors.date)}
-          aria-describedby={errors.date ? 'income-date-error' : undefined}
-          {...register('date')}
-        />
-        {errors.date?.message ? (
-          <p
-            id='income-date-error'
-            className='text-sm font-medium text-red-600'
-          >
-            {errors.date.message}
-          </p>
-        ) : null}
+          <div>
+            <Input
+              id='income-date'
+              label='Data'
+              type='date'
+              aria-invalid={Boolean(errors.date)}
+              aria-describedby={errors.date ? 'income-date-error' : undefined}
+              {...register('date')}
+            />
+            {errors.date?.message ? (
+              <p
+                id='income-date-error'
+                className='mt-1 text-sm font-medium text-red-600'
+              >
+                {errors.date.message}
+              </p>
+            ) : null}
+          </div>
 
-        <Input id='income-notes' label='Observações' {...register('notes')} />
+          <div className='md:col-span-2'>
+            <Input id='income-notes' label='Observações' {...register('notes')} />
+          </div>
+        </div>
 
         {error && <FormErrorMessage message={error} />}
 
-        <div className='flex flex-wrap gap-2'>
+        <div className='grid gap-2 sm:flex sm:flex-wrap'>
           <Button type='submit' disabled={isSubmitting}>
+            <Save aria-hidden='true' className='size-4' />
             {isSubmitting
               ? isEditing
                 ? 'Salvando...'
@@ -214,6 +228,7 @@ export function IncomeForm({
 
           {onCancel && (
             <Button type='button' onClick={onCancel} disabled={isSubmitting}>
+              <X aria-hidden='true' className='size-4' />
               Cancelar
             </Button>
           )}

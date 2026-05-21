@@ -1,6 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  CalendarDays,
+  ChartNoAxesCombined,
+  Search,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/shared/presentation/ui/components/button';
@@ -77,6 +84,13 @@ type SummaryCardProps = {
 };
 
 function SummaryCard({ label, value, tone = 'default' }: SummaryCardProps) {
+  const Icon =
+    tone === 'income'
+      ? TrendingUp
+      : tone === 'expense'
+        ? TrendingDown
+        : ChartNoAxesCombined;
+
   const toneClass =
     tone === 'income'
       ? 'text-emerald-700'
@@ -90,8 +104,20 @@ function SummaryCard({ label, value, tone = 'default' }: SummaryCardProps) {
 
   return (
     <Card>
-      <div className='space-y-2'>
-        <p className='text-sm font-medium text-slate-500'>{label}</p>
+      <div className='space-y-3'>
+        <div className='flex items-center gap-2 text-sm font-medium text-slate-500'>
+          <Icon
+            aria-hidden='true'
+            className={`size-4 ${
+              tone === 'income'
+                ? 'text-emerald-600'
+                : tone === 'expense'
+                  ? 'text-red-600'
+                  : 'text-slate-600'
+            }`}
+          />
+          <p>{label}</p>
+        </div>
         <MoneyDisplay value={value} className={`text-2xl ${toneClass}`} />
       </div>
     </Card>
@@ -113,10 +139,10 @@ function getResultCellClass(value: number) {
 function SummaryTable({ rows }: { rows: FinanceOperationalSummaryDailyRow[] }) {
   return (
     <Card>
-      <div className='overflow-x-auto'>
+      <div className='overflow-x-auto rounded-lg border border-slate-100'>
         <table className='w-full min-w-[640px] border-collapse text-sm'>
           <thead>
-            <tr className='border-b border-slate-200 text-left text-xs uppercase text-slate-500'>
+            <tr className='border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500'>
               <th className='w-20 px-3 py-3 font-semibold'>Dia</th>
               <th className='px-3 py-3 font-semibold'>Receita</th>
               <th className='px-3 py-3 font-semibold'>Despesa</th>
@@ -182,7 +208,13 @@ function SummaryFilterForm({
           onChange={(event) => setMonthValue(event.target.value)}
         />
 
-        <Button type='button' onClick={handleApplyFilters} disabled={isLoading}>
+        <Button
+          type='button'
+          onClick={handleApplyFilters}
+          disabled={isLoading}
+          className='w-full md:w-auto'
+        >
+          <Search aria-hidden='true' className='size-4' />
           {isLoading ? 'Carregando...' : 'Aplicar filtros'}
         </Button>
       </div>
@@ -261,9 +293,12 @@ export function FinanceSummaryPageContent() {
           </section>
 
           <section className='space-y-3'>
-            <h2 className='text-lg font-semibold text-slate-900'>
-              Resultado diário
-            </h2>
+            <div className='flex items-center gap-2'>
+              <CalendarDays aria-hidden='true' className='size-5 text-slate-600' />
+              <h2 className='text-lg font-semibold text-slate-900'>
+                Resultado diário
+              </h2>
+            </div>
             <SummaryTable rows={dailyRows} />
           </section>
         </div>

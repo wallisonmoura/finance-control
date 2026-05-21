@@ -1,3 +1,5 @@
+import { ChartNoAxesCombined, TrendingDown, TrendingUp } from 'lucide-react';
+
 import { Card } from '@/shared/presentation/ui/components/card';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 
@@ -15,23 +17,35 @@ export function FinanceHistorySummary({
   return (
     <div className='grid gap-4 md:grid-cols-3'>
       <Card>
-        <p className='text-sm text-slate-500'>Receitas do período</p>
+        <div className='flex items-center gap-2 text-sm text-slate-500'>
+          <TrendingUp aria-hidden='true' className='size-4 text-emerald-600' />
+          <p>Receitas do período</p>
+        </div>
         <div className='mt-2'>
-          <MoneyDisplay value={totalIncome} />
+          <MoneyDisplay value={totalIncome} className='text-emerald-700' />
         </div>
       </Card>
 
       <Card>
-        <p className='text-sm text-slate-500'>Despesas do período</p>
+        <div className='flex items-center gap-2 text-sm text-slate-500'>
+          <TrendingDown aria-hidden='true' className='size-4 text-red-600' />
+          <p>Despesas do período</p>
+        </div>
         <div className='mt-2'>
-          <MoneyDisplay value={totalExpense} />
+          <MoneyDisplay value={totalExpense} className='text-red-700' />
         </div>
       </Card>
 
       <Card>
-        <p className='text-sm text-slate-500'>Resultado do período</p>
+        <div className='flex items-center gap-2 text-sm text-slate-500'>
+          <ChartNoAxesCombined
+            aria-hidden='true'
+            className='size-4 text-slate-600'
+          />
+          <p>Resultado do período</p>
+        </div>
         <div className='mt-2'>
-          <MoneyDisplay value={balance} />
+          <MoneyDisplay value={balance} className='text-slate-950' />
         </div>
       </Card>
     </div>

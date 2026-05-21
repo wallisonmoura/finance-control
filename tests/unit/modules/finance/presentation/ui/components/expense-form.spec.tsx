@@ -57,13 +57,13 @@ describe('ExpenseForm', () => {
       />,
     );
 
-    await user.type(screen.getByLabelText('Descricao'), 'Combustivel');
+    await user.type(screen.getByLabelText('Descrição'), 'Combustivel');
     await user.clear(screen.getByLabelText('Valor'));
     await user.type(screen.getByLabelText('Valor'), '120,50');
     await user.clear(screen.getByLabelText('Data'));
     await user.type(screen.getByLabelText('Data'), '2026-05-16');
     await user.selectOptions(screen.getByLabelText('Categoria'), 'category-id');
-    await user.type(screen.getByLabelText('Observacoes'), 'Posto');
+    await user.type(screen.getByLabelText('Observações'), 'Posto');
 
     await user.click(screen.getByRole('button', { name: 'Registrar despesa' }));
 
@@ -118,12 +118,12 @@ describe('ExpenseForm', () => {
       />,
     );
 
-    await user.clear(screen.getByLabelText('Descricao'));
-    await user.type(screen.getByLabelText('Descricao'), 'Combustivel atualizado');
+    await user.clear(screen.getByLabelText('Descrição'));
+    await user.type(screen.getByLabelText('Descrição'), 'Combustivel atualizado');
     await user.clear(screen.getByLabelText('Valor'));
     await user.type(screen.getByLabelText('Valor'), '140');
 
-    await user.click(screen.getByRole('button', { name: 'Salvar alteracoes' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar alterações' }));
 
     await waitFor(() => {
       expect(updateExpenseMock).toHaveBeenCalledWith('expense-id', {
@@ -141,12 +141,12 @@ describe('ExpenseForm', () => {
     render(
       <ExpenseForm
         categories={[]}
-        categoriesError='Nao foi possivel carregar categorias.'
+        categoriesError='Não foi possível carregar categorias.'
       />,
     );
 
     expect(
-      screen.getByText('Nao foi possivel carregar categorias.'),
+      screen.getByText('Não foi possível carregar categorias.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Registrar despesa' })).toBeDisabled();
   });

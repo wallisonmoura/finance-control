@@ -1,9 +1,11 @@
 'use client';
 
 import { SyntheticEvent, useState } from 'react';
+import { Search } from 'lucide-react';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { Button } from '@/shared/presentation/ui/components/button';
+import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import {
   FinanceEntryTypeUi,
@@ -70,33 +72,24 @@ export function FinanceHistoryFilters({
             required
           />
 
-          <div className='space-y-1'>
-            <label
-              htmlFor='finance-history-type'
-              className='text-sm font-medium text-zinc-700'
-            >
-              Tipo
-            </label>
-
-            <select
-              id='finance-history-type'
-              name='type'
-              value={type}
-              onChange={(event) =>
-                setType(event.target.value as TypeFilterOption)
-              }
-              className='flex h-10 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 disabled:cursor-not-allowed disabled:opacity-50'
-              disabled={isLoading}
-            >
-              <option value='ALL'>Todos</option>
-              <option value='INCOME'>Receitas</option>
-              <option value='EXPENSE'>Despesas</option>
-            </select>
-          </div>
+          <SelectField
+            id='finance-history-type'
+            name='type'
+            label='Tipo'
+            value={type}
+            onChange={(event) => setType(event.target.value as TypeFilterOption)}
+            disabled={isLoading}
+            options={[
+              { label: 'Todos', value: 'ALL' },
+              { label: 'Receitas', value: 'INCOME' },
+              { label: 'Despesas', value: 'EXPENSE' },
+            ]}
+          />
         </div>
 
         <div className='flex justify-end'>
           <Button type='submit' disabled={isLoading}>
+            <Search aria-hidden='true' className='size-4' />
             {isLoading ? 'Aplicando...' : 'Aplicar filtros'}
           </Button>
         </div>

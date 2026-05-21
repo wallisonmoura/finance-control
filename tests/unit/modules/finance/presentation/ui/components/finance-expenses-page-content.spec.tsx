@@ -112,7 +112,7 @@ describe('FinanceExpensesPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Editar' }));
 
     expect(screen.getByText('Editar despesa')).toBeInTheDocument();
-    expect(screen.getByLabelText('Descricao')).toHaveValue('Combustivel');
+    expect(screen.getByLabelText('Descrição')).toHaveValue('Combustivel');
     expect(screen.getByDisplayValue('120')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Posto')).toBeInTheDocument();
   });

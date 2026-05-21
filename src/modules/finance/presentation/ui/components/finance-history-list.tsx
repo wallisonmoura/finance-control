@@ -1,3 +1,5 @@
+import { Pencil, Trash2 } from 'lucide-react';
+
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
@@ -64,7 +66,7 @@ export function FinanceHistoryList({
           <Card key={entry.id}>
             <div className='space-y-4'>
               <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
-                <div>
+                <div className='min-w-0'>
                   <div className='flex flex-wrap items-center gap-2'>
                     <span className='text-sm font-medium text-slate-500'>
                       {getEntryTypeLabel(entry.type)}
@@ -75,16 +77,18 @@ export function FinanceHistoryList({
                     </span>
                   </div>
 
-                  <h3 className='mt-2 text-base font-semibold text-slate-900'>
+                  <h3 className='mt-2 break-words text-base font-semibold text-slate-900'>
                     {entry.description}
                   </h3>
 
                   {entry.notes && (
-                    <p className='mt-1 text-sm text-slate-500'>{entry.notes}</p>
+                    <p className='mt-1 break-words text-sm text-slate-500'>
+                      {entry.notes}
+                    </p>
                   )}
 
                   {entry.categoryId && (
-                    <p className='mt-1 text-xs text-slate-400'>
+                    <p className='mt-1 break-words text-xs text-slate-400'>
                       Categoria: {entry.categoryId}
                     </p>
                   )}
@@ -100,21 +104,23 @@ export function FinanceHistoryList({
                   value={entry.amount}
                   className={
                     entry.type === 'INCOME'
-                      ? 'text-lg font-semibold text-emerald-700'
-                      : 'text-lg font-semibold text-red-700'
+                      ? 'text-lg font-semibold text-emerald-700 sm:text-right'
+                      : 'text-lg font-semibold text-red-700 sm:text-right'
                   }
                 />
               </div>
 
               {(canManageIncome || canManageExpense) && (
-                <div className='flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3'>
+                <div className='grid gap-2 border-t border-slate-100 pt-3 sm:flex sm:flex-wrap sm:justify-end'>
                   {canManageIncome && onEditIncome && (
                     <Button
                       type='button'
                       onClick={() => onEditIncome(entry)}
                       disabled={isDeleting}
                       variant='secondary'
+                      className='w-full sm:w-auto'
                     >
+                      <Pencil aria-hidden='true' className='size-4' />
                       Editar
                     </Button>
                   )}
@@ -125,7 +131,9 @@ export function FinanceHistoryList({
                       onClick={() => onDeleteIncome(entry)}
                       disabled={isDeleting}
                       variant='danger'
+                      className='w-full sm:w-auto'
                     >
+                      <Trash2 aria-hidden='true' className='size-4' />
                       {isDeleting ? 'Excluindo...' : 'Excluir'}
                     </Button>
                   )}
@@ -136,7 +144,9 @@ export function FinanceHistoryList({
                       onClick={() => onEditExpense(entry)}
                       disabled={isDeleting}
                       variant='secondary'
+                      className='w-full sm:w-auto'
                     >
+                      <Pencil aria-hidden='true' className='size-4' />
                       Editar
                     </Button>
                   )}
@@ -147,7 +157,9 @@ export function FinanceHistoryList({
                       onClick={() => onDeleteExpense(entry)}
                       disabled={isDeleting}
                       variant='danger'
+                      className='w-full sm:w-auto'
                     >
+                      <Trash2 aria-hidden='true' className='size-4' />
                       {isDeleting ? 'Excluindo...' : 'Excluir'}
                     </Button>
                   )}
