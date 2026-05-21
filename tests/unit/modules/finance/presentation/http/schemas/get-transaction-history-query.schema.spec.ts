@@ -100,7 +100,7 @@ describe('getTransactionHistoryQuerySchema', () => {
 
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        'startDate must be less than or equal to endDate',
+        'Data inicial deve ser menor ou igual à data final.',
       );
       expect(result.error.issues[0].path).toEqual(['startDate']);
     }

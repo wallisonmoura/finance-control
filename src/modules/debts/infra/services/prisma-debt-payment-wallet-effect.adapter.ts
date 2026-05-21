@@ -98,6 +98,6 @@ export class PrismaDebtPaymentWalletEffectAdapter implements DebtPaymentWalletEf
       return;
     }
 
-    throw new Error('Invalid debt payment source.');
+    throw new Error('Origem de pagamento inválida.');
   }
 }

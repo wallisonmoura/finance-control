@@ -1,16 +1,20 @@
 import { z } from 'zod';
 
+function hasAtMostTwoDecimalPlaces(value: number) {
+  return /^\d+(\.\d{1,2})?$/.test(value.toString());
+}
+
 function walletBalanceSchema(field: string) {
   return z.coerce
     .number({
-      error: `${field} must be a valid number`,
+      error: `${field} deve ser um número válido.`,
     })
-    .min(0, `${field} must be greater than or equal to 0`)
-    .refine((value) => Number.isInteger(value * 100), {
-      error: `${field} must have at most 2 decimal places`,
+    .min(0, `${field} deve ser maior ou igual a 0.`)
+    .refine(hasAtMostTwoDecimalPlaces, {
+      error: `${field} deve ter no máximo 2 casas decimais.`,
     })
     .refine((value) => value <= 999999999999.99, {
-      error: `${field} exceeds the allowed limit`,
+      error: `${field} excede o limite permitido.`,
     });
 }
 

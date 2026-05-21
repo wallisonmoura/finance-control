@@ -1,6 +1,6 @@
 export class InvalidDebtDescriptionError extends Error {
   constructor() {
-    super('Debt description is required.');
+    super('Descrição da dívida é obrigatória.');
     this.name = 'InvalidDebtDescriptionError';
   }
 }

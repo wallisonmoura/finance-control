@@ -30,7 +30,7 @@ describe('ExpenseCategory', () => {
         ...baseProps,
         userId: '',
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 
   it('deve falhar ao criar categoria com userId contendo apenas espaços', () => {
@@ -39,7 +39,7 @@ describe('ExpenseCategory', () => {
         ...baseProps,
         userId: '   ',
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 
   it('deve falhar ao criar categoria sem nome', () => {
@@ -66,7 +66,7 @@ describe('ExpenseCategory', () => {
         ...baseProps,
         slug: '',
       }),
-    ).toThrow('Expense category slug is required.');
+    ).toThrow('Slug da categoria de despesa é obrigatório.');
   });
 
   it('deve falhar ao criar categoria com slug contendo apenas espaços', () => {
@@ -75,7 +75,7 @@ describe('ExpenseCategory', () => {
         ...baseProps,
         slug: '   ',
       }),
-    ).toThrow('Expense category slug is required.');
+    ).toThrow('Slug da categoria de despesa é obrigatório.');
   });
 
   it('deve ativar uma categoria inativa', () => {
@@ -150,7 +150,7 @@ describe('ExpenseCategory', () => {
       category.update({
         slug: '',
       }),
-    ).toThrow('Expense category slug is required.');
+    ).toThrow('Slug da categoria de despesa é obrigatório.');
   });
 
   it('deve retornar os dados da categoria em toJSON', () => {

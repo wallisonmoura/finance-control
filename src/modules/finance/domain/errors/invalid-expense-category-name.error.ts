@@ -1,6 +1,6 @@
 export class InvalidExpenseCategoryNameError extends Error {
   constructor() {
-    super('Expense category name is required.');
+    super('Nome da categoria de despesa é obrigatório.');
     this.name = 'InvalidExpenseCategoryNameError';
   }
 }

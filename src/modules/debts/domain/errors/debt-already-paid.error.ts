@@ -1,6 +1,6 @@
 export class DebtAlreadyPaidError extends Error {
   constructor() {
-    super('Debt is already paid.');
+    super('Dívida já está paga.');
     this.name = 'DebtAlreadyPaidError';
   }
 }

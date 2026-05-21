@@ -1,6 +1,6 @@
 export class DebtNotFoundError extends Error {
   constructor() {
-    super('Debt not found.');
+    super('Dívida não encontrada.');
     this.name = 'DebtNotFoundError';
   }
 }

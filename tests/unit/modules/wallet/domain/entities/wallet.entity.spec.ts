@@ -84,7 +84,7 @@ describe('Wallet entity', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 
   it('deve atualizar os saldos da wallet', () => {

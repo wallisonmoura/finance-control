@@ -117,7 +117,7 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
         paidAt: new Date('2026-05-10T00:00:00.000Z'),
         expenseCategoryId: '00000000-0000-0000-0000-000000000000',
       }),
-    ).rejects.toThrow('Expense category not found.');
+    ).rejects.toThrow('Categoria de despesa não encontrada.');
   });
 
   it('deve lançar erro quando a categoria pertencer a outro usuário', async () => {
@@ -142,6 +142,6 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
         paidAt: new Date('2026-05-10T00:00:00.000Z'),
         expenseCategoryId: anotherCategory.id,
       }),
-    ).rejects.toThrow('Expense category not found.');
+    ).rejects.toThrow('Categoria de despesa não encontrada.');
   });
 });

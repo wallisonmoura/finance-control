@@ -18,7 +18,7 @@ describe('isoDateStringSchema', () => {
 
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        'Date must be in YYYY-MM-DD format',
+        'Data deve estar no formato YYYY-MM-DD.',
       );
     }
   });
@@ -30,7 +30,7 @@ describe('isoDateStringSchema', () => {
 
     if (!result.success) {
       expect(result.error.issues[0].message).toBe(
-        'Date must be in YYYY-MM-DD format',
+        'Data deve estar no formato YYYY-MM-DD.',
       );
     }
   });

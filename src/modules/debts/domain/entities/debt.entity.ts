@@ -39,7 +39,7 @@ export class Debt {
 
   private validate(): void {
     if (!this.props.userId.trim()) {
-      throw new Error('User id is required.');
+      throw new Error('ID do usuário é obrigatório.');
     }
 
     if (!this.props.description.trim()) {

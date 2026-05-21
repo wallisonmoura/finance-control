@@ -149,7 +149,7 @@ describe('PUT /api/wallet', () => {
 
     expect(response.status).toBe(404);
     expect(body).toEqual({
-      message: `Wallet not found for user "${user.id}".`,
+      message: `Wallet não encontrada para o usuário "${user.id}".`,
     });
   });
 });

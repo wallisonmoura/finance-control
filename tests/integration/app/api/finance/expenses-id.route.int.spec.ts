@@ -303,7 +303,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
 
       expect(response.status).toBe(409);
       expect(body.message).toBe(
-        'Financial entry linked to debt payment cannot be modified.',
+        'Lançamento vinculado ao pagamento de dívida não pode ser alterado.',
       );
     });
   });
@@ -470,7 +470,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
 
       expect(response.status).toBe(409);
       expect(body.message).toBe(
-        'Financial entry linked to debt payment cannot be modified.',
+        'Lançamento vinculado ao pagamento de dívida não pode ser alterado.',
       );
       expect(found).not.toBeNull();
     });

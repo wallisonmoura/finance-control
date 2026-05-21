@@ -391,7 +391,7 @@ describe('UpdateExpenseUseCase', () => {
         date: new Date('2026-03-24'),
         categoryId: 'category-2',
       }),
-    ).rejects.toThrow('Description is required.');
+    ).rejects.toThrow('Descrição é obrigatória.');
   });
 
   it('deve falhar se a data atualizada for inválida', async () => {
@@ -417,6 +417,6 @@ describe('UpdateExpenseUseCase', () => {
         date: new Date('invalid-date'),
         categoryId: 'category-2',
       }),
-    ).rejects.toThrow('Valid date is required.');
+    ).rejects.toThrow('Data válida é obrigatória.');
   });
 });

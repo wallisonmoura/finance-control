@@ -1,6 +1,6 @@
 export class InvalidDebtPaidStateError extends Error {
   constructor() {
-    super('Paid debt must have paidAt and paymentSource.');
+    super('Dívida paga deve ter data e origem de pagamento.');
     this.name = 'InvalidDebtPaidStateError';
   }
 }

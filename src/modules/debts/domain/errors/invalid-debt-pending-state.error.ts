@@ -1,6 +1,6 @@
 export class InvalidDebtPendingStateError extends Error {
   constructor() {
-    super('Pending debt cannot have paidAt or paymentSource.');
+    super('Dívida pendente não pode ter data ou origem de pagamento.');
     this.name = 'InvalidDebtPendingStateError';
   }
 }

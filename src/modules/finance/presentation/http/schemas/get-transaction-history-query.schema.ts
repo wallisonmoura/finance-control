@@ -11,7 +11,7 @@ export const getTransactionHistoryQuerySchema = z
     type: z.enum(FinancialEntryType).optional(),
   })
   .refine((data) => data.startDate <= data.endDate, {
-    message: 'startDate must be less than or equal to endDate',
+    message: 'Data inicial deve ser menor ou igual à data final.',
     path: ['startDate'],
   });
 

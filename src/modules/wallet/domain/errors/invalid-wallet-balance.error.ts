@@ -4,7 +4,7 @@ export class InvalidWalletBalanceError extends Error {
     value: number,
   ) {
     super(
-      `Invalid wallet balance for "${field}": ${value}. Balance must be greater than or equal to zero.`,
+      `Saldo inválido para "${field}": ${value}. O saldo deve ser maior ou igual a zero.`,
     );
     this.name = 'InvalidWalletBalanceError';
   }

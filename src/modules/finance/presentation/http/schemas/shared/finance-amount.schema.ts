@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+function hasAtMostTwoDecimalPlaces(value: number) {
+  return /^\d+(\.\d{1,2})?$/.test(value.toString());
+}
+
 export const financeAmountSchema = z.coerce
   .number({
     error: 'Valor deve ser numérico.',
@@ -7,7 +11,7 @@ export const financeAmountSchema = z.coerce
   .positive({
     error: 'Valor deve ser maior que zero.',
   })
-  .refine((value) => Number.isInteger(value * 100), {
+  .refine(hasAtMostTwoDecimalPlaces, {
     error: 'Valor deve ter no máximo 2 casas decimais.',
   })
   .refine((value) => value <= 999999999999.99, {

@@ -30,7 +30,7 @@ export class JoseJwtTokenService implements TokenService {
     const { payload } = await jwtVerify(token, secretKey);
 
     if (!payload.sub || !payload.email) {
-      throw new Error('Invalid token payload');
+      throw new Error('Token inválido.');
     }
 
     return {

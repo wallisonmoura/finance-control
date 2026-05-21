@@ -14,14 +14,14 @@ describe('Email Value Object', () => {
   });
 
   it('should throw an error when email is invalid', () => {
-    expect(() => Email.create('email-invalido')).toThrow('Invalid email');
+    expect(() => Email.create('email-invalido')).toThrow('E-mail inválido.');
   });
 
   it('should throw an error when email is empty', () => {
-    expect(() => Email.create('')).toThrow('Invalid email');
+    expect(() => Email.create('')).toThrow('E-mail inválido.');
   });
 
   it('should throw an error when email has only spaces', () => {
-    expect(() => Email.create('   ')).toThrow('Invalid email');
+    expect(() => Email.create('   ')).toThrow('E-mail inválido.');
   });
 });

@@ -102,7 +102,7 @@ describe('SignInUseCase', () => {
         email: 'email-invalido',
         password: '123456',
       }),
-    ).rejects.toThrow('Invalid email');
+    ).rejects.toThrow('E-mail inválido.');
   });
 
   it('should return basic authenticated user data only', async () => {

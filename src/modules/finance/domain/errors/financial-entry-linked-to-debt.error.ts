@@ -1,6 +1,6 @@
 export class FinancialEntryLinkedToDebtError extends Error {
   constructor() {
-    super('Financial entry linked to debt payment cannot be modified.');
+    super('Lançamento vinculado ao pagamento de dívida não pode ser alterado.');
     this.name = 'FinancialEntryLinkedToDebtError';
   }
 }

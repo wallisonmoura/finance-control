@@ -50,7 +50,7 @@ describe('toErrorNextResponse', () => {
     const body = await readJson(response);
 
     expect(response.status).toBe(404);
-    expect(JSON.stringify(body)).toContain('Debt not found');
+    expect(JSON.stringify(body)).toContain('Dívida não encontrada');
   });
 
   it('deve retornar 409 para DebtAlreadyPaidError', async () => {
@@ -58,7 +58,7 @@ describe('toErrorNextResponse', () => {
     const body = await readJson(response);
 
     expect(response.status).toBe(409);
-    expect(JSON.stringify(body)).toContain('already');
+    expect(JSON.stringify(body)).toContain('já está paga');
   });
 
   it('deve retornar 409 para InvalidDebtPendingStateError', async () => {

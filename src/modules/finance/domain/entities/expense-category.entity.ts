@@ -21,7 +21,7 @@ export class ExpenseCategory {
 
   private validate(): void {
     if (!this.props.userId.trim()) {
-      throw new Error('User id is required.');
+      throw new Error('ID do usuário é obrigatório.');
     }
 
     if (!this.props.name.trim()) {
@@ -29,7 +29,7 @@ export class ExpenseCategory {
     }
 
     if (!this.props.slug.trim()) {
-      throw new Error('Expense category slug is required.');
+      throw new Error('Slug da categoria de despesa é obrigatório.');
     }
   }
 

@@ -1,6 +1,6 @@
 export class ExpenseCategoryNotFoundError extends Error {
   constructor() {
-    super('Expense category not found.');
+    super('Categoria de despesa não encontrada.');
     this.name = 'ExpenseCategoryNotFoundError';
   }
 }

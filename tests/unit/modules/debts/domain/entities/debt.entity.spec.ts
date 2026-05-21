@@ -265,7 +265,7 @@ describe('Debt entity', () => {
         ...baseProps,
         userId: '',
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 
   it('deve falhar ao criar dívida com userId contendo apenas espaços', () => {
@@ -274,6 +274,6 @@ describe('Debt entity', () => {
         ...baseProps,
         userId: '   ',
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 });

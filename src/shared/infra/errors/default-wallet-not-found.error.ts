@@ -1,6 +1,6 @@
 export class DefaultWalletNotFoundError extends Error {
   constructor() {
-    super('Default wallet not found for user.');
+    super('Wallet padrão não encontrada para o usuário.');
     this.name = 'DefaultWalletNotFoundError';
   }
 }

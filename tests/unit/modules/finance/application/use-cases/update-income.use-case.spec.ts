@@ -237,7 +237,7 @@ describe('UpdateIncomeUseCase', () => {
         description: '',
         date: new Date('2026-03-24'),
       }),
-    ).rejects.toThrow('Description is required.');
+    ).rejects.toThrow('Descrição é obrigatória.');
   });
 
   it('deve falhar se a data atualizada for inválida', async () => {
@@ -255,6 +255,6 @@ describe('UpdateIncomeUseCase', () => {
         description: 'Venda atualizada',
         date: new Date('invalid-date'),
       }),
-    ).rejects.toThrow('Valid date is required.');
+    ).rejects.toThrow('Data válida é obrigatória.');
   });
 });

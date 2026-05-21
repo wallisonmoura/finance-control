@@ -1,6 +1,6 @@
 export class InvalidDebtAmountError extends Error {
   constructor() {
-    super('Debt amount must be greater than zero.');
+    super('Valor da dívida deve ser maior que zero.');
     this.name = 'InvalidDebtAmountError';
   }
 }

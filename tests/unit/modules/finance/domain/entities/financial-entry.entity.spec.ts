@@ -96,7 +96,7 @@ describe('FinancialEntry', () => {
         type: FinancialEntryType.INCOME,
         userId: '',
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 
   it('deve falhar ao criar lançamento com userId contendo apenas espaços', () => {
@@ -106,7 +106,7 @@ describe('FinancialEntry', () => {
         type: FinancialEntryType.INCOME,
         userId: '   ',
       }),
-    ).toThrow('User id is required.');
+    ).toThrow('ID do usuário é obrigatório.');
   });
 
   it('deve falhar ao criar lançamento sem descrição', () => {
@@ -116,7 +116,7 @@ describe('FinancialEntry', () => {
         type: FinancialEntryType.INCOME,
         description: '',
       }),
-    ).toThrow('Description is required.');
+    ).toThrow('Descrição é obrigatória.');
   });
 
   it('deve falhar ao criar lançamento com descrição contendo apenas espaços', () => {
@@ -126,7 +126,7 @@ describe('FinancialEntry', () => {
         type: FinancialEntryType.INCOME,
         description: '   ',
       }),
-    ).toThrow('Description is required.');
+    ).toThrow('Descrição é obrigatória.');
   });
 
   it('deve falhar ao criar lançamento com date inválida', () => {
@@ -136,7 +136,7 @@ describe('FinancialEntry', () => {
         type: FinancialEntryType.INCOME,
         date: new Date('invalid-date'),
       }),
-    ).toThrow('Valid date is required.');
+    ).toThrow('Data válida é obrigatória.');
   });
 
   it('deve falhar ao criar lançamento com date que não é Date', () => {
@@ -146,7 +146,7 @@ describe('FinancialEntry', () => {
         type: FinancialEntryType.INCOME,
         date: '2026-03-23' as unknown as Date,
       }),
-    ).toThrow('Valid date is required.');
+    ).toThrow('Data válida é obrigatória.');
   });
 
   it('deve falhar ao criar despesa sem categoria', () => {
@@ -278,7 +278,7 @@ describe('FinancialEntry', () => {
       entry.update({
         description: '',
       }),
-    ).toThrow('Description is required.');
+    ).toThrow('Descrição é obrigatória.');
   });
 
   it('deve validar data ao atualizar lançamento', () => {
@@ -291,7 +291,7 @@ describe('FinancialEntry', () => {
       entry.update({
         date: new Date('invalid-date'),
       }),
-    ).toThrow('Valid date is required.');
+    ).toThrow('Data válida é obrigatória.');
   });
 
   it('deve retornar os dados do lançamento em toJSON', () => {

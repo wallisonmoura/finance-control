@@ -41,18 +41,18 @@ export class FinancialEntry {
     }
 
     if (!this.props.userId.trim()) {
-      throw new Error('User id is required.');
+      throw new Error('ID do usuário é obrigatório.');
     }
 
     if (!this.props.description.trim()) {
-      throw new Error('Description is required.');
+      throw new Error('Descrição é obrigatória.');
     }
 
     if (
       !(this.props.date instanceof Date) ||
       Number.isNaN(this.props.date.getTime())
     ) {
-      throw new Error('Valid date is required.');
+      throw new Error('Data válida é obrigatória.');
     }
 
     if (

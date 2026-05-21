@@ -1,6 +1,6 @@
 export class InvalidDebtDueDateError extends Error {
   constructor() {
-    super('Debt due date is required and must be valid.');
+    super('Data de vencimento da dívida é obrigatória e deve ser válida.');
     this.name = 'InvalidDebtDueDateError';
   }
 }

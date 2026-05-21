@@ -1,6 +1,6 @@
 export class FinancialEntryNotFoundError extends Error {
   constructor() {
-    super('Financial entry not found.');
+    super('Lançamento financeiro não encontrado.');
     this.name = 'FinancialEntryNotFoundError';
   }
 }

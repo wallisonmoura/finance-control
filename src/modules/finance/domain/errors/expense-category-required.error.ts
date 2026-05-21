@@ -1,6 +1,6 @@
 export class ExpenseCategoryRequiredError extends Error {
   constructor() {
-    super('Expense category is required for expense entries.');
+    super('Categoria de despesa é obrigatória para despesas.');
     this.name = 'ExpenseCategoryRequiredError';
   }
 }

@@ -1,6 +1,6 @@
 export class UnauthorizedFinancialEntryAccessError extends Error {
   constructor() {
-    super('You do not have access to this financial entry.');
+    super('Você não tem acesso a este lançamento financeiro.');
     this.name = 'UnauthorizedFinancialEntryAccessError';
   }
 }

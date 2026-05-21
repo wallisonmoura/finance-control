@@ -15,6 +15,20 @@ describe('financeAmountSchema', () => {
     expect(result.data).toBe(100.5);
   });
 
+  it('deve aceitar valores decimais que sofrem imprecisão de ponto flutuante', () => {
+    const result = financeAmountSchema.safeParse(0.54);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(0.54);
+  });
+
+  it('deve aceitar valores com duas casas decimais no limite da validação', () => {
+    const result = financeAmountSchema.safeParse(560.55);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(560.55);
+  });
+
   it('deve rejeitar valor zero', () => {
     const result = financeAmountSchema.safeParse(0);
 

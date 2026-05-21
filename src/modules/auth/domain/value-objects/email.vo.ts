@@ -7,7 +7,7 @@ export class Email {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized);
 
     if (!isValid) {
-      throw new Error('Invalid email');
+      throw new Error('E-mail inválido.');
     }
 
     return new Email(normalized);

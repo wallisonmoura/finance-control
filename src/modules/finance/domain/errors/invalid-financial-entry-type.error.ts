@@ -1,6 +1,6 @@
 export class InvalidFinancialEntryTypeError extends Error {
   constructor() {
-    super('Financial entry type is invalid.');
+    super('Tipo de lançamento financeiro inválido.');
     this.name = 'InvalidFinancialEntryTypeError';
   }
 }

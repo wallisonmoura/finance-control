@@ -6,6 +6,6 @@ describe('InvalidCredentialsError', () => {
 
     expect(error).toBeInstanceOf(Error);
     expect(error.name).toBe('InvalidCredentialsError');
-    expect(error.message).toBe('Invalid credentials');
+    expect(error.message).toBe('Credenciais inválidas.');
   });
 });

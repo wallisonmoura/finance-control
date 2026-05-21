@@ -1,6 +1,6 @@
 export class InsufficientWalletBalanceError extends Error {
   constructor() {
-    super('Insufficient wallet balance.');
+    super('Saldo insuficiente na Wallet.');
     this.name = 'InsufficientWalletBalanceError';
   }
 }

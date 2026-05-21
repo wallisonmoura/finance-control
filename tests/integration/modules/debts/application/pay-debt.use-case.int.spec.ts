@@ -206,7 +206,7 @@ describe('PayDebtUseCase Integration', () => {
         expenseCategoryId: anotherCategory.id,
         paymentSource: DebtPaymentSource.BANK,
       }),
-    ).rejects.toThrow('Expense category not found.');
+    ).rejects.toThrow('Categoria de despesa não encontrada.');
 
     const persistedDebt = await prisma.debt.findUnique({
       where: {
