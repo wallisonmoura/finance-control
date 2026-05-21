@@ -20,7 +20,7 @@ describe('MobileMenu', () => {
       }),
     ).not.toBeInTheDocument();
 
-    expect(screen.getByRole('button', { name: 'Menu' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Abrir menu' })).toHaveAttribute(
       'aria-expanded',
       'false',
     );
@@ -31,7 +31,7 @@ describe('MobileMenu', () => {
 
     render(<MobileMenu pathname='/dashboard' />);
 
-    await user.click(screen.getByRole('button', { name: 'Menu' }));
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
     expect(
       screen.getByRole('navigation', {
@@ -39,7 +39,7 @@ describe('MobileMenu', () => {
       }),
     ).toBeInTheDocument();
 
-    expect(screen.getByRole('button', { name: 'Menu' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Fechar menu' })).toHaveAttribute(
       'aria-expanded',
       'true',
     );
@@ -50,10 +50,10 @@ describe('MobileMenu', () => {
 
     render(<MobileMenu pathname='/dashboard' />);
 
-    const menuButton = screen.getByRole('button', { name: 'Menu' });
+    const menuButton = screen.getByRole('button', { name: 'Abrir menu' });
 
     await user.click(menuButton);
-    await user.click(menuButton);
+    await user.click(screen.getByRole('button', { name: 'Fechar menu' }));
 
     expect(
       screen.queryByRole('navigation', {
@@ -69,19 +69,19 @@ describe('MobileMenu', () => {
 
     render(<MobileMenu pathname='/dashboard' />);
 
-    await user.click(screen.getByRole('button', { name: 'Menu' }));
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
-    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Painel' })).toHaveAttribute(
       'href',
       '/dashboard',
     );
 
-    expect(screen.getByRole('link', { name: 'Wallet' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Carteira' })).toHaveAttribute(
       'href',
       '/wallet',
     );
 
-    expect(screen.getByRole('link', { name: 'Finance' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Financeiro' })).toHaveAttribute(
       'href',
       '/finance',
     );
@@ -97,7 +97,7 @@ describe('MobileMenu', () => {
 
     render(<MobileMenu pathname='/debts' />);
 
-    await user.click(screen.getByRole('button', { name: 'Menu' }));
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
     expect(screen.getByRole('link', { name: 'Dívidas' })).toHaveAttribute(
       'aria-current',
@@ -108,7 +108,7 @@ describe('MobileMenu', () => {
   it('should close the menu when clicking a navigation link', () => {
     render(<MobileMenu pathname='/dashboard' />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
     expect(
       screen.getByRole('navigation', {
@@ -116,7 +116,7 @@ describe('MobileMenu', () => {
       }),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('link', { name: 'Wallet' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Carteira' }));
 
     expect(
       screen.queryByRole('navigation', {
@@ -128,7 +128,7 @@ describe('MobileMenu', () => {
   it('should mark parent mobile link as active for subroutes', () => {
     render(<MobileMenu pathname='/debts/pending' />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
     expect(screen.getByRole('link', { name: 'Dívidas' })).toHaveAttribute(
       'aria-current',

@@ -13,17 +13,17 @@ describe('DesktopSidebar', () => {
   it('should render the main navigation links', () => {
     render(<DesktopSidebar pathname='/dashboard' />);
 
-    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Painel' })).toHaveAttribute(
       'href',
       '/dashboard',
     );
 
-    expect(screen.getByRole('link', { name: 'Wallet' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Carteira' })).toHaveAttribute(
       'href',
       '/wallet',
     );
 
-    expect(screen.getByRole('link', { name: 'Finance' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Financeiro' })).toHaveAttribute(
       'href',
       '/finance',
     );
@@ -45,12 +45,12 @@ describe('DesktopSidebar', () => {
   it('should mark the active link', () => {
     render(<DesktopSidebar pathname='/wallet' />);
 
-    expect(screen.getByRole('link', { name: 'Wallet' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Carteira' })).toHaveAttribute(
       'aria-current',
       'page',
     );
 
-    expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Painel' })).not.toHaveAttribute(
       'aria-current',
     );
   });
@@ -58,7 +58,7 @@ describe('DesktopSidebar', () => {
   it('should mark parent link as active for subroutes', () => {
     render(<DesktopSidebar pathname='/finance/incomes' />);
 
-    expect(screen.getByRole('link', { name: 'Finance' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Financeiro' })).toHaveAttribute(
       'aria-current',
       'page',
     );

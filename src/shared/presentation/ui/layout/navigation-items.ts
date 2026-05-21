@@ -9,17 +9,17 @@ export type NavigationItem = {
 
 export const PRIVATE_NAVIGATION_ITEMS: NavigationItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Painel',
     href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
-    label: 'Wallet',
+    label: 'Carteira',
     href: '/wallet',
     icon: WalletCards,
   },
   {
-    label: 'Finance',
+    label: 'Financeiro',
     href: '/finance',
     icon: ChartNoAxesCombined,
   },

@@ -28,7 +28,9 @@ describe('PrivateNavigation', () => {
   it('should render the mobile menu button', () => {
     render(<PrivateNavigation />);
 
-    expect(screen.getByRole('button', { name: 'Menu' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Abrir menu' }),
+    ).toBeInTheDocument();
   });
 
   it('should mark the current pathname as active', () => {
@@ -36,7 +38,7 @@ describe('PrivateNavigation', () => {
 
     render(<PrivateNavigation />);
 
-    expect(screen.getByRole('link', { name: 'Finance' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Financeiro' })).toHaveAttribute(
       'aria-current',
       'page',
     );

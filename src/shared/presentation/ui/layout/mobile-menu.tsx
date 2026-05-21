@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 
@@ -34,11 +35,17 @@ export function MobileMenu({ pathname }: MobileMenuProps) {
         <Button
           type='button'
           onClick={toggleMenu}
+          aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
           aria-expanded={isOpen}
           aria-controls='mobile-navigation'
           variant='secondary'
+          className='size-10 px-0'
         >
-          Menu
+          {isOpen ? (
+            <X aria-hidden='true' className='size-5' />
+          ) : (
+            <Menu aria-hidden='true' className='size-5' />
+          )}
         </Button>
       </div>
 
