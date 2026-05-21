@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { RotateCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
@@ -57,6 +58,7 @@ export function WalletPageContent() {
             <FormErrorMessage message={error} />
 
             <Button type='button' onClick={refetch}>
+              <RotateCw aria-hidden='true' className='size-4' />
               Tentar novamente
             </Button>
           </div>

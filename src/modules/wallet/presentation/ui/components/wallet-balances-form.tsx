@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -164,7 +165,8 @@ export function WalletBalancesForm({
           </div>
         )}
 
-        <Button type='submit' disabled={cannotSubmit}>
+        <Button type='submit' disabled={cannotSubmit} className='w-full sm:w-auto'>
+          <Save aria-hidden='true' className='size-4' />
           {cannotSubmit ? 'Salvando...' : 'Salvar saldos'}
         </Button>
       </form>

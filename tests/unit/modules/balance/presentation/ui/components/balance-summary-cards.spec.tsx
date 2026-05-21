@@ -29,7 +29,7 @@ describe('BalanceSummaryCards', () => {
     render(<BalanceSummaryCards summary={summary} />);
 
     expect(
-      screen.getByText('Soma dos saldos-base da wallet.'),
+      screen.getByText('Soma dos saldos-base da Wallet.'),
     ).toBeInTheDocument();
 
     expect(
