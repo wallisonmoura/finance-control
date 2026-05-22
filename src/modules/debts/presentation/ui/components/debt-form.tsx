@@ -36,6 +36,10 @@ function parseMoneyInput(value: string) {
   return Number(value.replace(',', '.'));
 }
 
+function formatMoneyInputValue(value: number) {
+  return value.toFixed(2).replace('.', ',');
+}
+
 function isBrazilianMoneyInput(value: string) {
   return /^\d+(,\d{1,2})?$/.test(value);
 }
@@ -83,7 +87,7 @@ export function DebtForm({
   } = useForm<DebtFormValues>({
     resolver: zodResolver(debtFormSchema),
     defaultValues: {
-      amount: editingDebt ? String(editingDebt.amount).replace('.', ',') : '',
+      amount: editingDebt ? formatMoneyInputValue(editingDebt.amount) : '',
       description: editingDebt?.description ?? '',
       dueDate: editingDebt
         ? formatDateInputValue(editingDebt.dueDate)

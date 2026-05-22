@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
@@ -22,6 +22,7 @@ export function DebtsPageContent({
   initialError = null,
 }: DebtsPageContentProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const [editingDebt, setEditingDebt] = useState<DebtUi | null>(null);
   const [debtToDelete, setDebtToDelete] = useState<DebtUi | null>(null);
   const [deletingDebtId, setDeletingDebtId] = useState<string | null>(null);
@@ -31,6 +32,22 @@ export function DebtsPageContent({
     initialDebts,
     initialError,
   });
+
+  useEffect(() => {
+    if (!editingDebt || !isFormOpen) {
+      return;
+    }
+
+    formContainerRef.current?.scrollIntoView?.({
+      behavior: 'smooth',
+      block: 'start',
+    });
+    formContainerRef.current
+      ?.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        'input, select, textarea',
+      )
+      ?.focus({ preventScroll: true });
+  }, [editingDebt, isFormOpen]);
 
   function handleOpenCreateForm() {
     setActionError(null);
@@ -101,13 +118,15 @@ export function DebtsPageContent({
       )}
 
       {isFormOpen && (
-        <DebtForm
-          key={editingDebt?.id ?? 'create-debt'}
-          editingDebt={editingDebt}
-          onDebtCreated={handleDebtSaved}
-          onDebtUpdated={handleDebtSaved}
-          onCancel={handleCancelForm}
-        />
+        <div ref={formContainerRef}>
+          <DebtForm
+            key={editingDebt?.id ?? 'create-debt'}
+            editingDebt={editingDebt}
+            onDebtCreated={handleDebtSaved}
+            onDebtUpdated={handleDebtSaved}
+            onCancel={handleCancelForm}
+          />
+        </div>
       )}
 
       {isLoading && (

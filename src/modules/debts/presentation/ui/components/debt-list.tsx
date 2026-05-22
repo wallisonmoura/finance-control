@@ -43,7 +43,12 @@ export function DebtList({
   deletingDebtId = null,
 }: DebtListProps) {
   if (debts.length === 0) {
-    return <EmptyState description='Nenhuma dívida encontrada.' />;
+    return (
+      <EmptyState
+        title='Nenhuma dívida encontrada'
+        description='Cadastre uma nova dívida ou ajuste a visualização para acompanhar compromissos pendentes e pagos.'
+      />
+    );
   }
 
   return (

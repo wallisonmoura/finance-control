@@ -1,5 +1,11 @@
 import Link from 'next/link';
-import { CheckCircle2, ListChecks, Plus } from 'lucide-react';
+import {
+  CheckCircle2,
+  CircleDollarSign,
+  Clock3,
+  ListChecks,
+  Plus,
+} from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -11,6 +17,22 @@ type DebtOverviewSummaryProps = {
   debts: DebtUi[];
   onCreateDebt: () => void;
 };
+
+type DebtIndicator =
+  | {
+      kind: 'count';
+      label: string;
+      value: number;
+      icon: typeof Clock3;
+      toneClassName: string;
+    }
+  | {
+      kind: 'money';
+      label: string;
+      value: number;
+      icon: typeof Clock3;
+      toneClassName: string;
+    };
 
 function sumDebts(debts: DebtUi[]) {
   return debts.reduce((total, debt) => total + debt.amount, 0);
@@ -25,39 +47,64 @@ export function DebtOverviewSummary({
 
   const pendingTotal = sumDebts(pendingDebts);
   const paidTotal = sumDebts(paidDebts);
+  const indicators: DebtIndicator[] = [
+    {
+      kind: 'count',
+      label: 'Dívidas pendentes',
+      value: pendingDebts.length,
+      icon: Clock3,
+      toneClassName: 'text-amber-700',
+    },
+    {
+      kind: 'money',
+      label: 'Valor pendente',
+      value: pendingTotal,
+      icon: CircleDollarSign,
+      toneClassName: 'text-red-700',
+    },
+    {
+      kind: 'count',
+      label: 'Dívidas pagas',
+      value: paidDebts.length,
+      icon: CheckCircle2,
+      toneClassName: 'text-emerald-700',
+    },
+    {
+      kind: 'money',
+      label: 'Valor pago',
+      value: paidTotal,
+      icon: CircleDollarSign,
+      toneClassName: 'text-emerald-700',
+    },
+  ];
 
   return (
     <div className='space-y-4'>
       <div className='grid grid-cols-2 gap-3 xl:grid-cols-4'>
-        <Card>
-          <p className='text-sm text-slate-500'>Dívidas pendentes</p>
-          <strong className='mt-2 block text-xl font-bold text-slate-950 sm:text-2xl'>
-            {pendingDebts.length}
-          </strong>
-        </Card>
+        {indicators.map((indicator) => (
+          <Card key={indicator.label}>
+            <div className='flex items-center gap-2 text-sm text-slate-500'>
+              <indicator.icon
+                aria-hidden='true'
+                className={`size-4 ${indicator.toneClassName}`}
+              />
+              <p>{indicator.label}</p>
+            </div>
 
-        <Card>
-          <p className='text-sm text-slate-500'>Valor pendente</p>
-          <MoneyDisplay
-            value={pendingTotal}
-            className='mt-2 text-xl font-bold text-red-700 sm:text-2xl'
-          />
-        </Card>
-
-        <Card>
-          <p className='text-sm text-slate-500'>Dívidas pagas</p>
-          <strong className='mt-2 block text-xl font-bold text-slate-950 sm:text-2xl'>
-            {paidDebts.length}
-          </strong>
-        </Card>
-
-        <Card>
-          <p className='text-sm text-slate-500'>Valor pago</p>
-          <MoneyDisplay
-            value={paidTotal}
-            className='mt-2 text-xl font-bold text-emerald-700 sm:text-2xl'
-          />
-        </Card>
+            {indicator.kind === 'money' ? (
+              <MoneyDisplay
+                value={indicator.value}
+                className={`mt-2 text-xl font-bold sm:text-2xl ${indicator.toneClassName}`}
+              />
+            ) : (
+              <strong
+                className={`mt-2 block text-xl font-bold sm:text-2xl ${indicator.toneClassName}`}
+              >
+                {indicator.value}
+              </strong>
+            )}
+          </Card>
+        ))}
       </div>
 
       <div className='grid gap-2 sm:flex sm:flex-wrap sm:justify-end'>
