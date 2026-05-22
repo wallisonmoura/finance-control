@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
@@ -30,6 +30,7 @@ export function FinanceIncomesPageContent({
   initialFilters,
 }: FinanceIncomesPageContentProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const [editingIncome, setEditingIncome] = useState<FinanceEntryUi | null>(
     null,
   );
@@ -45,6 +46,22 @@ export function FinanceIncomesPageContent({
     initialData: initialHistory,
     initialError,
   });
+
+  useEffect(() => {
+    if (!editingIncome || !isFormOpen) {
+      return;
+    }
+
+    formContainerRef.current?.scrollIntoView?.({
+      behavior: 'smooth',
+      block: 'start',
+    });
+    formContainerRef.current
+      ?.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        'input, select, textarea',
+      )
+      ?.focus({ preventScroll: true });
+  }, [editingIncome, isFormOpen]);
 
   function handleOpenCreateForm() {
     setActionError(null);
@@ -122,13 +139,15 @@ export function FinanceIncomesPageContent({
       )}
 
       {isFormOpen && (
-        <IncomeForm
-          key={editingIncome?.id ?? 'create-income'}
-          editingIncome={editingIncome}
-          onIncomeCreated={handleIncomeSaved}
-          onIncomeUpdated={handleIncomeSaved}
-          onCancel={handleCancelForm}
-        />
+        <div ref={formContainerRef}>
+          <IncomeForm
+            key={editingIncome?.id ?? 'create-income'}
+            editingIncome={editingIncome}
+            onIncomeCreated={handleIncomeSaved}
+            onIncomeUpdated={handleIncomeSaved}
+            onCancel={handleCancelForm}
+          />
+        </div>
       )}
 
       {isLoading && (

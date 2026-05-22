@@ -34,6 +34,10 @@ function parseMoneyInput(value: string) {
   return Number(value.replace(',', '.'));
 }
 
+function formatMoneyInputValue(value: number) {
+  return value.toFixed(2).replace('.', ',');
+}
+
 function isBrazilianMoneyInput(value: string) {
   return /^\d+(,\d{1,2})?$/.test(value);
 }
@@ -42,6 +46,10 @@ function getOptionalNotes(notes: string) {
   const trimmedNotes = notes.trim();
 
   return trimmedNotes ? { notes: trimmedNotes } : {};
+}
+
+function isFutureDate(value: string) {
+  return value > getTodayDateValue();
 }
 
 const incomeFormSchema = z.object({
@@ -56,7 +64,12 @@ const incomeFormSchema = z.object({
     .refine((value) => parseMoneyInput(value) > 0, {
       message: 'Informe um valor maior que zero.',
     }),
-  date: z.string().min(1, 'Informe a data.'),
+  date: z
+    .string()
+    .min(1, 'Informe a data.')
+    .refine((value) => !isFutureDate(value), {
+      message: 'Informe uma data de hoje ou anterior.',
+    }),
   notes: z.string(),
 });
 
@@ -81,7 +94,7 @@ export function IncomeForm({
     resolver: zodResolver(incomeFormSchema),
     defaultValues: {
       amount: editingIncome
-        ? String(editingIncome.amount).replace('.', ',')
+        ? formatMoneyInputValue(editingIncome.amount)
         : '',
       description: editingIncome?.description ?? '',
       date: editingIncome
@@ -193,6 +206,7 @@ export function IncomeForm({
               id='income-date'
               label='Data'
               type='date'
+              max={getTodayDateValue()}
               aria-invalid={Boolean(errors.date)}
               aria-describedby={errors.date ? 'income-date-error' : undefined}
               {...register('date')}

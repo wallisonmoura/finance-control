@@ -14,6 +14,8 @@ export function FinanceHistorySummary({
   totalExpense,
   balance,
 }: FinanceHistorySummaryProps) {
+  const balanceClassName = balance >= 0 ? 'text-emerald-700' : 'text-red-700';
+
   return (
     <div className='grid gap-4 md:grid-cols-3'>
       <Card>
@@ -40,12 +42,14 @@ export function FinanceHistorySummary({
         <div className='flex items-center gap-2 text-sm text-slate-500'>
           <ChartNoAxesCombined
             aria-hidden='true'
-            className='size-4 text-slate-600'
+            className={`size-4 ${
+              balance >= 0 ? 'text-emerald-600' : 'text-red-600'
+            }`}
           />
           <p>Resultado do período</p>
         </div>
         <div className='mt-2'>
-          <MoneyDisplay value={balance} className='text-slate-950' />
+          <MoneyDisplay value={balance} className={balanceClassName} />
         </div>
       </Card>
     </div>

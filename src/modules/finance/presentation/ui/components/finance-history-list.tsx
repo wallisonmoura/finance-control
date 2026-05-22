@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
+import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 
 import { FinanceEntryUi } from '../types/finance-ui.types';
@@ -26,6 +27,12 @@ function getEntryTypeLabel(type: FinanceEntryUi['type']) {
   return type === 'INCOME' ? 'Receita' : 'Despesa';
 }
 
+function getEntryTypeClassName(type: FinanceEntryUi['type']) {
+  return type === 'INCOME'
+    ? 'bg-emerald-100 text-emerald-800'
+    : 'bg-red-100 text-red-800';
+}
+
 function isDebtPaymentExpense(entry: FinanceEntryUi) {
   return entry.type === 'EXPENSE' && Boolean(entry.debtId);
 }
@@ -41,11 +48,10 @@ export function FinanceHistoryList({
 }: FinanceHistoryListProps) {
   if (entries.length === 0) {
     return (
-      <Card>
-        <p className='text-sm text-slate-500'>
-          Nenhum lançamento encontrado para o período.
-        </p>
-      </Card>
+      <EmptyState
+        title='Nenhum lançamento encontrado'
+        description='Ajuste os filtros ou registre receitas e despesas para visualizar o histórico do período.'
+      />
     );
   }
 
@@ -68,7 +74,11 @@ export function FinanceHistoryList({
               <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
                 <div className='min-w-0'>
                   <div className='flex flex-wrap items-center gap-2'>
-                    <span className='text-sm font-medium text-slate-500'>
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs font-semibold ${getEntryTypeClassName(
+                        entry.type,
+                      )}`}
+                    >
                       {getEntryTypeLabel(entry.type)}
                     </span>
 
@@ -94,7 +104,7 @@ export function FinanceHistoryList({
                   )}
 
                   {isDebtPaymentExpense(entry) && (
-                    <p className='mt-1 text-xs text-slate-400'>
+                    <p className='mt-2 inline-flex rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600'>
                       Gerada por pagamento de dívida.
                     </p>
                   )}

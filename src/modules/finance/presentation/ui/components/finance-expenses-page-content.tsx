@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
@@ -36,6 +36,7 @@ export function FinanceExpensesPageContent({
   initialCategoriesError = null,
 }: FinanceExpensesPageContentProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const [editingExpense, setEditingExpense] = useState<FinanceEntryUi | null>(
     null,
   );
@@ -61,6 +62,22 @@ export function FinanceExpensesPageContent({
     initialCategories,
     initialError: initialCategoriesError,
   });
+
+  useEffect(() => {
+    if (!editingExpense || !isFormOpen) {
+      return;
+    }
+
+    formContainerRef.current?.scrollIntoView?.({
+      behavior: 'smooth',
+      block: 'start',
+    });
+    formContainerRef.current
+      ?.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        'input, select, textarea',
+      )
+      ?.focus({ preventScroll: true });
+  }, [editingExpense, isFormOpen]);
 
   function handleOpenCreateForm() {
     setActionError(null);
@@ -138,16 +155,18 @@ export function FinanceExpensesPageContent({
       )}
 
       {isFormOpen && (
-        <ExpenseForm
-          key={editingExpense?.id ?? 'create-expense'}
-          categories={categories}
-          isLoadingCategories={isLoadingCategories}
-          categoriesError={categoriesError}
-          editingExpense={editingExpense}
-          onExpenseCreated={handleExpenseSaved}
-          onExpenseUpdated={handleExpenseSaved}
-          onCancel={handleCancelForm}
-        />
+        <div ref={formContainerRef}>
+          <ExpenseForm
+            key={editingExpense?.id ?? 'create-expense'}
+            categories={categories}
+            isLoadingCategories={isLoadingCategories}
+            categoriesError={categoriesError}
+            editingExpense={editingExpense}
+            onExpenseCreated={handleExpenseSaved}
+            onExpenseUpdated={handleExpenseSaved}
+            onCancel={handleCancelForm}
+          />
+        </div>
       )}
 
       {isLoading && (

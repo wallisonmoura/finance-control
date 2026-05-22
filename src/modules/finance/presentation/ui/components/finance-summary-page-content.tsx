@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ClipboardEvent, DragEvent, KeyboardEvent } from 'react';
 import {
   CalendarDays,
   ChartNoAxesCombined,
@@ -164,6 +165,27 @@ function SummaryFilterForm({
     await onApplyFilters(parseMonthInputValue(monthValue));
   }
 
+  function handleMonthChange(value: string) {
+    if (!value) {
+      return;
+    }
+
+    setMonthValue(value);
+  }
+
+  function preventManualMonthEdit(
+    event:
+      | ClipboardEvent<HTMLInputElement>
+      | DragEvent<HTMLInputElement>
+      | KeyboardEvent<HTMLInputElement>,
+  ) {
+    if ('key' in event && event.key === 'Tab') {
+      return;
+    }
+
+    event.preventDefault();
+  }
+
   return (
     <Card>
       <div className='grid gap-4 md:grid-cols-[1fr_auto] md:items-end'>
@@ -173,7 +195,11 @@ function SummaryFilterForm({
           label='Mês'
           type='month'
           value={monthValue}
-          onChange={(event) => setMonthValue(event.target.value)}
+          aria-readonly='true'
+          onChange={(event) => handleMonthChange(event.target.value)}
+          onDrop={preventManualMonthEdit}
+          onKeyDown={preventManualMonthEdit}
+          onPaste={preventManualMonthEdit}
         />
 
         <Button
