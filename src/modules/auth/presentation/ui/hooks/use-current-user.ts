@@ -10,12 +10,25 @@ type UseCurrentUserState = {
   errorMessage: string | null;
 };
 
-export function useCurrentUser(): UseCurrentUserState {
-  const [user, setUser] = useState<AuthenticatedUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+type UseCurrentUserParams = {
+  initialUser?: AuthenticatedUser | null;
+  initialError?: string | null;
+};
+
+export function useCurrentUser(
+  params?: UseCurrentUserParams,
+): UseCurrentUserState {
+  const { initialUser = null, initialError = null } = params ?? {};
+  const hasInitialResult = Boolean(initialUser || initialError);
+  const [user, setUser] = useState<AuthenticatedUser | null>(initialUser);
+  const [isLoading, setIsLoading] = useState(!hasInitialResult);
+  const [errorMessage, setErrorMessage] = useState<string | null>(initialError);
 
   useEffect(() => {
+    if (hasInitialResult) {
+      return;
+    }
+
     let isMounted = true;
 
     async function loadCurrentUser() {
@@ -42,6 +55,7 @@ export function useCurrentUser(): UseCurrentUserState {
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

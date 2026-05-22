@@ -1,19 +1,18 @@
-'use client';
-
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
-import { LoadingState } from '@/shared/presentation/ui/components/loading-state';
 import { StatusMessage } from '@/shared/presentation/ui/components/status-message';
 
-import { useBalanceSummary } from '../hooks/use-balance-summary';
+import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
 import { BalanceSummaryCards } from './balance-summary-cards';
 
-export function BalanceSummaryDashboard() {
-  const { data, isLoading, error } = useBalanceSummary();
+type BalanceSummaryDashboardProps = {
+  summary?: BalanceSummaryUi | null;
+  error?: string | null;
+};
 
-  if (isLoading) {
-    return <LoadingState message='Carregando resumo financeiro...' />;
-  }
-
+export function BalanceSummaryDashboard({
+  summary,
+  error,
+}: BalanceSummaryDashboardProps) {
   if (error) {
     return (
       <StatusMessage
@@ -24,9 +23,9 @@ export function BalanceSummaryDashboard() {
     );
   }
 
-  if (!data) {
+  if (!summary) {
     return <EmptyState description='Nenhum resumo financeiro encontrado.' />;
   }
 
-  return <BalanceSummaryCards summary={data} />;
+  return <BalanceSummaryCards summary={summary} />;
 }

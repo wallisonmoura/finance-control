@@ -9,41 +9,35 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
-import { LoadingState } from '@/shared/presentation/ui/components/loading-state';
 
 import { useWallet } from '../hooks/use-wallet';
+import { WalletUi } from '../types/wallet-ui.types';
 import { WalletSummaryCard } from './wallet-summary-card';
 import { WalletBalancesForm } from './wallet-balances-form';
 
-export function WalletPageContent() {
+type WalletPageContentProps = {
+  initialWallet?: WalletUi | null;
+  initialError?: string | null;
+};
+
+export function WalletPageContent({
+  initialWallet = null,
+  initialError = null,
+}: WalletPageContentProps) {
   const {
     wallet,
-    isLoading,
     isUpdating,
     error,
     successMessage,
     refetch,
     updateBalances,
-  } = useWallet();
+  } = useWallet({ initialWallet, initialError });
 
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
     }
   }, [successMessage]);
-
-  if (isLoading) {
-    return (
-      <div className='space-y-6'>
-        <PageTitle
-          title='Wallet'
-          description='Visualize e atualize seus saldos-base.'
-        />
-
-        <LoadingState message='Carregando Wallet...' />
-      </div>
-    );
-  }
 
   if (error && !wallet) {
     return (

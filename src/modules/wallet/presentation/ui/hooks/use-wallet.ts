@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import {
   getWallet,
@@ -13,7 +11,6 @@ import {
 
 type UseWalletState = {
   wallet: WalletUi | null;
-  isLoading: boolean;
   isUpdating: boolean;
   error: string | null;
   successMessage: string | null;
@@ -21,15 +18,21 @@ type UseWalletState = {
   updateBalances: (payload: UpdateWalletBalancesPayload) => Promise<void>;
 };
 
-export function useWallet(): UseWalletState {
-  const [wallet, setWallet] = useState<WalletUi | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+type UseWalletParams = {
+  initialWallet?: WalletUi | null;
+  initialError?: string | null;
+};
+
+export function useWallet({
+  initialWallet = null,
+  initialError = null,
+}: UseWalletParams = {}): UseWalletState {
+  const [wallet, setWallet] = useState<WalletUi | null>(initialWallet);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   async function refetch() {
-    setIsLoading(true);
     setError(null);
     setSuccessMessage(null);
 
@@ -38,12 +41,10 @@ export function useWallet(): UseWalletState {
     if (response.error) {
       setWallet(null);
       setError(response.error);
-      setIsLoading(false);
       return;
     }
 
     setWallet(response.data ?? null);
-    setIsLoading(false);
   }
 
   async function updateBalances(payload: UpdateWalletBalancesPayload) {
@@ -64,41 +65,8 @@ export function useWallet(): UseWalletState {
     setIsUpdating(false);
   }
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadWallet() {
-      setIsLoading(true);
-      setError(null);
-      setSuccessMessage(null);
-
-      const response = await getWallet();
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (response.error) {
-        setWallet(null);
-        setError(response.error);
-        setIsLoading(false);
-        return;
-      }
-
-      setWallet(response.data ?? null);
-      setIsLoading(false);
-    }
-
-    loadWallet();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   return {
     wallet,
-    isLoading,
     isUpdating,
     error,
     successMessage,

@@ -125,7 +125,6 @@ export function WalletBalancesForm({
         <div className='grid gap-4 md:grid-cols-3'>
           <Input
             id='bankBalance'
-            name='bankBalance'
             label='Saldo em Banco'
             type='text'
             inputMode='decimal'
@@ -136,7 +135,6 @@ export function WalletBalancesForm({
 
           <Input
             id='cashBalance'
-            name='cashBalance'
             label='Saldo em Dinheiro'
             type='text'
             inputMode='decimal'
@@ -147,7 +145,6 @@ export function WalletBalancesForm({
 
           <Input
             id='receivableBalance'
-            name='receivableBalance'
             label='Valores a Receber'
             type='text'
             inputMode='decimal'

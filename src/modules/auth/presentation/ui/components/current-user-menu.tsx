@@ -3,10 +3,19 @@
 import { UserRound } from 'lucide-react';
 
 import { useCurrentUser } from '../hooks/use-current-user';
+import { AuthenticatedUser } from '../types/auth-ui.types';
 import { SignOutButton } from './sign-out-button';
 
-export function CurrentUserMenu() {
-  const { user, isLoading } = useCurrentUser();
+type CurrentUserMenuProps = {
+  initialUser?: AuthenticatedUser | null;
+  initialError?: string | null;
+};
+
+export function CurrentUserMenu({
+  initialUser = null,
+  initialError = null,
+}: CurrentUserMenuProps) {
+  const { user, isLoading } = useCurrentUser({ initialUser, initialError });
 
   return (
     <div className='flex w-full items-center justify-between gap-3 md:w-auto md:justify-end'>
