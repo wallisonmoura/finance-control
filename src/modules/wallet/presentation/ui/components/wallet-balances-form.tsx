@@ -33,9 +33,9 @@ const INVALID_AMOUNT_MESSAGE =
 
 function toFormState(wallet: WalletUi): WalletBalancesFormState {
   return {
-    bankBalance: String(wallet.bankBalance).replace('.', ','),
-    cashBalance: String(wallet.cashBalance).replace('.', ','),
-    receivableBalance: String(wallet.receivableBalance).replace('.', ','),
+    bankBalance: wallet.bankBalance.toFixed(2).replace('.', ','),
+    cashBalance: wallet.cashBalance.toFixed(2).replace('.', ','),
+    receivableBalance: wallet.receivableBalance.toFixed(2).replace('.', ','),
   };
 }
 
