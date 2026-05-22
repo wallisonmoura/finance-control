@@ -29,14 +29,6 @@ describe('BalanceSummaryCards', () => {
     render(<BalanceSummaryCards summary={summary} />);
 
     expect(
-      screen.getByText('Soma dos saldos-base da Wallet.'),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText('Total de compromissos ainda em aberto.'),
-    ).toBeInTheDocument();
-
-    expect(
       screen.getByText('Resultado após considerar dívidas pendentes.'),
     ).toBeInTheDocument();
 

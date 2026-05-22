@@ -137,6 +137,49 @@ describe('ExpenseForm', () => {
     expect(onExpenseUpdated).toHaveBeenCalledTimes(1);
   });
 
+  it('should render editing amount with two decimal places', () => {
+    render(
+      <ExpenseForm
+        categories={categories}
+        editingExpense={{
+          id: 'expense-id',
+          userId: 'user-id',
+          type: 'EXPENSE',
+          amount: 919.1,
+          description: 'Combustivel',
+          date: '2026-05-16',
+          categoryId: 'category-id',
+          notes: null,
+          createdAt: '2026-05-16T00:00:00.000Z',
+          updatedAt: '2026-05-16T00:00:00.000Z',
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText('Valor')).toHaveValue('919,10');
+  });
+
+  it('should validate future date before submitting', async () => {
+    const user = userEvent.setup();
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText('Categoria'), 'category-id');
+    await user.type(screen.getByLabelText('Descrição'), 'Combustivel');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '120');
+    await user.clear(screen.getByLabelText('Data'));
+    await user.type(screen.getByLabelText('Data'), '2999-01-01');
+
+    await user.click(screen.getByRole('button', { name: 'Registrar despesa' }));
+
+    expect(
+      await screen.findByText('Informe uma data de hoje ou anterior.'),
+    ).toBeInTheDocument();
+
+    expect(registerExpenseMock).not.toHaveBeenCalled();
+  });
+
   it('should render category loading error', () => {
     render(
       <ExpenseForm

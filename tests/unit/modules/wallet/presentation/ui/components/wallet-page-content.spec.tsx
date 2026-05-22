@@ -101,9 +101,9 @@ describe('WalletPageContent', () => {
     expect(screen.getByText('Wallet Total')).toBeInTheDocument();
     expect(screen.getByText('Atualizar saldos-base')).toBeInTheDocument();
 
-    expect(screen.getByLabelText('Saldo em Banco')).toHaveValue('1500');
-    expect(screen.getByLabelText('Saldo em Dinheiro')).toHaveValue('200');
-    expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450');
+    expect(screen.getByLabelText('Saldo em Banco')).toHaveValue('1500,00');
+    expect(screen.getByLabelText('Saldo em Dinheiro')).toHaveValue('200,00');
+    expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450,00');
   });
 
   it('deve exibir toast de sucesso quando houver atualização concluída', () => {

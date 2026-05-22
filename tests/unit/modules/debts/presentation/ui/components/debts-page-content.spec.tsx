@@ -96,8 +96,9 @@ describe('DebtsPageContent', () => {
 
     expect(screen.getByText('Editar dívida')).toBeInTheDocument();
     expect(screen.getByLabelText('Descrição')).toHaveValue('Seguro do carro');
-    expect(screen.getByDisplayValue('300')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('300,00')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Parcela unica')).toBeInTheDocument();
+    expect(screen.getByLabelText('Tipo')).toHaveFocus();
   });
 
   it('should delete a debt when confirmed', async () => {

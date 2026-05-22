@@ -73,6 +73,11 @@ describe('DebtList', () => {
   it('should render empty state', () => {
     render(<DebtList debts={[]} />);
 
-    expect(screen.getByText('Nenhuma dívida encontrada.')).toBeInTheDocument();
+    expect(screen.getByText('Nenhuma dívida encontrada')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Cadastre uma nova dívida ou ajuste a visualização para acompanhar compromissos pendentes e pagos.',
+      ),
+    ).toBeInTheDocument();
   });
 });

@@ -127,4 +127,27 @@ describe('DebtForm', () => {
 
     expect(onDebtUpdated).toHaveBeenCalledTimes(1);
   });
+
+  it('should render editing amount with two decimal places', () => {
+    render(
+      <DebtForm
+        editingDebt={{
+          id: 'debt-id',
+          userId: 'user-id',
+          description: 'Seguro do carro',
+          amount: 919.1,
+          dueDate: '2026-05-20T00:00:00.000Z',
+          type: 'ONE_TIME',
+          status: 'PENDING',
+          notes: null,
+          paidAt: null,
+          paymentSource: null,
+          createdAt: '2026-05-16T00:00:00.000Z',
+          updatedAt: '2026-05-16T00:00:00.000Z',
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText('Valor')).toHaveValue('919,10');
+  });
 });

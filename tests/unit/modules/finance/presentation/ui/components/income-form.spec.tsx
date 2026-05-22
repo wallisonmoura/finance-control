@@ -108,6 +108,27 @@ describe('IncomeForm', () => {
     });
   });
 
+  it('should render editing amount with two decimal places', () => {
+    render(
+      <IncomeForm
+        editingIncome={{
+          id: 'income-id',
+          userId: 'user-id',
+          type: 'INCOME',
+          amount: 919.1,
+          description: 'Corrida',
+          date: '2026-04-10T00:00:00.000Z',
+          categoryId: null,
+          notes: null,
+          createdAt: '2026-05-07T19:43:27.751Z',
+          updatedAt: '2026-05-07T19:43:27.751Z',
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText('Valor')).toHaveValue('919,10');
+  });
+
   it('should validate amount before submitting', async () => {
     const user = userEvent.setup();
 
@@ -123,6 +144,26 @@ describe('IncomeForm', () => {
 
     expect(
       await screen.findByText('Informe um valor maior que zero.'),
+    ).toBeInTheDocument();
+
+    expect(registerIncomeMock).not.toHaveBeenCalled();
+  });
+
+  it('should validate future date before submitting', async () => {
+    const user = userEvent.setup();
+
+    render(<IncomeForm />);
+
+    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '100');
+    await user.clear(screen.getByLabelText('Data'));
+    await user.type(screen.getByLabelText('Data'), '2999-01-01');
+
+    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+
+    expect(
+      await screen.findByText('Informe uma data de hoje ou anterior.'),
     ).toBeInTheDocument();
 
     expect(registerIncomeMock).not.toHaveBeenCalled();

@@ -113,7 +113,7 @@ describe('FinanceExpensesPageContent', () => {
 
     expect(screen.getByText('Editar despesa')).toBeInTheDocument();
     expect(screen.getByLabelText('Descrição')).toHaveValue('Combustivel');
-    expect(screen.getByDisplayValue('120')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('120,00')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Posto')).toBeInTheDocument();
   });
 

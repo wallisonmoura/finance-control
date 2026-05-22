@@ -100,7 +100,7 @@ describe('FinanceIncomesPageContent', () => {
 
     expect(screen.getByText('Editar receita')).toBeInTheDocument();
     expect(screen.getByDisplayValue('ganho uber')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('400')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('400,00')).toBeInTheDocument();
     expect(screen.getByDisplayValue('UBER')).toBeInTheDocument();
   });
 

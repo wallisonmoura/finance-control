@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -127,8 +127,11 @@ describe('FinanceSummaryPageContent', () => {
 
     render(<FinanceSummaryPageContent />);
 
-    await user.clear(screen.getByLabelText('Mês'));
-    await user.type(screen.getByLabelText('Mês'), '2026-04');
+    fireEvent.change(screen.getByLabelText('Mês'), {
+      target: {
+        value: '2026-04',
+      },
+    });
     await user.click(screen.getByRole('button', { name: 'Aplicar filtros' }));
 
     expect(push).toHaveBeenCalledWith('/finance/summary?month=2026-04');
@@ -136,6 +139,16 @@ describe('FinanceSummaryPageContent', () => {
       year: 2026,
       month: 4,
     });
+  });
+
+  it('should prevent clearing month filter by keyboard', async () => {
+    const user = userEvent.setup();
+
+    render(<FinanceSummaryPageContent />);
+
+    await user.clear(screen.getByLabelText('Mês'));
+
+    expect(screen.getByLabelText('Mês')).toHaveValue('2026-05');
   });
 
   it('should render loading state', () => {

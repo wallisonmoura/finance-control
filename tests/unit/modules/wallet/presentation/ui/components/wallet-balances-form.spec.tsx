@@ -25,9 +25,9 @@ describe('WalletBalancesForm', () => {
       />,
     );
 
-    expect(screen.getByLabelText('Saldo em Banco')).toHaveValue('1500');
-    expect(screen.getByLabelText('Saldo em Dinheiro')).toHaveValue('200');
-    expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450');
+    expect(screen.getByLabelText('Saldo em Banco')).toHaveValue('1500,00');
+    expect(screen.getByLabelText('Saldo em Dinheiro')).toHaveValue('200,00');
+    expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450,00');
   });
 
   it('deve enviar os novos saldos-base ao submeter o formulário', async () => {
