@@ -7,42 +7,34 @@ import {
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
 } from '../types/finance-ui.types';
+import { getCurrentMonthFilters } from '../utils/finance-filters';
 
-type UseFinanceHistoryInitialFilters = Partial<FinanceHistoryFiltersUi>;
+type UseFinanceHistoryParams = Partial<FinanceHistoryFiltersUi> & {
+  initialData?: FinanceHistoryUi | null;
+  initialError?: string | null;
+};
 
-export function getCurrentMonthFilters(
-  initialFilters?: UseFinanceHistoryInitialFilters,
-): FinanceHistoryFiltersUi {
-  const now = new Date();
-
-  const year = now.getFullYear();
-  const month = now.getMonth();
-
-  const startDate = new Date(Date.UTC(year, month, 1))
-    .toISOString()
-    .slice(0, 10);
-
-  const endDate = new Date(Date.UTC(year, month + 1, 0))
-    .toISOString()
-    .slice(0, 10);
-
-  return {
+export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
+  const {
+    initialData = null,
+    initialError = null,
     startDate,
     endDate,
-    ...initialFilters,
-  };
-}
+    type,
+  } = initialFilters ?? {};
+  const hasInitialResult = Boolean(initialData || initialError);
 
-export function useFinanceHistory(
-  initialFilters?: UseFinanceHistoryInitialFilters,
-) {
   const [filters, setFilters] = useState<FinanceHistoryFiltersUi>(() =>
-    getCurrentMonthFilters(initialFilters),
+    getCurrentMonthFilters({
+      ...(startDate ? { startDate } : {}),
+      ...(endDate ? { endDate } : {}),
+      ...(type ? { type } : {}),
+    }),
   );
 
-  const [data, setData] = useState<FinanceHistoryUi | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<FinanceHistoryUi | null>(initialData);
+  const [isLoading, setIsLoading] = useState(!hasInitialResult);
+  const [error, setError] = useState<string | null>(initialError);
   const requestIdRef = useRef(0);
 
   const loadHistory = useCallback(
@@ -85,6 +77,12 @@ export function useFinanceHistory(
   }, [filters, loadHistory]);
 
   useEffect(() => {
+    if (hasInitialResult) {
+      return () => {
+        requestIdRef.current += 1;
+      };
+    }
+
     void loadHistory(filters);
 
     return () => {

@@ -5,47 +5,17 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import {
-  getCurrentMonthFilters,
-  useFinanceHistory,
-} from '../hooks/use-finance-history';
+  getFinanceHistoryFiltersFromUrlSearchParams,
+} from '../utils/finance-filters';
+import { useFinanceHistory } from '../hooks/use-finance-history';
 import { FinanceHistoryFilters } from './finance-history-filters';
 import { FinanceHistoryList } from './finance-history-list';
 import { FinanceHistorySummary } from './finance-history-summary';
 import {
-  FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
+  FinanceHistoryUi,
 } from '../types/finance-ui.types';
 import { FinanceBackLink } from './finance-back-link';
-
-const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
-function isValidDateOnly(value: string | null): value is string {
-  if (!value || !DATE_ONLY_REGEX.test(value)) {
-    return false;
-  }
-
-  const date = new Date(`${value}T00:00:00.000Z`);
-
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
-function isValidType(value: string | null): value is FinanceEntryTypeUi {
-  return value === 'INCOME' || value === 'EXPENSE';
-}
-
-function getFiltersFromSearchParams(
-  searchParams: URLSearchParams,
-): FinanceHistoryFiltersUi {
-  const startDate = searchParams.get('startDate');
-  const endDate = searchParams.get('endDate');
-  const type = searchParams.get('type');
-
-  return getCurrentMonthFilters({
-    ...(isValidDateOnly(startDate) ? { startDate } : {}),
-    ...(isValidDateOnly(endDate) ? { endDate } : {}),
-    ...(isValidType(type) ? { type } : {}),
-  });
-}
 
 function toFinanceHistoryUrl(filters: FinanceHistoryFiltersUi): string {
   const searchParams = new URLSearchParams({
@@ -71,13 +41,36 @@ function areFiltersEqual(
   );
 }
 
-export function FinanceHistoryPageContent() {
+type FinanceHistoryPageContentProps = {
+  initialHistory?: FinanceHistoryUi;
+  initialError?: string | null;
+  initialFilters?: FinanceHistoryFiltersUi;
+};
+
+export function FinanceHistoryPageContent({
+  initialHistory,
+  initialError,
+  initialFilters,
+}: FinanceHistoryPageContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const urlFilters = useMemo(
-    () => getFiltersFromSearchParams(searchParams),
+    () => getFinanceHistoryFiltersFromUrlSearchParams(searchParams),
     [searchParams],
+  );
+
+  const hookInitialParams = useMemo(
+    () => ({
+      ...urlFilters,
+      ...(initialFilters && areFiltersEqual(initialFilters, urlFilters)
+        ? {
+            initialData: initialHistory ?? null,
+            initialError: initialError ?? null,
+          }
+        : {}),
+    }),
+    [initialError, initialFilters, initialHistory, urlFilters],
   );
 
   const {
@@ -89,7 +82,7 @@ export function FinanceHistoryPageContent() {
     isLoading,
     error,
     applyFilters,
-  } = useFinanceHistory(urlFilters);
+  } = useFinanceHistory(hookInitialParams);
 
   const handleApplyFilters = useCallback(
     async (nextFilters: FinanceHistoryFiltersUi) => {

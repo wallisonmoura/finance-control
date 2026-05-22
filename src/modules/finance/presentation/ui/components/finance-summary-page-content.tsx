@@ -20,47 +20,15 @@ import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 import {
   FinanceOperationalSummaryDailyRow,
   FinanceOperationalSummaryFilters,
-  getCurrentOperationalSummaryFilters,
   useFinanceOperationalSummary,
 } from '../hooks/use-finance-operational-summary';
+import { MonthlySummaryUi } from '../types/finance-ui.types';
+import {
+  getOperationalSummaryFiltersFromUrlSearchParams,
+  parseMonthInputValue,
+  toMonthInputValue,
+} from '../utils/finance-operational-summary';
 import { FinanceBackLink } from './finance-back-link';
-
-const MONTH_ONLY_REGEX = /^\d{4}-\d{2}$/;
-
-function toMonthInputValue(filters: { year: number; month: number }) {
-  return `${filters.year}-${String(filters.month).padStart(2, '0')}`;
-}
-
-function parseMonthInputValue(value: string): FinanceOperationalSummaryFilters {
-  const [year, month] = value.split('-').map(Number);
-
-  return {
-    year,
-    month,
-  };
-}
-
-function isValidMonthOnly(value: string | null): value is string {
-  if (!value || !MONTH_ONLY_REGEX.test(value)) {
-    return false;
-  }
-
-  const { year, month } = parseMonthInputValue(value);
-
-  return Number.isInteger(year) && month >= 1 && month <= 12;
-}
-
-function getFiltersFromSearchParams(
-  searchParams: URLSearchParams,
-): FinanceOperationalSummaryFilters {
-  const month = searchParams.get('month');
-
-  if (!isValidMonthOnly(month)) {
-    return getCurrentOperationalSummaryFilters();
-  }
-
-  return parseMonthInputValue(month);
-}
 
 function toFinanceSummaryUrl(filters: FinanceOperationalSummaryFilters) {
   const searchParams = new URLSearchParams({
@@ -222,17 +190,49 @@ function SummaryFilterForm({
   );
 }
 
-export function FinanceSummaryPageContent() {
+type FinanceSummaryPageContentProps = {
+  initialMonthlySummary?: MonthlySummaryUi | null;
+  initialDailyRows?: FinanceOperationalSummaryDailyRow[];
+  initialError?: string | null;
+  initialFilters?: FinanceOperationalSummaryFilters;
+};
+
+export function FinanceSummaryPageContent({
+  initialMonthlySummary,
+  initialDailyRows,
+  initialError,
+  initialFilters,
+}: FinanceSummaryPageContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const urlFilters = useMemo(
-    () => getFiltersFromSearchParams(searchParams),
+    () => getOperationalSummaryFiltersFromUrlSearchParams(searchParams),
     [searchParams],
   );
 
+  const hookInitialParams = useMemo(
+    () => ({
+      ...urlFilters,
+      ...(initialFilters && areFiltersEqual(initialFilters, urlFilters)
+        ? {
+            initialMonthlySummary: initialMonthlySummary ?? null,
+            initialDailyRows: initialDailyRows ?? [],
+            initialError: initialError ?? null,
+          }
+        : {}),
+    }),
+    [
+      initialDailyRows,
+      initialError,
+      initialFilters,
+      initialMonthlySummary,
+      urlFilters,
+    ],
+  );
+
   const { filters, monthlySummary, dailyRows, isLoading, error, applyFilters } =
-    useFinanceOperationalSummary(urlFilters);
+    useFinanceOperationalSummary(hookInitialParams);
 
   const handleApplyFilters = useCallback(
     async (nextFilters: FinanceOperationalSummaryFilters) => {

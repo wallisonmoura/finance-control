@@ -9,12 +9,26 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useFinanceHistory } from '../hooks/use-finance-history';
 import { deleteIncome } from '../services/finance-api.service';
-import { FinanceEntryUi } from '../types/finance-ui.types';
+import {
+  FinanceEntryUi,
+  FinanceHistoryFiltersUi,
+  FinanceHistoryUi,
+} from '../types/finance-ui.types';
 import { FinanceBackLink } from './finance-back-link';
 import { FinanceHistoryList } from './finance-history-list';
 import { IncomeForm } from './income-form';
 
-export function FinanceIncomesPageContent() {
+type FinanceIncomesPageContentProps = {
+  initialHistory?: FinanceHistoryUi | null;
+  initialError?: string | null;
+  initialFilters?: FinanceHistoryFiltersUi;
+};
+
+export function FinanceIncomesPageContent({
+  initialHistory = null,
+  initialError = null,
+  initialFilters,
+}: FinanceIncomesPageContentProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingIncome, setEditingIncome] = useState<FinanceEntryUi | null>(
     null,
@@ -26,7 +40,10 @@ export function FinanceIncomesPageContent() {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const { entries, isLoading, error, refresh } = useFinanceHistory({
+    ...initialFilters,
     type: 'INCOME',
+    initialData: initialHistory,
+    initialError,
   });
 
   function handleOpenCreateForm() {

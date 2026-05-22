@@ -10,12 +10,31 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { useExpenseCategories } from '../hooks/use-expense-categories';
 import { useFinanceHistory } from '../hooks/use-finance-history';
 import { deleteExpense } from '../services/finance-api.service';
-import { FinanceEntryUi } from '../types/finance-ui.types';
+import {
+  ExpenseCategoryUi,
+  FinanceEntryUi,
+  FinanceHistoryFiltersUi,
+  FinanceHistoryUi,
+} from '../types/finance-ui.types';
 import { ExpenseForm } from './expense-form';
 import { FinanceBackLink } from './finance-back-link';
 import { FinanceHistoryList } from './finance-history-list';
 
-export function FinanceExpensesPageContent() {
+type FinanceExpensesPageContentProps = {
+  initialHistory?: FinanceHistoryUi | null;
+  initialHistoryError?: string | null;
+  initialFilters?: FinanceHistoryFiltersUi;
+  initialCategories?: ExpenseCategoryUi[];
+  initialCategoriesError?: string | null;
+};
+
+export function FinanceExpensesPageContent({
+  initialHistory = null,
+  initialHistoryError = null,
+  initialFilters,
+  initialCategories = [],
+  initialCategoriesError = null,
+}: FinanceExpensesPageContentProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<FinanceEntryUi | null>(
     null,
@@ -28,14 +47,20 @@ export function FinanceExpensesPageContent() {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const { entries, isLoading, error, refresh } = useFinanceHistory({
+    ...initialFilters,
     type: 'EXPENSE',
+    initialData: initialHistory,
+    initialError: initialHistoryError,
   });
 
   const {
     categories,
     isLoading: isLoadingCategories,
     error: categoriesError,
-  } = useExpenseCategories();
+  } = useExpenseCategories({
+    initialCategories,
+    initialError: initialCategoriesError,
+  });
 
   function handleOpenCreateForm() {
     setActionError(null);
