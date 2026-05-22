@@ -1,50 +1,21 @@
 import { BalanceSummaryDashboard } from '@/modules/balance/presentation/ui/components/balance-summary-dashboard';
-import { getBalanceSummary } from '@/modules/balance/presentation/ui/services/balance-summary-api.service';
-import { render, screen, waitFor } from '@testing-library/react';
-
-jest.mock(
-  '@/modules/balance/presentation/ui/services/balance-summary-api.service',
-  () => ({
-    getBalanceSummary: jest.fn(),
-  }),
-);
-
-const getBalanceSummaryMock = jest.mocked(getBalanceSummary);
+import { render, screen } from '@testing-library/react';
 
 describe('BalanceSummaryDashboard', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should render loading state', () => {
-    getBalanceSummaryMock.mockImplementationOnce(
-      () => new Promise(() => undefined),
-    );
-
-    render(<BalanceSummaryDashboard />);
+  it('should render error state when server loading returns error', () => {
+    render(<BalanceSummaryDashboard error='Não autenticado' />);
 
     expect(
-      screen.getByText('Carregando resumo financeiro...'),
-    ).toBeInTheDocument();
-  });
-
-  it('should render error state when service returns error', async () => {
-    getBalanceSummaryMock.mockResolvedValueOnce({
-      error: 'Não autenticado',
-    });
-
-    render(<BalanceSummaryDashboard />);
-
-    expect(
-      await screen.findByText('Não foi possível carregar o dashboard.'),
+      screen.getByText('Não foi possível carregar o dashboard.'),
     ).toBeInTheDocument();
 
     expect(screen.getByText('Não autenticado')).toBeInTheDocument();
   });
 
-  it('should render summary cards when service returns data', async () => {
-    getBalanceSummaryMock.mockResolvedValueOnce({
-      data: {
+  it('should render summary cards when server loading returns data', () => {
+    render(
+      <BalanceSummaryDashboard
+        summary={{
         wallet: {
           bankBalance: 1500,
           cashBalance: 200,
@@ -55,15 +26,11 @@ describe('BalanceSummaryDashboard', () => {
           pendingDebts: 300,
         },
         finalBalance: 1850,
-      },
-    });
+        }}
+      />,
+    );
 
-    render(<BalanceSummaryDashboard />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Wallet Total')).toBeInTheDocument();
-    });
-
+    expect(screen.getByText('Wallet Total')).toBeInTheDocument();
     expect(screen.getByText('Dívidas Pendentes')).toBeInTheDocument();
     expect(screen.getByText('Saldo Final')).toBeInTheDocument();
     expect(screen.getByText('Saldo em Banco')).toBeInTheDocument();
@@ -71,13 +38,11 @@ describe('BalanceSummaryDashboard', () => {
     expect(screen.getByText('Valores a Receber')).toBeInTheDocument();
   });
 
-  it('should render empty state when service returns no data and no error', async () => {
-    getBalanceSummaryMock.mockResolvedValueOnce({});
-
+  it('should render empty state when server loading returns no data and no error', () => {
     render(<BalanceSummaryDashboard />);
 
     expect(
-      await screen.findByText('Nenhum resumo financeiro encontrado.'),
+      screen.getByText('Nenhum resumo financeiro encontrado.'),
     ).toBeInTheDocument();
   });
 });

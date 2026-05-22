@@ -31,7 +31,6 @@ function mockUseWalletState(
 ) {
   mockedUseWallet.mockReturnValue({
     wallet,
-    isLoading: false,
     isUpdating: false,
     error: null,
     successMessage: null,
@@ -44,21 +43,6 @@ function mockUseWalletState(
 describe('WalletPageContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('deve renderizar o estado de loading', () => {
-    mockUseWalletState({
-      wallet: null,
-      isLoading: true,
-    });
-
-    render(<WalletPageContent />);
-
-    expect(screen.getByText('Wallet')).toBeInTheDocument();
-    expect(
-      screen.getByText('Visualize e atualize seus saldos-base.'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Carregando Wallet...')).toBeInTheDocument();
   });
 
   it('deve renderizar erro quando não existir wallet carregada', async () => {
@@ -179,6 +163,17 @@ describe('WalletPageContent', () => {
       bankBalance: 2000,
       cashBalance: 300,
       receivableBalance: 500,
+    });
+  });
+
+  it('deve inicializar o hook com os dados recebidos do servidor', () => {
+    mockUseWalletState();
+
+    render(<WalletPageContent initialWallet={wallet} initialError={null} />);
+
+    expect(mockedUseWallet).toHaveBeenCalledWith({
+      initialWallet: wallet,
+      initialError: null,
     });
   });
 });

@@ -61,6 +61,21 @@ describe('CurrentUserMenu', () => {
     expect(await screen.findByText('Admin Local')).toBeInTheDocument();
   });
 
+  it('should show initial authenticated user without requesting current user again', () => {
+    render(
+      <CurrentUserMenu
+        initialUser={{
+          id: 'user-id',
+          name: 'Admin Local',
+          email: 'admin@financecontrol.com',
+        }}
+      />,
+    );
+
+    expect(screen.getByText('Admin Local')).toBeInTheDocument();
+    expect(mockedGetCurrentUser).not.toHaveBeenCalled();
+  });
+
   it('should show fallback user name when current user request fails', async () => {
     mockedGetCurrentUser.mockResolvedValueOnce({
       error: 'Não autenticado',

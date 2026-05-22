@@ -1,11 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
 import { PaidDebtsPageContent } from '@/modules/debts/presentation/ui/components/paid-debts-page-content';
-import { useDebts } from '@/modules/debts/presentation/ui/hooks/use-debts';
-
-jest.mock('@/modules/debts/presentation/ui/hooks/use-debts');
-
-const useDebtsMock = jest.mocked(useDebts);
 
 const pendingDebt = {
   id: 'pending-debt-id',
@@ -35,17 +30,10 @@ const paidDebt = {
 describe('PaidDebtsPageContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    useDebtsMock.mockReturnValue({
-      debts: [pendingDebt, paidDebt],
-      isLoading: false,
-      error: null,
-      refresh: jest.fn(),
-    });
   });
 
   it('should render only paid debts', () => {
-    render(<PaidDebtsPageContent />);
+    render(<PaidDebtsPageContent debts={[pendingDebt, paidDebt]} />);
 
     expect(screen.getByText('Dívidas pagas')).toBeInTheDocument();
     expect(screen.getByText('IPVA')).toBeInTheDocument();
@@ -56,5 +44,11 @@ describe('PaidDebtsPageContent', () => {
     );
     expect(screen.queryByRole('button', { name: 'Editar' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Excluir' })).not.toBeInTheDocument();
+  });
+
+  it('should render error state', () => {
+    render(<PaidDebtsPageContent debts={[]} error='Não autenticado' />);
+
+    expect(screen.getByText('Não autenticado')).toBeInTheDocument();
   });
 });

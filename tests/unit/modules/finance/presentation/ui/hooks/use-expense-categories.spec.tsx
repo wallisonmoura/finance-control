@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { getExpenseCategories } from '@/modules/finance/presentation/ui/services/finance-api.service';
@@ -12,7 +12,28 @@ describe('useExpenseCategories', () => {
     jest.clearAllMocks();
   });
 
-  it('should load expense categories', async () => {
+  it('should initialize with server expense categories', () => {
+    const categories = [
+      {
+        id: 'category-id',
+        name: 'Combustivel',
+        slug: 'combustivel',
+      },
+    ];
+
+    const { result } = renderHook(() =>
+      useExpenseCategories({
+        initialCategories: categories,
+      }),
+    );
+
+    expect(result.current.categories).toEqual(categories);
+    expect(result.current.error).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+    expect(getExpenseCategoriesMock).not.toHaveBeenCalled();
+  });
+
+  it('should refresh expense categories', async () => {
     const categories = [
       {
         id: 'category-id',
@@ -27,25 +48,23 @@ describe('useExpenseCategories', () => {
 
     const { result } = renderHook(() => useExpenseCategories());
 
-    expect(result.current.isLoading).toBe(true);
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+    await act(async () => {
+      await result.current.refresh();
     });
 
     expect(result.current.categories).toEqual(categories);
     expect(result.current.error).toBeNull();
   });
 
-  it('should expose error when loading categories fails', async () => {
+  it('should expose error when refresh fails', async () => {
     getExpenseCategoriesMock.mockResolvedValueOnce({
       error: 'Não foi possível carregar categorias.',
     });
 
     const { result } = renderHook(() => useExpenseCategories());
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+    await act(async () => {
+      await result.current.refresh();
     });
 
     expect(result.current.categories).toEqual([]);
