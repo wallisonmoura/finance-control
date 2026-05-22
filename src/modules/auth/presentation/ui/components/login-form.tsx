@@ -144,7 +144,11 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           ) : null}
         </div>
 
-        <Button type='submit' disabled={isSubmitting} className='w-full'>
+        <Button
+          type='submit'
+          disabled={isSubmitting}
+          className='h-12 w-full text-base font-semibold'
+        >
           {isSubmitting ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
