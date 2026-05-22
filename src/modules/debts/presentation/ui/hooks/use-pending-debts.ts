@@ -1,14 +1,20 @@
-'use client';
-
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { getPendingDebts } from '../services/debt-api.service';
 import { DebtUi } from '../types/debt-ui.types';
 
-export function usePendingDebts() {
-  const [debts, setDebts] = useState<DebtUi[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type UsePendingDebtsParams = {
+  initialDebts?: DebtUi[];
+  initialError?: string | null;
+};
+
+export function usePendingDebts({
+  initialDebts = [],
+  initialError = null,
+}: UsePendingDebtsParams = {}) {
+  const [debts, setDebts] = useState<DebtUi[]>(initialDebts);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(initialError);
 
   const loadPendingDebts = useCallback(async () => {
     setIsLoading(true);
@@ -25,34 +31,6 @@ export function usePendingDebts() {
 
     setDebts(response.data ?? []);
     setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialPendingDebts() {
-      const response = await getPendingDebts();
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (response.error) {
-        setDebts([]);
-        setError(response.error);
-        setIsLoading(false);
-        return;
-      }
-
-      setDebts(response.data ?? []);
-      setIsLoading(false);
-    }
-
-    void loadInitialPendingDebts();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   return {

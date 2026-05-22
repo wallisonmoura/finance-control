@@ -1,13 +1,18 @@
-'use client';
-
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
-import { useDebts } from '../hooks/use-debts';
+import { DebtUi } from '../types/debt-ui.types';
 import { DebtList } from './debt-list';
 
-export function PaidDebtsPageContent() {
-  const { debts, isLoading, error } = useDebts();
+type PaidDebtsPageContentProps = {
+  debts: DebtUi[];
+  error?: string | null;
+};
+
+export function PaidDebtsPageContent({
+  debts,
+  error = null,
+}: PaidDebtsPageContentProps) {
   const paidDebts = debts.filter((debt) => debt.status === 'PAID');
 
   return (
@@ -19,13 +24,9 @@ export function PaidDebtsPageContent() {
         description='Consulte compromissos financeiros que já foram quitados.'
       />
 
-      {isLoading && (
-        <p className='text-sm text-slate-500'>Carregando dívidas...</p>
-      )}
-
       {error && <p className='text-sm text-red-600'>{error}</p>}
 
-      {!isLoading && !error && <DebtList debts={paidDebts} />}
+      {!error && <DebtList debts={paidDebts} />}
     </div>
   );
 }

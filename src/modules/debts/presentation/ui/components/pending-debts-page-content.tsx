@@ -11,10 +11,21 @@ import { DebtUi } from '../types/debt-ui.types';
 import { DebtList } from './debt-list';
 import { DebtPaymentForm } from './debt-payment-form';
 
-export function PendingDebtsPageContent() {
+type PendingDebtsPageContentProps = {
+  initialDebts?: DebtUi[];
+  initialError?: string | null;
+};
+
+export function PendingDebtsPageContent({
+  initialDebts = [],
+  initialError = null,
+}: PendingDebtsPageContentProps) {
   const [payingDebt, setPayingDebt] = useState<DebtUi | null>(null);
 
-  const { debts, isLoading, error, refresh } = usePendingDebts();
+  const { debts, isLoading, error, refresh } = usePendingDebts({
+    initialDebts,
+    initialError,
+  });
   const {
     categories,
     isLoading: isLoadingCategories,

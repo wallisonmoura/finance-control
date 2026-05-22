@@ -12,14 +12,25 @@ import { DebtForm } from './debt-form';
 import { DebtList } from './debt-list';
 import { DebtOverviewSummary } from './debt-overview-summary';
 
-export function DebtsPageContent() {
+type DebtsPageContentProps = {
+  initialDebts?: DebtUi[];
+  initialError?: string | null;
+};
+
+export function DebtsPageContent({
+  initialDebts = [],
+  initialError = null,
+}: DebtsPageContentProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDebt, setEditingDebt] = useState<DebtUi | null>(null);
   const [debtToDelete, setDebtToDelete] = useState<DebtUi | null>(null);
   const [deletingDebtId, setDeletingDebtId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const { debts, isLoading, error, refresh } = useDebts();
+  const { debts, isLoading, error, refresh } = useDebts({
+    initialDebts,
+    initialError,
+  });
 
   function handleOpenCreateForm() {
     setActionError(null);
