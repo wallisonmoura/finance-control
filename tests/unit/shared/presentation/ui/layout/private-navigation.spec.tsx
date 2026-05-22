@@ -2,15 +2,15 @@ import { render, screen } from '@testing-library/react';
 
 import { PrivateNavigation } from '@/shared/presentation/ui/layout/private-navigation';
 
-const usePathnameMock = jest.fn();
+const mockUsePathname = jest.fn();
 
 jest.mock('next/navigation', () => ({
-  usePathname: () => usePathnameMock(),
+  usePathname: () => mockUsePathname(),
 }));
 
 describe('PrivateNavigation', () => {
   beforeEach(() => {
-    usePathnameMock.mockReturnValue('/dashboard');
+    mockUsePathname.mockReturnValue('/dashboard');
   });
 
   afterEach(() => {
@@ -34,7 +34,7 @@ describe('PrivateNavigation', () => {
   });
 
   it('should mark the current pathname as active', () => {
-    usePathnameMock.mockReturnValue('/finance');
+    mockUsePathname.mockReturnValue('/finance');
 
     render(<PrivateNavigation />);
 
