@@ -3,15 +3,18 @@ import { StatusMessage } from '@/shared/presentation/ui/components/status-messag
 
 import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
 import { BalanceSummaryCards } from './balance-summary-cards';
+import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 
 type BalanceSummaryDashboardProps = {
   summary?: BalanceSummaryUi | null;
   error?: string | null;
+  recentEntries?: FinanceEntryUi[];
 };
 
 export function BalanceSummaryDashboard({
   summary,
   error,
+  recentEntries = [],
 }: BalanceSummaryDashboardProps) {
   if (error) {
     return (
@@ -27,5 +30,5 @@ export function BalanceSummaryDashboard({
     return <EmptyState description='Nenhum resumo financeiro encontrado.' />;
   }
 
-  return <BalanceSummaryCards summary={summary} />;
+  return <BalanceSummaryCards summary={summary} recentEntries={recentEntries} />;
 }
