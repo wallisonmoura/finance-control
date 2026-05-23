@@ -7,8 +7,9 @@ describe('MobileMenu', () => {
   it('should render the application name', () => {
     render(<MobileMenu pathname='/dashboard' />);
 
-    expect(screen.getByText('Finance Control')).toBeInTheDocument();
-    expect(screen.getByText('Controle financeiro')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Finance Control' }),
+    ).toBeInTheDocument();
   });
 
   it('should start with the navigation menu closed', () => {

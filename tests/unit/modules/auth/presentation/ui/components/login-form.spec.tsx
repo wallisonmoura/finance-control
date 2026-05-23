@@ -38,7 +38,7 @@ describe('LoginForm', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: /entrar/i,
+        name: /faça seu login/i,
       }),
     ).toBeInTheDocument();
 
@@ -47,7 +47,7 @@ describe('LoginForm', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /entrar/i,
+        name: /^entrar$/i,
       }),
     ).toBeInTheDocument();
   });
@@ -70,7 +70,7 @@ describe('LoginForm', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: /entrar/i,
+        name: /^entrar$/i,
       }),
     );
 
@@ -103,7 +103,7 @@ describe('LoginForm', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: /entrar/i,
+        name: /^entrar$/i,
       }),
     );
 
@@ -132,7 +132,7 @@ describe('LoginForm', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: /entrar/i,
+        name: /^entrar$/i,
       }),
     );
 
@@ -154,7 +154,7 @@ describe('LoginForm', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: /entrar/i,
+        name: /^entrar$/i,
       }),
     );
 
@@ -216,7 +216,7 @@ describe('LoginForm', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: /entrar/i,
+        name: /^entrar$/i,
       }),
     );
 

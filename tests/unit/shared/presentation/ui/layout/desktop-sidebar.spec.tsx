@@ -6,8 +6,9 @@ describe('DesktopSidebar', () => {
   it('should render the application name', () => {
     render(<DesktopSidebar pathname='/dashboard' />);
 
-    expect(screen.getByText('Finance Control')).toBeInTheDocument();
-    expect(screen.getByText('Controle financeiro')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Finance Control' }),
+    ).toBeInTheDocument();
   });
 
   it('should render the main navigation links', () => {
