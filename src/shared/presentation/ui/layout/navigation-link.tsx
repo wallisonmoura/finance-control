@@ -22,13 +22,13 @@ export function NavigationLink({
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={[
-        'flex min-h-10 items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring',
+        'relative flex min-h-12 items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--fc-secondary)]',
         isActive
-          ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-          : 'text-slate-300 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+          ? 'bg-primary text-white shadow-lg shadow-slate-950/15 ring-1 ring-emerald-400/20 [&_svg]:text-[var(--fc-secondary)]'
+          : 'text-slate-700 hover:bg-slate-50 hover:text-slate-950 [&_svg]:text-slate-700',
       ].join(' ')}
     >
-      {Icon ? <Icon aria-hidden='true' className='size-4 shrink-0' /> : null}
+      {Icon ? <Icon aria-hidden='true' className='size-5 shrink-0' /> : null}
       {label}
     </Link>
   );
