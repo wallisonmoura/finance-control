@@ -8,7 +8,7 @@ export function Card({ className = '', children, ...props }: CardProps) {
   return (
     <PrimitiveCard
       className={[
-        'border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/70',
+        'border border-border bg-card p-4 shadow-sm shadow-slate-200/70',
         className,
       ].join(' ')}
       {...props}

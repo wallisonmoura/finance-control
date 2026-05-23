@@ -25,11 +25,11 @@ export function MobileMenu({ pathname }: MobileMenuProps) {
   }
 
   return (
-    <div className='sticky top-0 z-30 border-b border-slate-200 bg-white md:hidden'>
+    <div className='sticky top-0 z-30 border-b border-border bg-card md:hidden'>
       <div className='flex items-center justify-between px-4 py-4'>
         <div>
-          <p className='text-base font-bold text-slate-900'>Finance Control</p>
-          <p className='text-xs text-slate-500'>Controle financeiro</p>
+          <p className='text-base font-bold text-foreground'>Finance Control</p>
+          <p className='text-xs text-muted-foreground'>Controle financeiro</p>
         </div>
 
         <Button
@@ -53,7 +53,7 @@ export function MobileMenu({ pathname }: MobileMenuProps) {
         <nav
           id='mobile-navigation'
           aria-label='Navegação principal mobile'
-          className='space-y-1 border-t border-slate-200 bg-white px-4 py-3 shadow-lg shadow-slate-200/60'
+          className='space-y-1 border-t border-border bg-sidebar px-4 py-3 shadow-lg shadow-slate-200/60'
         >
           {PRIVATE_NAVIGATION_ITEMS.map((item) => (
             <NavigationLink

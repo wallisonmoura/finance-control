@@ -18,13 +18,13 @@ export function Button({
 }: ButtonProps) {
   const variantClassName = {
     primary:
-      '!bg-slate-900 !text-white shadow-sm hover:!bg-slate-800 focus-visible:ring-slate-400',
+      '!bg-[var(--fc-secondary)] !text-slate-950 shadow-sm hover:!bg-emerald-600 hover:!text-white focus-visible:ring-[var(--fc-secondary)]',
     secondary:
-      '!bg-white !text-slate-700 ring-1 ring-slate-200 shadow-sm hover:!bg-slate-100 hover:!text-slate-950 focus-visible:ring-slate-300',
+      '!bg-white !text-slate-700 ring-1 ring-border shadow-sm hover:!bg-muted hover:!text-slate-950 focus-visible:ring-[var(--fc-secondary)]',
     danger:
-      '!bg-red-50 !text-red-700 ring-1 ring-red-200 hover:!bg-red-100 hover:!text-red-800 focus-visible:ring-red-300',
+      '!bg-red-50 !text-red-700 ring-1 ring-red-200 hover:!bg-red-100 hover:!text-red-800 focus-visible:ring-[var(--fc-danger)]',
     ghost:
-      '!bg-transparent !text-slate-600 shadow-none hover:!bg-slate-100 hover:!text-slate-950 focus-visible:ring-slate-300',
+      '!bg-transparent !text-muted-foreground shadow-none hover:!bg-muted hover:!text-foreground focus-visible:ring-[var(--fc-secondary)]',
   }[variant];
 
   return (
@@ -33,7 +33,7 @@ export function Button({
       size='lg'
       className={[
         variantClassName,
-        'disabled:bg-slate-200 disabled:text-slate-500 disabled:ring-slate-200',
+        'disabled:bg-muted disabled:text-muted-foreground disabled:ring-border',
         fullWidth ? 'w-full' : '',
         className,
       ].join(' ')}

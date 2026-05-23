@@ -8,21 +8,21 @@ type DesktopSidebarProps = {
 
 export function DesktopSidebar({ pathname }: DesktopSidebarProps) {
   return (
-    <aside className='sticky top-0 hidden h-dvh w-64 shrink-0 overflow-y-auto border-r border-slate-200/80 bg-white px-4 py-5 md:block'>
-      <div className='mb-6 border-b border-slate-100 pb-5'>
+    <aside className='sticky top-0 hidden h-dvh w-64 shrink-0 overflow-y-auto border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground md:block'>
+      <div className='mb-6 border-b border-sidebar-border pb-5'>
         <div className='flex items-center gap-3'>
           <div
             aria-hidden='true'
-            className='flex size-10 items-center justify-center rounded-lg bg-slate-900 text-sm font-bold text-white shadow-sm'
+            className='flex size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground shadow-sm'
           >
             FC
           </div>
 
           <div className='min-w-0'>
-            <p className='truncate text-lg font-bold tracking-tight text-slate-950'>
+            <p className='truncate text-lg font-bold tracking-tight text-sidebar-foreground'>
               Finance Control
             </p>
-            <p className='text-xs text-slate-500'>Controle financeiro</p>
+            <p className='text-xs text-slate-300'>Controle financeiro</p>
           </div>
         </div>
       </div>

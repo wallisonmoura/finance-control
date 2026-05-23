@@ -22,10 +22,10 @@ export function NavigationLink({
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={[
-        'flex min-h-10 items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-slate-300',
+        'flex min-h-10 items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring',
         isActive
-          ? 'bg-slate-900 text-white shadow-sm'
-          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
+          ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+          : 'text-slate-300 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
       ].join(' ')}
     >
       {Icon ? <Icon aria-hidden='true' className='size-4 shrink-0' /> : null}
