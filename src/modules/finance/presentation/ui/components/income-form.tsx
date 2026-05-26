@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Save, X } from 'lucide-react';
+import { ChevronUp, HandCoins, Save, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -93,9 +93,7 @@ export function IncomeForm({
   } = useForm<IncomeFormValues>({
     resolver: zodResolver(incomeFormSchema),
     defaultValues: {
-      amount: editingIncome
-        ? formatMoneyInputValue(editingIncome.amount)
-        : '',
+      amount: editingIncome ? formatMoneyInputValue(editingIncome.amount) : '',
       description: editingIncome?.description ?? '',
       date: editingIncome
         ? formatDateInputValue(editingIncome.date)
@@ -141,28 +139,42 @@ export function IncomeForm({
   }
 
   return (
-    <Card>
+    <Card className='p-5 sm:p-6'>
       <form
         onSubmit={handleSubmit(handleIncomeSubmit)}
-        className='space-y-4'
+        className='space-y-6'
         noValidate
       >
-        <div>
-          <h2 className='text-lg font-semibold text-black'>
-            {isEditing ? 'Editar receita' : 'Registrar receita'}
-          </h2>
-          <p className='text-sm text-slate-500'>
-            {isEditing
-              ? 'Atualize os dados da receita selecionada.'
-              : 'Registre uma entrada real já ocorrida.'}
-          </p>
+        <div className='flex items-start justify-between gap-4'>
+          <div className='flex items-center gap-4'>
+            <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600'>
+              <HandCoins aria-hidden='true' className='size-6' />
+            </div>
+
+            <div>
+              <h2 className='text-xl font-semibold text-slate-950'>
+                {isEditing ? 'Editar receita' : 'Nova receita'}
+              </h2>
+              <p className='mt-1 text-sm text-slate-600'>
+                {isEditing
+                  ? 'Atualize os dados da receita selecionada.'
+                  : 'Preencha os dados da sua receita'}
+              </p>
+            </div>
+          </div>
+
+          <ChevronUp
+            aria-hidden='true'
+            className='mt-2 size-4 shrink-0 text-slate-600'
+          />
         </div>
 
-        <div className='grid gap-4 md:grid-cols-2'>
-          <div className='md:col-span-2'>
+        <div className='grid gap-4 lg:grid-cols-[1.35fr_0.8fr_0.8fr]'>
+          <div>
             <Input
               id='income-description'
-              label='Descrição'
+              label='Descrição *'
+              placeholder='Ex.: Corrida Uber'
               aria-invalid={Boolean(errors.description)}
               aria-describedby={
                 errors.description ? 'income-description-error' : undefined
@@ -182,9 +194,10 @@ export function IncomeForm({
           <div>
             <Input
               id='income-amount'
-              label='Valor'
+              label='Valor (R$) *'
               type='text'
               inputMode='decimal'
+              placeholder='0,00'
               aria-invalid={Boolean(errors.amount)}
               aria-describedby={
                 errors.amount ? 'income-amount-error' : undefined
@@ -204,7 +217,7 @@ export function IncomeForm({
           <div>
             <Input
               id='income-date'
-              label='Data'
+              label='Data *'
               type='date'
               max={getTodayDateValue()}
               aria-invalid={Boolean(errors.date)}
@@ -221,15 +234,37 @@ export function IncomeForm({
             ) : null}
           </div>
 
-          <div className='md:col-span-2'>
-            <Input id='income-notes' label='Observações' {...register('notes')} />
+          <div className='lg:col-span-3'>
+            <Input
+              id='income-notes'
+              label='Observação (opcional)'
+              placeholder='Adicione uma observação...'
+              {...register('notes')}
+            />
           </div>
         </div>
 
         {error && <FormErrorMessage message={error} />}
 
-        <div className='grid gap-2 sm:flex sm:flex-wrap'>
-          <Button type='submit' disabled={isSubmitting}>
+        <div className='grid gap-3 pt-1 sm:flex sm:flex-wrap sm:justify-end'>
+          {onCancel && (
+            <Button
+              type='button'
+              onClick={onCancel}
+              disabled={isSubmitting}
+              variant='secondary'
+              className='h-12 min-w-36 px-6 text-base'
+            >
+              <X aria-hidden='true' className='size-4' />
+              Cancelar
+            </Button>
+          )}
+
+          <Button
+            type='submit'
+            disabled={isSubmitting}
+            className='h-12 min-w-44 px-6 text-base'
+          >
             <Save aria-hidden='true' className='size-4' />
             {isSubmitting
               ? isEditing
@@ -237,15 +272,8 @@ export function IncomeForm({
                 : 'Registrando...'
               : isEditing
                 ? 'Salvar alterações'
-                : 'Registrar receita'}
+                : 'Salvar receita'}
           </Button>
-
-          {onCancel && (
-            <Button type='button' onClick={onCancel} disabled={isSubmitting}>
-              <X aria-hidden='true' className='size-4' />
-              Cancelar
-            </Button>
-          )}
         </div>
       </form>
     </Card>

@@ -99,9 +99,9 @@ describe('FinanceExpensesPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Nova despesa' }));
 
     expect(
-      screen.getByRole('heading', { name: 'Registrar despesa' }),
+      screen.getByRole('heading', { name: 'Nova despesa' }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('Categoria')).toBeInTheDocument();
+    expect(screen.getByLabelText('Categoria *')).toBeInTheDocument();
   });
 
   it('should open edit expense form', async () => {
@@ -112,7 +112,7 @@ describe('FinanceExpensesPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Editar' }));
 
     expect(screen.getByText('Editar despesa')).toBeInTheDocument();
-    expect(screen.getByLabelText('Descrição')).toHaveValue('Combustivel');
+    expect(screen.getByLabelText('Descrição *')).toHaveValue('Combustivel');
     expect(screen.getByDisplayValue('120,00')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Posto')).toBeInTheDocument();
   });

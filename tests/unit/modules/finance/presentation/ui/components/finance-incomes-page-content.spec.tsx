@@ -85,7 +85,7 @@ describe('FinanceIncomesPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Nova receita' }));
 
     expect(
-      screen.getByRole('heading', { name: 'Registrar receita' }),
+      screen.getByRole('heading', { name: 'Nova receita' }),
     ).toBeInTheDocument();
 
     expect(screen.getAllByRole('button', { name: 'Cancelar' })).toHaveLength(1);
