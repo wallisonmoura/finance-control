@@ -1,7 +1,6 @@
 'use client';
 
 import { SyntheticEvent, useState } from 'react';
-import { Search } from 'lucide-react';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { Button } from '@/shared/presentation/ui/components/button';
@@ -40,18 +39,9 @@ export function FinanceHistoryFilters({
   }
 
   return (
-    <Card>
+    <Card className='p-5'>
       <form onSubmit={handleSubmit} className='space-y-4'>
-        <div>
-          <h2 className='text-lg font-semibold text-zinc-900'>
-            Filtros do histórico
-          </h2>
-          <p className='mt-1 text-sm text-zinc-600'>
-            Consulte receitas e despesas por período.
-          </p>
-        </div>
-
-        <div className='grid gap-4 md:grid-cols-3'>
+        <div className='grid gap-4 md:grid-cols-[1fr_1fr_0.8fr_auto] md:items-end'>
           <Input
             id='finance-history-start-date'
             name='startDate'
@@ -85,11 +75,13 @@ export function FinanceHistoryFilters({
               { label: 'Despesas', value: 'EXPENSE' },
             ]}
           />
-        </div>
 
-        <div className='flex justify-end'>
-          <Button type='submit' disabled={isLoading}>
-            <Search aria-hidden='true' className='size-4' />
+          <Button
+            type='submit'
+            disabled={isLoading}
+            variant='secondary'
+            className='h-11 px-5'
+          >
             {isLoading ? 'Aplicando...' : 'Aplicar filtros'}
           </Button>
         </div>

@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ClipboardEvent, DragEvent, KeyboardEvent } from 'react';
 import {
+  ArrowDown,
+  ArrowUp,
+  BarChart3,
   CalendarDays,
-  ChartNoAxesCombined,
-  Search,
-  TrendingDown,
-  TrendingUp,
+  Funnel,
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -55,39 +55,45 @@ type SummaryCardProps = {
 function SummaryCard({ label, value, tone = 'default' }: SummaryCardProps) {
   const Icon =
     tone === 'income'
-      ? TrendingUp
+      ? ArrowUp
       : tone === 'expense'
-        ? TrendingDown
-        : ChartNoAxesCombined;
+        ? ArrowDown
+        : BarChart3;
 
   const toneClass =
     tone === 'income'
-      ? 'text-emerald-700'
+      ? '!text-emerald-700'
       : tone === 'expense'
-        ? 'text-red-700'
+        ? '!text-red-700'
         : tone === 'result'
           ? value >= 0
-            ? 'text-emerald-700'
-            : 'text-red-700'
-          : 'text-slate-950';
+            ? '!text-slate-950'
+            : '!text-red-700'
+          : '!text-slate-950';
+
+  const iconClass =
+    tone === 'income'
+      ? 'bg-emerald-50 text-emerald-600 ring-emerald-100'
+      : tone === 'expense'
+        ? 'bg-red-50 text-red-600 ring-red-100'
+        : 'bg-slate-50 text-slate-950 ring-slate-200';
 
   return (
-    <Card>
-      <div className='space-y-3'>
-        <div className='flex items-center gap-2 text-sm font-medium text-slate-500'>
-          <Icon
-            aria-hidden='true'
-            className={`size-4 ${
-              tone === 'income'
-                ? 'text-emerald-600'
-                : tone === 'expense'
-                  ? 'text-red-600'
-                  : 'text-slate-600'
-            }`}
-          />
-          <p>{label}</p>
+    <Card className='p-5'>
+      <div className='flex items-center gap-4'>
+        <div
+          className={`flex size-14 shrink-0 items-center justify-center rounded-2xl ring-1 ${iconClass}`}
+        >
+          <Icon aria-hidden='true' className='size-6' />
         </div>
-        <MoneyDisplay value={value} className={`text-2xl ${toneClass}`} />
+
+        <div className='min-w-0'>
+          <p className='text-sm font-medium text-slate-500'>{label}</p>
+          <MoneyDisplay
+            value={value}
+            className={`mt-1 text-2xl font-bold ${toneClass}`}
+          />
+        </div>
       </div>
     </Card>
   );
@@ -95,47 +101,59 @@ function SummaryCard({ label, value, tone = 'default' }: SummaryCardProps) {
 
 function getResultCellClass(value: number) {
   if (value > 0) {
-    return 'bg-emerald-100 text-emerald-950';
+    return 'bg-emerald-50 text-emerald-700 ring-emerald-100';
   }
 
   if (value < 0) {
-    return 'bg-red-100 text-red-950';
+    return 'bg-red-50 text-red-700 ring-red-100';
   }
 
-  return 'bg-slate-50 text-slate-700';
+  return 'bg-slate-50 text-slate-700 ring-slate-100';
 }
 
 function SummaryTable({ rows }: { rows: FinanceOperationalSummaryDailyRow[] }) {
   return (
-    <Card>
-      <div className='overflow-x-auto rounded-lg border border-slate-100'>
+    <Card className='p-0'>
+      <div className='flex items-center gap-2 border-b border-slate-200 px-5 py-4'>
+        <CalendarDays aria-hidden='true' className='size-5 text-slate-700' />
+        <h2 className='text-lg font-semibold text-slate-950'>
+          Resultado diário
+        </h2>
+      </div>
+
+      <div className='overflow-x-auto'>
         <table className='w-full min-w-[640px] border-collapse text-sm'>
           <thead>
-            <tr className='border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500'>
-              <th className='w-20 px-3 py-3 font-semibold'>Dia</th>
-              <th className='px-3 py-3 font-semibold'>Receita</th>
-              <th className='px-3 py-3 font-semibold'>Despesa</th>
-              <th className='px-3 py-3 font-semibold'>Resultado</th>
+            <tr className='border-b border-slate-200 bg-slate-50 text-left text-sm text-slate-600'>
+              <th className='w-24 px-5 py-3 font-semibold'>Dia</th>
+              <th className='px-5 py-3 font-semibold'>Receita</th>
+              <th className='px-5 py-3 font-semibold'>Despesa</th>
+              <th className='px-5 py-3 font-semibold'>Resultado</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.date} className='border-b border-slate-100'>
-                <td className='px-3 py-3 font-medium text-slate-500'>
+              <tr
+                key={row.date}
+                className='border-b border-slate-100 transition-colors last:border-b-0 hover:bg-slate-50/80'
+              >
+                <td className='px-5 py-3 font-medium text-slate-600'>
                   {String(row.day).padStart(2, '0')}
                 </td>
-                <td className='px-3 py-3 font-semibold text-emerald-700'>
+                <td className='px-5 py-3 font-semibold text-emerald-700'>
                   {formatMoney(row.totalIncome)}
                 </td>
-                <td className='px-3 py-3 font-semibold text-red-700'>
+                <td className='px-5 py-3 font-semibold text-red-700'>
                   {formatMoney(row.totalExpense)}
                 </td>
-                <td
-                  className={`px-3 py-3 font-semibold ${getResultCellClass(
-                    row.result,
-                  )}`}
-                >
-                  {formatMoney(row.result)}
+                <td className='px-5 py-3 font-semibold'>
+                  <span
+                    className={`inline-flex min-w-28 justify-center rounded-full px-3 py-1 ring-1 ${getResultCellClass(
+                      row.result,
+                    )}`}
+                  >
+                    {formatMoney(row.result)}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -187,8 +205,8 @@ function SummaryFilterForm({
   }
 
   return (
-    <Card>
-      <div className='grid gap-4 md:grid-cols-[1fr_auto] md:items-end'>
+    <Card className='p-5'>
+      <div className='grid gap-4 md:grid-cols-[minmax(280px,0.45fr)_1fr_auto] md:items-end'>
         <Input
           id='finance-summary-month'
           name='month'
@@ -202,13 +220,15 @@ function SummaryFilterForm({
           onPaste={preventManualMonthEdit}
         />
 
+        <div className='hidden md:block' />
+
         <Button
           type='button'
           onClick={handleApplyFilters}
           disabled={isLoading}
-          className='w-full md:w-auto'
+          className='h-12 w-full !bg-slate-950 px-6 text-base !text-white hover:!bg-slate-800 md:w-auto'
         >
-          <Search aria-hidden='true' className='size-4' />
+          <Funnel aria-hidden='true' className='size-4' />
           {isLoading ? 'Carregando...' : 'Aplicar filtros'}
         </Button>
       </div>
@@ -318,15 +338,7 @@ export function FinanceSummaryPageContent({
             />
           </section>
 
-          <section className='space-y-3'>
-            <div className='flex items-center gap-2'>
-              <CalendarDays aria-hidden='true' className='size-5 text-slate-600' />
-              <h2 className='text-lg font-semibold text-slate-900'>
-                Resultado diário
-              </h2>
-            </div>
-            <SummaryTable rows={dailyRows} />
-          </section>
+          <SummaryTable rows={dailyRows} />
         </div>
       )}
     </div>

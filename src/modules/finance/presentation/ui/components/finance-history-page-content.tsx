@@ -105,8 +105,8 @@ export function FinanceHistoryPageContent({
       <FinanceBackLink />
 
       <PageTitle
-        title='Histórico financeiro'
-        description='Consulte receitas e despesas realizadas por período.'
+        title='Histórico'
+        description='Consulte todas as movimentações financeiras registradas.'
       />
 
       <FinanceHistoryFilters
@@ -130,6 +130,7 @@ export function FinanceHistoryPageContent({
             totalIncome={totalIncome}
             totalExpense={totalExpense}
             balance={balance}
+            totalEntries={entries.length}
           />
 
           <FinanceHistoryList entries={entries} />

@@ -59,7 +59,7 @@ describe('FinanceHistoryPageContent', () => {
 
     render(<FinanceHistoryPageContent />);
 
-    expect(screen.getByText('Histórico financeiro')).toBeInTheDocument();
+    expect(screen.getByText('Histórico')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Voltar para financeiro' }),
     ).toHaveAttribute('href', '/finance');
@@ -129,9 +129,10 @@ describe('FinanceHistoryPageContent', () => {
 
     render(<FinanceHistoryPageContent />);
 
-    expect(screen.getByText('Receitas do período')).toBeInTheDocument();
-    expect(screen.getByText('Despesas do período')).toBeInTheDocument();
-    expect(screen.getByText('Resultado do período')).toBeInTheDocument();
+    expect(screen.getByText('Total de receitas')).toBeInTheDocument();
+    expect(screen.getByText('Total de despesas')).toBeInTheDocument();
+    expect(screen.getByText('Saldo no período')).toBeInTheDocument();
+    expect(screen.getByText('Total de movimentações')).toBeInTheDocument();
     expect(screen.getByText('ganho uber')).toBeInTheDocument();
   });
 
