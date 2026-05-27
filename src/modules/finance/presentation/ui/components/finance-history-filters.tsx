@@ -41,7 +41,7 @@ export function FinanceHistoryFilters({
   return (
     <Card className='p-5'>
       <form onSubmit={handleSubmit} className='space-y-4'>
-        <div className='grid gap-4 md:grid-cols-[1fr_1fr_0.8fr_auto] md:items-end'>
+        <div className='grid gap-4 lg:grid-cols-2 lg:items-end xl:grid-cols-[1fr_1fr_0.8fr_auto]'>
           <Input
             id='finance-history-start-date'
             name='startDate'
@@ -80,7 +80,7 @@ export function FinanceHistoryFilters({
             type='submit'
             disabled={isLoading}
             variant='secondary'
-            className='h-11 px-5'
+            className='h-11 w-full px-5 xl:w-auto'
           >
             {isLoading ? 'Aplicando...' : 'Aplicar filtros'}
           </Button>

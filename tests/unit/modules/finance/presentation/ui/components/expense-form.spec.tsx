@@ -26,6 +26,12 @@ const categories = [
   },
 ];
 
+const categoryLabel = 'Categoria *';
+const descriptionLabel = 'Descrição *';
+const amountLabel = 'Valor (R$) *';
+const dateLabel = 'Data *';
+const notesLabel = 'Observação (opcional)';
+
 describe('ExpenseForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -57,15 +63,15 @@ describe('ExpenseForm', () => {
       />,
     );
 
-    await user.type(screen.getByLabelText('Descrição'), 'Combustivel');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '120,50');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2026-05-16');
-    await user.selectOptions(screen.getByLabelText('Categoria'), 'category-id');
-    await user.type(screen.getByLabelText('Observações'), 'Posto');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Combustivel');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '120,50');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    await user.type(screen.getByLabelText(notesLabel), 'Posto');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar despesa' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
 
     await waitFor(() => {
       expect(registerExpenseMock).toHaveBeenCalledWith({
@@ -118,10 +124,13 @@ describe('ExpenseForm', () => {
       />,
     );
 
-    await user.clear(screen.getByLabelText('Descrição'));
-    await user.type(screen.getByLabelText('Descrição'), 'Combustivel atualizado');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '140');
+    await user.clear(screen.getByLabelText(descriptionLabel));
+    await user.type(
+      screen.getByLabelText(descriptionLabel),
+      'Combustivel atualizado',
+    );
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '140');
 
     await user.click(screen.getByRole('button', { name: 'Salvar alterações' }));
 
@@ -156,7 +165,7 @@ describe('ExpenseForm', () => {
       />,
     );
 
-    expect(screen.getByLabelText('Valor')).toHaveValue('919,10');
+    expect(screen.getByLabelText(amountLabel)).toHaveValue('919,10');
   });
 
   it('should validate future date before submitting', async () => {
@@ -164,14 +173,14 @@ describe('ExpenseForm', () => {
 
     render(<ExpenseForm categories={categories} />);
 
-    await user.selectOptions(screen.getByLabelText('Categoria'), 'category-id');
-    await user.type(screen.getByLabelText('Descrição'), 'Combustivel');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '120');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2999-01-01');
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Combustivel');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '120');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2999-01-01');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar despesa' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
 
     expect(
       await screen.findByText('Informe uma data de hoje ou anterior.'),
@@ -191,6 +200,6 @@ describe('ExpenseForm', () => {
     expect(
       screen.getByText('Não foi possível carregar categorias.'),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Registrar despesa' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Salvar despesa' })).toBeDisabled();
   });
 });

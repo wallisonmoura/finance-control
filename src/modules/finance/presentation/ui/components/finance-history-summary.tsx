@@ -25,7 +25,7 @@ export function FinanceHistorySummary({
 
   return (
     <Card className='p-0'>
-      <div className='grid gap-0 divide-y divide-slate-100 md:grid-cols-4 md:divide-x md:divide-y-0'>
+      <div className='grid gap-0 lg:grid-cols-2 xl:grid-cols-4'>
         <div className='flex items-center gap-4 p-5'>
           <div className='flex size-14 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600'>
             <ArrowUp aria-hidden='true' className='size-6' />
@@ -42,7 +42,7 @@ export function FinanceHistorySummary({
           </div>
         </div>
 
-        <div className='flex items-center gap-4 p-5'>
+        <div className='flex items-center gap-4 border-t border-slate-100 p-5 lg:border-t-0 lg:border-l xl:border-l'>
           <div className='flex size-14 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600'>
             <ArrowDown aria-hidden='true' className='size-6' />
           </div>
@@ -58,7 +58,7 @@ export function FinanceHistorySummary({
           </div>
         </div>
 
-        <div className='flex items-center gap-4 p-5'>
+        <div className='flex items-center gap-4 border-t border-slate-100 p-5 xl:border-t-0 xl:border-l'>
           <div className='flex size-14 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600'>
             <ArrowLeftRight aria-hidden='true' className='size-6' />
           </div>
@@ -74,7 +74,7 @@ export function FinanceHistorySummary({
           </div>
         </div>
 
-        <div className='flex items-center gap-4 p-5'>
+        <div className='flex items-center gap-4 border-t border-slate-100 p-5 lg:border-l xl:border-t-0'>
           <div className='flex size-14 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600'>
             <ClipboardList aria-hidden='true' className='size-6' />
           </div>

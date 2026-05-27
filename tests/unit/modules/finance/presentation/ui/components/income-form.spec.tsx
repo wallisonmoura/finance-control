@@ -21,6 +21,11 @@ const registerIncomeMock = registerIncome as jest.MockedFunction<
   typeof registerIncome
 >;
 
+const descriptionLabel = 'Descrição *';
+const amountLabel = 'Valor (R$) *';
+const dateLabel = 'Data *';
+const notesLabel = 'Observação (opcional)';
+
 describe('IncomeForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,14 +52,14 @@ describe('IncomeForm', () => {
 
     render(<IncomeForm onIncomeCreated={onIncomeCreated} />);
 
-    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '400,50');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2026-04-10');
-    await user.type(screen.getByLabelText('Observações'), 'Pagamento PIX');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '400,50');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+    await user.type(screen.getByLabelText(notesLabel), 'Pagamento PIX');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
 
     await waitFor(() => {
       expect(registerIncomeMock).toHaveBeenCalledWith({
@@ -91,13 +96,13 @@ describe('IncomeForm', () => {
 
     render(<IncomeForm />);
 
-    await user.type(screen.getByLabelText('Descrição'), 'Corrida');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '100');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2026-04-10');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
 
     await waitFor(() => {
       expect(registerIncomeMock).toHaveBeenCalledWith({
@@ -126,7 +131,7 @@ describe('IncomeForm', () => {
       />,
     );
 
-    expect(screen.getByLabelText('Valor')).toHaveValue('919,10');
+    expect(screen.getByLabelText(amountLabel)).toHaveValue('919,10');
   });
 
   it('should validate amount before submitting', async () => {
@@ -134,13 +139,13 @@ describe('IncomeForm', () => {
 
     render(<IncomeForm />);
 
-    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '0');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2026-04-10');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '0');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
 
     expect(
       await screen.findByText('Informe um valor maior que zero.'),
@@ -154,13 +159,13 @@ describe('IncomeForm', () => {
 
     render(<IncomeForm />);
 
-    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '100');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2999-01-01');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2999-01-01');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
 
     expect(
       await screen.findByText('Informe uma data de hoje ou anterior.'),
@@ -178,13 +183,13 @@ describe('IncomeForm', () => {
 
     render(<IncomeForm />);
 
-    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '100');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2026-04-10');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
 
     expect(
       await screen.findByText('Não foi possível registrar a receita.'),
@@ -207,13 +212,13 @@ describe('IncomeForm', () => {
 
     render(<IncomeForm />);
 
-    await user.type(screen.getByLabelText('Descrição'), 'Corrida Nova');
-    await user.clear(screen.getByLabelText('Valor'));
-    await user.type(screen.getByLabelText('Valor'), '100');
-    await user.clear(screen.getByLabelText('Data'));
-    await user.type(screen.getByLabelText('Data'), '2026-04-10');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
 
-    await user.click(screen.getByRole('button', { name: 'Registrar receita' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
 
     expect(
       screen.getByRole('button', { name: 'Registrando...' }),
@@ -238,7 +243,7 @@ describe('IncomeForm', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Registrar receita' }),
+        screen.getByRole('button', { name: 'Salvar receita' }),
       ).toBeEnabled();
     });
   });

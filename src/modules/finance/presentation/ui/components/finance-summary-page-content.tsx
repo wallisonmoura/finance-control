@@ -50,9 +50,15 @@ type SummaryCardProps = {
   label: string;
   value: number;
   tone?: 'default' | 'income' | 'expense' | 'result';
+  className?: string;
 };
 
-function SummaryCard({ label, value, tone = 'default' }: SummaryCardProps) {
+function SummaryCard({
+  label,
+  value,
+  tone = 'default',
+  className = '',
+}: SummaryCardProps) {
   const Icon =
     tone === 'income'
       ? ArrowUp
@@ -79,7 +85,7 @@ function SummaryCard({ label, value, tone = 'default' }: SummaryCardProps) {
         : 'bg-slate-50 text-slate-950 ring-slate-200';
 
   return (
-    <Card className='p-5'>
+    <Card className={`p-5 ${className}`}>
       <div className='flex items-center gap-4'>
         <div
           className={`flex size-14 shrink-0 items-center justify-center rounded-2xl ring-1 ${iconClass}`}
@@ -206,7 +212,7 @@ function SummaryFilterForm({
 
   return (
     <Card className='p-5'>
-      <div className='grid gap-4 md:grid-cols-[minmax(280px,0.45fr)_1fr_auto] md:items-end'>
+      <div className='grid gap-4 lg:grid-cols-[minmax(280px,0.45fr)_1fr_auto] lg:items-end'>
         <Input
           id='finance-summary-month'
           name='month'
@@ -220,13 +226,13 @@ function SummaryFilterForm({
           onPaste={preventManualMonthEdit}
         />
 
-        <div className='hidden md:block' />
+        <div className='hidden lg:block' />
 
         <Button
           type='button'
           onClick={handleApplyFilters}
           disabled={isLoading}
-          className='h-12 w-full !bg-slate-950 px-6 text-base !text-white hover:!bg-slate-800 md:w-auto'
+          className='h-12 w-full !bg-slate-950 px-6 text-base !text-white hover:!bg-slate-800 lg:w-auto'
         >
           <Funnel aria-hidden='true' className='size-4' />
           {isLoading ? 'Carregando...' : 'Aplicar filtros'}
@@ -320,7 +326,7 @@ export function FinanceSummaryPageContent({
 
       {!isLoading && !error && (
         <div className='space-y-6'>
-          <section className='grid gap-4 md:grid-cols-3'>
+          <section className='grid gap-4 lg:grid-cols-2 xl:grid-cols-3'>
             <SummaryCard
               label='Receitas do mês'
               value={monthlySummary?.totalIncome ?? 0}
@@ -335,6 +341,7 @@ export function FinanceSummaryPageContent({
               label='Resultado operacional'
               value={monthlySummary?.result ?? 0}
               tone='result'
+              className='lg:col-span-2 xl:col-span-1'
             />
           </section>
 
