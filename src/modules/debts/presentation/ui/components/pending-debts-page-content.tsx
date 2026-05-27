@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
@@ -30,7 +30,12 @@ export function PendingDebtsPageContent({
     categories,
     isLoading: isLoadingCategories,
     error: categoriesError,
+    refresh: refreshCategories,
   } = useExpenseCategories();
+
+  useEffect(() => {
+    void refreshCategories();
+  }, [refreshCategories]);
 
   function handleCancelPayment() {
     setPayingDebt(null);
@@ -51,18 +56,6 @@ export function PendingDebtsPageContent({
         description='Pague dívidas pendentes gerando a despesa financeira e atualizando a Wallet.'
       />
 
-      {payingDebt && (
-        <DebtPaymentForm
-          key={payingDebt.id}
-          debt={payingDebt}
-          categories={categories}
-          isLoadingCategories={isLoadingCategories}
-          categoriesError={categoriesError}
-          onDebtPaid={handleDebtPaid}
-          onCancel={handleCancelPayment}
-        />
-      )}
-
       {isLoading && (
         <p className='text-sm text-slate-500'>Carregando dívidas...</p>
       )}
@@ -70,7 +63,23 @@ export function PendingDebtsPageContent({
       {error && <p className='text-sm text-red-600'>{error}</p>}
 
       {!isLoading && !error && (
-        <DebtList debts={debts} onPayDebt={(debt) => setPayingDebt(debt)} />
+        <DebtList
+          debts={debts}
+          onPayDebt={(debt) => setPayingDebt(debt)}
+          expandedDebtId={payingDebt?.id ?? null}
+          renderExpandedContent={(debt) => (
+            <DebtPaymentForm
+              key={debt.id}
+              debt={debt}
+              categories={categories}
+              isLoadingCategories={isLoadingCategories}
+              categoriesError={categoriesError}
+              onDebtPaid={handleDebtPaid}
+              onCancel={handleCancelPayment}
+              embedded
+            />
+          )}
+        />
       )}
     </div>
   );

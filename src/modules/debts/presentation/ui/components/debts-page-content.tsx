@@ -138,12 +138,14 @@ export function DebtsPageContent({
       {actionError && <p className='text-sm text-red-600'>{actionError}</p>}
 
       {!isLoading && !error && (
-        <DebtList
-          debts={debts}
-          onEditDebt={handleEditDebt}
-          onDeleteDebt={handleDeleteDebt}
-          deletingDebtId={deletingDebtId}
-        />
+        <div className='border-t border-slate-200 pt-6'>
+          <DebtList
+            debts={debts}
+            onEditDebt={handleEditDebt}
+            onDeleteDebt={handleDeleteDebt}
+            deletingDebtId={deletingDebtId}
+          />
+        </div>
       )}
 
       <ConfirmDialog

@@ -140,4 +140,37 @@ describe('DebtPaymentForm', () => {
       screen.getByRole('button', { name: 'Confirmar pagamento' }),
     ).toBeDisabled();
   });
+
+  it('should not allow future payment date', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-05-27T12:00:00-03:00'));
+
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
+
+    render(<DebtPaymentForm debt={debt} categories={categories} />);
+
+    const paidAtInput = screen.getByLabelText('Data do pagamento');
+
+    expect(paidAtInput).toHaveValue('2026-05-27');
+    expect(paidAtInput).toHaveAttribute('max', '2026-05-27');
+
+    await user.selectOptions(
+      screen.getByLabelText('Categoria da despesa'),
+      'category-id',
+    );
+    await user.clear(paidAtInput);
+    await user.type(paidAtInput, '2026-05-28');
+    await user.click(
+      screen.getByRole('button', { name: 'Confirmar pagamento' }),
+    );
+
+    expect(
+      await screen.findByText('Informe uma data de hoje ou anterior.'),
+    ).toBeInTheDocument();
+    expect(payDebtMock).not.toHaveBeenCalled();
+
+    jest.useRealTimers();
+  });
 });

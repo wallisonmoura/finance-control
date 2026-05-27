@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreditCard, X } from 'lucide-react';
+import { LockKeyhole, WalletCards, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -11,7 +11,6 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
-import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { payDebt } from '../services/debt-api.service';
@@ -24,16 +23,31 @@ type DebtPaymentFormProps = {
   categoriesError?: string | null;
   onDebtPaid?: () => void | Promise<void>;
   onCancel?: () => void;
+  embedded?: boolean;
 };
 
 function getTodayDateValue() {
-  return new Date().toISOString().slice(0, 10);
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function isFutureDate(value: string) {
+  return value > getTodayDateValue();
 }
 
 const debtPaymentFormSchema = z.object({
   expenseCategoryId: z.string().min(1, 'Selecione uma categoria.'),
   paymentSource: z.enum(['BANK', 'CASH', 'RECEIVABLE']),
-  paidAt: z.string().min(1, 'Informe a data do pagamento.'),
+  paidAt: z
+    .string()
+    .min(1, 'Informe a data do pagamento.')
+    .refine((value) => !isFutureDate(value), {
+      message: 'Informe uma data de hoje ou anterior.',
+    }),
 });
 
 type DebtPaymentFormValues = z.infer<typeof debtPaymentFormSchema>;
@@ -45,6 +59,7 @@ export function DebtPaymentForm({
   categoriesError = null,
   onDebtPaid,
   onCancel,
+  embedded = false,
 }: DebtPaymentFormProps) {
   const {
     register,
@@ -78,23 +93,33 @@ export function DebtPaymentForm({
   const cannotSubmit =
     isSubmitting || isLoadingCategories || Boolean(categoriesError);
 
-  return (
-    <Card>
+  const content = (
+    <div
+      className={
+        embedded
+          ? 'rounded-xl border border-amber-200 bg-amber-50/30 p-4 sm:p-5'
+          : ''
+      }
+    >
       <form
         onSubmit={handleSubmit(handleDebtPaymentSubmit)}
-        className='space-y-4'
+        className='space-y-5'
         noValidate
       >
-        <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between'>
-          <div>
-            <h2 className='text-lg font-semibold text-black'>Pagar dívida</h2>
-            <p className='text-sm text-slate-500'>{debt.description}</p>
+        <div className='flex items-center gap-4'>
+          <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700'>
+            <WalletCards aria-hidden='true' className='size-6' />
           </div>
 
-          <MoneyDisplay
-            value={debt.amount}
-            className='text-lg font-semibold text-red-700'
-          />
+          <div className='min-w-0'>
+            <h2 className='text-lg font-semibold text-slate-950'>
+              Pagar dívida
+            </h2>
+            <p className='mt-1 text-sm text-slate-500'>
+              Preencha os dados abaixo para gerar a despesa e atualizar sua
+              Wallet.
+            </p>
+          </div>
         </div>
 
         <div className='grid gap-4 lg:grid-cols-3'>
@@ -146,6 +171,7 @@ export function DebtPaymentForm({
               id='debt-paid-at'
               label='Data do pagamento'
               type='date'
+              max={getTodayDateValue()}
               aria-invalid={Boolean(errors.paidAt)}
               aria-describedby={
                 errors.paidAt ? 'debt-payment-paid-at-error' : undefined
@@ -165,20 +191,36 @@ export function DebtPaymentForm({
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}
 
-        <div className='grid gap-2 sm:flex sm:flex-wrap'>
-          <Button type='submit' disabled={cannotSubmit}>
-            <CreditCard aria-hidden='true' className='size-4' />
+        <div className='grid gap-3 sm:flex sm:flex-wrap'>
+          <Button
+            type='submit'
+            disabled={cannotSubmit}
+            className='h-12 !bg-slate-950 px-6 !text-white hover:!bg-slate-800'
+          >
+            <LockKeyhole aria-hidden='true' className='size-4' />
             {isSubmitting ? 'Pagando...' : 'Confirmar pagamento'}
           </Button>
 
           {onCancel && (
-            <Button type='button' onClick={onCancel} disabled={isSubmitting}>
+            <Button
+              type='button'
+              onClick={onCancel}
+              disabled={isSubmitting}
+              variant='secondary'
+              className='h-12 px-6'
+            >
               <X aria-hidden='true' className='size-4' />
               Cancelar
             </Button>
           )}
         </div>
       </form>
-    </Card>
+    </div>
   );
+
+  if (embedded) {
+    return content;
+  }
+
+  return <Card>{content}</Card>;
 }

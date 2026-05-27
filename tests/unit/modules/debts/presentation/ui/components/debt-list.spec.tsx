@@ -37,6 +37,38 @@ describe('DebtList', () => {
     expect(screen.getAllByText('R$ 300,00')).toHaveLength(2);
   });
 
+  it('should sort pending debts first and newest paid debts first', () => {
+    render(
+      <DebtList
+        debts={[
+          {
+            ...paidDebt,
+            id: 'older-paid-debt-id',
+            description: 'cartão antigo',
+            paidAt: '2026-05-27T00:00:00.000Z',
+            updatedAt: '2026-05-27T10:00:00.000Z',
+          },
+          {
+            ...pendingDebt,
+            description: 'IPVA pendente',
+            dueDate: '2026-06-03T00:00:00.000Z',
+          },
+          {
+            ...paidDebt,
+            id: 'newer-paid-debt-id',
+            description: 'cartão novo',
+            paidAt: '2026-05-27T00:00:00.000Z',
+            updatedAt: '2026-05-27T12:00:00.000Z',
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent),
+    ).toEqual(['IPVA pendente', 'cartão novo', 'cartão antigo']);
+  });
+
   it('should show manage actions only for pending debts', async () => {
     const user = userEvent.setup();
     const onEditDebt = jest.fn();
