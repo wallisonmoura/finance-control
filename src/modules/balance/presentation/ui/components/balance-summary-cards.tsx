@@ -84,7 +84,7 @@ export function BalanceSummaryCards({
       <Card className='relative overflow-hidden border-slate-900/10 bg-primary p-0 text-white shadow-xl shadow-slate-300/80'>
         <div
           aria-hidden='true'
-          className='absolute inset-0 bg-[url("/images/dashboard-mobile-bg.png")] bg-cover bg-center sm:bg-[url("/images/dashboard-bg.png")]'
+          className='absolute inset-0 bg-[url("/images/dashboard-mobile-bg.png")] bg-cover bg-center lg:bg-[url("/images/dashboard-bg.png")]'
         />
         <div className='absolute inset-0 bg-primary/25' aria-hidden='true' />
 
@@ -150,10 +150,10 @@ export function BalanceSummaryCards({
           <h2>Composição dos saldos</h2>
         </div>
 
-        <div className='grid gap-4 md:grid-cols-3'>
+        <div className='grid gap-4 lg:grid-cols-3'>
           {availableItems.map((item) => (
             <Card key={item.label} className='p-5'>
-              <div className='flex gap-4 md:block md:space-y-4'>
+              <div className='flex gap-4 lg:block lg:space-y-4'>
                 <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100'>
                   <item.icon
                     aria-hidden='true'
@@ -194,7 +194,7 @@ export function BalanceSummaryCards({
             </p>
           ) : (
             <>
-              <div className='hidden md:block'>
+              <div className='hidden lg:block'>
                 <div className='grid grid-cols-[1.5fr_1fr_1fr_1fr_0.7fr] border-b border-slate-200 px-5 py-3 text-xs font-semibold text-slate-700'>
                   <span>Descrição</span>
                   <span>Categoria</span>
@@ -243,7 +243,7 @@ export function BalanceSummaryCards({
                 ))}
               </div>
 
-              <div className='divide-y divide-slate-100 md:hidden'>
+              <div className='divide-y divide-slate-100 lg:hidden'>
                 {recentEntries.map((entry) => (
                   <div
                     key={entry.id}

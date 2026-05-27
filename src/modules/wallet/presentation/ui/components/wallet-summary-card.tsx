@@ -36,7 +36,7 @@ export function WalletSummaryCard({ wallet }: WalletSummaryCardProps) {
       <Card className='relative overflow-hidden border-slate-900/10 bg-primary p-0 text-white shadow-xl shadow-slate-300/80'>
         <div
           aria-hidden='true'
-          className='absolute inset-0 bg-[url("/images/wallet-mobile-bg.png")] bg-cover bg-center sm:bg-[url("/images/wallet-bg.png")]'
+          className='absolute inset-0 bg-[url("/images/wallet-mobile-bg.png")] bg-cover bg-center lg:bg-[url("/images/wallet-bg.png")]'
         />
         <div className='absolute inset-0 bg-primary/20' aria-hidden='true' />
 
@@ -61,10 +61,10 @@ export function WalletSummaryCard({ wallet }: WalletSummaryCardProps) {
         </div>
       </Card>
 
-      <div className='grid gap-4 md:grid-cols-3'>
+      <div className='grid gap-4 lg:grid-cols-3'>
         {items.map((item) => (
           <Card key={item.label} className='p-5'>
-            <div className='flex gap-4 md:block md:space-y-4'>
+            <div className='flex gap-4 lg:block lg:space-y-4'>
               <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100'>
                 <item.icon
                   aria-hidden='true'
