@@ -9,16 +9,18 @@ import { SignOutButton } from './sign-out-button';
 type CurrentUserMenuProps = {
   initialUser?: AuthenticatedUser | null;
   initialError?: string | null;
+  showSignOut?: boolean;
 };
 
 export function CurrentUserMenu({
   initialUser = null,
   initialError = null,
+  showSignOut = true,
 }: CurrentUserMenuProps) {
   const { user, isLoading } = useCurrentUser({ initialUser, initialError });
 
   return (
-    <div className='flex w-full items-center justify-between gap-4 bg-white px-0 py-0 md:w-auto md:min-w-80 md:justify-between'>
+    <div className='flex w-full items-center justify-between gap-4 px-0 py-0 md:w-auto md:min-w-80 md:justify-between'>
       <div className='flex min-w-0 items-center gap-3'>
         <div
           aria-hidden='true'
@@ -36,7 +38,7 @@ export function CurrentUserMenu({
         </div>
       </div>
 
-      <SignOutButton />
+      {showSignOut ? <SignOutButton /> : null}
     </div>
   );
 }

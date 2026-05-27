@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 
+import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/current-user-menu';
+import { SignOutButton } from '@/modules/auth/presentation/ui/components/sign-out-button';
+import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
 
 import { NavigationLink } from './navigation-link';
@@ -12,9 +15,15 @@ import { isNavigationItemActive } from './is-navigation-item-active';
 
 type MobileMenuProps = {
   pathname: string;
+  currentUser?: AuthenticatedUser | null;
+  currentUserError?: string | null;
 };
 
-export function MobileMenu({ pathname }: MobileMenuProps) {
+export function MobileMenu({
+  pathname,
+  currentUser = null,
+  currentUserError = null,
+}: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleMenu() {
@@ -57,22 +66,36 @@ export function MobileMenu({ pathname }: MobileMenuProps) {
       </div>
 
       {isOpen && (
-        <nav
-          id='mobile-navigation'
-          aria-label='Navegação principal mobile'
-          className='space-y-2 border-t border-border bg-card px-4 py-3 shadow-lg shadow-slate-200/60'
-        >
-          {PRIVATE_NAVIGATION_ITEMS.map((item) => (
-            <NavigationLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              isActive={isNavigationItemActive(pathname, item.href)}
-              onClick={closeMenu}
+        <div className='border-t border-border bg-card shadow-lg shadow-slate-200/60'>
+          <div className='border-b border-border bg-slate-50 px-4 py-3'>
+            <CurrentUserMenu
+              initialUser={currentUser}
+              initialError={currentUserError}
+              showSignOut={false}
             />
-          ))}
-        </nav>
+          </div>
+
+          <nav
+            id='mobile-navigation'
+            aria-label='Navegação principal mobile'
+            className='space-y-2 px-4 py-3'
+          >
+            {PRIVATE_NAVIGATION_ITEMS.map((item) => (
+              <NavigationLink
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                icon={item.icon}
+                isActive={isNavigationItemActive(pathname, item.href)}
+                onClick={closeMenu}
+              />
+            ))}
+          </nav>
+
+          <div className='border-t border-border bg-slate-50 px-4 py-3'>
+            <SignOutButton />
+          </div>
+        </div>
       )}
     </div>
   );

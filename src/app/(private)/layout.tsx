@@ -13,7 +13,10 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
 
   return (
     <div className='min-h-dvh bg-background md:flex'>
-      <PrivateNavigation />
+      <PrivateNavigation
+        currentUser={currentUser}
+        currentUserError={currentUserError}
+      />
 
       <div className='flex min-h-dvh min-w-0 flex-1 flex-col'>
         <header className='sticky top-0 z-20 hidden h-24 bg-card/95 px-6 backdrop-blur md:block'>
@@ -24,13 +27,6 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
             />
           </div>
         </header>
-
-        <div className='border-b border-border bg-card px-4 py-3 md:hidden'>
-          <CurrentUserMenu
-            initialUser={currentUser}
-            initialError={currentUserError}
-          />
-        </div>
 
         <main className='mx-auto w-full max-w-7xl flex-1 px-4 py-5 md:px-8 md:py-8 lg:px-10'>
           {children}

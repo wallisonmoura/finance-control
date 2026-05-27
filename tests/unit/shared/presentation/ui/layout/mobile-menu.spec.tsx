@@ -1,11 +1,47 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { getCurrentUser } from '@/modules/auth/presentation/ui/services/auth-api.service';
 import { MobileMenu } from '@/shared/presentation/ui/layout/mobile-menu';
 
+jest.mock('@/modules/auth/presentation/ui/services/auth-api.service', () => ({
+  getCurrentUser: jest.fn(),
+  signOut: jest.fn(),
+}));
+
+const mockReplace = jest.fn();
+const mockRefresh = jest.fn();
+const mockedGetCurrentUser = jest.mocked(getCurrentUser);
+const currentUser = {
+  id: 'user-id',
+  name: 'Admin Local',
+  email: 'admin@financecontrol.com',
+};
+
+function renderMobileMenu(pathname = '/dashboard') {
+  return render(<MobileMenu pathname={pathname} currentUser={currentUser} />);
+}
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    replace: mockReplace,
+    refresh: mockRefresh,
+  }),
+}));
+
 describe('MobileMenu', () => {
+  beforeEach(() => {
+    mockReplace.mockReset();
+    mockRefresh.mockReset();
+    mockedGetCurrentUser.mockResolvedValue({
+      data: {
+        user: currentUser,
+      },
+    });
+  });
+
   it('should render the application name', () => {
-    render(<MobileMenu pathname='/dashboard' />);
+    renderMobileMenu();
 
     expect(
       screen.getByRole('img', { name: 'Finance Control' }),
@@ -13,7 +49,7 @@ describe('MobileMenu', () => {
   });
 
   it('should start with the navigation menu closed', () => {
-    render(<MobileMenu pathname='/dashboard' />);
+    renderMobileMenu();
 
     expect(
       screen.queryByRole('navigation', {
@@ -30,7 +66,7 @@ describe('MobileMenu', () => {
   it('should open the navigation menu when clicking the menu button', async () => {
     const user = userEvent.setup();
 
-    render(<MobileMenu pathname='/dashboard' />);
+    renderMobileMenu();
 
     await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
@@ -49,7 +85,7 @@ describe('MobileMenu', () => {
   it('should close the navigation menu when clicking the menu button twice', async () => {
     const user = userEvent.setup();
 
-    render(<MobileMenu pathname='/dashboard' />);
+    renderMobileMenu();
 
     const menuButton = screen.getByRole('button', { name: 'Abrir menu' });
 
@@ -68,7 +104,7 @@ describe('MobileMenu', () => {
   it('should render the main navigation links when open', async () => {
     const user = userEvent.setup();
 
-    render(<MobileMenu pathname='/dashboard' />);
+    renderMobileMenu();
 
     await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
@@ -93,10 +129,23 @@ describe('MobileMenu', () => {
     );
   });
 
+  it('should render the current user controls inside the open menu', async () => {
+    const user = userEvent.setup();
+
+    renderMobileMenu();
+
+    expect(screen.queryByText('Admin Local')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
+
+    expect(screen.getByText('Admin Local')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument();
+  });
+
   it('should mark the active mobile link', async () => {
     const user = userEvent.setup();
 
-    render(<MobileMenu pathname='/debts' />);
+    renderMobileMenu('/debts');
 
     await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
@@ -107,7 +156,7 @@ describe('MobileMenu', () => {
   });
 
   it('should close the menu when clicking a navigation link', () => {
-    render(<MobileMenu pathname='/dashboard' />);
+    renderMobileMenu();
 
     fireEvent.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
@@ -127,7 +176,7 @@ describe('MobileMenu', () => {
   });
 
   it('should mark parent mobile link as active for subroutes', () => {
-    render(<MobileMenu pathname='/debts/pending' />);
+    renderMobileMenu('/debts/pending');
 
     fireEvent.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
