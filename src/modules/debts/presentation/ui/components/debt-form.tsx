@@ -12,7 +12,6 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
-import { TextareaField } from '@/shared/presentation/ui/components/textarea-field';
 
 import { registerDebt, updateDebt } from '../services/debt-api.service';
 import { DebtTypeUi, DebtUi } from '../types/debt-ui.types';
@@ -143,10 +142,10 @@ export function DebtForm({
         noValidate
       >
         <div>
-          <h2 className='text-lg font-semibold text-black'>
+          <h2 className='text-lg font-semibold text-foreground'>
             {isEditing ? 'Editar dívida' : 'Cadastrar dívida'}
           </h2>
-          <p className='text-sm text-slate-500'>
+          <p className='text-sm text-muted-foreground'>
             {isEditing
               ? 'Atualize os dados da dívida pendente selecionada.'
               : 'Registre um compromisso financeiro pendente.'}
@@ -178,7 +177,7 @@ export function DebtForm({
             {errors.dueDate?.message ? (
               <p
                 id='debt-due-date-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.dueDate.message}
               </p>
@@ -198,7 +197,7 @@ export function DebtForm({
             {errors.description?.message ? (
               <p
                 id='debt-description-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.description.message}
               </p>
@@ -218,7 +217,7 @@ export function DebtForm({
             {errors.amount?.message ? (
               <p
                 id='debt-amount-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.amount.message}
               </p>
@@ -226,18 +225,31 @@ export function DebtForm({
           </div>
 
           <div className='md:col-span-2'>
-            <TextareaField
-              id='debt-notes'
-              label='Observações'
-              {...register('notes')}
-            />
+            <Input id='debt-notes' label='Observações' {...register('notes')} />
           </div>
         </div>
 
         {error && <FormErrorMessage message={error} />}
 
-        <div className='grid gap-2 sm:flex sm:flex-wrap'>
-          <Button type='submit' disabled={isSubmitting}>
+        <div className='grid gap-2 sm:flex sm:flex-wrap sm:justify-end'>
+          {onCancel && (
+            <Button
+              type='button'
+              onClick={onCancel}
+              disabled={isSubmitting}
+              variant='secondary'
+              className='h-10 min-w-36 px-6 text-base'
+            >
+              <X aria-hidden='true' className='size-4' />
+              Cancelar
+            </Button>
+          )}
+          <Button
+            type='submit'
+            disabled={isSubmitting}
+            variant='custom'
+            className='h-10 min-w-44 bg-income px-4 text-base text-primary-foreground hover:bg-income/90'
+          >
             <Save aria-hidden='true' className='size-4' />
             {isSubmitting
               ? isEditing
@@ -247,13 +259,6 @@ export function DebtForm({
                 ? 'Salvar alterações'
                 : 'Cadastrar dívida'}
           </Button>
-
-          {onCancel && (
-            <Button type='button' onClick={onCancel} disabled={isSubmitting}>
-              <X aria-hidden='true' className='size-4' />
-              Cancelar
-            </Button>
-          )}
         </div>
       </form>
     </Card>
