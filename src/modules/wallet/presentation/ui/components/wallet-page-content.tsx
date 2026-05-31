@@ -24,14 +24,8 @@ export function WalletPageContent({
   initialWallet = null,
   initialError = null,
 }: WalletPageContentProps) {
-  const {
-    wallet,
-    isUpdating,
-    error,
-    successMessage,
-    refetch,
-    updateBalances,
-  } = useWallet({ initialWallet, initialError });
+  const { wallet, isUpdating, error, successMessage, refetch, updateBalances } =
+    useWallet({ initialWallet, initialError });
 
   useEffect(() => {
     if (successMessage) {
@@ -43,7 +37,7 @@ export function WalletPageContent({
     return (
       <div className='space-y-6'>
         <PageTitle
-          title='Wallet'
+          title='Carteira'
           description='Visualize e atualize seus saldos-base.'
         />
 
@@ -65,11 +59,11 @@ export function WalletPageContent({
     return (
       <div className='space-y-6'>
         <PageTitle
-          title='Wallet'
+          title='Carteira'
           description='Visualize e atualize seus saldos-base.'
         />
 
-        <EmptyState description='Nenhuma Wallet encontrada para o usuário atual.' />
+        <EmptyState description='Nenhuma Carteira encontrada para o usuário atual.' />
       </div>
     );
   }
@@ -77,7 +71,7 @@ export function WalletPageContent({
   return (
     <div className='space-y-6'>
       <PageTitle
-        title='Wallet'
+        title='Carteira'
         description='Visualize sua posição financeira base e atualize seus saldos reais.'
       />
 

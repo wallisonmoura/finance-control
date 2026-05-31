@@ -10,8 +10,8 @@ type DesktopSidebarProps = {
 
 export function DesktopSidebar({ pathname }: DesktopSidebarProps) {
   return (
-    <aside className='sticky top-0 hidden h-dvh w-56 shrink-0 overflow-y-auto border-r border-slate-200/80 bg-white px-4 py-4 text-slate-800 shadow-xl shadow-slate-200/70 md:block'>
-      <div className='mb-7 border-b border-slate-200 pb-4'>
+    <aside className='sticky top-0 hidden h-dvh w-56 shrink-0 overflow-y-auto border-r border-border bg-card px-4 py-4 text-foreground shadow-xl shadow-border/70 md:block'>
+      <div className='mb-7 border-b border-border pb-4'>
         <div className='relative h-16 w-full overflow-hidden'>
           <Image
             src='/images/logo-finance-control-horizontal.png'

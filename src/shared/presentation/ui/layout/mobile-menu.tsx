@@ -66,8 +66,8 @@ export function MobileMenu({
       </div>
 
       {isOpen && (
-        <div className='border-t border-border bg-card shadow-lg shadow-slate-200/60'>
-          <div className='border-b border-border bg-slate-50 px-4 py-3'>
+        <div className='border-t border-border bg-card shadow-lg shadow-border/60'>
+          <div className='border-b border-border bg-background px-4 py-3'>
             <CurrentUserMenu
               initialUser={currentUser}
               initialError={currentUserError}
@@ -92,7 +92,7 @@ export function MobileMenu({
             ))}
           </nav>
 
-          <div className='border-t border-border bg-slate-50 px-4 py-3'>
+          <div className='border-t border-border bg-background px-4 py-3'>
             <SignOutButton />
           </div>
         </div>

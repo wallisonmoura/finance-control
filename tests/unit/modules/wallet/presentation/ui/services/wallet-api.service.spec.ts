@@ -89,7 +89,7 @@ describe('wallet-api.service', () => {
       const response = await getWallet();
 
       expect(response).toEqual({
-        error: 'Não foi possível processar a solicitação da Wallet.',
+        error: 'Não foi possível processar a solicitação da Carteira.',
       });
     });
 
@@ -102,7 +102,7 @@ describe('wallet-api.service', () => {
       const response = await getWallet();
 
       expect(response).toEqual({
-        error: 'Não foi possível processar a solicitação da Wallet.',
+        error: 'Não foi possível processar a solicitação da Carteira.',
       });
     });
   });
@@ -197,7 +197,7 @@ describe('wallet-api.service', () => {
       });
 
       expect(response).toEqual({
-        error: 'Não foi possível processar a solicitação da Wallet.',
+        error: 'Não foi possível processar a solicitação da Carteira.',
       });
     });
   });

@@ -1,5 +1,10 @@
 import type { LucideIcon } from 'lucide-react';
-import { ChartNoAxesCombined, CircleDollarSign, LayoutDashboard, WalletCards } from 'lucide-react';
+import {
+  ChartNoAxesCombined,
+  CircleDollarSign,
+  LayoutDashboard,
+  WalletCards,
+} from 'lucide-react';
 
 export type NavigationItem = {
   label: string;

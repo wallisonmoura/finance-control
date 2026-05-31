@@ -30,7 +30,7 @@ describe('BalanceSummaryDashboard', () => {
       />,
     );
 
-    expect(screen.getByText('Wallet Total')).toBeInTheDocument();
+    expect(screen.getByText('Valor Total da Carteira')).toBeInTheDocument();
     expect(screen.getByText('Dívidas Pendentes')).toBeInTheDocument();
     expect(screen.getByText('Saldo Final')).toBeInTheDocument();
     expect(screen.getByText('Saldo em Banco')).toBeInTheDocument();

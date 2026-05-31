@@ -60,29 +60,25 @@ function SummaryCard({
   className = '',
 }: SummaryCardProps) {
   const Icon =
-    tone === 'income'
-      ? ArrowUp
-      : tone === 'expense'
-        ? ArrowDown
-        : BarChart3;
+    tone === 'income' ? ArrowUp : tone === 'expense' ? ArrowDown : BarChart3;
 
   const toneClass =
     tone === 'income'
-      ? '!text-emerald-700'
+      ? 'text-income'
       : tone === 'expense'
-        ? '!text-red-700'
+        ? 'text-expense'
         : tone === 'result'
           ? value >= 0
-            ? '!text-slate-950'
-            : '!text-red-700'
-          : '!text-slate-950';
+            ? 'text-foreground'
+            : 'text-expense'
+          : 'text-foreground';
 
   const iconClass =
     tone === 'income'
-      ? 'bg-emerald-50 text-emerald-600 ring-emerald-100'
+      ? 'bg-income-muted text-income ring-income/20'
       : tone === 'expense'
-        ? 'bg-red-50 text-red-600 ring-red-100'
-        : 'bg-slate-50 text-slate-950 ring-slate-200';
+        ? 'bg-expense-muted text-expense ring-expense/20'
+        : 'bg-muted text-foreground ring-border';
 
   return (
     <Card className={`p-5 ${className}`}>
@@ -94,7 +90,7 @@ function SummaryCard({
         </div>
 
         <div className='min-w-0'>
-          <p className='text-sm font-medium text-slate-500'>{label}</p>
+          <p className='text-sm font-medium text-muted-foreground'>{label}</p>
           <MoneyDisplay
             value={value}
             className={`mt-1 text-2xl font-bold ${toneClass}`}
@@ -107,30 +103,33 @@ function SummaryCard({
 
 function getResultCellClass(value: number) {
   if (value > 0) {
-    return 'bg-emerald-50 text-emerald-700 ring-emerald-100';
+    return 'bg-income-muted text-income ring-income/20';
   }
 
   if (value < 0) {
-    return 'bg-red-50 text-red-700 ring-red-100';
+    return 'bg-expense-muted text-expense ring-expense/20';
   }
 
-  return 'bg-slate-50 text-slate-700 ring-slate-100';
+  return 'bg-muted text-muted-foreground ring-border';
 }
 
 function SummaryTable({ rows }: { rows: FinanceOperationalSummaryDailyRow[] }) {
   return (
     <Card className='p-0'>
-      <div className='flex items-center gap-2 border-b border-slate-200 px-5 py-4'>
-        <CalendarDays aria-hidden='true' className='size-5 text-slate-700' />
-        <h2 className='text-lg font-semibold text-slate-950'>
+      <div className='flex items-center gap-2 border-b border-border px-5 py-4'>
+        <CalendarDays
+          aria-hidden='true'
+          className='size-5 text-muted-foreground'
+        />
+        <h2 className='text-lg font-semibold text-foreground'>
           Resultado diário
         </h2>
       </div>
 
       <div className='overflow-x-auto'>
-        <table className='w-full min-w-[640px] border-collapse text-sm'>
+        <table className='w-full min-w-160 border-collapse text-sm'>
           <thead>
-            <tr className='border-b border-slate-200 bg-slate-50 text-left text-sm text-slate-600'>
+            <tr className='border-b border-border bg-muted text-left text-sm text-muted-foreground'>
               <th className='w-24 px-5 py-3 font-semibold'>Dia</th>
               <th className='px-5 py-3 font-semibold'>Receita</th>
               <th className='px-5 py-3 font-semibold'>Despesa</th>
@@ -141,15 +140,15 @@ function SummaryTable({ rows }: { rows: FinanceOperationalSummaryDailyRow[] }) {
             {rows.map((row) => (
               <tr
                 key={row.date}
-                className='border-b border-slate-100 transition-colors last:border-b-0 hover:bg-slate-50/80'
+                className='border-b border-border transition-colors last:border-b-0 hover:bg-muted/70'
               >
-                <td className='px-5 py-3 font-medium text-slate-600'>
+                <td className='px-5 py-3 font-medium text-muted-foreground'>
                   {String(row.day).padStart(2, '0')}
                 </td>
-                <td className='px-5 py-3 font-semibold text-emerald-700'>
+                <td className='px-5 py-3 font-semibold text-income'>
                   {formatMoney(row.totalIncome)}
                 </td>
-                <td className='px-5 py-3 font-semibold text-red-700'>
+                <td className='px-5 py-3 font-semibold text-expense'>
                   {formatMoney(row.totalExpense)}
                 </td>
                 <td className='px-5 py-3 font-semibold'>
@@ -232,7 +231,7 @@ function SummaryFilterForm({
           type='button'
           onClick={handleApplyFilters}
           disabled={isLoading}
-          className='h-12 w-full !bg-slate-950 px-6 text-base !text-white hover:!bg-slate-800 lg:w-auto'
+          className='h-12 w-full bg-primary px-6 text-base text-primary-foreground hover:bg-primary/90 lg:w-auto'
         >
           <Funnel aria-hidden='true' className='size-4' />
           {isLoading ? 'Carregando...' : 'Aplicar filtros'}
@@ -318,10 +317,12 @@ export function FinanceSummaryPageContent({
         onApplyFilters={handleApplyFilters}
       />
 
-      {error && <p className='text-sm text-red-600'>{error}</p>}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
 
       {isLoading && (
-        <p className='text-sm text-slate-500'>Carregando resumo financeiro...</p>
+        <p className='text-sm text-muted-foreground'>
+          Carregando resumo financeiro...
+        </p>
       )}
 
       {!isLoading && !error && (

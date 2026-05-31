@@ -5,7 +5,7 @@ import { Button as PrimitiveButton } from '@/shared/presentation/ui/primitives/b
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
   fullWidth?: boolean;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'custom';
 };
 
 export function Button({
@@ -16,20 +16,30 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
+  const primitiveVariant = {
+    primary: 'default',
+    secondary: 'secondary',
+    danger: 'destructive',
+    ghost: 'ghost',
+    custom: 'ghost',
+  }[variant] as 'default' | 'secondary' | 'destructive' | 'ghost';
+
   const variantClassName = {
     primary:
-      '!bg-[var(--fc-secondary)] !text-slate-950 shadow-sm hover:!bg-emerald-600 hover:!text-white focus-visible:ring-[var(--fc-secondary)]',
+      'bg-accent text-accent-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:ring-ring',
     secondary:
-      '!bg-white !text-slate-700 ring-1 ring-border shadow-sm hover:!bg-muted hover:!text-slate-950 focus-visible:ring-[var(--fc-secondary)]',
+      'bg-card text-foreground ring-1 ring-border shadow-sm hover:bg-muted hover:text-foreground focus-visible:ring-ring',
     danger:
-      '!bg-red-50 !text-red-700 ring-1 ring-red-200 hover:!bg-red-100 hover:!text-red-800 focus-visible:ring-[var(--fc-danger)]',
+      'bg-destructive/10 text-destructive ring-1 ring-destructive/20 hover:bg-destructive/15 hover:text-destructive focus-visible:ring-destructive',
     ghost:
-      '!bg-transparent !text-muted-foreground shadow-none hover:!bg-muted hover:!text-foreground focus-visible:ring-[var(--fc-secondary)]',
+      'bg-transparent text-muted-foreground shadow-none hover:bg-muted hover:text-foreground focus-visible:ring-ring',
+    custom: 'shadow-none focus-visible:ring-ring',
   }[variant];
 
   return (
     <PrimitiveButton
       asChild={asChild}
+      variant={primitiveVariant}
       size='lg'
       className={[
         variantClassName,

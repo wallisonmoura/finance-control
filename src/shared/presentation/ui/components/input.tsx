@@ -122,7 +122,7 @@ export function Input({
 
   return (
     <div className='space-y-1.5'>
-      <Label htmlFor={inputId} className='text-slate-900'>
+      <Label htmlFor={inputId} className='text-foreground'>
         {label}
       </Label>
 
@@ -133,7 +133,7 @@ export function Input({
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
         className={[
-          'h-11 bg-white text-black transition-all duration-200 ease-out',
+          'h-11 bg-card text-foreground transition-all duration-200 ease-out',
           className,
         ].join(' ')}
         {...props}

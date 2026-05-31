@@ -27,6 +27,15 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success-light: var(--fc-success-light);
+  --color-income: var(--income);
+  --color-income-muted: var(--income-muted);
+  --color-expense: var(--expense);
+  --color-expense-muted: var(--expense-muted);
+  --color-info: var(--info);
+  --color-info-muted: var(--info-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -56,6 +65,14 @@
   --fc-text-secondary: #475569;
   --fc-danger: #ef4444;
   --fc-success-light: #d1fae5;
+  --income: #047857;
+  --income-muted: #d1fae5;
+  --expense: #dc2626;
+  --expense-muted: #fee2e2;
+  --info: #2563eb;
+  --info-muted: #dbeafe;
+  --warning: #d97706;
+  --warning-muted: #fef3c7;
   --background: var(--fc-background);
   --foreground: var(--fc-text-primary);
   --card: #ffffff;
@@ -91,6 +108,14 @@
 }
 
 .dark {
+  --income: #34d399;
+  --income-muted: oklch(0.3 0.08 160);
+  --expense: #f87171;
+  --expense-muted: oklch(0.31 0.09 25);
+  --info: #60a5fa;
+  --info-muted: oklch(0.32 0.08 250);
+  --warning: #fbbf24;
+  --warning-muted: oklch(0.33 0.08 80);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

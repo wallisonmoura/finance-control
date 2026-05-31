@@ -24,15 +24,15 @@ export function CurrentUserMenu({
       <div className='flex min-w-0 items-center gap-3'>
         <div
           aria-hidden='true'
-          className='flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200'
+          className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-accent ring-1 ring-accent/30'
         >
           <UserRound className='size-6' />
         </div>
 
         <div className='min-w-0'>
-          <p className='text-sm text-slate-600'>Usuário</p>
+          <p className='text-sm text-muted-foreground'>Usuário</p>
 
-          <p className='max-w-48 truncate text-base font-semibold text-slate-950'>
+          <p className='max-w-48 truncate text-base font-semibold text-foreground'>
             {isLoading ? 'Carregando...' : (user?.name ?? 'Usuário')}
           </p>
         </div>

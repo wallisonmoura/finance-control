@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   return (
     <main className='space-y-6'>
       <PageTitle
-        title='Dashboard'
+        title='Página inicial'
         description='Acompanhe sua posição financeira atual.'
       />
 

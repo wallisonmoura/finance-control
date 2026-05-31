@@ -10,6 +10,7 @@ import {
   FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
 } from '../types/finance-ui.types';
+import { Funnel } from 'lucide-react';
 
 type FinanceHistoryFiltersProps = {
   filters: FinanceHistoryFiltersUi;
@@ -67,7 +68,9 @@ export function FinanceHistoryFilters({
             name='type'
             label='Tipo'
             value={type}
-            onChange={(event) => setType(event.target.value as TypeFilterOption)}
+            onChange={(event) =>
+              setType(event.target.value as TypeFilterOption)
+            }
             disabled={isLoading}
             options={[
               { label: 'Todos', value: 'ALL' },
@@ -79,9 +82,9 @@ export function FinanceHistoryFilters({
           <Button
             type='submit'
             disabled={isLoading}
-            variant='secondary'
-            className='h-11 w-full px-5 xl:w-auto'
+            className='h-11 w-full bg-primary px-5 text-base text-primary-foreground hover:bg-primary/90 xl:w-auto'
           >
+            <Funnel aria-hidden='true' className='size-4' />
             {isLoading ? 'Aplicando...' : 'Aplicar filtros'}
           </Button>
         </div>

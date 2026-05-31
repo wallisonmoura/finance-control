@@ -61,7 +61,7 @@ export function useWallet({
     }
 
     setWallet(response.data ?? null);
-    setSuccessMessage('Saldos da Wallet atualizados com sucesso.');
+    setSuccessMessage('Saldos da Carteira atualizados com sucesso.');
     setIsUpdating(false);
   }
 

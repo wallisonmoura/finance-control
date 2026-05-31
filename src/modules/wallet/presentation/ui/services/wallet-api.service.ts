@@ -22,10 +22,10 @@ async function getErrorMessage(response: Response) {
     return (
       body.message ||
       body.error ||
-      'Não foi possível processar a solicitação da Wallet.'
+      'Não foi possível processar a solicitação da Carteira.'
     );
   } catch {
-    return 'Não foi possível processar a solicitação da Wallet.';
+    return 'Não foi possível processar a solicitação da Carteira.';
   }
 }
 

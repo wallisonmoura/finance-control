@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   ArrowRight,
   History,
-  ReceiptText,
+  TrendingDown,
   TrendingUp,
   ChartPie,
 } from 'lucide-react';
@@ -23,7 +23,7 @@ const financeLinks = [
     title: 'Despesas',
     description: 'Gerencie saídas financeiras realizadas por categoria.',
     href: '/finance/expenses',
-    icon: ReceiptText,
+    icon: TrendingDown,
     tone: 'expense',
   },
   {
@@ -45,26 +45,27 @@ const financeLinks = [
 export function FinanceOverviewPageContent() {
   const toneClassNames = {
     income: {
-      card: 'border-t-[3px] border-t-emerald-500',
-      icon: 'bg-emerald-50 text-emerald-600',
+      card: 'border-t-[3px] border-t-income',
+      icon: 'bg-income-muted text-income',
       button:
-        'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800',
+        'bg-income-muted text-income hover:bg-income-muted/80 hover:text-income',
     },
     expense: {
-      card: 'border-t-[3px] border-t-red-500',
-      icon: 'bg-red-50 text-red-600',
-      button: 'bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700',
+      card: 'border-t-[3px] border-t-expense',
+      icon: 'bg-expense-muted text-expense',
+      button: 'bg-expense-muted text-expense hover:bg-expense-muted/80',
     },
     history: {
-      card: 'border-t-[3px] border-t-blue-500',
-      icon: 'bg-blue-50 text-blue-600',
-      button: 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700',
+      card: 'border-t-[3px] border-t-info',
+      icon: 'bg-info-muted text-info',
+      button:
+        'bg-info-muted text-info hover:bg-info-muted/80 hover:text-info',
     },
     summary: {
-      card: 'border-t-[3px] border-t-amber-500',
-      icon: 'bg-amber-50 text-amber-600',
+      card: 'border-t-[3px] border-t-warning',
+      icon: 'bg-warning-muted text-warning',
       button:
-        'bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700',
+        'bg-warning-muted text-warning hover:bg-warning-muted/80 hover:text-warning',
     },
   };
 
@@ -82,7 +83,7 @@ export function FinanceOverviewPageContent() {
           return (
             <Card
               key={item.href}
-              className={`flex min-h-44 flex-col p-4 shadow-sm shadow-slate-200/70 ${tone.card}`}
+              className={`flex min-h-44 flex-col p-4 shadow-sm shadow-border/70 ${tone.card}`}
             >
               <div className='flex flex-1 flex-col gap-4'>
                 <div className='flex items-start gap-3'>
@@ -93,10 +94,10 @@ export function FinanceOverviewPageContent() {
                   </div>
 
                   <div className='min-w-0'>
-                    <h2 className='text-lg font-semibold text-slate-950'>
+                    <h2 className='text-lg font-semibold text-foreground'>
                       {item.title}
                     </h2>
-                    <p className='mt-1 text-sm leading-6 text-slate-600'>
+                    <p className='mt-1 text-sm leading-6 text-muted-foreground'>
                       {item.description}
                     </p>
                   </div>
@@ -105,7 +106,7 @@ export function FinanceOverviewPageContent() {
                 <div className='mt-auto'>
                   <Button
                     asChild
-                    variant='secondary'
+                    variant='custom'
                     className={`h-9 w-full justify-between border-0 px-4 text-sm font-semibold shadow-none sm:w-auto ${tone.button}`}
                   >
                     <Link href={item.href} aria-label={`Acessar ${item.title}`}>

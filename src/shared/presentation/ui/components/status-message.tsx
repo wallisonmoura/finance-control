@@ -32,13 +32,13 @@ export function StatusMessage({
     <Alert
       className={
         tone === 'success'
-          ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+          ? 'border-accent/30 bg-success-light text-foreground'
           : undefined
       }
     >
       {title ? <AlertTitle>{title}</AlertTitle> : null}
       <AlertDescription
-        className={tone === 'success' ? 'text-emerald-800' : undefined}
+        className={tone === 'success' ? 'text-muted-foreground' : undefined}
       >
         {message}
       </AlertDescription>

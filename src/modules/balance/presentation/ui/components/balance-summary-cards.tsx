@@ -1,13 +1,13 @@
 import {
   Banknote,
   Building2,
-  CircleDollarSign,
   Gauge,
   HandCoins,
   Landmark,
   ReceiptText,
   TrendingUp,
   WalletCards,
+  BanknoteX,
 } from 'lucide-react';
 
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
@@ -61,27 +61,27 @@ export function BalanceSummaryCards({
       value: summary.wallet.bankBalance,
       description: 'Valor disponível em conta bancária.',
       icon: Building2,
-      valueClassName: 'text-slate-950',
+      valueClassName: 'text-foreground',
     },
     {
       label: 'Saldo em Dinheiro',
       value: summary.wallet.cashBalance,
       description: 'Valor disponível em dinheiro físico.',
       icon: Banknote,
-      valueClassName: 'text-slate-950',
+      valueClassName: 'text-foreground',
     },
     {
       label: 'Valores a Receber',
       value: summary.wallet.receivableBalance,
       description: 'Valores previstos para recebimento.',
       icon: HandCoins,
-      valueClassName: 'text-emerald-700',
+      valueClassName: 'text-accent',
     },
   ];
 
   return (
     <section aria-label='Resumo financeiro' className='space-y-7'>
-      <Card className='relative overflow-hidden border-slate-900/10 bg-primary p-0 text-white shadow-xl shadow-slate-300/80'>
+      <Card className='relative overflow-hidden border-primary/10 bg-primary p-0 text-primary-foreground shadow-xl shadow-border/80'>
         <div
           aria-hidden='true'
           className='absolute inset-0 bg-[url("/images/dashboard-mobile-bg.png")] bg-cover bg-center lg:bg-[url("/images/dashboard-bg.png")]'
@@ -90,8 +90,8 @@ export function BalanceSummaryCards({
 
         <div className='relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center'>
           <div className='space-y-5'>
-            <div className='flex items-center gap-3 text-sm font-medium text-white'>
-              <span className='flex size-10 items-center justify-center rounded-full bg-emerald-400/10 text-[var(--fc-secondary)]'>
+            <div className='flex items-center gap-3 text-sm font-medium text-primary-foreground'>
+              <span className='flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent'>
                 <Landmark aria-hidden='true' className='size-5' />
               </span>
               <p>Saldo Final</p>
@@ -100,53 +100,57 @@ export function BalanceSummaryCards({
             <div className='space-y-2'>
               <MoneyDisplay
                 value={summary.finalBalance}
-                className={`text-4xl !text-white sm:text-5xl ${
-                  summary.finalBalance < 0 ? '!text-red-300' : ''
+                className={`text-4xl text-primary-foreground sm:text-5xl ${
+                  summary.finalBalance < 0 ? 'text-destructive' : ''
                 }`}
               />
-              <p className='max-w-2xl text-sm text-white/90'>
+              <p className='max-w-2xl text-sm text-primary-foreground/90'>
                 Resultado após considerar dívidas pendentes.
               </p>
             </div>
           </div>
 
-          <div className='grid gap-3 sm:grid-cols-2 lg:min-w-[430px]'>
-            <div className='rounded-lg border border-white/15 bg-white/5 p-4 shadow-sm backdrop-blur'>
-              <div className='flex items-center gap-2 text-sm font-medium text-white'>
+          <div className='grid gap-3 sm:grid-cols-2 lg:min-w-107.5'>
+            <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
+              <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
                 <WalletCards
                   aria-hidden='true'
-                  className='size-5 text-[var(--fc-secondary)]'
+                  className='size-5 text-accent'
                 />
-                <span>Wallet Total</span>
+                <span>Valor Total da Carteira</span>
               </div>
               <MoneyDisplay
                 value={summary.wallet.walletTotal}
-                className='mt-4 text-2xl !text-white'
+                className='mt-4 text-2xl text-primary-foreground'
               />
-              <p className='mt-2 text-sm text-white/80'>Disponível para uso</p>
+              <p className='mt-2 text-sm text-primary-foreground/80'>
+                Disponível para uso
+              </p>
             </div>
 
-            <div className='rounded-lg border border-white/15 bg-white/5 p-4 shadow-sm backdrop-blur'>
-              <div className='flex items-center gap-2 text-sm font-medium text-white'>
-                <CircleDollarSign
+            <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
+              <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
+                <BanknoteX
                   aria-hidden='true'
-                  className='size-5 text-[var(--fc-secondary)]'
+                  className='size-5 text-destructive'
                 />
                 <span>Dívidas Pendentes</span>
               </div>
               <MoneyDisplay
                 value={summary.debts.pendingDebts}
-                className='mt-4 text-2xl !text-red-300'
+                className='mt-4 text-2xl text-destructive'
               />
-              <p className='mt-2 text-sm text-white/80'>Total a pagar</p>
+              <p className='mt-2 text-sm text-primary-foreground/80'>
+                Total a pagar
+              </p>
             </div>
           </div>
         </div>
       </Card>
 
       <div className='space-y-3'>
-        <div className='flex items-center gap-2 text-sm font-semibold text-slate-950'>
-          <Gauge aria-hidden='true' className='size-4 text-slate-600' />
+        <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+          <Gauge aria-hidden='true' className='size-4 text-muted-foreground' />
           <h2>Composição dos saldos</h2>
         </div>
 
@@ -154,15 +158,15 @@ export function BalanceSummaryCards({
           {availableItems.map((item) => (
             <Card key={item.label} className='p-5'>
               <div className='flex gap-4 lg:block lg:space-y-4'>
-                <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100'>
+                <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-accent ring-1 ring-accent/20'>
                   <item.icon
                     aria-hidden='true'
-                    className='size-6 text-emerald-600'
+                    className='size-6 text-accent'
                   />
                 </div>
 
                 <div className='min-w-0 space-y-3'>
-                  <p className='text-sm font-medium text-slate-700'>
+                  <p className='text-sm font-medium text-foreground'>
                     {item.label}
                   </p>
 
@@ -171,7 +175,7 @@ export function BalanceSummaryCards({
                     className={`text-2xl font-semibold tracking-tight ${item.valueClassName}`}
                   />
 
-                  <p className='text-sm leading-6 text-slate-500'>
+                  <p className='text-sm leading-6 text-muted-foreground'>
                     {item.description}
                   </p>
                 </div>
@@ -182,8 +186,8 @@ export function BalanceSummaryCards({
       </div>
 
       <div className='space-y-3'>
-        <div className='flex items-center gap-2 text-sm font-semibold text-slate-950'>
-          <TrendingUp aria-hidden='true' className='size-4 text-emerald-600' />
+        <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+          <TrendingUp aria-hidden='true' className='size-4 text-accent' />
           <h2>Transações recentes</h2>
         </div>
 
@@ -195,7 +199,7 @@ export function BalanceSummaryCards({
           ) : (
             <>
               <div className='hidden lg:block'>
-                <div className='grid grid-cols-[1.5fr_1fr_1fr_1fr_0.7fr] border-b border-slate-200 px-5 py-3 text-xs font-semibold text-slate-700'>
+                <div className='grid grid-cols-[1.5fr_1fr_1fr_1fr_0.7fr] border-b border-border px-5 py-3 text-xs font-semibold text-muted-foreground'>
                   <span>Descrição</span>
                   <span>Categoria</span>
                   <span>Data</span>
@@ -206,44 +210,44 @@ export function BalanceSummaryCards({
                 {recentEntries.map((entry) => (
                   <div
                     key={entry.id}
-                    className='grid grid-cols-[1.5fr_1fr_1fr_1fr_0.7fr] items-center border-b border-slate-100 px-5 py-3 last:border-b-0'
+                    className='grid grid-cols-[1.5fr_1fr_1fr_1fr_0.7fr] items-center border-b border-border px-5 py-3 last:border-b-0'
                   >
                     <div className='flex min-w-0 items-center gap-3'>
                       <span
                         className={`flex size-9 shrink-0 items-center justify-center rounded-full ${
                           entry.type === 'INCOME'
-                            ? 'bg-emerald-50 text-emerald-600'
-                            : 'bg-red-50 text-red-600'
+                            ? 'bg-success-light text-accent'
+                            : 'bg-destructive/10 text-destructive'
                         }`}
                       >
                         <TransactionIcon type={entry.type} />
                       </span>
-                      <span className='truncate text-sm font-medium text-slate-950'>
+                      <span className='truncate text-sm font-medium text-foreground'>
                         {entry.description}
                       </span>
                     </div>
-                    <span className='text-sm text-slate-600'>
+                    <span className='text-sm text-muted-foreground'>
                       {entry.type === 'INCOME' ? 'Receitas' : 'Despesas'}
                     </span>
-                    <span className='text-sm text-slate-600'>
+                    <span className='text-sm text-muted-foreground'>
                       {formatDate(entry.date)}
                     </span>
                     <MoneyDisplay
                       value={getTransactionDisplayValue(entry)}
                       className={`text-right text-sm font-semibold ${
                         entry.type === 'INCOME'
-                          ? '!text-emerald-700'
-                          : '!text-red-600'
+                          ? 'text-accent'
+                          : 'text-destructive'
                       }`}
                     />
-                    <span className='justify-self-end rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700'>
+                    <span className='justify-self-end rounded-full bg-success-light px-3 py-1 text-xs font-semibold text-accent'>
                       {getTransactionStatus(entry)}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className='divide-y divide-slate-100 lg:hidden'>
+              <div className='divide-y divide-border lg:hidden'>
                 {recentEntries.map((entry) => (
                   <div
                     key={entry.id}
@@ -253,17 +257,17 @@ export function BalanceSummaryCards({
                       <span
                         className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
                           entry.type === 'INCOME'
-                            ? 'bg-emerald-50 text-emerald-600'
-                            : 'bg-red-50 text-red-600'
+                            ? 'bg-success-light text-accent'
+                            : 'bg-destructive/10 text-destructive'
                         }`}
                       >
                         <TransactionIcon type={entry.type} />
                       </span>
                       <div className='min-w-0'>
-                        <p className='truncate text-sm font-medium text-slate-950'>
+                        <p className='truncate text-sm font-medium text-foreground'>
                           {entry.description}
                         </p>
-                        <p className='text-xs text-slate-500'>
+                        <p className='text-xs text-muted-foreground'>
                           {formatDate(entry.date)}
                         </p>
                       </div>
@@ -272,18 +276,18 @@ export function BalanceSummaryCards({
                       value={getTransactionDisplayValue(entry)}
                       className={`shrink-0 text-right text-sm font-semibold ${
                         entry.type === 'INCOME'
-                          ? '!text-emerald-700'
-                          : '!text-red-600'
+                          ? 'text-accent'
+                          : 'text-destructive'
                       }`}
                     />
                   </div>
                 ))}
               </div>
 
-              <div className='border-t border-slate-100 px-5 py-4 text-center'>
+              <div className='border-t border-border px-5 py-4 text-center'>
                 <Link
                   href='/finance/history'
-                  className='text-sm font-semibold text-slate-950 hover:text-[var(--fc-secondary)]'
+                  className='text-sm font-semibold text-foreground hover:text-accent'
                 >
                   Ver todas as transações
                 </Link>

@@ -114,12 +114,12 @@ export function WalletBalancesForm({
         <div className='grid gap-6 lg:grid-cols-[1fr_30%] lg:items-center'>
           <div className='space-y-6'>
             <div className='space-y-1'>
-              <h2 className='text-xl font-semibold text-slate-950'>
+              <h2 className='text-xl font-semibold text-foreground'>
                 Atualizar saldos-base
               </h2>
 
-              <p className='text-sm leading-6 text-slate-600'>
-                Ajuste os valores reais da sua Wallet. Essa ação não cria
+              <p className='text-sm leading-6 text-muted-foreground'>
+                Ajuste os valores reais da sua Carteira. Essa ação não cria
                 receita ou despesa.
               </p>
             </div>
@@ -171,21 +171,21 @@ export function WalletBalancesForm({
             <Button
               type='submit'
               disabled={cannotSubmit}
-              className='h-12 w-full bg-primary px-6 text-white hover:bg-slate-900 sm:w-auto'
+              className='h-12 w-full bg-primary px-6 text-primary-foreground hover:bg-primary/90 sm:w-auto'
             >
               <Save aria-hidden='true' className='size-4' />
               {cannotSubmit ? 'Salvando...' : 'Salvar saldos'}
             </Button>
           </div>
 
-          <div className='flex flex-col items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50/70 px-5 py-6 text-center text-sm leading-6 text-slate-700 lg:min-h-36'>
+          <div className='flex flex-col items-center justify-center rounded-lg border border-accent/30 bg-success-light px-5 py-6 text-center text-sm leading-6 text-foreground lg:min-h-36'>
             <ShieldCheck
               aria-hidden='true'
-              className='mb-3 size-8 shrink-0 text-emerald-600'
+              className='mb-3 size-8 shrink-0 text-accent'
             />
             <p>
               Esses valores representam seus saldos-base e são usados para o
-              total da Wallet.
+              total da Carteira.
             </p>
           </div>
         </div>

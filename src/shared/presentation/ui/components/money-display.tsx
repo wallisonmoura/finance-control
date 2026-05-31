@@ -1,4 +1,5 @@
 import { formatMoney } from '../utils/format-money';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
 type MoneyDisplayProps = {
   value: number;
@@ -8,10 +9,10 @@ type MoneyDisplayProps = {
 export function MoneyDisplay({ value, className = '' }: MoneyDisplayProps) {
   return (
     <strong
-      className={[
-        'block text-2xl font-bold tracking-tight text-slate-950',
+      className={cn(
+        'block text-2xl font-bold tracking-tight text-foreground',
         className,
-      ].join(' ')}
+      )}
     >
       {formatMoney(value)}
     </strong>

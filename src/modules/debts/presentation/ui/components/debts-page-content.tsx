@@ -130,15 +130,17 @@ export function DebtsPageContent({
       )}
 
       {isLoading && (
-        <p className='text-sm text-slate-500'>Carregando dívidas...</p>
+        <p className='text-sm text-muted-foreground'>Carregando dívidas...</p>
       )}
 
-      {error && <p className='text-sm text-red-600'>{error}</p>}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
 
-      {actionError && <p className='text-sm text-red-600'>{actionError}</p>}
+      {actionError && (
+        <p className='text-sm text-destructive'>{actionError}</p>
+      )}
 
       {!isLoading && !error && (
-        <div className='border-t border-slate-200 pt-6'>
+        <div className='border-t border-border pt-6'>
           <DebtList
             debts={debts}
             onEditDebt={handleEditDebt}

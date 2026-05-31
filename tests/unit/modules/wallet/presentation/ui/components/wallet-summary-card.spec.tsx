@@ -20,7 +20,7 @@ describe('WalletSummaryCard', () => {
 
     expect(
       screen.getByRole('region', {
-        name: 'Resumo da Wallet',
+        name: 'Resumo da Carteira',
       }),
     ).toBeInTheDocument();
   });
@@ -28,7 +28,7 @@ describe('WalletSummaryCard', () => {
   it('deve renderizar os labels dos saldos da Wallet', () => {
     render(<WalletSummaryCard wallet={wallet} />);
 
-    expect(screen.getByText('Wallet Total')).toBeInTheDocument();
+    expect(screen.getByText('Valor Total da Carteira')).toBeInTheDocument();
     expect(screen.getByText('Saldo em Banco')).toBeInTheDocument();
     expect(screen.getByText('Saldo em Dinheiro')).toBeInTheDocument();
     expect(screen.getByText('Valores a Receber')).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('WalletSummaryCard', () => {
     render(<WalletSummaryCard wallet={wallet} />);
 
     expect(
-      screen.getByText('Soma dos saldos-base informados na Wallet.'),
+      screen.getByText('Soma dos saldos-base informados na carteira.'),
     ).toBeInTheDocument();
 
     expect(

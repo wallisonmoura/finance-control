@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronUp, Save, WalletCards, X } from 'lucide-react';
+import { BanknoteArrowDown, ChevronUp, Save, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -12,7 +12,6 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
-import { TextareaField } from '@/shared/presentation/ui/components/textarea-field';
 
 import {
   registerExpense,
@@ -167,15 +166,15 @@ export function ExpenseForm({
       >
         <div className='flex items-start justify-between gap-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600'>
-              <WalletCards aria-hidden='true' className='size-6' />
+            <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-expense-muted text-expense'>
+              <BanknoteArrowDown aria-hidden='true' className='size-6' />
             </div>
 
             <div>
-              <h2 className='text-xl font-semibold text-slate-950'>
+              <h2 className='text-xl font-semibold text-foreground'>
                 {isEditing ? 'Editar despesa' : 'Nova despesa'}
               </h2>
-              <p className='mt-1 text-sm text-slate-600'>
+              <p className='mt-1 text-sm text-muted-foreground'>
                 {isEditing
                   ? 'Atualize os dados da despesa selecionada.'
                   : 'Preencha os dados da sua despesa'}
@@ -183,10 +182,21 @@ export function ExpenseForm({
             </div>
           </div>
 
-          <ChevronUp
-            aria-hidden='true'
-            className='mt-2 size-4 shrink-0 text-slate-600'
-          />
+          {onCancel ? (
+            <button
+              type='button'
+              onClick={onCancel}
+              aria-label='Fechar formulário'
+              className='mt-2 inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition hover:bg-expense-muted hover:text-expense focus:outline-none focus:ring-2 focus:ring-expense/30'
+            >
+              <ChevronUp aria-hidden='true' className='size-5' />
+            </button>
+          ) : (
+            <ChevronUp
+              aria-hidden='true'
+              className='mt-2 size-5 shrink-0 text-muted-foreground'
+            />
+          )}
         </div>
 
         <div className='grid gap-4 md:grid-cols-2'>
@@ -213,7 +223,7 @@ export function ExpenseForm({
             {errors.categoryId?.message ? (
               <p
                 id='expense-category-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.categoryId.message}
               </p>
@@ -233,7 +243,7 @@ export function ExpenseForm({
             {errors.date?.message ? (
               <p
                 id='expense-date-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.date.message}
               </p>
@@ -254,7 +264,7 @@ export function ExpenseForm({
             {errors.description?.message ? (
               <p
                 id='expense-description-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.description.message}
               </p>
@@ -277,7 +287,7 @@ export function ExpenseForm({
             {errors.amount?.message ? (
               <p
                 id='expense-amount-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.amount.message}
               </p>
@@ -285,7 +295,7 @@ export function ExpenseForm({
           </div>
 
           <div className='md:col-span-2'>
-            <TextareaField
+            <Input
               id='expense-notes'
               label='Observação (opcional)'
               placeholder='Adicione uma observação...'
@@ -305,7 +315,7 @@ export function ExpenseForm({
               onClick={onCancel}
               disabled={isSubmitting}
               variant='secondary'
-              className='h-12 min-w-36 px-6 text-base'
+              className='h-10 min-w-36 px-6 text-base'
             >
               <X aria-hidden='true' className='size-4' />
               Cancelar
@@ -315,7 +325,8 @@ export function ExpenseForm({
           <Button
             type='submit'
             disabled={cannotSubmit}
-            className='h-12 min-w-44 !bg-red-600 px-6 text-base !text-white hover:!bg-red-700'
+            variant='custom'
+            className='h-10 min-w-44 bg-expense px-4 text-base text-primary-foreground hover:bg-expense/90'
           >
             <Save aria-hidden='true' className='size-4' />
             {isSubmitting

@@ -4,13 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  Mail,
-  UserRound,
-} from 'lucide-react';
+import { Eye, EyeOff, LockKeyhole, Mail, UserRound } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -61,8 +55,8 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
   }
 
   return (
-    <div className='min-h-screen bg-white lg:h-dvh lg:min-h-0 lg:overflow-hidden'>
-      <div className='grid min-h-screen w-full bg-white lg:h-full lg:min-h-0 lg:grid-cols-2'>
+    <div className='min-h-screen bg-card lg:h-dvh lg:min-h-0 lg:overflow-hidden'>
+      <div className='grid min-h-screen w-full bg-card lg:h-full lg:min-h-0 lg:grid-cols-2'>
         <aside className='relative hidden h-full overflow-hidden bg-primary lg:block'>
           <Image
             src='/images/auth-bg.png'
@@ -74,7 +68,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           />
         </aside>
 
-        <section className='relative flex min-h-screen flex-col bg-white px-6 py-8 lg:h-dvh lg:min-h-0 lg:px-16 lg:py-0'>
+        <section className='relative flex min-h-screen flex-col bg-card px-6 py-8 lg:h-dvh lg:min-h-0 lg:px-16 lg:py-0'>
           <div className='mx-auto flex w-full max-w-md flex-1 flex-col justify-center lg:h-full lg:flex-none lg:py-12 lg:pb-20'>
             <div className='mb-8 flex justify-center lg:hidden'>
               <Image
@@ -88,13 +82,13 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
             </div>
 
             <div className='text-center'>
-              <p className='text-sm font-semibold text-[var(--fc-secondary)]'>
+              <p className='text-sm font-semibold text-accent'>
                 Bem-vindo de volta!
               </p>
-              <h2 className='mt-3 text-3xl font-bold tracking-normal text-slate-950'>
+              <h2 className='mt-3 text-3xl font-bold tracking-normal text-foreground'>
                 Faça seu login
               </h2>
-              <p className='mt-3 text-sm text-slate-500'>
+              <p className='mt-3 text-sm text-muted-foreground'>
                 Entre para continuar
               </p>
             </div>
@@ -105,14 +99,14 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               noValidate
             >
               <div className='space-y-2'>
-                <Label htmlFor='email' className='text-sm text-slate-950'>
+                <Label htmlFor='email' className='text-sm text-foreground'>
                   E-mail
                 </Label>
 
                 <div className='relative'>
                   <Mail
                     aria-hidden='true'
-                    className='pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-slate-400'
+                    className='pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground'
                   />
 
                   <Input
@@ -122,7 +116,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                     autoComplete='email'
                     aria-invalid={Boolean(errors.email)}
                     aria-describedby={errors.email ? 'email-error' : undefined}
-                    className='h-12 rounded-lg border-slate-300 bg-white pl-4 pr-11 text-slate-950 shadow-sm'
+                    className='h-12 rounded-lg border-input bg-card pl-4 pr-11 text-foreground shadow-sm'
                     {...register('email')}
                   />
                 </div>
@@ -130,7 +124,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                 {errors.email?.message ? (
                   <p
                     id='email-error'
-                    className='text-sm font-medium text-[var(--fc-danger)]'
+                    className='text-sm font-medium text-destructive'
                   >
                     {errors.email.message}
                   </p>
@@ -138,14 +132,14 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='password' className='text-sm text-slate-950'>
+                <Label htmlFor='password' className='text-sm text-foreground'>
                   Senha
                 </Label>
 
                 <div className='relative'>
                   <LockKeyhole
                     aria-hidden='true'
-                    className='pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400'
+                    className='pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground'
                   />
 
                   <Input
@@ -157,7 +151,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                     aria-describedby={
                       errors.password ? 'password-error' : undefined
                     }
-                    className='h-12 rounded-lg border-slate-300 bg-white px-11 text-slate-950 shadow-sm'
+                    className='h-12 rounded-lg border-input bg-card px-11 text-foreground shadow-sm'
                     {...register('password')}
                   />
 
@@ -169,7 +163,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                         ? 'Ocultar caracteres'
                         : 'Mostrar caracteres'
                     }
-                    className='absolute right-2 top-1/2 inline-flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-[var(--fc-secondary)]'
+                    className='absolute right-2 top-1/2 inline-flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring'
                   >
                     {isPasswordVisible ? (
                       <EyeOff aria-hidden='true' className='size-4' />
@@ -182,7 +176,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                 {errors.password?.message ? (
                   <p
                     id='password-error'
-                    className='text-sm font-medium text-[var(--fc-danger)]'
+                    className='text-sm font-medium text-destructive'
                   >
                     {errors.password.message}
                   </p>
@@ -192,7 +186,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               <div className='flex justify-end'>
                 <button
                   type='button'
-                  className='cursor-default text-sm font-medium text-[var(--fc-secondary)]'
+                  className='cursor-default text-sm font-medium text-accent'
                 >
                   Esqueceu sua senha?
                 </button>
@@ -207,35 +201,35 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                 {isSubmitting ? 'Entrando...' : 'Entrar'}
               </Button>
 
-              <div className='flex items-center gap-4 text-xs text-slate-500'>
-                <div className='h-px flex-1 bg-slate-200' />
+              <div className='flex items-center gap-4 text-xs text-muted-foreground'>
+                <div className='h-px flex-1 bg-border' />
                 <span>ou continue com</span>
-                <div className='h-px flex-1 bg-slate-200' />
+                <div className='h-px flex-1 bg-border' />
               </div>
 
               <button
                 type='button'
-                className='flex h-12 w-full cursor-default items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 shadow-sm'
+                className='flex h-12 w-full cursor-default items-center justify-center gap-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground shadow-sm'
               >
-                <span className='text-lg font-bold text-[var(--fc-secondary)]'>
+                <span className='text-lg font-bold text-accent'>
                   G
                 </span>
                 Entrar com Google
               </button>
             </form>
 
-            <div className='mt-8 text-center text-sm text-slate-500'>
+            <div className='mt-8 text-center text-sm text-muted-foreground'>
               Ainda não tem uma conta?{' '}
               <button
                 type='button'
-                className='cursor-default font-semibold text-[var(--fc-secondary)]'
+                className='cursor-default font-semibold text-accent'
               >
                 Criar conta
               </button>
             </div>
           </div>
 
-          <footer className='mx-auto mt-8 hidden w-full max-w-md items-center justify-center gap-5 border-t border-slate-200 pt-6 text-xs text-slate-500 sm:flex lg:absolute lg:bottom-8 lg:left-16 lg:right-16 lg:mx-0 lg:mt-0 lg:max-w-none lg:pt-5'>
+          <footer className='mx-auto mt-8 hidden w-full max-w-md items-center justify-center gap-5 border-t border-border pt-6 text-xs text-muted-foreground sm:flex lg:absolute lg:bottom-8 lg:left-16 lg:right-16 lg:mx-0 lg:mt-0 lg:max-w-none lg:pt-5'>
             <span>Privacidade</span>
             <span aria-hidden='true'>•</span>
             <span>Termos de Uso</span>

@@ -97,7 +97,7 @@ export function DebtPaymentForm({
     <div
       className={
         embedded
-          ? 'rounded-xl border border-amber-200 bg-amber-50/30 p-4 sm:p-5'
+          ? 'rounded-xl border border-warning/30 bg-warning-muted/30 p-4 sm:p-5'
           : ''
       }
     >
@@ -107,17 +107,17 @@ export function DebtPaymentForm({
         noValidate
       >
         <div className='flex items-center gap-4'>
-          <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700'>
+          <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-warning-muted text-warning'>
             <WalletCards aria-hidden='true' className='size-6' />
           </div>
 
           <div className='min-w-0'>
-            <h2 className='text-lg font-semibold text-slate-950'>
+            <h2 className='text-lg font-semibold text-foreground'>
               Pagar dívida
             </h2>
-            <p className='mt-1 text-sm text-slate-500'>
+            <p className='mt-1 text-sm text-muted-foreground'>
               Preencha os dados abaixo para gerar a despesa e atualizar sua
-              Wallet.
+              Carteira.
             </p>
           </div>
         </div>
@@ -148,7 +148,7 @@ export function DebtPaymentForm({
             {errors.expenseCategoryId?.message ? (
               <p
                 id='debt-payment-category-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.expenseCategoryId.message}
               </p>
@@ -181,7 +181,7 @@ export function DebtPaymentForm({
             {errors.paidAt?.message ? (
               <p
                 id='debt-payment-paid-at-error'
-                className='mt-1 text-sm font-medium text-red-600'
+                className='mt-1 text-sm font-medium text-destructive'
               >
                 {errors.paidAt.message}
               </p>
@@ -191,16 +191,7 @@ export function DebtPaymentForm({
 
         {categoriesError && <FormErrorMessage message={categoriesError} />}
 
-        <div className='grid gap-3 sm:flex sm:flex-wrap'>
-          <Button
-            type='submit'
-            disabled={cannotSubmit}
-            className='h-12 !bg-slate-950 px-6 !text-white hover:!bg-slate-800'
-          >
-            <LockKeyhole aria-hidden='true' className='size-4' />
-            {isSubmitting ? 'Pagando...' : 'Confirmar pagamento'}
-          </Button>
-
+        <div className='grid gap-3 sm:flex sm:flex-wrap sm:justify-end'>
           {onCancel && (
             <Button
               type='button'
@@ -213,6 +204,14 @@ export function DebtPaymentForm({
               Cancelar
             </Button>
           )}
+          <Button
+            type='submit'
+            disabled={cannotSubmit}
+            className='h-12 bg-primary px-6 text-primary-foreground hover:bg-primary/90'
+          >
+            <LockKeyhole aria-hidden='true' className='size-4' />
+            {isSubmitting ? 'Pagando...' : 'Confirmar pagamento'}
+          </Button>
         </div>
       </form>
     </div>

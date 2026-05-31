@@ -53,14 +53,14 @@ export function PendingDebtsPageContent({
 
       <PageTitle
         title='Dívidas pendentes'
-        description='Pague dívidas pendentes gerando a despesa financeira e atualizando a Wallet.'
+        description='Pague dívidas pendentes gerando a despesa financeira e atualizando a Carteira.'
       />
 
       {isLoading && (
-        <p className='text-sm text-slate-500'>Carregando dívidas...</p>
+        <p className='text-sm text-muted-foreground'>Carregando dívidas...</p>
       )}
 
-      {error && <p className='text-sm text-red-600'>{error}</p>}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
 
       {!isLoading && !error && (
         <DebtList

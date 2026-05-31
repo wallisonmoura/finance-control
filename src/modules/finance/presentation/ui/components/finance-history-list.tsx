@@ -38,8 +38,8 @@ function getEntryTypeLabel(type: FinanceEntryUi['type']) {
 
 function getEntryTypeClassName(type: FinanceEntryUi['type']) {
   return type === 'INCOME'
-    ? 'bg-emerald-100 text-emerald-800'
-    : 'bg-red-100 text-red-800';
+    ? 'bg-income-muted text-income'
+    : 'bg-expense-muted text-expense';
 }
 
 function isDebtPaymentExpense(entry: FinanceEntryUi) {
@@ -82,12 +82,12 @@ export function FinanceHistoryList({
     <Card className='overflow-hidden p-0' aria-label='Histórico financeiro'>
       {groupEntriesByDate(entries).map(([dateKey, dateEntries]) => (
         <section key={dateKey}>
-          <div className='flex items-center gap-2 border-b border-slate-100 bg-slate-50/70 px-5 py-3 text-sm font-semibold text-slate-700'>
+          <div className='flex items-center gap-2 border-b border-border bg-muted/70 px-5 py-3 text-sm font-semibold text-muted-foreground'>
             <CalendarDays aria-hidden='true' className='size-4' />
             {formatLongDate(dateEntries[0].date)}
           </div>
 
-          <div className='divide-y divide-slate-100'>
+          <div className='divide-y divide-border'>
             {dateEntries.map((entry) => {
               const canManageIncome =
                 entry.type === 'INCOME' && (onEditIncome || onDeleteIncome);
@@ -104,22 +104,22 @@ export function FinanceHistoryList({
               return (
                 <div
                   key={entry.id}
-                  className='grid gap-4 px-5 py-4 transition-colors hover:bg-slate-50/80 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'
+                  className='grid gap-4 px-5 py-4 transition-colors hover:bg-muted/70 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'
                 >
                   <div className='flex min-w-0 gap-4'>
                     <div
                       className={[
                         'flex size-12 shrink-0 items-center justify-center rounded-2xl ring-1',
                         isIncome
-                          ? 'bg-emerald-50 text-emerald-600 ring-emerald-100'
-                          : 'bg-red-50 text-red-600 ring-red-100',
+                          ? 'bg-income-muted text-income ring-income/20'
+                          : 'bg-expense-muted text-expense ring-expense/20',
                       ].join(' ')}
                     >
                       <EntryIcon aria-hidden='true' className='size-6' />
                     </div>
 
                     <div className='min-w-0'>
-                      <h3 className='break-words text-base font-semibold text-slate-950'>
+                      <h3 className='wrap-break-word text-base font-semibold text-foreground'>
                         {entry.description}
                       </h3>
 
@@ -134,8 +134,8 @@ export function FinanceHistoryList({
 
                         {entry.categoryId && (
                           <>
-                            <span className='h-4 w-px bg-slate-200' />
-                            <span className='text-sm font-medium text-slate-500'>
+                            <span className='h-4 w-px bg-border' />
+                            <span className='text-sm font-medium text-muted-foreground'>
                               Categoria: {entry.categoryId}
                             </span>
                           </>
@@ -143,13 +143,13 @@ export function FinanceHistoryList({
                       </div>
 
                       {entry.notes && (
-                        <p className='mt-2 break-words text-sm leading-6 text-slate-500'>
+                        <p className='mt-2 wrap-break-word text-sm leading-6 text-muted-foreground'>
                           {entry.notes}
                         </p>
                       )}
 
                       {isDebtPaymentExpense(entry) && (
-                        <p className='mt-2 text-sm font-medium text-slate-500'>
+                        <p className='mt-2 text-sm font-medium text-muted-foreground'>
                           Gerada por pagamento de dívida.
                         </p>
                       )}
@@ -161,12 +161,12 @@ export function FinanceHistoryList({
                       value={entry.amount}
                       className={
                         isIncome
-                          ? 'text-left text-xl font-bold !text-emerald-700 sm:text-right'
-                          : 'text-left text-xl font-bold !text-red-700 sm:text-right'
+                          ? 'text-left text-xl font-bold text-income sm:text-right'
+                          : 'text-left text-xl font-bold text-expense sm:text-right'
                       }
                     />
 
-                    <span className='text-sm font-medium text-slate-500'>
+                    <span className='text-sm font-medium text-muted-foreground'>
                       {formatDate(entry.date)}
                     </span>
 
@@ -191,7 +191,7 @@ export function FinanceHistoryList({
                             onClick={() => onDeleteIncome(entry)}
                             disabled={isDeleting}
                             variant='danger'
-                            className='h-10 w-full min-w-28 rounded-lg bg-white px-4 text-sm shadow-none sm:w-auto'
+                            className='h-10 w-full min-w-28 rounded-lg px-4 text-sm shadow-none sm:w-auto'
                           >
                             <Trash2 aria-hidden='true' className='size-4' />
                             {isDeleting ? 'Excluindo...' : 'Excluir'}
@@ -217,7 +217,7 @@ export function FinanceHistoryList({
                             onClick={() => onDeleteExpense(entry)}
                             disabled={isDeleting}
                             variant='danger'
-                            className='h-10 w-full min-w-28 rounded-lg bg-white px-4 text-sm shadow-none sm:w-auto'
+                            className='h-10 w-full min-w-28 rounded-lg px-4 text-sm shadow-none sm:w-auto'
                           >
                             <Trash2 aria-hidden='true' className='size-4' />
                             {isDeleting ? 'Excluindo...' : 'Excluir'}
@@ -233,7 +233,7 @@ export function FinanceHistoryList({
         </section>
       ))}
 
-      <p className='border-t border-slate-100 px-5 py-4 text-center text-sm text-slate-500'>
+      <p className='border-t border-border px-5 py-4 text-center text-sm text-muted-foreground'>
         Mostrando {entries.length} de {entries.length}{' '}
         {entries.length === 1 ? 'movimentação' : 'movimentações'}
       </p>

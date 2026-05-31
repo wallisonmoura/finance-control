@@ -77,7 +77,7 @@ describe('WalletPageContent', () => {
     render(<WalletPageContent />);
 
     expect(
-      screen.getByText('Nenhuma Wallet encontrada para o usuário atual.'),
+      screen.getByText('Nenhuma Carteira encontrada para o usuário atual.'),
     ).toBeInTheDocument();
   });
 
@@ -94,11 +94,11 @@ describe('WalletPageContent', () => {
 
     expect(
       screen.getByRole('region', {
-        name: 'Resumo da Wallet',
+        name: 'Resumo da Carteira',
       }),
     ).toBeInTheDocument();
 
-    expect(screen.getByText('Wallet Total')).toBeInTheDocument();
+    expect(screen.getByText('Valor Total da Carteira')).toBeInTheDocument();
     expect(screen.getByText('Atualizar saldos-base')).toBeInTheDocument();
 
     expect(screen.getByLabelText('Saldo em Banco')).toHaveValue('1500,00');
@@ -108,13 +108,13 @@ describe('WalletPageContent', () => {
 
   it('deve exibir toast de sucesso quando houver atualização concluída', () => {
     mockUseWalletState({
-      successMessage: 'Saldos da Wallet atualizados com sucesso.',
+      successMessage: 'Saldos da Carteira atualizados com sucesso.',
     });
 
     render(<WalletPageContent />);
 
     expect(toast.success).toHaveBeenCalledWith(
-      'Saldos da Wallet atualizados com sucesso.',
+      'Saldos da Carteira atualizados com sucesso.',
     );
   });
 
@@ -129,7 +129,7 @@ describe('WalletPageContent', () => {
 
     expect(
       screen.getByRole('region', {
-        name: 'Resumo da Wallet',
+        name: 'Resumo da Carteira',
       }),
     ).toBeInTheDocument();
   });

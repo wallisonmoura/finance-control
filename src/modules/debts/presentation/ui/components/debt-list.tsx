@@ -41,8 +41,8 @@ function getDebtStatusLabel(status: DebtUi['status']) {
 
 function getDebtStatusClassName(status: DebtUi['status']) {
   return status === 'PENDING'
-    ? 'bg-orange-50 text-orange-700 ring-orange-100'
-    : 'bg-emerald-50 text-emerald-700 ring-emerald-100';
+    ? 'bg-warning-muted text-warning ring-warning/20'
+    : 'bg-income-muted text-income ring-income/20';
 }
 
 function getPaymentSourceLabel(source: DebtUi['paymentSource']) {
@@ -128,7 +128,7 @@ export function DebtList({
   return (
     <section className='space-y-4' aria-label='Lista de dívidas'>
       {title ? (
-        <h2 className='text-lg font-semibold text-slate-800'>{title}</h2>
+        <h2 className='text-lg font-semibold text-foreground'>{title}</h2>
       ) : null}
 
       {sortDebtsForDisplay(debts).map((debt) => {
@@ -145,8 +145,8 @@ export function DebtList({
             className={[
               'p-5 transition-all hover:shadow-md',
               isPaid
-                ? 'border-l-4 border-l-emerald-500'
-                : 'hover:border-orange-100',
+                ? 'border-l-4 border-l-income'
+                : 'hover:border-warning/30',
             ].join(' ')}
           >
             <div className='space-y-5'>
@@ -162,22 +162,22 @@ export function DebtList({
                       {getDebtStatusLabel(debt.status)}
                     </span>
 
-                    <span className='rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600'>
+                    <span className='rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground'>
                       {getDebtTypeLabel(debt.type)}
                     </span>
 
-                    <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600'>
+                    <span className='inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground'>
                       <CalendarDays aria-hidden='true' className='size-3.5' />
                       Vence em {formatDate(debt.dueDate)}
                     </span>
                   </div>
 
-                  <h3 className='mt-4 break-words text-lg font-semibold text-slate-950'>
+                  <h3 className='mt-4 wrap-break-word text-lg font-semibold text-foreground'>
                     {debt.description}
                   </h3>
 
                   {debt.notes && (
-                    <p className='mt-2 break-words text-sm leading-6 text-slate-500'>
+                    <p className='mt-2 wrap-break-word text-sm leading-6 text-muted-foreground'>
                       {debt.notes}
                     </p>
                   )}
@@ -188,21 +188,21 @@ export function DebtList({
                     value={debt.amount}
                     className={
                       isPaid
-                        ? 'text-left text-xl font-bold !text-emerald-700 sm:text-right'
-                        : 'text-left text-xl font-bold !text-slate-950 sm:text-right'
+                        ? 'text-left text-xl font-bold text-income sm:text-right'
+                        : 'text-left text-xl font-bold text-foreground sm:text-right'
                     }
                   />
 
                   {debt.paidAt ? (
                     <div className='grid gap-3 sm:justify-items-end'>
-                      <p className='inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700'>
+                      <p className='inline-flex items-center gap-2 rounded-lg bg-income-muted px-3 py-2 text-sm font-semibold text-income'>
                         <CheckCircle2 aria-hidden='true' className='size-4' />
                         Pago em {formatDate(debt.paidAt)}
                       </p>
                       {getPaymentSourceLabel(debt.paymentSource) ? (
-                        <p className='text-sm text-slate-500'>
+                        <p className='text-sm text-muted-foreground'>
                           Origem:{' '}
-                          <strong className='text-slate-800'>
+                          <strong className='text-foreground'>
                             {getPaymentSourceLabel(debt.paymentSource)}
                           </strong>
                         </p>
@@ -217,7 +217,7 @@ export function DebtList({
                           type='button'
                           onClick={() => onPayDebt(debt)}
                           disabled={isDeleting}
-                          className='h-10 w-full min-w-28 rounded-lg !bg-slate-950 px-4 text-sm !text-white hover:!bg-slate-800 sm:w-auto'
+                          className='h-10 w-full min-w-28 rounded-lg bg-primary px-4 text-sm text-primary-foreground hover:bg-primary/90 sm:w-auto'
                         >
                           <CreditCard aria-hidden='true' className='size-4' />
                           Pagar
@@ -243,7 +243,7 @@ export function DebtList({
                           onClick={() => onDeleteDebt(debt)}
                           disabled={isDeleting}
                           variant='danger'
-                          className='h-10 w-full min-w-28 rounded-lg bg-white px-4 text-sm shadow-none sm:w-auto'
+                          className='h-10 w-full min-w-28 rounded-lg px-4 text-sm shadow-none sm:w-auto'
                         >
                           <Trash2 aria-hidden='true' className='size-4' />
                           {isDeleting ? 'Excluindo...' : 'Excluir'}
