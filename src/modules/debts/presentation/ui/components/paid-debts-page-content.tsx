@@ -2,6 +2,7 @@ import { CalendarDays, CheckCircle2, WalletCards } from 'lucide-react';
 
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
 import { Card } from '@/shared/presentation/ui/components/card';
+import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
@@ -53,7 +54,7 @@ export function PaidDebtsPageContent({
         description='Consulte compromissos financeiros que já foram quitados.'
       />
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
       {!error && (
         <>

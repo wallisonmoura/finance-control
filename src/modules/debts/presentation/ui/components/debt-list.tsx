@@ -11,6 +11,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
 import { DebtUi } from '../types/debt-ui.types';
 
@@ -142,22 +143,22 @@ export function DebtList({
         return (
           <Card
             key={debt.id}
-            className={[
+            className={cn(
               'p-5 transition-all hover:shadow-md',
               isPaid
                 ? 'border-l-4 border-l-income'
                 : 'hover:border-warning/30',
-            ].join(' ')}
+            )}
           >
             <div className='space-y-5'>
               <div className='grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'>
                 <div className='min-w-0'>
                   <div className='flex flex-wrap items-center gap-2'>
                     <span
-                      className={[
+                      className={cn(
                         'rounded-full px-3 py-1 text-xs font-semibold ring-1',
                         getDebtStatusClassName(debt.status),
-                      ].join(' ')}
+                      )}
                     >
                       {getDebtStatusLabel(debt.status)}
                     </span>
@@ -217,6 +218,7 @@ export function DebtList({
                           type='button'
                           onClick={() => onPayDebt(debt)}
                           disabled={isDeleting}
+                          variant='custom'
                           className='h-10 w-full min-w-28 rounded-lg bg-primary px-4 text-sm text-primary-foreground hover:bg-primary/90 sm:w-auto'
                         >
                           <CreditCard aria-hidden='true' className='size-4' />

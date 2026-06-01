@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
+import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { usePendingDebts } from '../hooks/use-pending-debts';
@@ -60,7 +61,7 @@ export function PendingDebtsPageContent({
         <p className='text-sm text-muted-foreground'>Carregando dívidas...</p>
       )}
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
       {!isLoading && !error && (
         <DebtList

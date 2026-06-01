@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
+import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useDebts } from '../hooks/use-debts';
@@ -133,11 +134,9 @@ export function DebtsPageContent({
         <p className='text-sm text-muted-foreground'>Carregando dívidas...</p>
       )}
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
-      {actionError && (
-        <p className='text-sm text-destructive'>{actionError}</p>
-      )}
+      {actionError && <FormErrorMessage message={actionError} />}
 
       {!isLoading && !error && (
         <div className='border-t border-border pt-6'>
