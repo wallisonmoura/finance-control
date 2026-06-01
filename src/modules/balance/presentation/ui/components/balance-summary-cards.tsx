@@ -14,6 +14,7 @@ import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display'
 import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 import Link from 'next/link';
 
 type BalanceSummaryCardsProps = {
@@ -41,6 +42,16 @@ function getTransactionStatus(entry: FinanceEntryUi) {
 
 function getTransactionDisplayValue(entry: FinanceEntryUi) {
   return entry.type === 'INCOME' ? entry.amount : -entry.amount;
+}
+
+function getTransactionToneClassName(entry: FinanceEntryUi) {
+  return entry.type === 'INCOME'
+    ? 'bg-income-muted text-income'
+    : 'bg-expense-muted text-expense';
+}
+
+function getTransactionValueClassName(entry: FinanceEntryUi) {
+  return entry.type === 'INCOME' ? 'text-income' : 'text-expense';
 }
 
 function TransactionIcon({ type }: { type: FinanceEntryUi['type'] }) {
@@ -214,11 +225,10 @@ export function BalanceSummaryCards({
                   >
                     <div className='flex min-w-0 items-center gap-3'>
                       <span
-                        className={`flex size-9 shrink-0 items-center justify-center rounded-full ${
-                          entry.type === 'INCOME'
-                            ? 'bg-success-light text-accent'
-                            : 'bg-destructive/10 text-destructive'
-                        }`}
+                        className={cn(
+                          'flex size-9 shrink-0 items-center justify-center rounded-full',
+                          getTransactionToneClassName(entry),
+                        )}
                       >
                         <TransactionIcon type={entry.type} />
                       </span>
@@ -234,13 +244,17 @@ export function BalanceSummaryCards({
                     </span>
                     <MoneyDisplay
                       value={getTransactionDisplayValue(entry)}
-                      className={`text-right text-sm font-semibold ${
-                        entry.type === 'INCOME'
-                          ? 'text-accent'
-                          : 'text-destructive'
-                      }`}
+                      className={cn(
+                        'text-right text-sm font-semibold',
+                        getTransactionValueClassName(entry),
+                      )}
                     />
-                    <span className='justify-self-end rounded-full bg-success-light px-3 py-1 text-xs font-semibold text-accent'>
+                    <span
+                      className={cn(
+                        'justify-self-end rounded-full px-3 py-1 text-xs font-semibold',
+                        getTransactionToneClassName(entry),
+                      )}
+                    >
                       {getTransactionStatus(entry)}
                     </span>
                   </div>
@@ -255,11 +269,10 @@ export function BalanceSummaryCards({
                   >
                     <div className='flex min-w-0 items-center gap-3'>
                       <span
-                        className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
-                          entry.type === 'INCOME'
-                            ? 'bg-success-light text-accent'
-                            : 'bg-destructive/10 text-destructive'
-                        }`}
+                        className={cn(
+                          'flex size-10 shrink-0 items-center justify-center rounded-full',
+                          getTransactionToneClassName(entry),
+                        )}
                       >
                         <TransactionIcon type={entry.type} />
                       </span>
@@ -274,11 +287,10 @@ export function BalanceSummaryCards({
                     </div>
                     <MoneyDisplay
                       value={getTransactionDisplayValue(entry)}
-                      className={`shrink-0 text-right text-sm font-semibold ${
-                        entry.type === 'INCOME'
-                          ? 'text-accent'
-                          : 'text-destructive'
-                      }`}
+                      className={cn(
+                        'shrink-0 text-right text-sm font-semibold',
+                        getTransactionValueClassName(entry),
+                      )}
                     />
                   </div>
                 ))}
