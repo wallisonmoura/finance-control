@@ -40,18 +40,18 @@ export function WalletSummaryCard({ wallet }: WalletSummaryCardProps) {
         />
         <div className='absolute inset-0 bg-primary/20' aria-hidden='true' />
 
-        <div className='relative grid min-h-48 gap-6 p-5 sm:min-h-60 sm:p-7 md:grid-cols-[1fr_auto] md:items-center'>
+        <div className='relative grid gap-6 p-5 sm:p-7 md:grid-cols-[1fr_auto] md:items-center'>
           <div className='space-y-5'>
-            <div className='flex items-center gap-3 text-base font-medium text-primary-foreground'>
-              <span className='flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent'>
-                <WalletCards aria-hidden='true' className='size-6' />
+            <div className='flex items-center gap-3 text-sm font-medium text-primary-foreground'>
+              <span className='flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent'>
+                <WalletCards aria-hidden='true' className='size-5' />
               </span>
               <p>Valor Total da Carteira</p>
             </div>
 
             <MoneyDisplay
               value={wallet.walletTotal}
-              className='text-4xl font-semibold text-primary-foreground sm:text-6xl'
+              className='text-4xl font-semibold text-primary-foreground sm:text-5xl'
             />
 
             <p className='max-w-md text-sm text-primary-foreground/90'>
