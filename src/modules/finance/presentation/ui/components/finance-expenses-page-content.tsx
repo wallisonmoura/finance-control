@@ -13,6 +13,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
+import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
@@ -197,11 +198,9 @@ export function FinanceExpensesPageContent({
         <p className='text-sm text-muted-foreground'>Carregando despesas...</p>
       )}
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
-      {actionError && (
-        <p className='text-sm text-destructive'>{actionError}</p>
-      )}
+      {actionError && <FormErrorMessage message={actionError} />}
 
       {!isLoading && !error && (
         <Card className='overflow-hidden p-0'>

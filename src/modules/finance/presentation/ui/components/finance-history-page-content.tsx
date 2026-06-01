@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import {
@@ -122,7 +123,7 @@ export function FinanceHistoryPageContent({
         </p>
       )}
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
       {!isLoading && !error && (
         <>

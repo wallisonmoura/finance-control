@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
+import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
@@ -231,6 +232,7 @@ function SummaryFilterForm({
           type='button'
           onClick={handleApplyFilters}
           disabled={isLoading}
+          variant='custom'
           className='h-12 w-full bg-primary px-6 text-base text-primary-foreground hover:bg-primary/90 lg:w-auto'
         >
           <Funnel aria-hidden='true' className='size-4' />
@@ -317,7 +319,7 @@ export function FinanceSummaryPageContent({
         onApplyFilters={handleApplyFilters}
       />
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
       {isLoading && (
         <p className='text-sm text-muted-foreground'>

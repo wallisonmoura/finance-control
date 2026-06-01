@@ -4,6 +4,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
 import { FinanceEntryUi } from '../types/finance-ui.types';
 
@@ -108,12 +109,12 @@ export function FinanceHistoryList({
                 >
                   <div className='flex min-w-0 gap-4'>
                     <div
-                      className={[
+                      className={cn(
                         'flex size-12 shrink-0 items-center justify-center rounded-2xl ring-1',
                         isIncome
                           ? 'bg-income-muted text-income ring-income/20'
                           : 'bg-expense-muted text-expense ring-expense/20',
-                      ].join(' ')}
+                      )}
                     >
                       <EntryIcon aria-hidden='true' className='size-6' />
                     </div>
