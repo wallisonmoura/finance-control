@@ -9,6 +9,7 @@ type ConfirmDialogProps = {
   title: string;
   description: string;
   confirmLabel?: string;
+  confirmingLabel?: string;
   cancelLabel?: string;
   isConfirming?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -20,6 +21,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel = 'Confirmar',
+  confirmingLabel = 'Confirmando...',
   cancelLabel = 'Cancelar',
   isConfirming = false,
   onOpenChange,
@@ -51,7 +53,7 @@ export function ConfirmDialog({
               disabled={isConfirming}
               onClick={onConfirm}
             >
-              {isConfirming ? 'Excluindo...' : confirmLabel}
+              {isConfirming ? confirmingLabel : confirmLabel}
             </Button>
           </div>
         </AlertDialogPrimitive.Content>

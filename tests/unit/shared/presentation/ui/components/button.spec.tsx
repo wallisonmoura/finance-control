@@ -14,4 +14,18 @@ describe('Button', () => {
 
     expect(screen.getByRole('button', { name: 'Salvando' })).toBeDisabled();
   });
+
+  it('deve manter variant custom sem estilos visuais de ghost', () => {
+    render(
+      <Button variant='custom' className='bg-income hover:bg-income/90'>
+        Salvar
+      </Button>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Salvar' });
+
+    expect(button).toHaveClass('bg-income');
+    expect(button).toHaveClass('hover:bg-income/90');
+    expect(button).not.toHaveClass('hover:bg-muted');
+  });
 });

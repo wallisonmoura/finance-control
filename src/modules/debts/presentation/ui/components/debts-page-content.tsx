@@ -155,6 +155,7 @@ export function DebtsPageContent({
         title='Excluir dívida'
         description={`Deseja excluir a dívida "${debtToDelete?.description ?? ''}"?`}
         confirmLabel='Excluir'
+        confirmingLabel='Excluindo...'
         isConfirming={deletingDebtId === debtToDelete?.id}
         onOpenChange={(open) => {
           if (!open) {

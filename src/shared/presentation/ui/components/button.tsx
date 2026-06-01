@@ -1,6 +1,7 @@
 import { ButtonHTMLAttributes } from 'react';
 
 import { Button as PrimitiveButton } from '@/shared/presentation/ui/primitives/button';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
@@ -21,8 +22,8 @@ export function Button({
     secondary: 'secondary',
     danger: 'destructive',
     ghost: 'ghost',
-    custom: 'ghost',
-  }[variant] as 'default' | 'secondary' | 'destructive' | 'ghost';
+    custom: 'custom',
+  }[variant] as 'default' | 'secondary' | 'destructive' | 'ghost' | 'custom';
 
   const variantClassName = {
     primary:
@@ -41,12 +42,12 @@ export function Button({
       asChild={asChild}
       variant={primitiveVariant}
       size='lg'
-      className={[
+      className={cn(
         variantClassName,
         'disabled:bg-muted disabled:text-muted-foreground disabled:ring-border',
-        fullWidth ? 'w-full' : '',
+        fullWidth && 'w-full',
         className,
-      ].join(' ')}
+      )}
       {...props}
     >
       {children}

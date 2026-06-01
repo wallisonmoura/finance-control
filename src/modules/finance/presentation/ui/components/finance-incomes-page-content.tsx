@@ -288,6 +288,7 @@ export function FinanceIncomesPageContent({
         title='Excluir receita'
         description={`Deseja excluir a receita "${incomeToDelete?.description ?? ''}"?`}
         confirmLabel='Excluir'
+        confirmingLabel='Excluindo...'
         isConfirming={deletingIncomeId === incomeToDelete?.id}
         onOpenChange={(open) => {
           if (!open) {

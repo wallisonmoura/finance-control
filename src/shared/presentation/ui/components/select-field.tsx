@@ -1,6 +1,7 @@
 import type { SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Label } from '@/shared/presentation/ui/primitives/label';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
 type SelectFieldOption = {
   label: string;
@@ -37,14 +38,14 @@ export function SelectField({
           id={id}
           name={name}
           value={value}
-          className={[
+          className={cn(
             'h-11 w-full cursor-pointer appearance-none rounded-lg border border-input bg-card py-2 pr-10 pl-3 text-sm text-foreground shadow-sm outline-none',
             'transition-[border-color,box-shadow,background-color,color] duration-300 ease-out',
             'hover:border-ring hover:bg-muted',
             'focus:border-ring focus:bg-card focus:shadow-md focus:shadow-border/70 focus:ring-4 focus:ring-ring/30',
             'disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground',
             className,
-          ].join(' ')}
+          )}
           {...props}
         >
           {children ?? (

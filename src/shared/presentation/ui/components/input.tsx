@@ -6,6 +6,7 @@ import type {
 
 import { Label } from '@/shared/presentation/ui/primitives/label';
 import { Input as PrimitiveInput } from '@/shared/presentation/ui/primitives/input';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -132,10 +133,10 @@ export function Input({
         inputMode={inputMode}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        className={[
+        className={cn(
           'h-11 bg-card text-foreground transition-all duration-200 ease-out',
           className,
-        ].join(' ')}
+        )}
         {...props}
       />
     </div>

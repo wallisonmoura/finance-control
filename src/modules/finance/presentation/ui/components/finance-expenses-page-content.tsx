@@ -323,6 +323,7 @@ export function FinanceExpensesPageContent({
         title='Excluir despesa'
         description={`Deseja excluir a despesa "${expenseToDelete?.description ?? ''}"?`}
         confirmLabel='Excluir'
+        confirmingLabel='Excluindo...'
         isConfirming={deletingExpenseId === expenseToDelete?.id}
         onOpenChange={(open) => {
           if (!open) {

@@ -30,6 +30,8 @@ export function StatusMessage({
 
   return (
     <Alert
+      role='status'
+      aria-live='polite'
       className={
         tone === 'success'
           ? 'border-accent/30 bg-success-light text-foreground'
