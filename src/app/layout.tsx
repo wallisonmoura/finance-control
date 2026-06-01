@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from '@/shared/presentation/ui/primitives/sonner';
 import './globals.css';
@@ -13,17 +13,30 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const appDescription =
+  'Seu dinheiro, seu controle, seu futuro. Organize receitas, despesas, carteira e dívidas em uma plataforma simples e objetiva.';
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
   ),
+  manifest: '/manifest.webmanifest',
   title: {
     default: 'Finance Control',
     template: '%s | Finance Control',
   },
-  description:
-    'Controle suas receitas, despesas, carteira e dividas em uma plataforma simples e organizada.',
+  description: appDescription,
   applicationName: 'Finance Control',
+  keywords: [
+    'controle financeiro',
+    'finanças pessoais',
+    'receitas',
+    'despesas',
+    'carteira',
+    'dívidas',
+  ],
+  creator: 'Finance Control',
+  publisher: 'Finance Control',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -33,20 +46,48 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
+  appleWebApp: {
+    capable: true,
+    title: 'Finance Control',
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: 'Finance Control',
-    description:
-      'Controle suas receitas, despesas, carteira e dividas em uma plataforma simples e organizada.',
+    description: appDescription,
+    url: '/',
+    siteName: 'Finance Control',
+    locale: 'pt_BR',
     type: 'website',
-    images: ['/images/opengraph-image.png'],
+    images: [
+      {
+        url: '/images/opengraph-image.png',
+        width: 1731,
+        height: 909,
+        alt: 'Finance Control - Seu dinheiro, seu controle, seu futuro.',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Finance Control',
-    description:
-      'Controle suas receitas, despesas, carteira e dividas em uma plataforma simples e organizada.',
-    images: ['/images/twitter-image.png'],
+    description: appDescription,
+    images: [
+      {
+        url: '/images/twitter-image.png',
+        width: 1774,
+        height: 887,
+        alt: 'Finance Control - Seu dinheiro, seu controle, seu futuro.',
+      },
+    ],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#020617',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
