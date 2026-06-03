@@ -53,6 +53,9 @@ jobs:
           JWT_EXPIRES_IN="7d"
           EOF
 
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
       - name: Apply test database migrations
         run: npx prisma migrate deploy
 
