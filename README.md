@@ -167,13 +167,17 @@ JWT_SECRET="your-local-secret"
 JWT_EXPIRES_IN="7d"
 ```
 
-### 4. Aplicar migrations e seed
+### 4. Aplicar migrations e seed local
 
 ```bash
 npx prisma migrate dev
 npx prisma generate
-npm run db:seed
+npm run db:seed:dev
 ```
+
+O seed cria um usuario local de desenvolvimento, uma carteira padrao e categorias iniciais de despesa. Ele e bloqueado em `NODE_ENV=production` e tambem bloqueia bancos que nao parecam locais ou de teste.
+
+Nao rode seed no banco de producao.
 
 ### 5. Rodar em desenvolvimento
 
@@ -225,6 +229,7 @@ npm run test:integration
 npm run test:ui
 npm run test:all
 npm run db:seed
+npm run db:seed:dev
 ```
 
 ## Testes
@@ -305,6 +310,25 @@ O MVP funcional esta implementado:
 - layout responsivo e navegacao refinada;
 - carregamento inicial de dados aproveitando Server Components/Server Data quando faz sentido;
 - suites de testes unitarios, integracao e UI configuradas.
+
+## Deploy com Vercel e Supabase
+
+O deploy planejado usa Vercel para a aplicacao Next.js e Supabase apenas como PostgreSQL gerenciado.
+
+Ambientes recomendados:
+
+- local: PostgreSQL via Docker;
+- teste local: PostgreSQL via Docker com banco `finance_control_test`;
+- CI: PostgreSQL service do GitHub Actions;
+- producao: Supabase Postgres.
+
+Para producao, configure a `DATABASE_URL` do Supabase na Vercel e rode apenas as migrations:
+
+```bash
+npx prisma migrate deploy
+```
+
+Dados iniciais de producao, como usuario real e categorias, devem ser inseridos manualmente pelo painel/SQL do Supabase. O seed do projeto e apenas para desenvolvimento local.
 
 ## Direcao do projeto
 

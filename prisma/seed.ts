@@ -2,7 +2,36 @@ import { hash } from 'bcryptjs';
 
 import { prisma } from '@/shared/infra/database/prisma/client';
 
+function assertSafeSeedEnvironment() {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Seed bloqueado em NODE_ENV=production. Insira dados de produção manualmente pelo Supabase.',
+    );
+  }
+
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL não definido para execução do seed.');
+  }
+
+  const { hostname, pathname } = new URL(databaseUrl);
+  const databaseName = pathname.slice(1);
+  const isLocalDatabase = ['localhost', '127.0.0.1', 'postgres'].includes(
+    hostname,
+  );
+  const isTestDatabase = /(^|[_-])test($|[_-])/.test(databaseName);
+
+  if (!isLocalDatabase && !isTestDatabase) {
+    throw new Error(
+      `Seed bloqueado para banco "${databaseName}" em "${hostname}". Use apenas banco local/teste.`,
+    );
+  }
+}
+
 async function main() {
+  assertSafeSeedEnvironment();
+
   const passwordHash = await hash('123456', 10);
 
   const user = await prisma.user.upsert({
