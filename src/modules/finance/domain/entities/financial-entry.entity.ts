@@ -28,7 +28,8 @@ export class FinancialEntry {
   static create(props: FinancialEntryProps): FinancialEntry {
     return new FinancialEntry({
       ...props,
-      categoryId: props.categoryId ?? null,
+      categoryId:
+        props.type === FinancialEntryType.INCOME ? null : (props.categoryId ?? null),
       debtId: props.debtId ?? null,
       notes: props.notes ?? null,
     });
@@ -63,10 +64,6 @@ export class FinancialEntry {
       !this.props.categoryId
     ) {
       throw new ExpenseCategoryRequiredError();
-    }
-
-    if (this.props.type === FinancialEntryType.INCOME) {
-      this.props.categoryId = null;
     }
   }
 
