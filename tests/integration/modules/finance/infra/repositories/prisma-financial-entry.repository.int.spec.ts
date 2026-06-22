@@ -2,6 +2,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { PrismaFinancialEntryRepository } from '@/modules/finance/infra/repositories/prisma-financial-entry.repository';
+import { PrismaWalletRepository } from '@/modules/wallet/infra/repositories/prisma-wallet.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { createTestUser } from '../../../../../helpers/database/create-test-user';
 import { createTestWallet } from '../../../../../helpers/database/create-test-wallet';
@@ -13,7 +14,7 @@ describe('PrismaFinancialEntryRepository', () => {
   let repository: PrismaFinancialEntryRepository;
 
   beforeAll(async () => {
-    repository = new PrismaFinancialEntryRepository();
+    repository = new PrismaFinancialEntryRepository(new PrismaWalletRepository());
   });
 
   beforeEach(async () => {
