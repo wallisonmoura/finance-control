@@ -1,4 +1,6 @@
 import { InvalidExpenseCategoryNameError } from '../errors/invalid-expense-category-name.error';
+import { InvalidExpenseCategorySlugError } from '../errors/invalid-expense-category-slug.error';
+import { InvalidExpenseCategoryUserIdError } from '../errors/invalid-expense-category-user-id.error';
 
 export interface ExpenseCategoryProps {
   id: string;
@@ -21,7 +23,7 @@ export class ExpenseCategory {
 
   private validate(): void {
     if (!this.props.userId.trim()) {
-      throw new Error('ID do usuário é obrigatório.');
+      throw new InvalidExpenseCategoryUserIdError();
     }
 
     if (!this.props.name.trim()) {
@@ -29,7 +31,7 @@ export class ExpenseCategory {
     }
 
     if (!this.props.slug.trim()) {
-      throw new Error('Slug da categoria de despesa é obrigatório.');
+      throw new InvalidExpenseCategorySlugError();
     }
   }
 

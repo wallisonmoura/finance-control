@@ -7,6 +7,7 @@ import { InvalidDebtDescriptionError } from '../errors/invalid-debt-description.
 import { InvalidDebtDueDateError } from '../errors/invalid-debt-due-date.error';
 import { InvalidDebtPaidStateError } from '../errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '../errors/invalid-debt-pending-state.error';
+import { InvalidDebtUserIdError } from '../errors/invalid-debt-user-id.error';
 
 export interface DebtProps {
   id: string;
@@ -39,7 +40,7 @@ export class Debt {
 
   private validate(): void {
     if (!this.props.userId.trim()) {
-      throw new Error('ID do usuário é obrigatório.');
+      throw new InvalidDebtUserIdError();
     }
 
     if (!this.props.description.trim()) {

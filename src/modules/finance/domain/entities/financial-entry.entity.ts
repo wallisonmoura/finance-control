@@ -1,7 +1,10 @@
 import { FinancialEntryType } from '../enums/financial-entry-type.enum';
 import { ExpenseCategoryRequiredError } from '../errors/expense-category-required.error';
 import { InvalidFinancialEntryAmountError } from '../errors/invalid-financial-entry-amount.error';
+import { InvalidFinancialEntryDateError } from '../errors/invalid-financial-entry-date.error';
+import { InvalidFinancialEntryDescriptionError } from '../errors/invalid-financial-entry-description.error';
 import { InvalidFinancialEntryTypeError } from '../errors/invalid-financial-entry-type.error';
+import { InvalidFinancialEntryUserIdError } from '../errors/invalid-financial-entry-user-id.error';
 
 export interface FinancialEntryProps {
   id: string;
@@ -41,18 +44,18 @@ export class FinancialEntry {
     }
 
     if (!this.props.userId.trim()) {
-      throw new Error('ID do usuário é obrigatório.');
+      throw new InvalidFinancialEntryUserIdError();
     }
 
     if (!this.props.description.trim()) {
-      throw new Error('Descrição é obrigatória.');
+      throw new InvalidFinancialEntryDescriptionError();
     }
 
     if (
       !(this.props.date instanceof Date) ||
       Number.isNaN(this.props.date.getTime())
     ) {
-      throw new Error('Data válida é obrigatória.');
+      throw new InvalidFinancialEntryDateError();
     }
 
     if (

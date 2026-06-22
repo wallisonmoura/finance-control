@@ -1,3 +1,4 @@
+import { InvalidDebtUserIdError } from '@/modules/debts/domain/errors/invalid-debt-user-id.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
@@ -5,11 +6,17 @@ import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/inval
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
+import { InvalidExpenseCategorySlugError } from '@/modules/finance/domain/errors/invalid-expense-category-slug.error';
+import { InvalidExpenseCategoryUserIdError } from '@/modules/finance/domain/errors/invalid-expense-category-user-id.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 import { FinancialEntryLinkedToDebtError } from '@/modules/finance/domain/errors/financial-entry-linked-to-debt.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
+import { InvalidFinancialEntryDateError } from '@/modules/finance/domain/errors/invalid-financial-entry-date.error';
+import { InvalidFinancialEntryDescriptionError } from '@/modules/finance/domain/errors/invalid-financial-entry-description.error';
+import { InvalidFinancialEntryUserIdError } from '@/modules/finance/domain/errors/invalid-financial-entry-user-id.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
+import { InvalidWalletUserIdError } from '@/modules/wallet/domain/errors/invalid-wallet-user-id.error';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { NextResponse } from 'next/server';
@@ -138,8 +145,41 @@ export function toErrorNextResponse(error: unknown) {
   if (
     error instanceof InvalidDebtAmountError ||
     error instanceof InvalidDebtDescriptionError ||
-    error instanceof InvalidDebtDueDateError
+    error instanceof InvalidDebtDueDateError ||
+    error instanceof InvalidDebtUserIdError
   ) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 400 },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Finance — entity validation
+  // ---------------------------------------------------------------------------
+
+  if (
+    error instanceof InvalidFinancialEntryUserIdError ||
+    error instanceof InvalidFinancialEntryDescriptionError ||
+    error instanceof InvalidFinancialEntryDateError ||
+    error instanceof InvalidExpenseCategoryUserIdError ||
+    error instanceof InvalidExpenseCategorySlugError
+  ) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 400 },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Wallet — entity validation
+  // ---------------------------------------------------------------------------
+
+  if (error instanceof InvalidWalletUserIdError) {
     return NextResponse.json(
       {
         message: error.message,

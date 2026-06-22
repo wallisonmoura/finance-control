@@ -1,4 +1,5 @@
 import { InvalidWalletBalanceError } from '../errors/invalid-wallet-balance.error';
+import { InvalidWalletUserIdError } from '../errors/invalid-wallet-user-id.error';
 
 export interface WalletProps {
   id: string;
@@ -21,7 +22,7 @@ export class Wallet {
 
   private validate(): void {
     if (!this.props.userId.trim()) {
-      throw new Error('ID do usuário é obrigatório.');
+      throw new InvalidWalletUserIdError();
     }
 
     if (this.props.bankBalance < 0) {

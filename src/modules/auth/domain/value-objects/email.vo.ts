@@ -1,3 +1,5 @@
+import { InvalidEmailError } from '../errors/invalid-email.error';
+
 export class Email {
   private constructor(private readonly value: string) {}
 
@@ -7,7 +9,7 @@ export class Email {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized);
 
     if (!isValid) {
-      throw new Error('E-mail inválido.');
+      throw new InvalidEmailError();
     }
 
     return new Email(normalized);
