@@ -94,16 +94,19 @@ Regras importantes:
 ## Stack
 
 - Next.js
-- React
+- React 19
 - TypeScript
 - PostgreSQL
-- Prisma
+- Prisma com driver adapter pg
 - Docker Compose
 - Zod
 - React Hook Form
-- shadcn/UI com Radix e Lucide
-- Tailwind CSS
+- shadcn/ui com Radix UI e Lucide React
+- Tailwind CSS v4
 - Zustand
+- next-themes
+- next-pwa
+- sonner
 - Jest
 - Testing Library
 - bcryptjs
@@ -228,6 +231,10 @@ npm run test:unit
 npm run test:integration
 npm run test:ui
 npm run test:all
+npm run test:watch
+npm run test:coverage:unit
+npm run test:coverage:integration
+npm run test:coverage
 npm run db:seed
 npm run db:seed:dev
 ```
@@ -306,10 +313,13 @@ O MVP funcional esta implementado:
 - pagamento de divida integrado com Wallet e Finance;
 - UI operacional com dashboard, wallet, finance, debts, historico e resumo;
 - formularios padronizados com React Hook Form e Zod;
-- mensagens com toast e confirmacoes com dialog;
+- mensagens com sonner e confirmacoes com dialog;
 - layout responsivo e navegacao refinada;
 - carregamento inicial de dados aproveitando Server Components/Server Data quando faz sentido;
-- suites de testes unitarios, integracao e UI configuradas.
+- suites de testes unitarios, integracao e UI configuradas;
+- identidade visual propria com logo, favicon, OG images e assets de marca;
+- suporte a tema escuro e claro com next-themes;
+- suporte a PWA com service worker, manifest e icones instaláveis.
 
 ## Deploy com Vercel e Supabase
 
@@ -336,11 +346,8 @@ O projeto deve evoluir de forma incremental, preservando o que ja funciona. Muda
 
 Possiveis evolucoes futuras:
 
-- identidade visual propria;
-- favicon e assets oficiais;
 - gestao de categorias pelo usuario;
 - relatorios por periodo e categoria;
 - alertas de vencimento;
 - exportacao de dados;
-- experiencia PWA;
 - eventual separacao entre frontend e backend se o produto crescer nessa direcao.
