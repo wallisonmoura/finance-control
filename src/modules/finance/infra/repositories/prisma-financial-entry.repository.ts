@@ -6,12 +6,10 @@ import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum
 import { TransactionType } from '@prisma/client';
 import { DefaultWalletNotFoundError } from '../../../../shared/infra/errors/default-wallet-not-found.error';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
-import { PrismaWalletRepository } from '@/modules/wallet/infra/repositories/prisma-wallet.repository';
+import { WalletRepository } from '@/modules/wallet/domain/repositories/wallet.repository';
 
 export class PrismaFinancialEntryRepository implements FinancialEntryRepository {
-  constructor(
-    private readonly walletRepository = new PrismaWalletRepository(),
-  ) {}
+  constructor(private readonly walletRepository: WalletRepository) {}
 
   async findById(id: string): Promise<FinancialEntry | null> {
     const transaction = await prisma.transaction.findUnique({
