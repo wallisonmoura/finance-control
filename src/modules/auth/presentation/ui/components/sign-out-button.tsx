@@ -6,8 +6,13 @@ import { LoaderCircle, LogOut } from 'lucide-react';
 
 import { signOut } from '../services/auth-api.service';
 import { Button } from '@/shared/presentation/ui/components/button';
+import { cn } from '@/shared/presentation/ui/lib/utils';
 
-export function SignOutButton() {
+type SignOutButtonProps = {
+  className?: string;
+};
+
+export function SignOutButton({ className }: SignOutButtonProps) {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +34,10 @@ export function SignOutButton() {
       onClick={handleSignOut}
       disabled={isLoading}
       variant='secondary'
-      className='h-11 shrink-0 gap-2 rounded-lg border-0 bg-card px-4 text-foreground shadow-none hover:bg-destructive/10 hover:text-destructive'
+      className={cn(
+        'h-11 shrink-0 gap-2 rounded-lg border-0 bg-card px-4 text-foreground shadow-none hover:bg-destructive/10 hover:text-destructive',
+        className,
+      )}
     >
       {isLoading ? (
         <LoaderCircle aria-hidden='true' className='size-4 animate-spin' />
