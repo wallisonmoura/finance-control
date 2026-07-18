@@ -1,5 +1,8 @@
 import { FinanceHistoryPageContent } from '@/modules/finance/presentation/ui/components/finance-history-page-content';
-import { getCurrentUserFinanceHistory } from '@/modules/finance/presentation/server/get-current-user-finance-data';
+import {
+  getCurrentUserExpenseCategories,
+  getCurrentUserFinanceHistory,
+} from '@/modules/finance/presentation/server/get-current-user-finance-data';
 import { getFinanceHistoryFiltersFromSearchParamsRecord } from '@/modules/finance/presentation/ui/utils/finance-filters';
 import { LoadingState } from '@/shared/presentation/ui/components/loading-state';
 import { Suspense } from 'react';
@@ -14,7 +17,10 @@ export default async function FinanceHistoryPage({
   const resolvedSearchParams = (await searchParams) ?? {};
   const filters =
     getFinanceHistoryFiltersFromSearchParamsRecord(resolvedSearchParams);
-  const { data, error } = await getCurrentUserFinanceHistory(filters);
+  const [{ data, error }, categoriesResult] = await Promise.all([
+    getCurrentUserFinanceHistory(filters),
+    getCurrentUserExpenseCategories(),
+  ]);
 
   return (
     <Suspense fallback={<LoadingState message='Carregando histórico financeiro...' />}>
@@ -22,6 +28,7 @@ export default async function FinanceHistoryPage({
         initialHistory={data}
         initialError={error}
         initialFilters={filters}
+        initialCategories={categoriesResult.data ?? []}
       />
     </Suspense>
   );

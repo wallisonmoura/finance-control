@@ -6,10 +6,11 @@ import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { cn } from '@/shared/presentation/ui/lib/utils';
 
-import { FinanceEntryUi } from '../types/finance-ui.types';
+import { ExpenseCategoryUi, FinanceEntryUi } from '../types/finance-ui.types';
 
 type FinanceHistoryListProps = {
   entries: FinanceEntryUi[];
+  categories?: ExpenseCategoryUi[];
   onEditIncome?: (entry: FinanceEntryUi) => void;
   onDeleteIncome?: (entry: FinanceEntryUi) => void;
   onEditExpense?: (entry: FinanceEntryUi) => void;
@@ -63,6 +64,7 @@ function groupEntriesByDate(entries: FinanceEntryUi[]) {
 
 export function FinanceHistoryList({
   entries,
+  categories = [],
   onEditIncome,
   onDeleteIncome,
   onEditExpense,
@@ -70,6 +72,10 @@ export function FinanceHistoryList({
   deletingIncomeId = null,
   deletingExpenseId = null,
 }: FinanceHistoryListProps) {
+  const categoryNameById = new Map(
+    categories.map((category) => [category.id, category.name]),
+  );
+
   if (entries.length === 0) {
     return (
       <EmptyState
@@ -101,6 +107,9 @@ export function FinanceHistoryList({
                 deletingIncomeId === entry.id || deletingExpenseId === entry.id;
               const isIncome = entry.type === 'INCOME';
               const EntryIcon = isIncome ? ArrowUp : ArrowDown;
+              const categoryName = entry.categoryId
+                ? (categoryNameById.get(entry.categoryId) ?? null)
+                : null;
 
               return (
                 <div
@@ -133,11 +142,11 @@ export function FinanceHistoryList({
                           {getEntryTypeLabel(entry.type)}
                         </span>
 
-                        {entry.categoryId && (
+                        {categoryName && (
                           <>
                             <span className='h-4 w-px bg-border' />
                             <span className='text-sm font-medium text-muted-foreground'>
-                              Categoria: {entry.categoryId}
+                              Categoria: {categoryName}
                             </span>
                           </>
                         )}

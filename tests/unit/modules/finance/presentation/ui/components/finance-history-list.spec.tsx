@@ -14,6 +14,9 @@ describe('FinanceHistoryList', () => {
   it('should render finance entries', () => {
     render(
       <FinanceHistoryList
+        categories={[
+          { id: 'category-id', name: 'Abastecimento', slug: 'abastecimento' },
+        ]}
         entries={[
           {
             id: 'income-id',
@@ -50,7 +53,34 @@ describe('FinanceHistoryList', () => {
     expect(screen.getByText('Despesa')).toBeInTheDocument();
 
     expect(screen.getByText('UBER')).toBeInTheDocument();
-    expect(screen.getByText(/Categoria: category-id/i)).toBeInTheDocument();
+    expect(screen.getByText(/Categoria: Abastecimento/i)).toBeInTheDocument();
+    expect(screen.queryByText(/category-id/i)).not.toBeInTheDocument();
+  });
+
+  it('should not render the raw category id when the category is unknown', () => {
+    render(
+      <FinanceHistoryList
+        categories={[]}
+        entries={[
+          {
+            id: 'expense-id',
+            userId: 'user-id',
+            type: 'EXPENSE',
+            amount: 50,
+            description: 'abastecimento gasolina',
+            date: '2026-05-05T00:00:00.000Z',
+            categoryId: 'category-id',
+            notes: null,
+            createdAt: '2026-05-07T20:13:50.343Z',
+            updatedAt: '2026-05-07T20:13:50.343Z',
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('abastecimento gasolina')).toBeInTheDocument();
+    expect(screen.queryByText(/Categoria:/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/category-id/i)).not.toBeInTheDocument();
   });
 
   it('should render income actions when callbacks are provided', () => {
