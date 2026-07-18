@@ -22,6 +22,7 @@ describe('WalletBalancesForm', () => {
         wallet={wallet}
         isUpdating={false}
         onSubmit={jest.fn()}
+        onCancel={jest.fn()}
       />,
     );
 
@@ -39,6 +40,7 @@ describe('WalletBalancesForm', () => {
         wallet={wallet}
         isUpdating={false}
         onSubmit={onSubmit}
+        onCancel={jest.fn()}
       />,
     );
 
@@ -73,6 +75,7 @@ describe('WalletBalancesForm', () => {
         wallet={wallet}
         isUpdating={false}
         onSubmit={onSubmit}
+        onCancel={jest.fn()}
       />,
     );
 
@@ -101,6 +104,7 @@ describe('WalletBalancesForm', () => {
         wallet={wallet}
         isUpdating={false}
         onSubmit={onSubmit}
+        onCancel={jest.fn()}
       />,
     );
 
@@ -128,6 +132,7 @@ describe('WalletBalancesForm', () => {
         wallet={wallet}
         isUpdating={false}
         onSubmit={onSubmit}
+        onCancel={jest.fn()}
       />,
     );
 
@@ -147,9 +152,32 @@ describe('WalletBalancesForm', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it('deve chamar onCancel ao clicar em Cancelar', async () => {
+    const user = userEvent.setup();
+    const onCancel = jest.fn();
+
+    render(
+      <WalletBalancesForm
+        wallet={wallet}
+        isUpdating={false}
+        onSubmit={jest.fn()}
+        onCancel={onCancel}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
   it('deve desabilitar o botão enquanto estiver atualizando', () => {
     render(
-      <WalletBalancesForm wallet={wallet} isUpdating onSubmit={jest.fn()} />,
+      <WalletBalancesForm
+        wallet={wallet}
+        isUpdating
+        onSubmit={jest.fn()}
+        onCancel={jest.fn()}
+      />,
     );
 
     expect(

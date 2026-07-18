@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { RotateCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Pencil, RotateCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
@@ -26,6 +26,19 @@ export function WalletPageContent({
 }: WalletPageContentProps) {
   const { wallet, isUpdating, error, successMessage, refetch, updateBalances } =
     useWallet({ initialWallet, initialError });
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [lastHandledSuccess, setLastHandledSuccess] = useState(successMessage);
+
+  // Fecha o formulário quando uma atualização é concluída com sucesso.
+  // Ajuste feito durante o render (não em effect) para evitar renders em cascata.
+  if (successMessage !== lastHandledSuccess) {
+    setLastHandledSuccess(successMessage);
+
+    if (successMessage) {
+      setIsFormOpen(false);
+    }
+  }
 
   useEffect(() => {
     if (successMessage) {
@@ -79,11 +92,24 @@ export function WalletPageContent({
 
       <WalletSummaryCard wallet={wallet} />
 
-      <WalletBalancesForm
-        wallet={wallet}
-        isUpdating={isUpdating}
-        onSubmit={updateBalances}
-      />
+      {isFormOpen ? (
+        <WalletBalancesForm
+          wallet={wallet}
+          isUpdating={isUpdating}
+          onSubmit={updateBalances}
+          onCancel={() => setIsFormOpen(false)}
+        />
+      ) : (
+        <Button
+          type='button'
+          onClick={() => setIsFormOpen(true)}
+          variant='custom'
+          className='h-12 w-full bg-primary px-6 text-primary-foreground hover:bg-primary/90 sm:w-auto'
+        >
+          <Pencil aria-hidden='true' className='size-4' />
+          Atualizar saldos
+        </Button>
+      )}
     </div>
   );
 }

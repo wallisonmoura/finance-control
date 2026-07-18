@@ -81,7 +81,7 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve renderizar a Wallet com resumo e formulário', () => {
+  it('deve iniciar com o resumo e o formulário fechado', () => {
     mockUseWalletState();
 
     render(<WalletPageContent />);
@@ -99,11 +99,76 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText('Valor Total da Carteira')).toBeInTheDocument();
-    expect(screen.getByText('Atualizar saldos-base')).toBeInTheDocument();
 
+    expect(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    ).toBeInTheDocument();
+
+    expect(screen.queryByLabelText('Saldo em Banco')).not.toBeInTheDocument();
+    expect(screen.queryByText('Atualizar saldos-base')).not.toBeInTheDocument();
+  });
+
+  it('deve abrir o formulário ao clicar em Atualizar saldos', async () => {
+    const user = userEvent.setup();
+
+    mockUseWalletState();
+
+    render(<WalletPageContent />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    );
+
+    expect(screen.getByText('Atualizar saldos-base')).toBeInTheDocument();
     expect(screen.getByLabelText('Saldo em Banco')).toHaveValue('1500,00');
     expect(screen.getByLabelText('Saldo em Dinheiro')).toHaveValue('200,00');
     expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450,00');
+  });
+
+  it('deve fechar o formulário ao clicar em Cancelar', async () => {
+    const user = userEvent.setup();
+
+    mockUseWalletState();
+
+    render(<WalletPageContent />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    );
+
+    expect(screen.getByLabelText('Saldo em Banco')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    expect(screen.queryByLabelText('Saldo em Banco')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    ).toBeInTheDocument();
+  });
+
+  it('deve fechar o formulário quando a atualização for concluída com sucesso', async () => {
+    const user = userEvent.setup();
+
+    mockUseWalletState();
+
+    const { rerender } = render(<WalletPageContent />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    );
+
+    expect(screen.getByLabelText('Saldo em Banco')).toBeInTheDocument();
+
+    mockUseWalletState({
+      successMessage: 'Saldos da Carteira atualizados com sucesso.',
+    });
+
+    rerender(<WalletPageContent />);
+
+    expect(screen.queryByLabelText('Saldo em Banco')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    ).toBeInTheDocument();
   });
 
   it('deve exibir toast de sucesso quando houver atualização concluída', () => {
@@ -143,6 +208,10 @@ describe('WalletPageContent', () => {
     });
 
     render(<WalletPageContent />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Atualizar saldos' }),
+    );
 
     await user.clear(screen.getByLabelText('Saldo em Banco'));
     await user.type(screen.getByLabelText('Saldo em Banco'), '2000');
