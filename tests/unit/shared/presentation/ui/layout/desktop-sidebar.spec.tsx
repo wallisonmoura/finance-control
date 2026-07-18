@@ -4,7 +4,7 @@ import { DesktopSidebar } from '@/shared/presentation/ui/layout/desktop-sidebar'
 
 describe('DesktopSidebar', () => {
   it('should render the application name', () => {
-    render(<DesktopSidebar pathname='/dashboard' />);
+    render(<DesktopSidebar pathname='/' />);
 
     expect(
       screen.getByRole('img', { name: 'Finance Control' }),
@@ -12,11 +12,11 @@ describe('DesktopSidebar', () => {
   });
 
   it('should render the main navigation links', () => {
-    render(<DesktopSidebar pathname='/dashboard' />);
+    render(<DesktopSidebar pathname='/' />);
 
     expect(screen.getByRole('link', { name: 'Painel' })).toHaveAttribute(
       'href',
-      '/dashboard',
+      '/',
     );
 
     expect(screen.getByRole('link', { name: 'Carteira' })).toHaveAttribute(
@@ -36,7 +36,7 @@ describe('DesktopSidebar', () => {
   });
 
   it('should render the navigation landmark', () => {
-    render(<DesktopSidebar pathname='/dashboard' />);
+    render(<DesktopSidebar pathname='/' />);
 
     expect(
       screen.getByRole('navigation', { name: 'Navegação principal' }),

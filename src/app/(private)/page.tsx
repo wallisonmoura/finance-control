@@ -4,7 +4,7 @@ import { getCurrentUserFinanceHistory } from '@/modules/finance/presentation/ser
 import { getCurrentMonthFilters } from '@/modules/finance/presentation/ui/utils/finance-filters';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
-export default async function DashboardPage() {
+export default async function HomePage() {
   const [{ data, error }, financeHistory] = await Promise.all([
     getCurrentUserBalanceSummary(),
     getCurrentUserFinanceHistory(getCurrentMonthFilters()),

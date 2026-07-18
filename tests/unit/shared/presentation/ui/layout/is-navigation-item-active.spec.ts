@@ -18,9 +18,10 @@ describe('isNavigationItemActive', () => {
     expect(isNavigationItemActive('/wallet', '/debts')).toBe(false);
   });
 
-  it('should only activate dashboard on exact match', () => {
-    expect(isNavigationItemActive('/dashboard', '/dashboard')).toBe(true);
-    expect(isNavigationItemActive('/dashboard/test', '/dashboard')).toBe(false);
+  it('should only activate the home item on exact match', () => {
+    expect(isNavigationItemActive('/', '/')).toBe(true);
+    expect(isNavigationItemActive('/wallet', '/')).toBe(false);
+    expect(isNavigationItemActive('/finance/history', '/')).toBe(false);
   });
 
   it('should not match similar path prefixes', () => {
