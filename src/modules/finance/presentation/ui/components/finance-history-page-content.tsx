@@ -13,6 +13,7 @@ import { FinanceHistoryFilters } from './finance-history-filters';
 import { FinanceHistoryList } from './finance-history-list';
 import { FinanceHistorySummary } from './finance-history-summary';
 import {
+  ExpenseCategoryUi,
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
 } from '../types/finance-ui.types';
@@ -46,12 +47,14 @@ type FinanceHistoryPageContentProps = {
   initialHistory?: FinanceHistoryUi;
   initialError?: string | null;
   initialFilters?: FinanceHistoryFiltersUi;
+  initialCategories?: ExpenseCategoryUi[];
 };
 
 export function FinanceHistoryPageContent({
   initialHistory,
   initialError,
   initialFilters,
+  initialCategories = [],
 }: FinanceHistoryPageContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -134,7 +137,7 @@ export function FinanceHistoryPageContent({
             totalEntries={entries.length}
           />
 
-          <FinanceHistoryList entries={entries} />
+          <FinanceHistoryList entries={entries} categories={initialCategories} />
         </>
       )}
     </div>
