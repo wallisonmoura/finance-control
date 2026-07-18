@@ -16,7 +16,7 @@ chore/<name>   # tooling, config, docs, refactor
 
 ## CI
 
-CI runs on every push (any branch) and on every pull request. Jobs: lint → test:all → build. All must pass before merge.
+CI runs on every pull request targeting `main` — when the PR is opened and on every new commit pushed while it is open. Pushes to branches without an open PR (and direct pushes to `main`) do not trigger it. Jobs: lint → test:all → build. All must pass before merge.
 
 ## Opening a PR
 
@@ -32,5 +32,5 @@ Examples:
 ```
 feat(wallet): add receivable balance field
 fix(debts): prevent editing auto-generated transactions
-chore: update CI triggers to run on all branches
+chore(ci): run workflow only on pull requests to main
 ```
