@@ -20,6 +20,7 @@ type WalletBalancesFormProps = {
   wallet: WalletUi;
   isUpdating: boolean;
   onSubmit: (payload: UpdateWalletBalancesPayload) => Promise<void>;
+  onCancel: () => void;
 };
 
 type WalletBalancesFormState = {
@@ -73,6 +74,7 @@ export function WalletBalancesForm({
   wallet,
   isUpdating,
   onSubmit,
+  onCancel,
 }: WalletBalancesFormProps) {
   const {
     register,
@@ -168,15 +170,27 @@ export function WalletBalancesForm({
               </div>
             )}
 
-            <Button
-              type='submit'
-              disabled={cannotSubmit}
-              variant='custom'
-              className='h-12 w-full bg-primary px-6 text-primary-foreground hover:bg-primary/90 sm:w-auto'
-            >
-              <Save aria-hidden='true' className='size-4' />
-              {cannotSubmit ? 'Salvando...' : 'Salvar saldos'}
-            </Button>
+            <div className='grid gap-3 sm:flex sm:items-center'>
+              <Button
+                type='submit'
+                disabled={cannotSubmit}
+                variant='custom'
+                className='h-12 w-full bg-primary px-6 text-primary-foreground hover:bg-primary/90 sm:w-auto'
+              >
+                <Save aria-hidden='true' className='size-4' />
+                {cannotSubmit ? 'Salvando...' : 'Salvar saldos'}
+              </Button>
+
+              <Button
+                type='button'
+                onClick={onCancel}
+                disabled={cannotSubmit}
+                variant='secondary'
+                className='h-12 w-full px-6 sm:w-auto'
+              >
+                Cancelar
+              </Button>
+            </div>
           </div>
 
           <div className='flex flex-col items-center justify-center rounded-lg border border-accent/30 bg-success-light px-5 py-6 text-center text-sm leading-6 text-foreground lg:min-h-36'>
