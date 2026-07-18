@@ -18,7 +18,7 @@ const currentUser = {
   email: 'admin@financecontrol.com',
 };
 
-function renderMobileMenu(pathname = '/dashboard') {
+function renderMobileMenu(pathname = '/') {
   return render(<MobileMenu pathname={pathname} currentUser={currentUser} />);
 }
 
@@ -110,7 +110,7 @@ describe('MobileMenu', () => {
 
     expect(screen.getByRole('link', { name: 'Painel' })).toHaveAttribute(
       'href',
-      '/dashboard',
+      '/',
     );
 
     expect(screen.getByRole('link', { name: 'Carteira' })).toHaveAttribute(
@@ -184,5 +184,54 @@ describe('MobileMenu', () => {
       'aria-current',
       'page',
     );
+  });
+
+  it('should close the menu when clicking outside', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <div>
+        <MobileMenu pathname='/' currentUser={currentUser} />
+        <button type='button'>outside area</button>
+      </div>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
+
+    expect(
+      screen.getByRole('navigation', {
+        name: 'Navegação principal mobile',
+      }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'outside area' }));
+
+    expect(
+      screen.queryByRole('navigation', {
+        name: 'Navegação principal mobile',
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should close the menu when pressing Escape', async () => {
+    const user = userEvent.setup();
+
+    renderMobileMenu();
+
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
+
+    expect(
+      screen.getByRole('navigation', {
+        name: 'Navegação principal mobile',
+      }),
+    ).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(
+      screen.queryByRole('navigation', {
+        name: 'Navegação principal mobile',
+      }),
+    ).not.toBeInTheDocument();
   });
 });
