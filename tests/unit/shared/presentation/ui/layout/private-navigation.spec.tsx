@@ -10,7 +10,7 @@ jest.mock('next/navigation', () => ({
 
 describe('PrivateNavigation', () => {
   beforeEach(() => {
-    mockUsePathname.mockReturnValue('/dashboard');
+    mockUsePathname.mockReturnValue('/');
   });
 
   afterEach(() => {

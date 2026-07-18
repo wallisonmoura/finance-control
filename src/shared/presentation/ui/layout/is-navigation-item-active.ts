@@ -1,5 +1,5 @@
 export function isNavigationItemActive(pathname: string, href: string) {
-  if (href === '/dashboard') {
+  if (href === '/') {
     return pathname === href;
   }
 

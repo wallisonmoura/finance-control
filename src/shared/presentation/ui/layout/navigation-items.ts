@@ -15,7 +15,7 @@ export type NavigationItem = {
 export const PRIVATE_NAVIGATION_ITEMS: NavigationItem[] = [
   {
     label: 'Painel',
-    href: '/dashboard',
+    href: '/',
     icon: LayoutDashboard,
   },
   {

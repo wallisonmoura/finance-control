@@ -8,11 +8,11 @@ type LoginPageProps = {
 
 function normalizeRedirectTo(redirectTo?: string) {
   if (!redirectTo) {
-    return '/dashboard';
+    return '/';
   }
 
   if (!redirectTo.startsWith('/') || redirectTo.startsWith('//')) {
-    return '/dashboard';
+    return '/';
   }
 
   return redirectTo;
