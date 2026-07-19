@@ -29,6 +29,10 @@ function toFinanceHistoryUrl(filters: FinanceHistoryFiltersUi): string {
     searchParams.set('type', filters.type);
   }
 
+  if (filters.categoryId) {
+    searchParams.set('categoryId', filters.categoryId);
+  }
+
   return `/finance/history?${searchParams.toString()}`;
 }
 
@@ -114,8 +118,9 @@ export function FinanceHistoryPageContent({
       />
 
       <FinanceHistoryFilters
-        key={`${filters.startDate}-${filters.endDate}-${filters.type ?? 'ALL'}`}
+        key={`${filters.startDate}-${filters.endDate}-${filters.type ?? 'ALL'}-${filters.categoryId ?? 'ALL'}`}
         filters={filters}
+        categories={initialCategories}
         isLoading={isLoading}
         onApplyFilters={handleApplyFilters}
       />
