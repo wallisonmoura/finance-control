@@ -3,29 +3,28 @@ import {
   getTodayDateValue,
 } from '@/shared/presentation/ui/lib/date';
 
-const ORIGINAL_TZ = process.env.TZ;
-
 describe('formatLocalDateValue', () => {
-  beforeAll(() => {
-    // Fixa um fuso negativo (UTC-3) para reproduzir a virada de dia à noite.
-    process.env.TZ = 'America/Sao_Paulo';
-  });
+  it('usa os componentes locais da data, não os de UTC', () => {
+    // Data "fake" que só expõe os getters locais. Garante que a função use
+    // getFullYear/getMonth/getDate — e não toISOString(), que converteria
+    // para UTC e adiantaria o dia em fusos negativos no fim da noite.
+    const localDate = {
+      getFullYear: () => 2026,
+      getMonth: () => 6, // julho (0-based)
+      getDate: () => 18,
+    } as unknown as Date;
 
-  afterAll(() => {
-    process.env.TZ = ORIGINAL_TZ;
-  });
-
-  it('usa o dia do calendário local, não o de UTC, perto da meia-noite', () => {
-    // 2026-07-19T02:26Z equivale a 2026-07-18 23:26 em America/Sao_Paulo.
-    const instant = new Date('2026-07-19T02:26:00.000Z');
-
-    expect(formatLocalDateValue(instant)).toBe('2026-07-18');
+    expect(formatLocalDateValue(localDate)).toBe('2026-07-18');
   });
 
   it('formata mês e dia com zero à esquerda', () => {
-    const instant = new Date('2026-03-05T12:00:00.000Z');
+    const localDate = {
+      getFullYear: () => 2026,
+      getMonth: () => 2, // março (0-based)
+      getDate: () => 5,
+    } as unknown as Date;
 
-    expect(formatLocalDateValue(instant)).toBe('2026-03-05');
+    expect(formatLocalDateValue(localDate)).toBe('2026-03-05');
   });
 });
 
