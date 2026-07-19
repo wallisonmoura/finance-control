@@ -11,6 +11,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
+import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 
 import { registerIncome, updateIncome } from '../services/finance-api.service';
 import { FinanceEntryUi } from '../types/finance-ui.types';
@@ -24,10 +25,6 @@ type IncomeFormProps = {
 
 function formatDateInputValue(date: string) {
   return date.slice(0, 10);
-}
-
-function getTodayDateValue() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function parseMoneyInput(value: string) {

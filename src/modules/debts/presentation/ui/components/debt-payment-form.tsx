@@ -11,6 +11,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
+import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { payDebt } from '../services/debt-api.service';
@@ -25,15 +26,6 @@ type DebtPaymentFormProps = {
   onCancel?: () => void;
   embedded?: boolean;
 };
-
-function getTodayDateValue() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
 
 function isFutureDate(value: string) {
   return value > getTodayDateValue();

@@ -11,6 +11,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
+import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { registerDebt, updateDebt } from '../services/debt-api.service';
@@ -25,10 +26,6 @@ type DebtFormProps = {
 
 function formatDateInputValue(date: string) {
   return date.slice(0, 10);
-}
-
-function getTodayDateValue() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function parseMoneyInput(value: string) {
