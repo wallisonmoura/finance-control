@@ -106,6 +106,7 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
     startDate: Date,
     endDate: Date,
     type?: FinancialEntryType,
+    categoryId?: string,
   ): Promise<FinancialEntry[]> {
     const transactions = await prisma.transaction.findMany({
       where: {
@@ -122,6 +123,7 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
                   : TransactionType.EXPENSE,
             }
           : {}),
+        ...(categoryId ? { expenseCategoryId: categoryId } : {}),
       },
       orderBy: [{ transactionDate: 'asc' }, { createdAt: 'asc' }],
     });

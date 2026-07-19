@@ -13,5 +13,6 @@ export interface FinancialEntryRepository {
     startDate: Date,
     endDate: Date,
     type?: FinancialEntryType,
+    categoryId?: string,
   ): Promise<FinancialEntry[]>;
 }

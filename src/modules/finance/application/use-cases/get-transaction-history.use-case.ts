@@ -16,6 +16,7 @@ export class GetTransactionHistoryUseCase {
       input.startDate,
       input.endDate,
       input.type,
+      input.categoryId,
     );
 
     const sortedEntries = [...entries].sort(
