@@ -273,4 +273,60 @@ describe('FinanceHistoryPageContent', () => {
       }),
     );
   });
+
+  it('should re-apply filters when only the URL categoryId changes', () => {
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+      }) as unknown as ReturnType<typeof useSearchParams>,
+    );
+
+    useFinanceHistoryMock.mockReturnValue({
+      data: {
+        entries: [],
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+      },
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      filters: {
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+      },
+      isLoading: false,
+      error: null,
+      applyFilters,
+      refresh: jest.fn(),
+    });
+
+    const { rerender } = render(<FinanceHistoryPageContent />);
+
+    expect(applyFilters).not.toHaveBeenCalled();
+
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      }) as unknown as ReturnType<typeof useSearchParams>,
+    );
+
+    rerender(<FinanceHistoryPageContent />);
+
+    expect(applyFilters).toHaveBeenCalledWith(
+      expect.objectContaining({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      }),
+    );
+  });
 });

@@ -43,7 +43,8 @@ function areFiltersEqual(
   return (
     first.startDate === second.startDate &&
     first.endDate === second.endDate &&
-    first.type === second.type
+    first.type === second.type &&
+    first.categoryId === second.categoryId
   );
 }
 
