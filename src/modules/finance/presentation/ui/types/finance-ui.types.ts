@@ -33,6 +33,7 @@ export type FinanceHistoryFiltersUi = {
   startDate: string;
   endDate: string;
   type?: FinanceEntryTypeUi;
+  categoryId?: string;
 };
 
 export type FinanceHistoryUi = {

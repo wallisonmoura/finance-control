@@ -105,4 +105,25 @@ describe('getTransactionHistoryQuerySchema', () => {
       expect(result.error.issues[0].path).toEqual(['startDate']);
     }
   });
+
+  it('deve aceitar categoryId quando for um UUID válido', () => {
+    const result = getTransactionHistoryQuerySchema.parse({
+      startDate: '2026-04-01',
+      endDate: '2026-04-30',
+      type: 'EXPENSE',
+      categoryId: '11111111-1111-4111-8111-111111111111',
+    });
+
+    expect(result.categoryId).toBe('11111111-1111-4111-8111-111111111111');
+  });
+
+  it('deve rejeitar categoryId que não seja UUID', () => {
+    expect(() =>
+      getTransactionHistoryQuerySchema.parse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        categoryId: 'not-a-uuid',
+      }),
+    ).toThrow();
+  });
 });

@@ -96,6 +96,7 @@ export async function getCurrentUserFinanceHistory(
       startDate: new Date(`${filters.startDate}T00:00:00.000Z`),
       endDate: new Date(`${filters.endDate}T00:00:00.000Z`),
       type: toFinancialEntryType(filters.type),
+      categoryId: filters.categoryId,
     });
 
     return {
