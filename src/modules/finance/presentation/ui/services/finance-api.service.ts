@@ -183,6 +183,10 @@ export async function getFinanceHistory(
     searchParams.set('type', filters.type);
   }
 
+  if (filters.categoryId) {
+    searchParams.set('categoryId', filters.categoryId);
+  }
+
   const response = await fetch(
     `/api/finance/history?${searchParams.toString()}`,
     {

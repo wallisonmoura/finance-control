@@ -202,6 +202,38 @@ describe('finance-api.service', () => {
     });
   });
 
+  it('should include categoryId in the getFinanceHistory query', async () => {
+    const history = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => history,
+    });
+
+    await getFinanceHistory({
+      startDate: '2026-04-01',
+      endDate: '2026-04-30',
+      type: 'EXPENSE',
+      categoryId: '11111111-1111-4111-8111-111111111111',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=11111111-1111-4111-8111-111111111111',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+  });
+
   it('should get finance history without type filter', async () => {
     const history = {
       entries: [],

@@ -21,6 +21,7 @@ export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
     startDate,
     endDate,
     type,
+    categoryId,
   } = initialFilters ?? {};
   const hasInitialResult = Boolean(initialData || initialError);
 
@@ -29,6 +30,7 @@ export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
       ...(startDate ? { startDate } : {}),
       ...(endDate ? { endDate } : {}),
       ...(type ? { type } : {}),
+      ...(categoryId ? { categoryId } : {}),
     }),
   );
 
