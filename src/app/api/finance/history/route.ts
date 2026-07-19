@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         startDate: request.nextUrl.searchParams.get('startDate') ?? undefined,
         endDate: request.nextUrl.searchParams.get('endDate') ?? undefined,
         type: request.nextUrl.searchParams.get('type') ?? undefined,
+        categoryId: request.nextUrl.searchParams.get('categoryId') ?? undefined,
       },
     });
 
