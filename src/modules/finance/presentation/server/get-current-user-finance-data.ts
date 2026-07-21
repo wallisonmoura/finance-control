@@ -5,6 +5,10 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
+import {
+  parseDateFromQuery,
+  parseExclusiveEndDateFromQuery,
+} from '@/modules/finance/presentation/http/schemas/shared/parse-date-from-query';
 
 import {
   ExpenseCategoryUi,
@@ -93,8 +97,8 @@ export async function getCurrentUserFinanceHistory(
     const useCase = makeGetTransactionHistoryUseCase();
     const history = await useCase.execute({
       userId: auth.userId,
-      startDate: new Date(`${filters.startDate}T00:00:00.000Z`),
-      endDate: new Date(`${filters.endDate}T00:00:00.000Z`),
+      startDate: parseDateFromQuery(filters.startDate),
+      endDate: parseExclusiveEndDateFromQuery(filters.endDate),
       type: toFinancialEntryType(filters.type),
       categoryId: filters.categoryId,
     });
@@ -156,8 +160,8 @@ export async function getCurrentUserOperationalSummary(
       }),
       historyUseCase.execute({
         userId: auth.userId,
-        startDate: new Date(`${period.startDate}T00:00:00.000Z`),
-        endDate: new Date(`${period.endDate}T00:00:00.000Z`),
+        startDate: parseDateFromQuery(period.startDate),
+        endDate: parseExclusiveEndDateFromQuery(period.endDate),
       }),
     ]);
 
