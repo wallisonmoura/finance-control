@@ -60,7 +60,9 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
   ): Promise<FinancialEntry[]> {
     return this.entries.filter((entry) => {
       const isSameUser = entry.userId === userId;
-      const isWithinPeriod = entry.date >= startDate && entry.date <= endDate;
+      // Fim exclusivo, espelhando o `lt: endDate` do PrismaFinancialEntryRepository.
+      // Divergir daqui faz o teste unitário discordar do banco.
+      const isWithinPeriod = entry.date >= startDate && entry.date < endDate;
       const matchesType = type ? entry.type === type : true;
       const matchesCategory = categoryId
         ? entry.categoryId === categoryId
