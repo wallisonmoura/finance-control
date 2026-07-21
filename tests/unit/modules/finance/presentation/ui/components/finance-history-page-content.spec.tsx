@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { FinanceHistoryPageContent } from '@/modules/finance/presentation/ui/components/finance-history-page-content';
 import { useFinanceHistory } from '@/modules/finance/presentation/ui/hooks/use-finance-history';
+import { ExpenseCategoryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 
 jest.mock('@/modules/finance/presentation/ui/hooks/use-finance-history', () => {
   const actual = jest.requireActual(
@@ -214,5 +215,118 @@ describe('FinanceHistoryPageContent', () => {
       endDate: '2026-05-20',
       type: 'EXPENSE',
     });
+  });
+
+  it('should push categoryId in the URL when a category filter is applied', async () => {
+    const user = userEvent.setup();
+
+    const categories: ExpenseCategoryUi[] = [
+      {
+        id: '11111111-1111-4111-8111-111111111111',
+        name: 'Combustível',
+        slug: 'combustivel',
+      },
+    ];
+
+    useFinanceHistoryMock.mockReturnValue({
+      data: {
+        entries: [],
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+      },
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      filters: {
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+      },
+      isLoading: false,
+      error: null,
+      applyFilters,
+      refresh: jest.fn(),
+    });
+
+    render(
+      <FinanceHistoryPageContent initialCategories={categories} />,
+    );
+
+    await user.selectOptions(screen.getByLabelText('Tipo'), 'EXPENSE');
+    await user.selectOptions(
+      screen.getByLabelText('Categoria'),
+      '11111111-1111-4111-8111-111111111111',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Aplicar filtros' }),
+    );
+
+    expect(push).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'categoryId=11111111-1111-4111-8111-111111111111',
+      ),
+    );
+    expect(applyFilters).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      }),
+    );
+  });
+
+  it('should re-apply filters when only the URL categoryId changes', () => {
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+      }) as unknown as ReturnType<typeof useSearchParams>,
+    );
+
+    useFinanceHistoryMock.mockReturnValue({
+      data: {
+        entries: [],
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+      },
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      filters: {
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+      },
+      isLoading: false,
+      error: null,
+      applyFilters,
+      refresh: jest.fn(),
+    });
+
+    const { rerender } = render(<FinanceHistoryPageContent />);
+
+    expect(applyFilters).not.toHaveBeenCalled();
+
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      }) as unknown as ReturnType<typeof useSearchParams>,
+    );
+
+    rerender(<FinanceHistoryPageContent />);
+
+    expect(applyFilters).toHaveBeenCalledWith(
+      expect.objectContaining({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        type: 'EXPENSE',
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      }),
+    );
   });
 });

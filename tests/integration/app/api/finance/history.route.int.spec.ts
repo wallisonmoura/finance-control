@@ -213,6 +213,184 @@ describe('GET /api/finance/history', () => {
     ).toBe(true);
   });
 
+  it('deve filtrar o histórico por categoria quando categoryId for informado', async () => {
+    const user = await createTestUser({
+      email: 'history-category-filter@test.com',
+    });
+    const wallet = await createTestWallet({
+      userId: user.id,
+      isDefault: true,
+    });
+    const categoryA = await createTestExpenseCategory({
+      userId: user.id,
+      name: 'Categoria A',
+    });
+    const categoryB = await createTestExpenseCategory({
+      userId: user.id,
+      name: 'Categoria B',
+    });
+
+    await prisma.transaction.createMany({
+      data: [
+        {
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'EXPENSE',
+          amount: 150,
+          description: 'Despesa categoria A',
+          expenseCategoryId: categoryA.id,
+          transactionDate: new Date(2026, 3, 10),
+        },
+        {
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'EXPENSE',
+          amount: 90,
+          description: 'Despesa categoria B',
+          expenseCategoryId: categoryB.id,
+          transactionDate: new Date(2026, 3, 11),
+        },
+      ],
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      `http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=${categoryA.id}`,
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.entries).toHaveLength(1);
+    expect(body.entries[0].categoryId).toBe(categoryA.id);
+    expect(body.totalExpense).toBe(150);
+  });
+
+  it('deve retornar vazio quando categoryId não tiver lançamentos no período', async () => {
+    const user = await createTestUser({
+      email: 'history-category-empty@test.com',
+    });
+    const wallet = await createTestWallet({
+      userId: user.id,
+      isDefault: true,
+    });
+    const category = await createTestExpenseCategory({
+      userId: user.id,
+      name: 'Categoria sem lançamentos',
+    });
+
+    await prisma.transaction.create({
+      data: {
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        amount: 50,
+        description: 'Despesa de outra categoria',
+        expenseCategoryId: category.id,
+        transactionDate: new Date(2026, 3, 10),
+      },
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=99999999-9999-4999-8999-999999999999',
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.entries).toHaveLength(0);
+  });
+
+  it('deve retornar vazio quando categoryId pertencer a outro usuário', async () => {
+    const user = await createTestUser({
+      email: 'history-category-owner@test.com',
+    });
+    const otherUser = await createTestUser({
+      email: 'history-category-other-owner@test.com',
+    });
+
+    const wallet = await createTestWallet({
+      userId: user.id,
+      name: 'Carteira do dono',
+      isDefault: true,
+    });
+    const otherWallet = await createTestWallet({
+      userId: otherUser.id,
+      name: 'Carteira do outro',
+      isDefault: true,
+    });
+
+    const otherCategory = await createTestExpenseCategory({
+      userId: otherUser.id,
+      name: 'Categoria do outro usuário',
+    });
+    const ownCategory = await createTestExpenseCategory({
+      userId: user.id,
+      name: 'Categoria do dono',
+    });
+
+    await prisma.transaction.createMany({
+      data: [
+        {
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'EXPENSE',
+          amount: 120,
+          description: 'Despesa do dono',
+          expenseCategoryId: ownCategory.id,
+          transactionDate: new Date(2026, 3, 10),
+        },
+        {
+          userId: otherUser.id,
+          walletId: otherWallet.id,
+          type: 'EXPENSE',
+          amount: 999,
+          description: 'Despesa do outro usuário',
+          expenseCategoryId: otherCategory.id,
+          transactionDate: new Date(2026, 3, 10),
+        },
+      ],
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      `http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=${otherCategory.id}`,
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.entries).toHaveLength(0);
+    expect(body.totalExpense).toBe(0);
+  });
+
+  it('deve retornar 400 quando categoryId for inválido', async () => {
+    const user = await createTestUser({
+      email: 'history-category-invalid@test.com',
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&categoryId=not-a-uuid',
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(400);
+  });
+
   it('deve retornar 401 quando não estiver autenticado', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 

@@ -7,6 +7,7 @@ import { Button } from '@/shared/presentation/ui/components/button';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import {
+  ExpenseCategoryUi,
   FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
 } from '../types/finance-ui.types';
@@ -14,20 +15,37 @@ import { Funnel } from 'lucide-react';
 
 type FinanceHistoryFiltersProps = {
   filters: FinanceHistoryFiltersUi;
+  categories: ExpenseCategoryUi[];
   isLoading?: boolean;
   onApplyFilters: (filters: FinanceHistoryFiltersUi) => void | Promise<void>;
 };
 
 type TypeFilterOption = 'ALL' | FinanceEntryTypeUi;
 
+const ALL_CATEGORIES = 'ALL';
+
 export function FinanceHistoryFilters({
   filters,
+  categories,
   isLoading = false,
   onApplyFilters,
 }: FinanceHistoryFiltersProps) {
   const [startDate, setStartDate] = useState(filters.startDate);
   const [endDate, setEndDate] = useState(filters.endDate);
   const [type, setType] = useState<TypeFilterOption>(filters.type ?? 'ALL');
+  const [categoryId, setCategoryId] = useState<string>(
+    filters.categoryId ?? ALL_CATEGORIES,
+  );
+
+  const isCategoryEnabled = type === 'EXPENSE';
+
+  function handleTypeChange(nextType: TypeFilterOption) {
+    setType(nextType);
+
+    if (nextType !== 'EXPENSE') {
+      setCategoryId(ALL_CATEGORIES);
+    }
+  }
 
   async function handleSubmit(event: SyntheticEvent) {
     event.preventDefault();
@@ -36,13 +54,16 @@ export function FinanceHistoryFilters({
       startDate,
       endDate,
       type: type === 'ALL' ? undefined : type,
+      ...(isCategoryEnabled && categoryId !== ALL_CATEGORIES
+        ? { categoryId }
+        : {}),
     });
   }
 
   return (
     <Card className='p-5'>
       <form onSubmit={handleSubmit} className='space-y-4'>
-        <div className='grid gap-4 lg:grid-cols-2 lg:items-end xl:grid-cols-[1fr_1fr_0.8fr_auto]'>
+        <div className='grid gap-4 lg:grid-cols-2 lg:items-end xl:grid-cols-[1fr_1fr_0.8fr_0.8fr_auto]'>
           <Input
             id='finance-history-start-date'
             name='startDate'
@@ -69,13 +90,29 @@ export function FinanceHistoryFilters({
             label='Tipo'
             value={type}
             onChange={(event) =>
-              setType(event.target.value as TypeFilterOption)
+              handleTypeChange(event.target.value as TypeFilterOption)
             }
             disabled={isLoading}
             options={[
               { label: 'Todos', value: 'ALL' },
               { label: 'Receitas', value: 'INCOME' },
               { label: 'Despesas', value: 'EXPENSE' },
+            ]}
+          />
+
+          <SelectField
+            id='finance-history-category'
+            name='categoryId'
+            label='Categoria'
+            value={isCategoryEnabled ? categoryId : ALL_CATEGORIES}
+            onChange={(event) => setCategoryId(event.target.value)}
+            disabled={isLoading || !isCategoryEnabled}
+            options={[
+              { label: 'Todas as categorias', value: ALL_CATEGORIES },
+              ...categories.map((category) => ({
+                label: category.name,
+                value: category.id,
+              })),
             ]}
           />
 

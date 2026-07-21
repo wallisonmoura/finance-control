@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import {
   FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
@@ -8,6 +10,10 @@ type FinanceHistoryInitialFilters = Partial<FinanceHistoryFiltersUi>;
 type SearchParamsRecord = Record<string, string | string[] | undefined>;
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+// Mesmo validador usado por getTransactionHistoryQuerySchema, para que a UI
+// nunca envie à API um categoryId que ela vá rejeitar com 400.
+const categoryIdSchema = z.uuid();
 
 export function getCurrentMonthFilters(
   initialFilters?: FinanceHistoryInitialFilters,
@@ -61,17 +67,23 @@ export function isValidFinanceEntryType(
   return value === 'INCOME' || value === 'EXPENSE';
 }
 
+export function isValidCategoryId(value: string | null): value is string {
+  return categoryIdSchema.safeParse(value).success;
+}
+
 export function getFinanceHistoryFiltersFromUrlSearchParams(
   searchParams: URLSearchParams,
 ): FinanceHistoryFiltersUi {
   const startDate = searchParams.get('startDate');
   const endDate = searchParams.get('endDate');
   const type = searchParams.get('type');
+  const categoryId = searchParams.get('categoryId');
 
   return getCurrentMonthFilters({
     ...(isValidDateOnly(startDate) ? { startDate } : {}),
     ...(isValidDateOnly(endDate) ? { endDate } : {}),
     ...(isValidFinanceEntryType(type) ? { type } : {}),
+    ...(isValidCategoryId(categoryId) ? { categoryId } : {}),
   });
 }
 
@@ -81,10 +93,12 @@ export function getFinanceHistoryFiltersFromSearchParamsRecord(
   const startDate = getFirstSearchParamValue(searchParams, 'startDate');
   const endDate = getFirstSearchParamValue(searchParams, 'endDate');
   const type = getFirstSearchParamValue(searchParams, 'type');
+  const categoryId = getFirstSearchParamValue(searchParams, 'categoryId');
 
   return getCurrentMonthFilters({
     ...(isValidDateOnly(startDate) ? { startDate } : {}),
     ...(isValidDateOnly(endDate) ? { endDate } : {}),
     ...(isValidFinanceEntryType(type) ? { type } : {}),
+    ...(isValidCategoryId(categoryId) ? { categoryId } : {}),
   });
 }

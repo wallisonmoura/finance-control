@@ -140,4 +140,29 @@ describe('GetTransactionHistoryController', () => {
       }),
     ).rejects.toThrow();
   });
+
+  it('deve repassar categoryId para o use case', async () => {
+    const output: TransactionHistoryOutput = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+    };
+
+    useCase.execute.mockResolvedValue(output);
+
+    await controller.handle({
+      userId: 'user-123',
+      query: {
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        type: FinancialEntryType.EXPENSE,
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      },
+    });
+
+    const input = useCase.execute.mock.calls[0][0];
+
+    expect(input.categoryId).toBe('11111111-1111-4111-8111-111111111111');
+  });
 });

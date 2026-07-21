@@ -104,4 +104,54 @@ describe('GetTransactionHistoryUseCase', () => {
     expect(output.totalExpense).toBe(100);
     expect(output.balance).toBe(-100);
   });
+
+  it('deve filtrar por categoria quando categoryId for informado', async () => {
+    const repository = new InMemoryFinancialEntryRepository();
+    const useCase = new GetTransactionHistoryUseCase(repository);
+
+    const userId = 'user-1';
+    const categoryId = '11111111-1111-4111-8111-111111111111';
+    const otherCategoryId = '22222222-2222-4222-8222-222222222222';
+
+    await repository.create(
+      FinancialEntry.create({
+        id: 'entry-1',
+        userId,
+        type: FinancialEntryType.EXPENSE,
+        amount: 100,
+        description: 'Gasolina',
+        date: new Date('2026-04-10T00:00:00.000Z'),
+        categoryId,
+        notes: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+    await repository.create(
+      FinancialEntry.create({
+        id: 'entry-2',
+        userId,
+        type: FinancialEntryType.EXPENSE,
+        amount: 50,
+        description: 'Mercado',
+        date: new Date('2026-04-11T00:00:00.000Z'),
+        categoryId: otherCategoryId,
+        notes: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+
+    const result = await useCase.execute({
+      userId,
+      startDate: new Date('2026-04-01T00:00:00.000Z'),
+      endDate: new Date('2026-04-30T00:00:00.000Z'),
+      type: FinancialEntryType.EXPENSE,
+      categoryId,
+    });
+
+    expect(result.entries).toHaveLength(1);
+    expect(result.entries[0].description).toBe('Gasolina');
+    expect(result.totalExpense).toBe(100);
+  });
 });

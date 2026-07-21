@@ -9,6 +9,7 @@ export const getTransactionHistoryQuerySchema = z
     startDate: isoDateStringSchema,
     endDate: isoDateStringSchema,
     type: z.enum(FinancialEntryType).optional(),
+    categoryId: z.uuid().optional(),
   })
   .refine((data) => data.startDate <= data.endDate, {
     message: 'Data inicial deve ser menor ou igual à data final.',

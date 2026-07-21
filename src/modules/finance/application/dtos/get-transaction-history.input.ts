@@ -5,4 +5,5 @@ export interface GetTransactionHistoryInput {
   startDate: Date;
   endDate: Date;
   type?: FinancialEntryType;
+  categoryId?: string;
 }

@@ -56,13 +56,17 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
     startDate: Date,
     endDate: Date,
     type?: FinancialEntryType,
+    categoryId?: string,
   ): Promise<FinancialEntry[]> {
     return this.entries.filter((entry) => {
       const isSameUser = entry.userId === userId;
       const isWithinPeriod = entry.date >= startDate && entry.date <= endDate;
       const matchesType = type ? entry.type === type : true;
+      const matchesCategory = categoryId
+        ? entry.categoryId === categoryId
+        : true;
 
-      return isSameUser && isWithinPeriod && matchesType;
+      return isSameUser && isWithinPeriod && matchesType && matchesCategory;
     });
   }
 }
