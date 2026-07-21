@@ -120,9 +120,39 @@ describe('getCurrentUserFinanceHistory', () => {
     expect(execute).toHaveBeenCalledWith({
       userId: 'user-id',
       startDate: new Date('2026-05-01T00:00:00.000Z'),
-      endDate: new Date('2026-05-31T00:00:00.000Z'),
+      // O repositório filtra o período com `lt: endDate`, então o fim precisa
+      // ser exclusivo para que lançamentos do próprio endDate entrem.
+      endDate: new Date('2026-06-01T00:00:00.000Z'),
       type: 'INCOME',
+      categoryId: undefined,
     });
+  });
+
+  it('should forward the category filter to the use case', async () => {
+    const execute = jest.fn().mockResolvedValueOnce({
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+    });
+
+    getAuthenticatedUserIdMock.mockResolvedValueOnce('user-id');
+    makeGetTransactionHistoryUseCaseMock.mockReturnValueOnce({
+      execute,
+    } as unknown as ReturnType<typeof makeGetTransactionHistoryUseCase>);
+
+    await getCurrentUserFinanceHistory({
+      startDate: '2026-05-01',
+      endDate: '2026-05-31',
+      type: 'EXPENSE',
+      categoryId: '11111111-1111-4111-8111-111111111111',
+    });
+
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categoryId: '11111111-1111-4111-8111-111111111111',
+      }),
+    );
   });
 
   it('should return generic error message when history loading fails', async () => {
@@ -243,7 +273,9 @@ describe('getCurrentUserOperationalSummary', () => {
     expect(historyExecute).toHaveBeenCalledWith({
       userId: 'user-id',
       startDate: new Date('2026-05-01T00:00:00.000Z'),
-      endDate: new Date('2026-05-31T00:00:00.000Z'),
+      // Fim exclusivo: sem isso o último dia do mês fica de fora e a linha
+      // correspondente do resumo diário aparece zerada.
+      endDate: new Date('2026-06-01T00:00:00.000Z'),
     });
   });
 
