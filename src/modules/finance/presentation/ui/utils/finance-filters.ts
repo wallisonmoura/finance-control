@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import {
   FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
@@ -8,8 +10,10 @@ type FinanceHistoryInitialFilters = Partial<FinanceHistoryFiltersUi>;
 type SearchParamsRecord = Record<string, string | string[] | undefined>;
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Mesmo validador usado por getTransactionHistoryQuerySchema, para que a UI
+// nunca envie à API um categoryId que ela vá rejeitar com 400.
+const categoryIdSchema = z.uuid();
 
 export function getCurrentMonthFilters(
   initialFilters?: FinanceHistoryInitialFilters,
@@ -64,7 +68,7 @@ export function isValidFinanceEntryType(
 }
 
 export function isValidCategoryId(value: string | null): value is string {
-  return Boolean(value) && UUID_REGEX.test(value as string);
+  return categoryIdSchema.safeParse(value).success;
 }
 
 export function getFinanceHistoryFiltersFromUrlSearchParams(

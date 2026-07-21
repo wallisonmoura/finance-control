@@ -15,6 +15,14 @@ describe('isValidCategoryId', () => {
     expect(isValidCategoryId('abc')).toBe(false);
     expect(isValidCategoryId(null)).toBe(false);
   });
+
+  it('rejeita UUID com formato hexadecimal correto mas versão inválida', () => {
+    // Uma checagem apenas hexadecimal aceitaria este valor, mas a API usa
+    // z.uuid() e responderia 400. UI e API precisam concordar.
+    expect(isValidCategoryId('11111111-1111-1111-1111-111111111111')).toBe(
+      false,
+    );
+  });
 });
 
 describe('parsing de categoryId nos filtros', () => {
