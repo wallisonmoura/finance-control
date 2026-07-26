@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
@@ -9,9 +10,14 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { useDebts } from '../hooks/use-debts';
 import { deleteDebt } from '../services/debt-api.service';
 import { DebtUi } from '../types/debt-ui.types';
+import {
+  filterDebtsByMonth,
+  getDebtsMonthFromUrlSearchParams,
+} from '../utils/debt-filters';
 import { DebtForm } from './debt-form';
 import { DebtList } from './debt-list';
 import { DebtOverviewSummary } from './debt-overview-summary';
+import { DebtsMonthFilter } from './debts-month-filter';
 
 type DebtsPageContentProps = {
   initialDebts?: DebtUi[];
@@ -33,6 +39,23 @@ export function DebtsPageContent({
     initialDebts,
     initialError,
   });
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const month = useMemo(
+    () => getDebtsMonthFromUrlSearchParams(searchParams),
+    [searchParams],
+  );
+
+  const filteredDebts = useMemo(
+    () => filterDebtsByMonth(debts, month),
+    [debts, month],
+  );
+
+  function handleMonthChange(nextMonth: string) {
+    router.push(`/debts?month=${nextMonth}`);
+  }
 
   useEffect(() => {
     if (!editingDebt || !isFormOpen) {
@@ -139,9 +162,11 @@ export function DebtsPageContent({
       {actionError && <FormErrorMessage message={actionError} />}
 
       {!isLoading && !error && (
-        <div className='border-t border-border pt-6'>
+        <div className='space-y-4 border-t border-border pt-6'>
+          <DebtsMonthFilter month={month} onMonthChange={handleMonthChange} />
+
           <DebtList
-            debts={debts}
+            debts={filteredDebts}
             onEditDebt={handleEditDebt}
             onDeleteDebt={handleDeleteDebt}
             deletingDebtId={deletingDebtId}
