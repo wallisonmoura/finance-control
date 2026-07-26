@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { DebtsPageContent } from '@/modules/debts/presentation/ui/components/debts-page-content';
 import { useDebts } from '@/modules/debts/presentation/ui/hooks/use-debts';
@@ -11,11 +12,15 @@ jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   registerDebt: jest.fn(),
   updateDebt: jest.fn(),
 }));
+jest.mock('next/navigation');
 
 const useDebtsMock = jest.mocked(useDebts);
 const deleteDebtMock = jest.mocked(deleteDebt);
+const useRouterMock = jest.mocked(useRouter);
+const useSearchParamsMock = jest.mocked(useSearchParams);
 
 const refreshMock = jest.fn();
+const push = jest.fn();
 
 const debt = {
   id: 'debt-id',
@@ -52,6 +57,16 @@ describe('DebtsPageContent', () => {
       error: null,
       refresh: refreshMock,
     });
+
+    useRouterMock.mockReturnValue({
+      push,
+    } as unknown as ReturnType<typeof useRouter>);
+
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({ month: '2026-05' }) as unknown as ReturnType<
+        typeof useSearchParams
+      >,
+    );
   });
 
   it('should render debts page', () => {
@@ -124,5 +139,32 @@ describe('DebtsPageContent', () => {
 
     expect(deleteDebtMock).toHaveBeenCalledWith('debt-id');
     expect(refreshMock).toHaveBeenCalled();
+  });
+
+  it('should only list debts due in the selected month, keeping summary totals unfiltered', () => {
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({ month: '2026-06' }) as unknown as ReturnType<
+        typeof useSearchParams
+      >,
+    );
+
+    render(<DebtsPageContent />);
+
+    expect(screen.queryByText('Seguro do carro')).not.toBeInTheDocument();
+    expect(screen.queryByText('IPVA')).not.toBeInTheDocument();
+    // Os totais do resumo continuam somando as duas dívidas (mês 2026-05),
+    // mesmo com o mês filtrado (2026-06) sem nenhuma dívida.
+    expect(screen.getByText('R$ 300,00')).toBeInTheDocument();
+    expect(screen.getByText('R$ 500,00')).toBeInTheDocument();
+  });
+
+  it('should push the next month to the url when navigating forward', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtsPageContent />);
+
+    await user.click(screen.getByRole('button', { name: 'Próximo mês' }));
+
+    expect(push).toHaveBeenCalledWith('/debts?month=2026-06');
   });
 });
