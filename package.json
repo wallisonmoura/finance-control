@@ -8,7 +8,7 @@
     "start": "next start",
     "test:unit": "jest --selectProjects backend tests/unit",
     "test:integration": "jest --selectProjects integration --runInBand",
-    "test:ui": "jest --selectProjects ui",
+    "test:ui": "TZ=America/Sao_Paulo jest --selectProjects ui",
     "test": "npm run test:unit && npm run test:integration",
     "test:all": "npm run test && npm run test:ui",
     "test:watch": "jest --watch",
