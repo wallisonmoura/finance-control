@@ -14,10 +14,12 @@ import {
   filterDebtsByMonth,
   getDebtsMonthFromUrlSearchParams,
 } from '../utils/debt-filters';
+import { DebtActionsBar } from './debt-actions-bar';
 import { DebtForm } from './debt-form';
 import { DebtList } from './debt-list';
 import { DebtOverviewSummary } from './debt-overview-summary';
 import { DebtsMonthFilter } from './debts-month-filter';
+import { DebtsMonthSummary } from './debts-month-summary';
 
 type DebtsPageContentProps = {
   initialDebts?: DebtUi[];
@@ -138,7 +140,7 @@ export function DebtsPageContent({
       />
 
       {!isLoading && !error && !isFormOpen && (
-        <DebtOverviewSummary debts={debts} onCreateDebt={handleOpenCreateForm} />
+        <DebtOverviewSummary debts={debts} />
       )}
 
       {isFormOpen && (
@@ -163,7 +165,15 @@ export function DebtsPageContent({
 
       {!isLoading && !error && (
         <div className='space-y-4 border-t border-border pt-6'>
-          <DebtsMonthFilter month={month} onMonthChange={handleMonthChange} />
+          <div className='flex flex-wrap items-center justify-between gap-3'>
+            <DebtsMonthFilter month={month} onMonthChange={handleMonthChange} />
+
+            {!isFormOpen && (
+              <DebtActionsBar onCreateDebt={handleOpenCreateForm} />
+            )}
+          </div>
+
+          <DebtsMonthSummary debts={filteredDebts} />
 
           <DebtList
             debts={filteredDebts}

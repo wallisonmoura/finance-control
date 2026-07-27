@@ -76,7 +76,9 @@ describe('DebtsPageContent', () => {
     expect(screen.getByText('Seguro do carro')).toBeInTheDocument();
     expect(screen.getByText('Valor pendente')).toBeInTheDocument();
     expect(screen.getByText('Valor pago')).toBeInTheDocument();
-    expect(screen.getAllByText('R$ 300,00')).toHaveLength(2);
+    expect(screen.getByText('Valor pendente no mês')).toBeInTheDocument();
+    expect(screen.getByText('Dívidas pendentes no mês')).toBeInTheDocument();
+    expect(screen.getAllByText('R$ 300,00')).toHaveLength(3);
     expect(screen.getAllByText('R$ 500,00')).toHaveLength(2);
     expect(screen.getByRole('link', { name: 'Ver pendentes' })).toHaveAttribute(
       'href',
@@ -100,6 +102,8 @@ describe('DebtsPageContent', () => {
 
     expect(screen.getByRole('heading', { name: 'Cadastrar dívida' })).toBeInTheDocument();
     expect(screen.getByLabelText('Tipo')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Nova dívida' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeInTheDocument();
   });
 
   it('should open edit debt form', async () => {
@@ -156,6 +160,8 @@ describe('DebtsPageContent', () => {
     // mesmo com o mês filtrado (2026-06) sem nenhuma dívida.
     expect(screen.getByText('R$ 300,00')).toBeInTheDocument();
     expect(screen.getByText('R$ 500,00')).toBeInTheDocument();
+    // O mini-resumo do mês reflete o mês filtrado (sem dívidas), não o geral.
+    expect(screen.getByText('R$ 0,00')).toBeInTheDocument();
   });
 
   it('should push the next month to the url when navigating forward', async () => {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { DebtOverviewSummary } from '@/modules/debts/presentation/ui/components/debt-overview-summary';
+import { DebtsMonthSummary } from '@/modules/debts/presentation/ui/components/debts-month-summary';
 
 const debts = [
   {
@@ -33,15 +33,20 @@ const debts = [
   },
 ];
 
-describe('DebtOverviewSummary', () => {
-  it('should render debt indicators', () => {
-    render(<DebtOverviewSummary debts={debts} />);
+describe('DebtsMonthSummary', () => {
+  it('should sum and count only pending debts from the given list', () => {
+    render(<DebtsMonthSummary debts={debts} />);
 
-    expect(screen.getByText('Dívidas pendentes')).toBeInTheDocument();
-    expect(screen.getByText('Valor pendente')).toBeInTheDocument();
-    expect(screen.getByText('Dívidas pagas')).toBeInTheDocument();
-    expect(screen.getByText('Valor pago')).toBeInTheDocument();
+    expect(screen.getByText('Valor pendente no mês')).toBeInTheDocument();
     expect(screen.getByText('R$ 300,00')).toBeInTheDocument();
-    expect(screen.getByText('R$ 500,00')).toBeInTheDocument();
+    expect(screen.getByText('Dívidas pendentes no mês')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  it('should render zero when there are no pending debts in the list', () => {
+    render(<DebtsMonthSummary debts={[]} />);
+
+    expect(screen.getByText('R$ 0,00')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
 });

@@ -21,8 +21,8 @@ export function DebtsMonthFilter({
   const isCurrentMonth = month === getCurrentMonthValue();
 
   return (
-    <div className='flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3'>
-      <div className='flex items-center gap-2'>
+    <div className='flex w-full flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 lg:w-auto'>
+      <div className='flex w-full items-center justify-between gap-2 lg:w-auto lg:justify-start'>
         <Button
           type='button'
           variant='secondary'
