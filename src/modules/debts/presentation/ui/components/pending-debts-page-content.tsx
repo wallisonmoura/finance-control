@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
@@ -21,6 +22,8 @@ export function PendingDebtsPageContent({
   initialDebts = [],
   initialError = null,
 }: PendingDebtsPageContentProps) {
+  const router = useRouter();
+
   const [payingDebt, setPayingDebt] = useState<DebtUi | null>(null);
 
   const { debts, isLoading, error, refresh } = usePendingDebts({
@@ -46,6 +49,7 @@ export function PendingDebtsPageContent({
     setPayingDebt(null);
 
     await refresh();
+    router.refresh();
   }
 
   return (
