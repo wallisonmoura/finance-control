@@ -14,6 +14,7 @@ import {
   filterDebtsByMonth,
   getDebtsMonthFromUrlSearchParams,
 } from '../utils/debt-filters';
+import { DebtActionsBar } from './debt-actions-bar';
 import { DebtForm } from './debt-form';
 import { DebtList } from './debt-list';
 import { DebtOverviewSummary } from './debt-overview-summary';
@@ -138,7 +139,10 @@ export function DebtsPageContent({
       />
 
       {!isLoading && !error && !isFormOpen && (
-        <DebtOverviewSummary debts={debts} onCreateDebt={handleOpenCreateForm} />
+        <>
+          <DebtOverviewSummary debts={debts} />
+          <DebtActionsBar onCreateDebt={handleOpenCreateForm} />
+        </>
       )}
 
       {isFormOpen && (
