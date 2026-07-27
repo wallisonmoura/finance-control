@@ -17,3 +17,28 @@ export function formatLocalDateValue(date: Date): string {
 export function getTodayDateValue(): string {
   return formatLocalDateValue(new Date());
 }
+
+const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+
+/**
+ * Quantos dias de calendário faltam para `dueDateValue`, a partir de hoje
+ * (horário local). 0 = vence hoje, positivo = no futuro, negativo = já
+ * passou. Usa só a parte YYYY-MM-DD da string recebida — mesmo cuidado com
+ * fuso do resto do módulo de dívidas (ver `dueDate.slice(0, 7)` em
+ * `debt-filters.ts`): nunca reinterpretar a data via `new Date(iso).getDate()`
+ * local, pois isso reconverteria o instante UTC para o fuso da máquina.
+ */
+export function getDaysUntil(dueDateValue: string): number {
+  const [todayYear, todayMonth, todayDay] = getTodayDateValue()
+    .split('-')
+    .map(Number);
+  const [dueYear, dueMonth, dueDay] = dueDateValue
+    .slice(0, 10)
+    .split('-')
+    .map(Number);
+
+  const todayUtc = Date.UTC(todayYear, todayMonth - 1, todayDay);
+  const dueUtc = Date.UTC(dueYear, dueMonth - 1, dueDay);
+
+  return Math.round((dueUtc - todayUtc) / MILLISECONDS_PER_DAY);
+}
