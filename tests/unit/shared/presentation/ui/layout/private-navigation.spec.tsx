@@ -33,6 +33,14 @@ describe('PrivateNavigation', () => {
     ).toBeInTheDocument();
   });
 
+  it('should render the due-soon debts bell', () => {
+    render(<PrivateNavigation />);
+
+    expect(
+      screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
+    ).toBeInTheDocument();
+  });
+
   it('should mark the current pathname as active', () => {
     mockUsePathname.mockReturnValue('/finance');
 
