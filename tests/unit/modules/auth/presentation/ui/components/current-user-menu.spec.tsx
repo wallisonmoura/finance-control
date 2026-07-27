@@ -85,4 +85,21 @@ describe('CurrentUserMenu', () => {
 
     expect(await screen.findByText('Usuário')).toBeInTheDocument();
   });
+
+  it('should render an optional slot between the user info and the sign-out button', () => {
+    render(
+      <CurrentUserMenu
+        initialUser={{
+          id: 'user-id',
+          name: 'Admin Local',
+          email: 'admin@financecontrol.com',
+        }}
+      >
+        <button type='button'>Sino</button>
+      </CurrentUserMenu>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Sino' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument();
+  });
 });

@@ -213,6 +213,14 @@ describe('MobileMenu', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('should render the due-soon debts bell in the always-visible bar', () => {
+    renderMobileMenu();
+
+    expect(
+      screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
+    ).toBeInTheDocument();
+  });
+
   it('should close the menu when pressing Escape', async () => {
     const user = userEvent.setup();
 

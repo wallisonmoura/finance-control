@@ -7,6 +7,8 @@ import { Menu, X } from 'lucide-react';
 import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/current-user-menu';
 import { SignOutButton } from '@/modules/auth/presentation/ui/components/sign-out-button';
 import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.types';
+import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
 
 import { NavigationLink } from './navigation-link';
@@ -17,12 +19,16 @@ type MobileMenuProps = {
   pathname: string;
   currentUser?: AuthenticatedUser | null;
   currentUserError?: string | null;
+  initialPendingDebts?: DebtUi[];
+  initialPendingDebtsError?: string | null;
 };
 
 export function MobileMenu({
   pathname,
   currentUser = null,
   currentUserError = null,
+  initialPendingDebts = [],
+  initialPendingDebtsError = null,
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,21 +76,28 @@ export function MobileMenu({
       className='sticky top-0 z-30 border-b border-border bg-card md:hidden'
     >
       <div className='flex items-center justify-between px-4 py-4'>
-        <Button
-          type='button'
-          onClick={toggleMenu}
-          aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
-          aria-expanded={isOpen}
-          aria-controls='mobile-navigation'
-          variant='secondary'
-          className='size-10 px-0'
-        >
-          {isOpen ? (
-            <X aria-hidden='true' className='size-5' />
-          ) : (
-            <Menu aria-hidden='true' className='size-5' />
-          )}
-        </Button>
+        <div className='flex items-center gap-2'>
+          <Button
+            type='button'
+            onClick={toggleMenu}
+            aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={isOpen}
+            aria-controls='mobile-navigation'
+            variant='secondary'
+            className='size-10 px-0'
+          >
+            {isOpen ? (
+              <X aria-hidden='true' className='size-5' />
+            ) : (
+              <Menu aria-hidden='true' className='size-5' />
+            )}
+          </Button>
+
+          <DebtsDueSoonBell
+            initialDebts={initialPendingDebts}
+            initialError={initialPendingDebtsError}
+          />
+        </div>
 
         <div className='relative h-11 w-40 overflow-hidden'>
           <Image

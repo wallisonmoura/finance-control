@@ -1,5 +1,6 @@
 'use client';
 
+import { ReactNode } from 'react';
 import { UserRound } from 'lucide-react';
 
 import { useCurrentUser } from '../hooks/use-current-user';
@@ -10,12 +11,14 @@ type CurrentUserMenuProps = {
   initialUser?: AuthenticatedUser | null;
   initialError?: string | null;
   showSignOut?: boolean;
+  children?: ReactNode;
 };
 
 export function CurrentUserMenu({
   initialUser = null,
   initialError = null,
   showSignOut = true,
+  children,
 }: CurrentUserMenuProps) {
   const { user, isLoading } = useCurrentUser({ initialUser, initialError });
 
@@ -38,7 +41,10 @@ export function CurrentUserMenu({
         </div>
       </div>
 
-      {showSignOut ? <SignOutButton /> : null}
+      <div className='flex items-center gap-3'>
+        {children}
+        {showSignOut ? <SignOutButton /> : null}
+      </div>
     </div>
   );
 }
