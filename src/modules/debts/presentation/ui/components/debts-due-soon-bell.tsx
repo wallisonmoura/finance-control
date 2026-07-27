@@ -65,7 +65,7 @@ export function DebtsDueSoonBell({
       <PopoverTrigger
         type='button'
         aria-label='Dívidas vencendo em breve'
-        className='relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-card px-0 text-foreground shadow-sm ring-1 ring-border transition-all hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+        className='relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-card px-0 text-foreground shadow-sm ring-1 ring-border transition-all hover:bg-muted hover:text-foreground focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-ring/50'
       >
         <Bell aria-hidden='true' className='size-5' />
 
@@ -107,7 +107,7 @@ export function DebtsDueSoonBell({
                     </span>
                   </span>
 
-                  <MoneyDisplay value={debt.amount} className='text-sm' />
+                  <MoneyDisplay value={debt.amount} className='shrink-0 text-sm' />
                 </Link>
               </li>
             ))}

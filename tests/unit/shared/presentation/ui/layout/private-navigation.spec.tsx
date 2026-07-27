@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 
 import { PrivateNavigation } from '@/shared/presentation/ui/layout/private-navigation';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
 
 const mockUsePathname = jest.fn();
 
@@ -39,6 +40,31 @@ describe('PrivateNavigation', () => {
     expect(
       screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
     ).toBeInTheDocument();
+  });
+
+  it('should thread pending debts down to the due-soon bell', () => {
+    const debtDueToday: DebtUi = {
+      id: 'debt-1',
+      userId: 'user-1',
+      description: 'Aluguel',
+      amount: 1200,
+      dueDate: new Date().toISOString(),
+      type: 'ONE_TIME',
+      status: 'PENDING',
+      notes: null,
+      paidAt: null,
+      paymentSource: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    render(<PrivateNavigation initialPendingDebts={[debtDueToday]} />);
+
+    const bellButton = screen.getByRole('button', {
+      name: 'Dívidas vencendo em breve',
+    });
+
+    expect(within(bellButton).getByText('1')).toBeInTheDocument();
   });
 
   it('should mark the current pathname as active', () => {
