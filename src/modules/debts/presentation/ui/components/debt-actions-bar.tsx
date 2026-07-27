@@ -9,7 +9,7 @@ type DebtActionsBarProps = {
 
 export function DebtActionsBar({ onCreateDebt }: DebtActionsBarProps) {
   return (
-    <div className='grid gap-3 sm:grid-cols-3 md:grid-cols-1 lg:flex lg:flex-wrap lg:justify-end'>
+    <div className='grid w-full gap-3 sm:grid-cols-3 lg:flex lg:w-auto lg:flex-wrap lg:justify-end'>
       <Button
         asChild
         variant='secondary'

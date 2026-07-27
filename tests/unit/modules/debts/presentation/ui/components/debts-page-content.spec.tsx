@@ -102,6 +102,8 @@ describe('DebtsPageContent', () => {
 
     expect(screen.getByRole('heading', { name: 'Cadastrar dívida' })).toBeInTheDocument();
     expect(screen.getByLabelText('Tipo')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Nova dívida' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Próximo mês' })).toBeInTheDocument();
   });
 
   it('should open edit debt form', async () => {
