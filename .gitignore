@@ -52,9 +52,6 @@ next-env.d.ts
 docs/
 AGENTS.md
 
-# harness-managed git worktrees and subagent-driven-development scratch
+# harness-managed git worktrees (scratch, never tracked) and SDD scratch directories
 .claude/worktrees/
 .superpowers/
-
-# harness-managed git worktrees (scratch, never tracked)
-.claude/worktrees/
