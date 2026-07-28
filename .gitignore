@@ -51,3 +51,6 @@ next-env.d.ts
 
 docs/
 AGENTS.md
+
+# harness-managed git worktrees (scratch, never tracked)
+.claude/worktrees/
