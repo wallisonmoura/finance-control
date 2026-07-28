@@ -110,6 +110,40 @@ describe('DebtsDueSoonBell', () => {
     ).toHaveAttribute('href', '/debts');
   });
 
+  it('should close the dropdown after clicking a debt to navigate to /debts', async () => {
+    const user = userEvent.setup();
+
+    const debts = [
+      buildDebt({ description: 'Aluguel', dueDate: buildIsoDateOffsetFromToday(0) }),
+    ];
+
+    render(<DebtsDueSoonBell initialDebts={debts} />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
+    );
+
+    await user.click(screen.getByRole('link', { name: /Aluguel/ }));
+
+    expect(screen.queryByText('Vencendo em breve')).not.toBeInTheDocument();
+  });
+
+  it('should close the dropdown after clicking "Ver todas as dívidas"', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtsDueSoonBell initialDebts={[]} />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
+    );
+
+    await user.click(
+      screen.getByRole('link', { name: 'Ver todas as dívidas' }),
+    );
+
+    expect(screen.queryByText('Vencendo em breve')).not.toBeInTheDocument();
+  });
+
   it('should show an empty state message when opened with no debts due soon', async () => {
     const user = userEvent.setup();
 

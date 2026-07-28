@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Bell } from 'lucide-react';
 
@@ -59,9 +59,10 @@ export function DebtsDueSoonBell({
   }, [initialDebts, initialError]);
 
   const count = dueSoonDebts.length;
+  const [open, setOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         type='button'
         aria-label='Dívidas vencendo em breve'
@@ -70,7 +71,7 @@ export function DebtsDueSoonBell({
         <Bell aria-hidden='true' className='size-5' />
 
         {count > 0 && (
-          <Badge className='absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full px-1'>
+          <Badge className='absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full bg-destructive px-1 text-destructive-foreground'>
             {count}
           </Badge>
         )}
@@ -96,6 +97,7 @@ export function DebtsDueSoonBell({
               >
                 <Link
                   href='/debts'
+                  onClick={() => setOpen(false)}
                   className='flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted'
                 >
                   <span className='min-w-0'>
@@ -116,7 +118,9 @@ export function DebtsDueSoonBell({
 
         <div className='border-t border-border p-2'>
           <Button asChild variant='ghost' className='w-full justify-center'>
-            <Link href='/debts'>Ver todas as dívidas</Link>
+            <Link href='/debts' onClick={() => setOpen(false)}>
+              Ver todas as dívidas
+            </Link>
           </Button>
         </div>
       </PopoverContent>
