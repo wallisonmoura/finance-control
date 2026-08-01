@@ -84,6 +84,26 @@ describe('getCurrentBusinessDateValue', () => {
 });
 
 describe('getDaysUntil', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  it('não conta um dia a mais quando o processo já leria o dia seguinte (fuso do produto ainda não virou)', () => {
+    // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08).
+    // Simula um processo cujos getters locais leem em UTC (ex.: servidor em
+    // produção, no SSR do sino de dívidas vencendo em breve): se
+    // getDaysUntil usasse esses getters, uma dívida que vence em 3 dias
+    // (real, no fuso de negócio) apareceria como vencendo em 2 — cruzando o
+    // limite de "vencendo em breve" um dia antes da hora.
+    jest.useFakeTimers().setSystemTime(new Date('2026-07-31T22:38:00-03:00'));
+    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2026);
+    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(7); // agosto (0-based)
+    jest.spyOn(Date.prototype, 'getDate').mockReturnValue(1);
+
+    expect(getDaysUntil('2026-08-03')).toBe(3);
+  });
+
   function buildIsoDateOffsetFromToday(daysFromToday: number): string {
     const now = new Date();
 
