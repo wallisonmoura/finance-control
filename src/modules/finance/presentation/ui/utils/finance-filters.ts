@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { getCurrentBusinessDateValue } from '@/shared/presentation/ui/lib/date';
+
 import {
   FinanceEntryTypeUi,
   FinanceHistoryFiltersUi,
@@ -18,16 +20,15 @@ const categoryIdSchema = z.uuid();
 export function getCurrentMonthFilters(
   initialFilters?: FinanceHistoryInitialFilters,
 ): FinanceHistoryFiltersUi {
-  const now = new Date();
+  const [year, month] = getCurrentBusinessDateValue()
+    .split('-')
+    .map(Number);
 
-  const year = now.getFullYear();
-  const month = now.getMonth();
-
-  const startDate = new Date(Date.UTC(year, month, 1))
+  const startDate = new Date(Date.UTC(year, month - 1, 1))
     .toISOString()
     .slice(0, 10);
 
-  const endDate = new Date(Date.UTC(year, month + 1, 0))
+  const endDate = new Date(Date.UTC(year, month, 0))
     .toISOString()
     .slice(0, 10);
 
