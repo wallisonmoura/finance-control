@@ -1,3 +1,5 @@
+import { getCurrentBusinessDateValue } from '@/shared/presentation/ui/lib/date';
+
 import { FinanceEntryUi } from '../types/finance-ui.types';
 
 type SearchParamsRecord = Record<string, string | string[] | undefined>;
@@ -39,12 +41,9 @@ function getFirstSearchParamValue(
 const MONTH_ONLY_REGEX = /^\d{4}-\d{2}$/;
 
 export function getCurrentOperationalSummaryFilters(): FinanceOperationalSummaryFilters {
-  const now = new Date();
+  const [year, month] = getCurrentBusinessDateValue().split('-').map(Number);
 
-  return {
-    year: now.getFullYear(),
-    month: now.getMonth() + 1,
-  };
+  return { year, month };
 }
 
 export function toMonthInputValue(filters: FinanceOperationalSummaryFilters) {

@@ -18,6 +18,31 @@ export function getTodayDateValue(): string {
   return formatLocalDateValue(new Date());
 }
 
+const BUSINESS_TIME_ZONE = 'America/Sao_Paulo';
+
+/**
+ * Data no fuso de negócio do produto (America/Sao_Paulo) no formato
+ * YYYY-MM-DD, independente do fuso do processo que executa o código.
+ *
+ * Necessário para código que roda no servidor: em produção o runtime roda
+ * em UTC, então perto da meia-noite local (UTC-3) `new Date().getMonth()`
+ * já teria virado o mês seguinte. Usa Intl com timeZone explícito, que
+ * resolve o instante real (getTime()) e ignora os getters locais do Date.
+ */
+export function getCurrentBusinessDateValue(date: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BUSINESS_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+
+  const get = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 /**

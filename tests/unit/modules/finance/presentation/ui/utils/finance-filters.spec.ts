@@ -1,8 +1,40 @@
 import {
+  getCurrentMonthFilters,
   getFinanceHistoryFiltersFromSearchParamsRecord,
   getFinanceHistoryFiltersFromUrlSearchParams,
   isValidCategoryId,
 } from '@/modules/finance/presentation/ui/utils/finance-filters';
+import { getCurrentBusinessDateValue } from '@/shared/presentation/ui/lib/date';
+
+// A resolução do dia no fuso de negócio (independente do fuso do servidor)
+// já é coberta em date.spec.ts. Aqui mockamos o valor para testar só a
+// montagem do range do mês a partir dele.
+jest.mock('@/shared/presentation/ui/lib/date', () => ({
+  getCurrentBusinessDateValue: jest.fn(() => '2026-01-15'),
+}));
+
+const mockedGetCurrentBusinessDateValue =
+  getCurrentBusinessDateValue as jest.Mock;
+
+describe('getCurrentMonthFilters', () => {
+  it('monta o range do mês a partir do dia de negócio atual', () => {
+    mockedGetCurrentBusinessDateValue.mockReturnValueOnce('2026-07-31');
+
+    const filters = getCurrentMonthFilters();
+
+    expect(filters.startDate).toBe('2026-07-01');
+    expect(filters.endDate).toBe('2026-07-31');
+  });
+
+  it('lida corretamente com a virada de ano', () => {
+    mockedGetCurrentBusinessDateValue.mockReturnValueOnce('2026-12-31');
+
+    const filters = getCurrentMonthFilters();
+
+    expect(filters.startDate).toBe('2026-12-01');
+    expect(filters.endDate).toBe('2026-12-31');
+  });
+});
 
 describe('isValidCategoryId', () => {
   it('aceita UUID válido', () => {

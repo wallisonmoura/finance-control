@@ -1,5 +1,6 @@
 import {
   formatLocalDateValue,
+  getCurrentBusinessDateValue,
   getDaysUntil,
   getTodayDateValue,
 } from '@/shared/presentation/ui/lib/date';
@@ -37,6 +38,48 @@ describe('getTodayDateValue', () => {
     ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     expect(getTodayDateValue()).toBe(expected);
+  });
+});
+
+describe('getCurrentBusinessDateValue', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('resolve o dia de calendário do fuso do produto (America/Sao_Paulo), não o do processo', () => {
+    // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08).
+    // Simula um processo cujos getters locais leem em UTC (ex.: servidor
+    // rodando em produção), mockando apenas Date.prototype — a função deve
+    // ignorar esses getters e usar Intl com timeZone explícito.
+    const instant = new Date('2026-07-31T22:38:00-03:00');
+    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2026);
+    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(7); // agosto (0-based)
+    jest.spyOn(Date.prototype, 'getDate').mockReturnValue(1);
+
+    expect(getCurrentBusinessDateValue(instant)).toBe('2026-07-31');
+  });
+
+  it('resolve o ano correto na virada de ano, mesmo quando o processo já leria o ano seguinte', () => {
+    // 23:10 em São Paulo (31/12/2026) já é 02:10 UTC de 01/01/2027 — a
+    // variante mais grave deste bug, que erraria mês e ano juntos.
+    const instant = new Date('2026-12-31T23:10:00-03:00');
+    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2027);
+    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(0); // janeiro (0-based)
+    jest.spyOn(Date.prototype, 'getDate').mockReturnValue(1);
+
+    expect(getCurrentBusinessDateValue(instant)).toBe('2026-12-31');
+  });
+
+  it('usa a data atual quando nenhuma data é passada', () => {
+    const now = new Date();
+    const expected = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(now);
+
+    expect(getCurrentBusinessDateValue()).toBe(expected);
   });
 });
 
