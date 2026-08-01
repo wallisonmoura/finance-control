@@ -47,14 +47,21 @@ const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 /**
  * Quantos dias de calendário faltam para `dueDateValue`, a partir de hoje
- * (horário local). 0 = vence hoje, positivo = no futuro, negativo = já
- * passou. Usa só a parte YYYY-MM-DD da string recebida — mesmo cuidado com
- * fuso do resto do módulo de dívidas (ver `dueDate.slice(0, 7)` em
- * `debt-filters.ts`): nunca reinterpretar a data via `new Date(iso).getDate()`
- * local, pois isso reconverteria o instante UTC para o fuso da máquina.
+ * no fuso de negócio do produto. 0 = vence hoje, positivo = no futuro,
+ * negativo = já passou. Usa só a parte YYYY-MM-DD da string recebida —
+ * mesmo cuidado com fuso do resto do módulo de dívidas (ver
+ * `dueDate.slice(0, 7)` em `debt-filters.ts`): nunca reinterpretar a data
+ * via `new Date(iso).getDate()` local, pois isso reconverteria o instante
+ * UTC para o fuso da máquina.
+ *
+ * Usa `getCurrentBusinessDateValue()` (não `getTodayDateValue()`) porque o
+ * único consumidor (`DebtsDueSoonBell`) roda dentro de um Server Component
+ * e recebe SSR no servidor antes de hidratar no navegador — se dependesse
+ * do fuso do processo, o SSR em produção (UTC) poderia contar um dia a mais
+ * perto da meia-noite local, cruzando cedo o limite de "vencendo em breve".
  */
 export function getDaysUntil(dueDateValue: string): number {
-  const [todayYear, todayMonth, todayDay] = getTodayDateValue()
+  const [todayYear, todayMonth, todayDay] = getCurrentBusinessDateValue()
     .split('-')
     .map(Number);
   const [dueYear, dueMonth, dueDay] = dueDateValue

@@ -5,6 +5,22 @@ import {
   getTodayDateValue,
 } from '@/shared/presentation/ui/lib/date';
 
+/**
+ * Simula um processo cujos getters locais de Date leem como se estivessem
+ * em UTC (o pior caso: servidor de produção) — usado para provar que
+ * funções do fuso de negócio (Intl com timeZone explícito) ignoram esses
+ * getters e resolvem o dia certo mesmo assim.
+ */
+function mockDateGettersAsIfUtc(
+  year: number,
+  monthIndex: number,
+  day: number,
+): void {
+  jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(year);
+  jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(monthIndex);
+  jest.spyOn(Date.prototype, 'getDate').mockReturnValue(day);
+}
+
 describe('formatLocalDateValue', () => {
   it('usa os componentes locais da data, não os de UTC', () => {
     // Data "fake" que só expõe os getters locais. Garante que a função use
@@ -52,9 +68,7 @@ describe('getCurrentBusinessDateValue', () => {
     // rodando em produção), mockando apenas Date.prototype — a função deve
     // ignorar esses getters e usar Intl com timeZone explícito.
     const instant = new Date('2026-07-31T22:38:00-03:00');
-    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2026);
-    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(7); // agosto (0-based)
-    jest.spyOn(Date.prototype, 'getDate').mockReturnValue(1);
+    mockDateGettersAsIfUtc(2026, 7, 1); // "01/08" (agosto, 0-based)
 
     expect(getCurrentBusinessDateValue(instant)).toBe('2026-07-31');
   });
@@ -63,9 +77,7 @@ describe('getCurrentBusinessDateValue', () => {
     // 23:10 em São Paulo (31/12/2026) já é 02:10 UTC de 01/01/2027 — a
     // variante mais grave deste bug, que erraria mês e ano juntos.
     const instant = new Date('2026-12-31T23:10:00-03:00');
-    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2027);
-    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(0); // janeiro (0-based)
-    jest.spyOn(Date.prototype, 'getDate').mockReturnValue(1);
+    mockDateGettersAsIfUtc(2027, 0, 1); // "01/01/2027" (janeiro, 0-based)
 
     expect(getCurrentBusinessDateValue(instant)).toBe('2026-12-31');
   });
@@ -84,6 +96,24 @@ describe('getCurrentBusinessDateValue', () => {
 });
 
 describe('getDaysUntil', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  it('não conta um dia a mais quando o processo já leria o dia seguinte (fuso do produto ainda não virou)', () => {
+    // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08).
+    // Simula um processo cujos getters locais leem em UTC (ex.: servidor em
+    // produção, no SSR do sino de dívidas vencendo em breve): se
+    // getDaysUntil usasse esses getters, uma dívida que vence em 3 dias
+    // (real, no fuso de negócio) apareceria como vencendo em 2 — cruzando o
+    // limite de "vencendo em breve" um dia antes da hora.
+    jest.useFakeTimers().setSystemTime(new Date('2026-07-31T22:38:00-03:00'));
+    mockDateGettersAsIfUtc(2026, 7, 1); // "01/08" (agosto, 0-based)
+
+    expect(getDaysUntil('2026-08-03')).toBe(3);
+  });
+
   function buildIsoDateOffsetFromToday(daysFromToday: number): string {
     const now = new Date();
 
