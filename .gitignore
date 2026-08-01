@@ -55,3 +55,7 @@ AGENTS.md
 # harness-managed git worktrees (scratch, never tracked) and SDD scratch directories
 .claude/worktrees/
 .superpowers/
+
+# locally-installed Claude Code skills (per-machine, not project source)
+.claude/skills/
+skills-lock.json
