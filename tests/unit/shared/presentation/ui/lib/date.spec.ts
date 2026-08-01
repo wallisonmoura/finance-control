@@ -59,6 +59,17 @@ describe('getCurrentBusinessDateValue', () => {
     expect(getCurrentBusinessDateValue(instant)).toBe('2026-07-31');
   });
 
+  it('resolve o ano correto na virada de ano, mesmo quando o processo já leria o ano seguinte', () => {
+    // 23:10 em São Paulo (31/12/2026) já é 02:10 UTC de 01/01/2027 — a
+    // variante mais grave deste bug, que erraria mês e ano juntos.
+    const instant = new Date('2026-12-31T23:10:00-03:00');
+    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2027);
+    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(0); // janeiro (0-based)
+    jest.spyOn(Date.prototype, 'getDate').mockReturnValue(1);
+
+    expect(getCurrentBusinessDateValue(instant)).toBe('2026-12-31');
+  });
+
   it('usa a data atual quando nenhuma data é passada', () => {
     const now = new Date();
     const expected = new Intl.DateTimeFormat('en-CA', {

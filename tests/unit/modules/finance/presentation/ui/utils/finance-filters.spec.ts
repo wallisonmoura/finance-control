@@ -4,26 +4,35 @@ import {
   getFinanceHistoryFiltersFromUrlSearchParams,
   isValidCategoryId,
 } from '@/modules/finance/presentation/ui/utils/finance-filters';
+import { getCurrentBusinessDateValue } from '@/shared/presentation/ui/lib/date';
+
+// A resolução do dia no fuso de negócio (independente do fuso do servidor)
+// já é coberta em date.spec.ts. Aqui mockamos o valor para testar só a
+// montagem do range do mês a partir dele.
+jest.mock('@/shared/presentation/ui/lib/date', () => ({
+  getCurrentBusinessDateValue: jest.fn(() => '2026-01-15'),
+}));
+
+const mockedGetCurrentBusinessDateValue =
+  getCurrentBusinessDateValue as jest.Mock;
 
 describe('getCurrentMonthFilters', () => {
-  afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
-  });
-
-  it('usa o mês do fuso de negócio (America/Sao_Paulo), não o do processo, perto da meia-noite', () => {
-    // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08).
-    // Simula um processo cujos getters locais leem em UTC (ex.: servidor em
-    // produção): o filtro não pode "virar" para agosto enquanto ainda é
-    // 31/07 no fuso de negócio.
-    jest.useFakeTimers().setSystemTime(new Date('2026-07-31T22:38:00-03:00'));
-    jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2026);
-    jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(7); // agosto (0-based)
+  it('monta o range do mês a partir do dia de negócio atual', () => {
+    mockedGetCurrentBusinessDateValue.mockReturnValueOnce('2026-07-31');
 
     const filters = getCurrentMonthFilters();
 
     expect(filters.startDate).toBe('2026-07-01');
     expect(filters.endDate).toBe('2026-07-31');
+  });
+
+  it('lida corretamente com a virada de ano', () => {
+    mockedGetCurrentBusinessDateValue.mockReturnValueOnce('2026-12-31');
+
+    const filters = getCurrentMonthFilters();
+
+    expect(filters.startDate).toBe('2026-12-01');
+    expect(filters.endDate).toBe('2026-12-31');
   });
 });
 
