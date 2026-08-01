@@ -12,6 +12,21 @@ function buildIsoDateOffsetFromToday(daysFromToday: number): string {
   ).toISOString();
 }
 
+/**
+ * Simula um processo cujos getters locais de Date leem como se estivessem
+ * em UTC (o pior caso: SSR em produção, já que este componente roda dentro
+ * de um Server Component antes de hidratar no navegador).
+ */
+function mockDateGettersAsIfUtc(
+  year: number,
+  monthIndex: number,
+  day: number,
+): void {
+  jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(year);
+  jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(monthIndex);
+  jest.spyOn(Date.prototype, 'getDate').mockReturnValue(day);
+}
+
 function buildDebt(overrides: Partial<DebtUi> = {}): DebtUi {
   return {
     id: 'debt-1',
@@ -31,6 +46,11 @@ function buildDebt(overrides: Partial<DebtUi> = {}): DebtUi {
 }
 
 describe('DebtsDueSoonBell', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
   it('should show a badge counting only pending debts due within the next 2 days', () => {
     const debts = [
       buildDebt({ id: 'due-today', dueDate: buildIsoDateOffsetFromToday(0) }),
@@ -54,6 +74,26 @@ describe('DebtsDueSoonBell', () => {
     });
 
     expect(within(bellButton).getByText('3')).toBeInTheDocument();
+  });
+
+  it('should not count a debt due in 3 business days as due soon during the SSR UTC-offset window', () => {
+    // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08) —
+    // reproduz o SSR em produção na janela em que o servidor (UTC) já
+    // pensa ser o dia seguinte, antes da hidratação corrigir no navegador.
+    jest.useFakeTimers().setSystemTime(new Date('2026-07-31T22:38:00-03:00'));
+    mockDateGettersAsIfUtc(2026, 7, 1); // "01/08" (agosto, 0-based)
+
+    const debts = [
+      buildDebt({ id: 'due-in-3-business-days', dueDate: '2026-08-03' }),
+    ];
+
+    render(<DebtsDueSoonBell initialDebts={debts} />);
+
+    const bellButton = screen.getByRole('button', {
+      name: 'Dívidas vencendo em breve',
+    });
+
+    expect(within(bellButton).queryByText(/^\d+$/)).not.toBeInTheDocument();
   });
 
   it('should show no badge when there are no debts due soon', () => {
