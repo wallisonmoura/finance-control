@@ -74,7 +74,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       paymentSource: DebtPaymentSource.BANK,
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toEqual({
       bankBalance: 1000,
@@ -94,7 +94,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       receivableBalance: 50,
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toEqual({
       bankBalance: 700,
@@ -107,7 +107,7 @@ describe('PrismaBalanceSummaryRepository', () => {
   it('deve retornar null quando o usuário não possuir wallet default', async () => {
     const user = await createTestUser();
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toBeNull();
   });
@@ -151,7 +151,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       status: DebtStatus.PENDING,
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toEqual({
       bankBalance: 100,

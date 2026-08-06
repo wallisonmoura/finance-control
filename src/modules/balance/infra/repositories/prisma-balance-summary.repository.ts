@@ -6,7 +6,7 @@ import {
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 
 export class PrismaBalanceSummaryRepository implements BalanceSummaryRepository {
-  async getByUserId(userId: string): Promise<BalanceSummaryData | null> {
+  async findByUserId(userId: string): Promise<BalanceSummaryData | null> {
     const wallet = await prisma.wallet.findFirst({
       where: {
         userId,

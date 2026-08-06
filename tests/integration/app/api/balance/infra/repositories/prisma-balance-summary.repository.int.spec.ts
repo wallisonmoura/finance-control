@@ -82,7 +82,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       ],
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toEqual({
       bankBalance: 1000,
@@ -112,7 +112,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       },
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toEqual({
       bankBalance: 700,
@@ -131,7 +131,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       },
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toBeNull();
   });
@@ -199,7 +199,7 @@ describe('PrismaBalanceSummaryRepository', () => {
       },
     });
 
-    const output = await sut.getByUserId(user.id);
+    const output = await sut.findByUserId(user.id);
 
     expect(output).toEqual({
       bankBalance: 100,
