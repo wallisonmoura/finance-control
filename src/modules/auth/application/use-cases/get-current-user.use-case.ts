@@ -10,7 +10,7 @@ export class GetCurrentUserUseCase {
     const user = await this.userRepository.findById(input.userId);
 
     if (!user) {
-      throw new UserNotFoundError();
+      throw new UserNotFoundError(input.userId);
     }
 
     return {

@@ -4,7 +4,7 @@ import { Email } from '../../domain/value-objects/email.vo';
 
 export class PrismaUserMapper {
   static toDomain(raw: PrismaUser): User {
-    return new User({
+    return User.create({
       id: raw.id,
       name: raw.name,
       email: Email.create(raw.email),

@@ -1,3 +1,4 @@
+import { InvalidUserNameError } from '../errors/invalid-user-name.error';
 import { Email } from '../value-objects/email.vo';
 
 export interface UserProps {
@@ -10,29 +11,41 @@ export interface UserProps {
 }
 
 export class User {
-  constructor(private readonly props: UserProps) {}
+  private constructor(private readonly props: UserProps) {
+    this.validate();
+  }
 
-  public get id(): string {
+  static create(props: UserProps): User {
+    return new User(props);
+  }
+
+  private validate(): void {
+    if (!this.props.name.trim()) {
+      throw new InvalidUserNameError();
+    }
+  }
+
+  get id(): string {
     return this.props.id;
   }
 
-  public get name(): string {
+  get name(): string {
     return this.props.name;
   }
 
-  public get email(): Email {
+  get email(): Email {
     return this.props.email;
   }
 
-  public get passwordHash(): string {
+  get passwordHash(): string {
     return this.props.passwordHash;
   }
 
-  public get createdAt(): Date {
+  get createdAt(): Date {
     return this.props.createdAt;
   }
 
-  public get updatedAt(): Date {
+  get updatedAt(): Date {
     return this.props.updatedAt;
   }
 }

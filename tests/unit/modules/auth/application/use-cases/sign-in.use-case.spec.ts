@@ -28,7 +28,7 @@ describe('SignInUseCase', () => {
   }
 
   function makeUser(): User {
-    return new User({
+    return User.create({
       id: 'user-1',
       name: 'Wallison',
       email: Email.create('wallison@email.com'),
