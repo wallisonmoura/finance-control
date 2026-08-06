@@ -99,3 +99,4 @@ Regras detalhadas por área estão em `.claude/rules/`:
 @docs/realinhamento-dominio-financeiro-wallet-balance-debts.md
 @docs/casos-de-uso-finance-control-v2.0.md
 @docs/documentacao-de-modelagem-db-v2.0.md
+@docs/status-implementacao-finance-control-v1.0.md
