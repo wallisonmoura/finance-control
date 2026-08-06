@@ -1,3 +1,6 @@
+import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
+import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
+import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
@@ -6,9 +9,13 @@ import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-d
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
+import { ExpenseCategoryRequiredError } from '@/modules/finance/domain/errors/expense-category-required.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
+import { InvalidExpenseCategoryNameError } from '@/modules/finance/domain/errors/invalid-expense-category-name.error';
+import { InvalidFinancialEntryTypeError } from '@/modules/finance/domain/errors/invalid-financial-entry-type.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
+import { InvalidWalletBalanceError } from '@/modules/wallet/domain/errors/invalid-wallet-balance.error';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { toErrorNextResponse } from '@/shared/presentation/http/to-error-next-response';
@@ -129,6 +136,52 @@ describe('toErrorNextResponse', () => {
     );
 
     expect(response.status).toBe(404);
+  });
+
+  it('deve retornar 400 para ExpenseCategoryRequiredError', async () => {
+    const response = toErrorNextResponse(new ExpenseCategoryRequiredError());
+
+    expect(response.status).toBe(400);
+  });
+
+  it('deve retornar 400 para InvalidFinancialEntryTypeError', async () => {
+    const response = toErrorNextResponse(new InvalidFinancialEntryTypeError());
+
+    expect(response.status).toBe(400);
+  });
+
+  it('deve retornar 400 para InvalidWalletBalanceError', async () => {
+    const response = toErrorNextResponse(
+      new InvalidWalletBalanceError('bankBalance', -10),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it('deve retornar 400 para InvalidExpenseCategoryNameError', async () => {
+    const response = toErrorNextResponse(new InvalidExpenseCategoryNameError());
+
+    expect(response.status).toBe(400);
+  });
+
+  it('deve retornar 401 para InvalidCredentialsError', async () => {
+    const response = toErrorNextResponse(new InvalidCredentialsError());
+    const body = await readJson(response);
+
+    expect(response.status).toBe(401);
+    expect(JSON.stringify(body)).toContain('Credenciais inválidas');
+  });
+
+  it('deve retornar 401 para UserNotFoundError', async () => {
+    const response = toErrorNextResponse(new UserNotFoundError());
+
+    expect(response.status).toBe(401);
+  });
+
+  it('deve retornar 400 para InvalidEmailError', async () => {
+    const response = toErrorNextResponse(new InvalidEmailError());
+
+    expect(response.status).toBe(400);
   });
 
   it('deve retornar 500 para erro desconhecido', async () => {

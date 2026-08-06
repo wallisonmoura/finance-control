@@ -1,3 +1,6 @@
+import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
+import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
+import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { InvalidDebtUserIdError } from '@/modules/debts/domain/errors/invalid-debt-user-id.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
@@ -9,13 +12,17 @@ import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/inva
 import { InvalidExpenseCategorySlugError } from '@/modules/finance/domain/errors/invalid-expense-category-slug.error';
 import { InvalidExpenseCategoryUserIdError } from '@/modules/finance/domain/errors/invalid-expense-category-user-id.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
+import { ExpenseCategoryRequiredError } from '@/modules/finance/domain/errors/expense-category-required.error';
 import { FinancialEntryLinkedToDebtError } from '@/modules/finance/domain/errors/financial-entry-linked-to-debt.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
+import { InvalidExpenseCategoryNameError } from '@/modules/finance/domain/errors/invalid-expense-category-name.error';
 import { InvalidFinancialEntryDateError } from '@/modules/finance/domain/errors/invalid-financial-entry-date.error';
 import { InvalidFinancialEntryDescriptionError } from '@/modules/finance/domain/errors/invalid-financial-entry-description.error';
+import { InvalidFinancialEntryTypeError } from '@/modules/finance/domain/errors/invalid-financial-entry-type.error';
 import { InvalidFinancialEntryUserIdError } from '@/modules/finance/domain/errors/invalid-financial-entry-user-id.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
+import { InvalidWalletBalanceError } from '@/modules/wallet/domain/errors/invalid-wallet-balance.error';
 import { InvalidWalletUserIdError } from '@/modules/wallet/domain/errors/invalid-wallet-user-id.error';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
@@ -28,6 +35,31 @@ export function toErrorNextResponse(error: unknown) {
       {
         message: 'Erro de validação.',
         issues: error.issues,
+      },
+      { status: 400 },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Auth
+  // ---------------------------------------------------------------------------
+
+  if (
+    error instanceof InvalidCredentialsError ||
+    error instanceof UserNotFoundError
+  ) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 401 },
+    );
+  }
+
+  if (error instanceof InvalidEmailError) {
+    return NextResponse.json(
+      {
+        message: error.message,
       },
       { status: 400 },
     );
@@ -164,8 +196,11 @@ export function toErrorNextResponse(error: unknown) {
     error instanceof InvalidFinancialEntryUserIdError ||
     error instanceof InvalidFinancialEntryDescriptionError ||
     error instanceof InvalidFinancialEntryDateError ||
+    error instanceof InvalidFinancialEntryTypeError ||
+    error instanceof ExpenseCategoryRequiredError ||
     error instanceof InvalidExpenseCategoryUserIdError ||
-    error instanceof InvalidExpenseCategorySlugError
+    error instanceof InvalidExpenseCategorySlugError ||
+    error instanceof InvalidExpenseCategoryNameError
   ) {
     return NextResponse.json(
       {
@@ -179,7 +214,10 @@ export function toErrorNextResponse(error: unknown) {
   // Wallet — entity validation
   // ---------------------------------------------------------------------------
 
-  if (error instanceof InvalidWalletUserIdError) {
+  if (
+    error instanceof InvalidWalletUserIdError ||
+    error instanceof InvalidWalletBalanceError
+  ) {
     return NextResponse.json(
       {
         message: error.message,
