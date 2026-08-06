@@ -89,6 +89,16 @@ describe('FinancialEntry', () => {
     ).toThrow(InvalidFinancialEntryAmountError);
   });
 
+  it('deve falhar ao criar lançamento com valor não finito', () => {
+    expect(() =>
+      FinancialEntry.create({
+        ...baseProps,
+        type: FinancialEntryType.INCOME,
+        amount: Number.NaN,
+      }),
+    ).toThrow(InvalidFinancialEntryAmountError);
+  });
+
   it('deve falhar ao criar lançamento sem userId', () => {
     expect(() =>
       FinancialEntry.create({

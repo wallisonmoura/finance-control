@@ -1,3 +1,4 @@
+import { Money } from '@/shared/domain/value-objects/money.vo';
 import { DebtPaymentSource } from '../enums/debt-payment-source.enum';
 import { DebtStatus } from '../enums/debt-status.enum';
 import { DebtType } from '../enums/debt-type.enum';
@@ -47,9 +48,7 @@ export class Debt {
       throw new InvalidDebtDescriptionError();
     }
 
-    if (this.props.amount <= 0) {
-      throw new InvalidDebtAmountError();
-    }
+    this.validateAmount(this.props.amount);
 
     if (
       !(this.props.dueDate instanceof Date) ||
@@ -68,6 +67,20 @@ export class Debt {
       if (this.props.paidAt === null || this.props.paymentSource === null) {
         throw new InvalidDebtPaidStateError();
       }
+    }
+  }
+
+  private validateAmount(value: number): void {
+    let amount: Money;
+
+    try {
+      amount = Money.create(value);
+    } catch {
+      throw new InvalidDebtAmountError();
+    }
+
+    if (amount.getValue() <= 0) {
+      throw new InvalidDebtAmountError();
     }
   }
 
