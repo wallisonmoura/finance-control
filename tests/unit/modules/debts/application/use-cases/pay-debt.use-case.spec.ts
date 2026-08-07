@@ -6,6 +6,7 @@ import { Debt } from '@/modules/debts/domain/entities/debt.entity';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
+import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
 import { InMemoryDebtPaymentWalletEffectPort } from './fakes/in-memory-debt-payment-wallet-effect.port';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 
@@ -115,7 +116,7 @@ describe('PayDebtUseCase', () => {
         expenseCategoryId: 'category-1',
         paymentSource: DebtPaymentSource.RECEIVABLE,
       }),
-    ).rejects.toBeInstanceOf(DebtNotFoundError);
+    ).rejects.toBeInstanceOf(UnauthorizedDebtAccessError);
   });
 
   it('deve lançar erro ao tentar pagar uma dívida já paga', async () => {

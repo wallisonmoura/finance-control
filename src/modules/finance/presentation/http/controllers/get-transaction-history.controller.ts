@@ -7,14 +7,23 @@ import {
   parseExclusiveEndDateFromQuery,
 } from '../schemas/shared/parse-date-from-query';
 import {
+  FinanceHttpPresenter,
+  FinancialEntryHttpResponse,
+} from '../presenters/finance-http.presenter';
+import {
   HttpRequest,
   HttpResponse,
 } from '@/shared/presentation/http/http.types';
 import { Controller } from '@/shared/presentation/http/controller';
 
+export interface TransactionHistoryHttpResponse
+  extends Omit<TransactionHistoryOutput, 'entries'> {
+  entries: FinancialEntryHttpResponse[];
+}
+
 export class GetTransactionHistoryController implements Controller<
   HttpRequest,
-  TransactionHistoryOutput
+  TransactionHistoryHttpResponse
 > {
   constructor(
     private readonly getTransactionHistoryUseCase: GetTransactionHistoryUseCase,
@@ -22,7 +31,7 @@ export class GetTransactionHistoryController implements Controller<
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<TransactionHistoryOutput>> {
+  ): Promise<HttpResponse<TransactionHistoryHttpResponse>> {
     const query = getTransactionHistoryQuerySchema.parse(request.query);
 
     const input: GetTransactionHistoryInput = {
@@ -37,7 +46,10 @@ export class GetTransactionHistoryController implements Controller<
 
     return {
       statusCode: 200,
-      body: result,
+      body: {
+        ...result,
+        entries: FinanceHttpPresenter.toResponseList(result.entries),
+      },
     };
   }
 }

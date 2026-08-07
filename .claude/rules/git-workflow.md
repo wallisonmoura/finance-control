@@ -34,3 +34,9 @@ feat(wallet): add receivable balance field
 fix(debts): prevent editing auto-generated transactions
 chore(ci): run workflow only on pull requests to main
 ```
+
+## Versioning
+
+Every `feat` or `fix` PR bumps `package.json` `"version"` by SemVer — `feat` = minor, `fix` = patch — in its own `chore(release): bump version to X.Y.Z` commit, in the same PR. Pure `chore`/`docs`-only PRs (no `feat`/`fix` commits) do not need a bump.
+
+**Do this before opening the PR, not after** — it's easy to forget once the PR is already up. Check the bump is present as part of the pre-PR review, the same way the Prisma-migration check is (see `backend-engineer` agent's Prisma pre-PR gate). If a bump is missing on an already-open PR, add it as a new commit before merge rather than skipping it.

@@ -30,4 +30,10 @@ export class FinanceHttpPresenter {
       updatedAt: entry.updatedAt.toISOString(),
     };
   }
+
+  static toResponseList(
+    entries: FinancialEntryOutput[],
+  ): FinancialEntryHttpResponse[] {
+    return entries.map((entry) => FinanceHttpPresenter.toResponse(entry));
+  }
 }

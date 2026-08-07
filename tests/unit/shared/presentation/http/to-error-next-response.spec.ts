@@ -3,6 +3,7 @@ import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.er
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
+import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
 import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/invalid-debt-description.error';
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
@@ -58,6 +59,14 @@ describe('toErrorNextResponse', () => {
 
     expect(response.status).toBe(404);
     expect(JSON.stringify(body)).toContain('Dívida não encontrada');
+  });
+
+  it('deve retornar 404 para UnauthorizedDebtAccessError', async () => {
+    const response = toErrorNextResponse(new UnauthorizedDebtAccessError());
+    const body = await readJson(response);
+
+    expect(response.status).toBe(404);
+    expect(JSON.stringify(body)).toContain('não tem acesso a esta dívida');
   });
 
   it('deve retornar 409 para DebtAlreadyPaidError', async () => {
