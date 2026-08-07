@@ -21,7 +21,7 @@ describe('ListExpenseCategoriesController', () => {
       userId: 'user-id',
     });
 
-    expect(useCase.execute).toHaveBeenCalledWith('user-id');
+    expect(useCase.execute).toHaveBeenCalledWith({ userId: 'user-id' });
     expect(response).toEqual({
       statusCode: 200,
       body: output,

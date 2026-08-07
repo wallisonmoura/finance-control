@@ -46,7 +46,7 @@ describe('ListExpenseCategoriesUseCase', () => {
 
     const useCase = new ListExpenseCategoriesUseCase(repository);
 
-    const categories = await useCase.execute('user-1');
+    const categories = await useCase.execute({ userId: 'user-1' });
 
     expect(categories).toEqual([
       {
