@@ -1,5 +1,5 @@
-import { DebtOutput } from '@/modules/debts/application/dto/debt.output';
-import { ListPendingDebtsInput } from '@/modules/debts/application/dto/list-pending-debts.input';
+import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
+import { ListPendingDebtsInput } from '@/modules/debts/application/dtos/list-pending-debts.input';
 import { ListPendingDebtsUseCase } from '@/modules/debts/application/use-cases/list-pending-debts.use-case';
 import { Controller } from '@/shared/presentation/http/controller';
 import {

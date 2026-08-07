@@ -1,5 +1,5 @@
-import { DebtOutput } from '@/modules/debts/application/dto/debt.output';
-import { PayDebtInput } from '@/modules/debts/application/dto/pay-debt.input';
+import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
+import { PayDebtInput } from '@/modules/debts/application/dtos/pay-debt.input';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';

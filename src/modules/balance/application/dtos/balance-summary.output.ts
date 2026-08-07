@@ -1,4 +1,4 @@
-export type BalanceSummaryOutput = {
+export interface BalanceSummaryOutput {
   wallet: {
     bankBalance: number;
     cashBalance: number;
@@ -9,4 +9,4 @@ export type BalanceSummaryOutput = {
     pendingDebts: number;
   };
   finalBalance: number;
-};
+}

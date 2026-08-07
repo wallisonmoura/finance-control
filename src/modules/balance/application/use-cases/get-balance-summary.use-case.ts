@@ -1,7 +1,7 @@
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 import { BalanceSummaryRepository } from '../../domain/repositories/balance-summary.repository';
-import { BalanceSummaryOutput } from '../dto/balance-summary.output';
-import { GetBalanceSummaryInput } from '../dto/get-balance-summary.input';
+import { BalanceSummaryOutput } from '../dtos/balance-summary.output';
+import { GetBalanceSummaryInput } from '../dtos/get-balance-summary.input';
 
 export class GetBalanceSummaryUseCase {
   constructor(

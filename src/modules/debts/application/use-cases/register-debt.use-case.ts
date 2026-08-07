@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { Debt } from '../../domain/entities/debt.entity';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
-import { DebtOutput } from '../dto/debt.output';
-import { RegisterDebtInput } from '../dto/register-debt.input';
+import { DebtOutput } from '../dtos/debt.output';
+import { RegisterDebtInput } from '../dtos/register-debt.input';
 import { DebtStatus } from '../../domain/enums/debt-status.enum';
 
 export class RegisterDebtUseCase {

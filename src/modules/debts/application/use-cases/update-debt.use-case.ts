@@ -1,8 +1,8 @@
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
 import { UnauthorizedDebtAccessError } from '../../domain/errors/unauthorized-debt-access.error';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
-import { DebtOutput } from '../dto/debt.output';
-import { UpdateDebtInput } from '../dto/update-debt.input';
+import { DebtOutput } from '../dtos/debt.output';
+import { UpdateDebtInput } from '../dtos/update-debt.input';
 
 export class UpdateDebtUseCase {
   constructor(private readonly debtRepository: DebtRepository) {}

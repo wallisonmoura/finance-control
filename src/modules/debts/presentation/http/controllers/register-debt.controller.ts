@@ -1,4 +1,4 @@
-import { DebtOutput } from '@/modules/debts/application/dto/debt.output';
+import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { RegisterDebtUseCase } from '@/modules/debts/application/use-cases/register-debt.use-case';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
@@ -9,7 +9,7 @@ import {
   registerDebtSchema,
   RegisterDebtSchemaData,
 } from '../schemas/register-debt.schema';
-import { RegisterDebtInput } from '@/modules/debts/application/dto/register-debt.input';
+import { RegisterDebtInput } from '@/modules/debts/application/dtos/register-debt.input';
 
 export class RegisterDebtController implements Controller<
   HttpRequest,

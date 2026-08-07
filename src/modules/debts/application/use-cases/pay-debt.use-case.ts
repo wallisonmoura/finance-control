@@ -3,8 +3,8 @@ import { UnauthorizedDebtAccessError } from '../../domain/errors/unauthorized-de
 import { DebtRepository } from '../../domain/repositories/debt.repository';
 import { DebtPaymentFinancialEffectPort } from '../../domain/services/debt-payment-financial-effect.port';
 import { DebtPaymentWalletEffectPort } from '../../domain/services/debt-payment-wallet-effect.port';
-import { DebtOutput } from '../dto/debt.output';
-import { PayDebtInput } from '../dto/pay-debt.input';
+import { DebtOutput } from '../dtos/debt.output';
+import { PayDebtInput } from '../dtos/pay-debt.input';
 
 export class PayDebtUseCase {
   constructor(
