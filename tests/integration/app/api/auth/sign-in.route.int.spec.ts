@@ -79,7 +79,7 @@ describe('POST /api/auth/sign-in', () => {
 
     expect(response.status).toBe(400);
     expect(body).toEqual({
-      message: 'Dados de entrada inválidos',
+      message: 'Erro de validação.',
       issues: expect.any(Array),
     });
   });
@@ -107,7 +107,7 @@ describe('POST /api/auth/sign-in', () => {
 
     expect(response.status).toBe(500);
     expect(body).toEqual({
-      message: 'Erro interno do servidor',
+      message: 'Erro interno do servidor.',
     });
   });
 });

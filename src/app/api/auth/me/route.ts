@@ -1,31 +1,26 @@
-import {
-  AUTH_TOKEN_SECRET,
-  AUTH_UNAUTHORIZED_MESSAGE,
-} from '@/modules/auth/constants/auth.constants';
+import { getAuthenticatedUserIdFromRequest } from '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request';
+import { unauthorizedResponse } from '@/modules/auth/presentation/http/helpers/unauthorized-response';
 import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user.use-case';
-import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.service';
 import { GetCurrentUserController } from '@/modules/auth/presentation/http/controllers/get-current-user.controller';
-import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
-import { NextRequest, NextResponse } from 'next/server';
+import { toErrorNextResponse } from '@/shared/presentation/http/to-error-next-response';
+import { toNextResponse } from '@/shared/presentation/http/to-next-response';
+import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  if (!AUTH_TOKEN_SECRET) {
-    return NextResponse.json(
-      { message: AUTH_UNAUTHORIZED_MESSAGE },
-      { status: 500 },
-    );
+  try {
+    const userId = await getAuthenticatedUserIdFromRequest(request);
+
+    if (!userId) {
+      return unauthorizedResponse();
+    }
+
+    const useCase = makeGetCurrentUserUseCase();
+    const controller = new GetCurrentUserController(useCase);
+
+    const response = await controller.handle({ userId });
+
+    return toNextResponse(response);
+  } catch (error) {
+    return toErrorNextResponse(error);
   }
-
-  const getCurrentUserUseCase = makeGetCurrentUserUseCase();
-
-  const tokenService = new JoseJwtTokenService(AUTH_TOKEN_SECRET!);
-
-  const controller = new GetCurrentUserController(
-    getCurrentUserUseCase,
-    tokenService,
-  );
-
-  const token = getAuthTokenFromRequest(request);
-
-  return controller.handle({ token });
 }
