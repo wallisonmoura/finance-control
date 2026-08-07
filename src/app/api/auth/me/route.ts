@@ -1,6 +1,6 @@
 import { getAuthenticatedUserIdFromRequest } from '@/modules/auth/presentation/http/helpers/get-authenticated-user-id-from-request';
 import { unauthorizedResponse } from '@/modules/auth/presentation/http/helpers/unauthorized-response';
-import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user.use-case';
+import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
 import { GetCurrentUserController } from '@/modules/auth/presentation/http/controllers/get-current-user.controller';
 import { toErrorNextResponse } from '@/shared/presentation/http/to-error-next-response';
 import { toNextResponse } from '@/shared/presentation/http/to-next-response';

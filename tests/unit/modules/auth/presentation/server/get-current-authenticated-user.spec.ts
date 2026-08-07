@@ -1,11 +1,11 @@
 import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
-import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user.use-case';
+import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
 import { getCurrentAuthenticatedUser } from '@/modules/auth/presentation/server/get-current-authenticated-user';
 
 jest.mock('@/modules/auth/presentation/server/get-authenticated-user-id', () => ({
   getAuthenticatedUserId: jest.fn(),
 }));
-jest.mock('@/modules/auth/infra/factories/make-get-current-user.use-case', () => ({
+jest.mock('@/modules/auth/infra/factories/make-get-current-user-use-case', () => ({
   makeGetCurrentUserUseCase: jest.fn(),
 }));
 
