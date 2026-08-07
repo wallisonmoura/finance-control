@@ -61,10 +61,10 @@ describe('GetTransactionHistoryController', () => {
 
     expect(input.type).toBe(FinancialEntryType.INCOME);
 
-    expect(response).toEqual({
-      statusCode: 200,
-      body: output,
-    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body?.entries).toEqual([
+      expect.objectContaining({ id: 'entry-1', date: '2026-04-01' }),
+    ]);
   });
 
   it('deve retornar status 200 quando o tipo não for informado', async () => {

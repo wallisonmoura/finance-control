@@ -100,6 +100,12 @@ describe('GET /api/finance/history', () => {
         ['Receita período', 'Despesa período'].includes(entry.description),
       ),
     ).toBe(true);
+
+    expect(
+      body.entries.every((entry: { date: string }) =>
+        /^\d{4}-\d{2}-\d{2}$/.test(entry.date),
+      ),
+    ).toBe(true);
   });
 
   it('deve incluir lançamentos realizados no próprio endDate informado', async () => {

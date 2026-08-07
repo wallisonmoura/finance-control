@@ -66,10 +66,11 @@ describe('GetDailyTransactionsController', () => {
     expect(input.date).toBeInstanceOf(Date);
     expect(input.date.toISOString()).toBe('2026-04-06T00:00:00.000Z');
 
-    expect(response).toEqual({
-      statusCode: 200,
-      body: output,
-    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body?.entries).toEqual([
+      expect.objectContaining({ id: 'entry-1', date: '2026-04-06' }),
+      expect.objectContaining({ id: 'entry-2', date: '2026-04-06' }),
+    ]);
   });
 
   it('deve lançar erro quando faltar a data', async () => {

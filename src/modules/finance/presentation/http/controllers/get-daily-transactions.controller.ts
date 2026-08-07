@@ -4,14 +4,23 @@ import { DailyTransactionsOutput } from '@/modules/finance/application/dtos/dail
 import { GetDailyTransactionsInput } from '@/modules/finance/application/dtos/get-daily-transactions.input';
 import { parseDateFromQuery } from '../schemas/shared/parse-date-from-query';
 import {
+  FinanceHttpPresenter,
+  FinancialEntryHttpResponse,
+} from '../presenters/finance-http.presenter';
+import {
   HttpRequest,
   HttpResponse,
 } from '@/shared/presentation/http/http.types';
 import { Controller } from '@/shared/presentation/http/controller';
 
+export interface DailyTransactionsHttpResponse
+  extends Omit<DailyTransactionsOutput, 'entries'> {
+  entries: FinancialEntryHttpResponse[];
+}
+
 export class GetDailyTransactionsController implements Controller<
   HttpRequest,
-  DailyTransactionsOutput
+  DailyTransactionsHttpResponse
 > {
   constructor(
     private readonly getDailyTransactionsUseCase: GetDailyTransactionsUseCase,
@@ -19,7 +28,7 @@ export class GetDailyTransactionsController implements Controller<
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<DailyTransactionsOutput>> {
+  ): Promise<HttpResponse<DailyTransactionsHttpResponse>> {
     const query = getDailyTransactionsQuerySchema.parse(request.query);
 
     const input: GetDailyTransactionsInput = {
@@ -31,7 +40,10 @@ export class GetDailyTransactionsController implements Controller<
 
     return {
       statusCode: 200,
-      body: result,
+      body: {
+        ...result,
+        entries: FinanceHttpPresenter.toResponseList(result.entries),
+      },
     };
   }
 }

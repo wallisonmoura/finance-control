@@ -102,6 +102,12 @@ describe('GET /api/finance/daily-transactions', () => {
     expect(body.date).not.toContain('2026-04-07');
 
     expect(
+      body.entries.every((entry: { date: string }) =>
+        /^\d{4}-\d{2}-\d{2}$/.test(entry.date),
+      ),
+    ).toBe(true);
+
+    expect(
       body.entries.every((entry: { description: string }) =>
         ['Receita do dia', 'Despesa do dia'].includes(entry.description),
       ),
