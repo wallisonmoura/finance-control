@@ -1,5 +1,8 @@
+import { Money } from '@/shared/domain/value-objects/money.vo';
 import { InvalidWalletBalanceError } from '../errors/invalid-wallet-balance.error';
 import { InvalidWalletUserIdError } from '../errors/invalid-wallet-user-id.error';
+
+type WalletBalanceField = 'bankBalance' | 'cashBalance' | 'receivableBalance';
 
 export interface WalletProps {
   id: string;
@@ -25,25 +28,16 @@ export class Wallet {
       throw new InvalidWalletUserIdError();
     }
 
-    if (this.props.bankBalance < 0) {
-      throw new InvalidWalletBalanceError(
-        'bankBalance',
-        this.props.bankBalance,
-      );
-    }
+    this.validateBalance('bankBalance', this.props.bankBalance);
+    this.validateBalance('cashBalance', this.props.cashBalance);
+    this.validateBalance('receivableBalance', this.props.receivableBalance);
+  }
 
-    if (this.props.cashBalance < 0) {
-      throw new InvalidWalletBalanceError(
-        'cashBalance',
-        this.props.cashBalance,
-      );
-    }
-
-    if (this.props.receivableBalance < 0) {
-      throw new InvalidWalletBalanceError(
-        'receivableBalance',
-        this.props.receivableBalance,
-      );
+  private validateBalance(field: WalletBalanceField, value: number): void {
+    try {
+      Money.create(value);
+    } catch {
+      throw new InvalidWalletBalanceError(field, value);
     }
   }
 

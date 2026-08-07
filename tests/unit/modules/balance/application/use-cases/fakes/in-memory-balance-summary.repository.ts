@@ -6,7 +6,7 @@ import {
 export class InMemoryBalanceSummaryRepository implements BalanceSummaryRepository {
   private dataByUserId = new Map<string, BalanceSummaryData>();
 
-  async getByUserId(userId: string): Promise<BalanceSummaryData | null> {
+  async findByUserId(userId: string): Promise<BalanceSummaryData | null> {
     return this.dataByUserId.get(userId) ?? null;
   }
 

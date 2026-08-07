@@ -6,5 +6,5 @@ export type BalanceSummaryData = {
 };
 
 export interface BalanceSummaryRepository {
-  getByUserId(userId: string): Promise<BalanceSummaryData | null>;
+  findByUserId(userId: string): Promise<BalanceSummaryData | null>;
 }

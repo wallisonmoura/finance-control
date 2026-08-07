@@ -73,6 +73,20 @@ describe('Wallet entity', () => {
     ).toThrow(InvalidWalletBalanceError);
   });
 
+  it('deve lançar erro quando bankBalance não for um número finito', () => {
+    expect(() =>
+      Wallet.create({
+        id: 'wallet-1',
+        userId: 'user-1',
+        bankBalance: Number.NaN,
+        cashBalance: 200,
+        receivableBalance: 300,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    ).toThrow(InvalidWalletBalanceError);
+  });
+
   it('deve lançar erro quando userId estiver vazio', () => {
     expect(() =>
       Wallet.create({

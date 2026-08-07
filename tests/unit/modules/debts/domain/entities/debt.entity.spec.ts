@@ -78,6 +78,15 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtAmountError);
   });
 
+  it('deve lançar erro quando o valor não for um número finito', () => {
+    expect(() =>
+      Debt.create({
+        ...baseProps,
+        amount: Number.NaN,
+      }),
+    ).toThrow(InvalidDebtAmountError);
+  });
+
   it('deve lançar erro quando a dueDate for inválida', () => {
     expect(() =>
       Debt.create({

@@ -1,3 +1,4 @@
+import { Money } from '@/shared/domain/value-objects/money.vo';
 import { FinancialEntryType } from '../enums/financial-entry-type.enum';
 import { ExpenseCategoryRequiredError } from '../errors/expense-category-required.error';
 import { InvalidFinancialEntryAmountError } from '../errors/invalid-financial-entry-amount.error';
@@ -40,9 +41,7 @@ export class FinancialEntry {
       throw new InvalidFinancialEntryTypeError();
     }
 
-    if (this.props.amount <= 0) {
-      throw new InvalidFinancialEntryAmountError();
-    }
+    this.validateAmount(this.props.amount);
 
     if (!this.props.userId.trim()) {
       throw new InvalidFinancialEntryUserIdError();
@@ -64,6 +63,20 @@ export class FinancialEntry {
       !this.props.categoryId
     ) {
       throw new ExpenseCategoryRequiredError();
+    }
+  }
+
+  private validateAmount(value: number): void {
+    let amount: Money;
+
+    try {
+      amount = Money.create(value);
+    } catch {
+      throw new InvalidFinancialEntryAmountError();
+    }
+
+    if (amount.getValue() <= 0) {
+      throw new InvalidFinancialEntryAmountError();
     }
   }
 

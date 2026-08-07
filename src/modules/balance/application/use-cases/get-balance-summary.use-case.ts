@@ -9,10 +9,12 @@ export class GetBalanceSummaryUseCase {
   ) {}
 
   async execute(input: GetBalanceSummaryInput): Promise<BalanceSummaryOutput> {
-    const data = await this.balanceSummaryRepository.getByUserId(input.userId);
+    const data = await this.balanceSummaryRepository.findByUserId(
+      input.userId,
+    );
 
     if (!data) {
-      throw new WalletNotFoundError();
+      throw new WalletNotFoundError(input.userId);
     }
 
     const walletTotal =

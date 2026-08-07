@@ -78,4 +78,12 @@ describe('GetBalanceSummaryUseCase', () => {
       }),
     ).rejects.toBeInstanceOf(WalletNotFoundError);
   });
+
+  it('deve incluir o userId na mensagem de WalletNotFoundError', async () => {
+    await expect(
+      sut.execute({
+        userId: 'user-1',
+      }),
+    ).rejects.toThrow('Wallet não encontrada para o usuário "user-1".');
+  });
 });
