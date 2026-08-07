@@ -9,6 +9,7 @@ import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/inval
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
+import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
 import { InvalidExpenseCategorySlugError } from '@/modules/finance/domain/errors/invalid-expense-category-slug.error';
 import { InvalidExpenseCategoryUserIdError } from '@/modules/finance/domain/errors/invalid-expense-category-user-id.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
@@ -145,6 +146,15 @@ export function toErrorNextResponse(error: unknown) {
   // ---------------------------------------------------------------------------
 
   if (error instanceof DebtNotFoundError) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 404 },
+    );
+  }
+
+  if (error instanceof UnauthorizedDebtAccessError) {
     return NextResponse.json(
       {
         message: error.message,

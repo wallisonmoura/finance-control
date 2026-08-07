@@ -5,6 +5,7 @@ import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
+import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 
 describe('UpdateDebtUseCase', () => {
@@ -83,7 +84,7 @@ describe('UpdateDebtUseCase', () => {
         id: 'debt-1',
         description: 'Tentativa inválida',
       }),
-    ).rejects.toBeInstanceOf(DebtNotFoundError);
+    ).rejects.toBeInstanceOf(UnauthorizedDebtAccessError);
   });
 
   it('deve lançar erro ao tentar atualizar uma dívida paga', async () => {

@@ -1,4 +1,5 @@
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
+import { UnauthorizedDebtAccessError } from '../../domain/errors/unauthorized-debt-access.error';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
 import { DebtPaymentFinancialEffectPort } from '../../domain/services/debt-payment-financial-effect.port';
 import { DebtPaymentWalletEffectPort } from '../../domain/services/debt-payment-wallet-effect.port';
@@ -15,8 +16,12 @@ export class PayDebtUseCase {
   async execute(input: PayDebtInput): Promise<DebtOutput> {
     const debt = await this.debtRepository.findById(input.id);
 
-    if (!debt || debt.userId !== input.userId) {
+    if (!debt) {
       throw new DebtNotFoundError();
+    }
+
+    if (debt.userId !== input.userId) {
+      throw new UnauthorizedDebtAccessError();
     }
 
     const paidDebt = debt.markAsPaid({
