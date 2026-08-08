@@ -12,7 +12,7 @@ describe('RegisterDebtUseCase', () => {
     sut = new RegisterDebtUseCase(debtRepository);
   });
 
-  it('deve cadastrar uma dívida pendente com sucesso', async () => {
+  it('should register a pending debt successfully', async () => {
     const dueDate = new Date('2026-04-20');
 
     const output = await sut.execute({
@@ -38,7 +38,7 @@ describe('RegisterDebtUseCase', () => {
     expect(debtRepository.items).toHaveLength(1);
   });
 
-  it('deve cadastrar com notes null quando não informado', async () => {
+  it('should register with notes null when not provided', async () => {
     const output = await sut.execute({
       userId: 'user-1',
       description: 'Conta de energia',

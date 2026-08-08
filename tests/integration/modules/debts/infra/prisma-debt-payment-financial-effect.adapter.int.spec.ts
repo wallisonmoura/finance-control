@@ -32,7 +32,7 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
     await prisma.$disconnect();
   });
 
-  it('deve criar uma despesa real vinculada à dívida paga', async () => {
+  it('should create a real expense linked to the paid debt', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -82,7 +82,7 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
     expect(transaction?.debtId).toBe(debt.id);
   });
 
-  it('deve lançar erro quando não existir wallet default para o usuário', async () => {
+  it('should throw an error when there is no default wallet for the user', async () => {
     const user = await createTestUser();
 
     const category = await createTestExpenseCategory({
@@ -101,7 +101,7 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
     ).rejects.toBeInstanceOf(DefaultWalletNotFoundError);
   });
 
-  it('deve lançar erro quando a categoria de despesa não existir', async () => {
+  it('should throw an error when the expense category does not exist', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -120,7 +120,7 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
     ).rejects.toThrow('Categoria de despesa não encontrada.');
   });
 
-  it('deve lançar erro quando a categoria pertencer a outro usuário', async () => {
+  it('should throw an error when the category belongs to another user', async () => {
     const user = await createTestUser();
 
     await createTestWallet({

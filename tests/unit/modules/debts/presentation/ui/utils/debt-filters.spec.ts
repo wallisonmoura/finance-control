@@ -28,11 +28,11 @@ function buildDebt(overrides: Partial<DebtUi> = {}): DebtUi {
 }
 
 describe('isValidMonthValue', () => {
-  it('aceita valor no formato YYYY-MM', () => {
+  it('accepts a value in YYYY-MM format', () => {
     expect(isValidMonthValue('2026-07')).toBe(true);
   });
 
-  it('rejeita formato inválido', () => {
+  it('rejects an invalid format', () => {
     expect(isValidMonthValue('2026-7')).toBe(false);
     expect(isValidMonthValue('2026-13')).toBe(false);
     expect(isValidMonthValue('2026-00')).toBe(false);
@@ -42,29 +42,29 @@ describe('isValidMonthValue', () => {
 });
 
 describe('getPreviousMonthValue / getNextMonthValue', () => {
-  it('avança um mês dentro do mesmo ano', () => {
+  it('advances one month within the same year', () => {
     expect(getNextMonthValue('2026-07')).toBe('2026-08');
   });
 
-  it('volta um mês dentro do mesmo ano', () => {
+  it('goes back one month within the same year', () => {
     expect(getPreviousMonthValue('2026-07')).toBe('2026-06');
   });
 
-  it('cruza a virada de ano ao avançar de dezembro', () => {
+  it('crosses the year boundary when advancing from December', () => {
     expect(getNextMonthValue('2026-12')).toBe('2027-01');
   });
 
-  it('cruza a virada de ano ao voltar de janeiro', () => {
+  it('crosses the year boundary when going back from January', () => {
     expect(getPreviousMonthValue('2026-01')).toBe('2025-12');
   });
 });
 
 describe('formatMonthLabel', () => {
-  it('formata o mês por extenso em pt-BR', () => {
+  it('formats the month name in pt-BR', () => {
     expect(formatMonthLabel('2026-07')).toBe('Julho de 2026');
   });
 
-  it('não sofre deslocamento de fuso horário nas bordas do ano', () => {
+  it('does not suffer timezone offset at year boundaries', () => {
     // Regressão do bug corrigido no PR #7: interpretar a data-mês em UTC,
     // nunca deixando new Date(...).getMonth() aplicar o fuso local.
     expect(formatMonthLabel('2026-01')).toBe('Janeiro de 2026');
@@ -73,13 +73,13 @@ describe('formatMonthLabel', () => {
 });
 
 describe('getDebtsMonthFromUrlSearchParams', () => {
-  it('lê o mês da URL quando válido', () => {
+  it('reads the month from the URL when valid', () => {
     const params = new URLSearchParams({ month: '2026-03' });
 
     expect(getDebtsMonthFromUrlSearchParams(params)).toBe('2026-03');
   });
 
-  it('cai no mês atual quando ausente ou inválido', () => {
+  it('falls back to the current month when missing or invalid', () => {
     expect(getDebtsMonthFromUrlSearchParams(new URLSearchParams())).toBe(
       getCurrentMonthValue(),
     );
@@ -90,19 +90,19 @@ describe('getDebtsMonthFromUrlSearchParams', () => {
 });
 
 describe('filterDebtsByMonth', () => {
-  it('inclui dívida com vencimento no mês selecionado', () => {
+  it('includes a debt due in the selected month', () => {
     const debt = buildDebt({ dueDate: '2026-07-15T00:00:00.000Z' });
 
     expect(filterDebtsByMonth([debt], '2026-07', '2026-07')).toEqual([debt]);
   });
 
-  it('exclui dívida com vencimento em outro mês', () => {
+  it('excludes a debt due in another month', () => {
     const debt = buildDebt({ dueDate: '2026-08-01T00:00:00.000Z' });
 
     expect(filterDebtsByMonth([debt], '2026-07', '2026-07')).toEqual([]);
   });
 
-  it('inclui pendente vencida de mês anterior quando o filtro é o mês atual real', () => {
+  it('includes an overdue pending debt from a previous month when the filter is the real current month', () => {
     const overdue = buildDebt({
       status: 'PENDING',
       dueDate: '2026-06-10T00:00:00.000Z',
@@ -113,7 +113,7 @@ describe('filterDebtsByMonth', () => {
     ]);
   });
 
-  it('não inclui pendente vencida ao navegar para um mês que não é o atual real', () => {
+  it('does not include an overdue pending debt when navigating to a month that is not the real current one', () => {
     const overdue = buildDebt({
       status: 'PENDING',
       dueDate: '2026-05-10T00:00:00.000Z',
@@ -123,7 +123,7 @@ describe('filterDebtsByMonth', () => {
     expect(filterDebtsByMonth([overdue], '2026-06', '2026-07')).toEqual([]);
   });
 
-  it('não inclui dívida paga vencida em mês anterior mesmo no mês atual real', () => {
+  it('does not include a paid debt overdue in a previous month even in the real current month', () => {
     const paidOverdue = buildDebt({
       status: 'PAID',
       dueDate: '2026-06-10T00:00:00.000Z',
@@ -136,7 +136,7 @@ describe('filterDebtsByMonth', () => {
     );
   });
 
-  it('filtra por dueDate, não por paidAt', () => {
+  it('filters by dueDate, not by paidAt', () => {
     const paidInMonth = buildDebt({
       status: 'PAID',
       dueDate: '2026-07-05T00:00:00.000Z',
@@ -160,7 +160,7 @@ describe('filterDebtsByMonth', () => {
     expect(result).toEqual([paidInMonth]);
   });
 
-  it('usa o mês atual real por padrão quando referenceMonth não é informado', () => {
+  it('uses the real current month by default when referenceMonth is not provided', () => {
     const overdue = buildDebt({
       status: 'PENDING',
       dueDate: '2020-01-01T00:00:00.000Z',

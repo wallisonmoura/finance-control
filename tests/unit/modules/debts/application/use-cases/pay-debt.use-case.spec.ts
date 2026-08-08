@@ -29,7 +29,7 @@ describe('PayDebtUseCase', () => {
     );
   });
 
-  it('deve pagar uma dívida pendente e registrar os efeitos em finance e wallet', async () => {
+  it('should pay a pending debt and record the effects in finance and wallet', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-1',
@@ -78,7 +78,7 @@ describe('PayDebtUseCase', () => {
     });
   });
 
-  it('deve lançar erro quando a dívida não existir', async () => {
+  it('should throw an error when the debt does not exist', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',
@@ -90,7 +90,7 @@ describe('PayDebtUseCase', () => {
     ).rejects.toBeInstanceOf(DebtNotFoundError);
   });
 
-  it('deve lançar erro quando a dívida pertencer a outro usuário', async () => {
+  it('should throw an error when the debt belongs to another user', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-2',
@@ -119,7 +119,7 @@ describe('PayDebtUseCase', () => {
     ).rejects.toBeInstanceOf(UnauthorizedDebtAccessError);
   });
 
-  it('deve lançar erro ao tentar pagar uma dívida já paga', async () => {
+  it('should throw an error when trying to pay an already paid debt', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-1',

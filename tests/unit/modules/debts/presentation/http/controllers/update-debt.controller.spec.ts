@@ -19,7 +19,7 @@ describe('UpdateDebtController', () => {
     controller = new UpdateDebtController(useCase as UpdateDebtUseCase);
   });
 
-  it('deve atualizar uma dívida e retornar 200', async () => {
+  it('should update a debt and return 200', async () => {
     const output = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       userId: 'user-id',
@@ -70,7 +70,7 @@ describe('UpdateDebtController', () => {
     });
   });
 
-  it('deve propagar erro de validação quando o id for inválido', async () => {
+  it('should propagate a validation error when the id is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',
@@ -90,7 +90,7 @@ describe('UpdateDebtController', () => {
     expect(execute).not.toHaveBeenCalled();
   });
 
-  it('deve propagar erro de validação quando o payload for inválido', async () => {
+  it('should propagate a validation error when the payload is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',

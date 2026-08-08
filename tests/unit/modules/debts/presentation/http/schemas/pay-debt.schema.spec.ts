@@ -9,7 +9,7 @@ describe('payDebtSchema', () => {
     paymentSource: DebtPaymentSource.BANK,
   };
 
-  it('deve aceitar payload válido de pagamento de dívida com BANK', () => {
+  it('should accept a valid debt payment payload with BANK', () => {
     const result = payDebtSchema.safeParse(validPayload);
 
     expect(result.success).toBe(true);
@@ -19,7 +19,7 @@ describe('payDebtSchema', () => {
     }
   });
 
-  it('deve aceitar paymentSource CASH', () => {
+  it('should accept paymentSource CASH', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       paymentSource: DebtPaymentSource.CASH,
@@ -32,7 +32,7 @@ describe('payDebtSchema', () => {
     }
   });
 
-  it('deve aceitar paymentSource RECEIVABLE', () => {
+  it('should accept paymentSource RECEIVABLE', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       paymentSource: DebtPaymentSource.RECEIVABLE,
@@ -45,7 +45,7 @@ describe('payDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar paidAt ausente', () => {
+  it('should reject a missing paidAt', () => {
     const { paidAt, ...payloadWithoutPaidAt } = validPayload;
 
     const result = payDebtSchema.safeParse(payloadWithoutPaidAt);
@@ -53,7 +53,7 @@ describe('payDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar paidAt inválido', () => {
+  it('should reject an invalid paidAt', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       paidAt: '2026-02-30',
@@ -62,7 +62,7 @@ describe('payDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar paidAt com datetime completo', () => {
+  it('should reject paidAt with a full datetime', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       paidAt: '2026-04-10T10:00:00Z',
@@ -71,7 +71,7 @@ describe('payDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar expenseCategoryId ausente', () => {
+  it('should reject a missing expenseCategoryId', () => {
     const { expenseCategoryId, ...payloadWithoutCategory } = validPayload;
 
     const result = payDebtSchema.safeParse(payloadWithoutCategory);
@@ -79,7 +79,7 @@ describe('payDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar expenseCategoryId inválido', () => {
+  it('should reject an invalid expenseCategoryId', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       expenseCategoryId: 'category-1',
@@ -94,7 +94,7 @@ describe('payDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar paymentSource ausente', () => {
+  it('should reject a missing paymentSource', () => {
     const { paymentSource, ...payloadWithoutPaymentSource } = validPayload;
 
     const result = payDebtSchema.safeParse(payloadWithoutPaymentSource);
@@ -108,7 +108,7 @@ describe('payDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar paymentSource inválido', () => {
+  it('should reject an invalid paymentSource', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       paymentSource: 'PIX',
@@ -123,7 +123,7 @@ describe('payDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar campos extras', () => {
+  it('should reject extra fields', () => {
     const result = payDebtSchema.safeParse({
       ...validPayload,
       amount: 100,

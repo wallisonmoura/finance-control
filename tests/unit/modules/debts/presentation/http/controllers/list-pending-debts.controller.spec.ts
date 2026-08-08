@@ -20,7 +20,7 @@ describe('ListPendingDebtsController', () => {
     );
   });
 
-  it('deve listar as dívidas pendentes do usuário autenticado e retornar 200', async () => {
+  it('should list the authenticated user pending debts and return 200', async () => {
     const output = [
       {
         id: 'debt-id',

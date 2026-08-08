@@ -20,7 +20,7 @@ describe('DebtHttpPresenter', () => {
     updatedAt: new Date('2026-05-01T10:00:00.000Z'),
   };
 
-  it('deve converter DebtOutput para resposta HTTP formatando dueDate como YYYY-MM-DD', () => {
+  it('should convert DebtOutput to an HTTP response formatting dueDate as YYYY-MM-DD', () => {
     const response = DebtHttpPresenter.toResponse(baseOutput);
 
     expect(response).toEqual({
@@ -39,7 +39,7 @@ describe('DebtHttpPresenter', () => {
     });
   });
 
-  it('deve formatar paidAt como YYYY-MM-DD quando a dívida estiver paga', () => {
+  it('should format paidAt as YYYY-MM-DD when the debt is paid', () => {
     const paidOutput: DebtOutput = {
       ...baseOutput,
       status: DebtStatus.PAID,
@@ -53,13 +53,13 @@ describe('DebtHttpPresenter', () => {
     expect(response.paymentSource).toBe(DebtPaymentSource.BANK);
   });
 
-  it('deve retornar paidAt como null quando a dívida estiver pendente', () => {
+  it('should return paidAt as null when the debt is pending', () => {
     const response = DebtHttpPresenter.toResponse(baseOutput);
 
     expect(response.paidAt).toBeNull();
   });
 
-  it('deve converter uma lista de DebtOutput para lista de resposta HTTP', () => {
+  it('should convert a list of DebtOutput to a list of HTTP responses', () => {
     const secondOutput: DebtOutput = {
       ...baseOutput,
       id: 'debt-2',
@@ -79,7 +79,7 @@ describe('DebtHttpPresenter', () => {
     expect(response[1].dueDate).toBe('2026-06-15');
   });
 
-  it('deve retornar lista vazia quando não houver dívidas', () => {
+  it('should return an empty list when there are no debts', () => {
     expect(DebtHttpPresenter.toResponseList([])).toEqual([]);
   });
 });

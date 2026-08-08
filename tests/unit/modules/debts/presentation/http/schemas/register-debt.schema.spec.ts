@@ -11,7 +11,7 @@ describe('registerDebtSchema', () => {
     notes: 'Parcela única',
   };
 
-  it('deve aceitar payload válido de cadastro de dívida', () => {
+  it('should accept a valid debt registration payload', () => {
     const result = registerDebtSchema.safeParse(validPayload);
 
     expect(result.success).toBe(true);
@@ -21,7 +21,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve aceitar payload válido sem notes', () => {
+  it('should accept a valid payload without notes', () => {
     const { notes, ...payloadWithoutNotes } = validPayload;
 
     const result = registerDebtSchema.safeParse(payloadWithoutNotes);
@@ -33,7 +33,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve converter amount string numérica para number', () => {
+  it('should convert a numeric amount string to a number', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       amount: '500.75',
@@ -46,7 +46,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve aceitar dívida recorrente', () => {
+  it('should accept a recurring debt', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       type: DebtType.RECURRING,
@@ -59,7 +59,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar description ausente', () => {
+  it('should reject a missing description', () => {
     const { description, ...payloadWithoutDescription } = validPayload;
 
     const result = registerDebtSchema.safeParse(payloadWithoutDescription);
@@ -71,7 +71,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar description que não seja string', () => {
+  it('should reject a description that is not a string', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       description: 123,
@@ -86,7 +86,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar description vazia', () => {
+  it('should reject an empty description', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       description: '',
@@ -99,7 +99,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar description apenas com espaços', () => {
+  it('should reject a description with only spaces', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       description: '   ',
@@ -112,7 +112,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar description acima de 255 caracteres', () => {
+  it('should reject a description over 255 characters', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       description: 'a'.repeat(256),
@@ -127,7 +127,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar amount inválido', () => {
+  it('should reject an invalid amount', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       amount: 0,
@@ -136,7 +136,7 @@ describe('registerDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar dueDate inválida', () => {
+  it('should reject an invalid dueDate', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       dueDate: '2026-02-30',
@@ -145,7 +145,7 @@ describe('registerDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar type ausente', () => {
+  it('should reject a missing type', () => {
     const { type, ...payloadWithoutType } = validPayload;
 
     const result = registerDebtSchema.safeParse(payloadWithoutType);
@@ -157,7 +157,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar type inválido', () => {
+  it('should reject an invalid type', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       type: 'INVALID',
@@ -170,7 +170,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar notes que não seja string', () => {
+  it('should reject notes that are not a string', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       notes: 123,
@@ -185,7 +185,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar notes acima de 1000 caracteres', () => {
+  it('should reject notes over 1000 characters', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       notes: 'a'.repeat(1001),
@@ -200,7 +200,7 @@ describe('registerDebtSchema', () => {
     }
   });
 
-  it('deve rejeitar campos extras', () => {
+  it('should reject extra fields', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,
       status: 'PAID',
