@@ -17,7 +17,7 @@ describe('SignInController', () => {
     controller = new SignInController(useCase);
   });
 
-  it('deve chamar o SignInUseCase com o input correto', async () => {
+  it('should call SignInUseCase with the correct input', async () => {
     const output: SignInOutput = {
       accessToken: 'token-123',
       user: {
@@ -47,7 +47,7 @@ describe('SignInController', () => {
     expect(useCase.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('deve retornar 200 com o usuário e o access token para o cookie', async () => {
+  it('should return 200 with the user and access token for the cookie', async () => {
     const output: SignInOutput = {
       accessToken: 'token-123',
       user: {
@@ -73,7 +73,7 @@ describe('SignInController', () => {
     });
   });
 
-  it('deve lançar erro quando o payload for inválido', async () => {
+  it('should throw an error when the payload is invalid', async () => {
     const request: HttpRequest = {
       body: {
         email: 'email-invalido',
