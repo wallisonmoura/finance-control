@@ -22,7 +22,7 @@ describe('PrismaWalletRepository', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar a wallet do usuário ao buscar por userId', async () => {
+  it('should return the user wallet when searching by userId', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -43,7 +43,7 @@ describe('PrismaWalletRepository', () => {
     expect(wallet?.getWalletTotal()).toBe(175);
   });
 
-  it('deve retornar null quando o usuário não possuir wallet', async () => {
+  it('should return null when the user has no wallet', async () => {
     const user = await createTestUser();
 
     const wallet = await repository.findByUserId(user.id);
@@ -51,7 +51,7 @@ describe('PrismaWalletRepository', () => {
     expect(wallet).toBeNull();
   });
 
-  it('deve atualizar os saldos da wallet', async () => {
+  it('should update the wallet balances', async () => {
     const user = await createTestUser();
 
     const persistedWallet = await createTestWallet({

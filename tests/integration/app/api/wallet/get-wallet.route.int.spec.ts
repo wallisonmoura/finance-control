@@ -31,7 +31,7 @@ describe('GET /api/wallet', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar 200 com a wallet do usuário autenticado', async () => {
+  it('should return 200 with the authenticated user wallet', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -63,7 +63,7 @@ describe('GET /api/wallet', () => {
     });
   });
 
-  it('deve retornar 401 quando o usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest('http://localhost:3000/api/wallet', {
@@ -75,7 +75,7 @@ describe('GET /api/wallet', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 404 quando o usuário autenticado não possuir wallet', async () => {
+  it('should return 404 when the authenticated user has no wallet', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);

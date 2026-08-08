@@ -13,7 +13,7 @@ describe('UpdateWalletBalancesUseCase', () => {
     sut = new UpdateWalletBalancesUseCase(walletRepository);
   });
 
-  it('deve atualizar os saldos da wallet', async () => {
+  it('should update the wallet balances', async () => {
     const wallet = Wallet.create({
       id: 'wallet-1',
       userId: 'user-1',
@@ -41,7 +41,7 @@ describe('UpdateWalletBalancesUseCase', () => {
     expect(output.walletTotal).toBe(2100);
   });
 
-  it('deve lançar erro quando a wallet não existir', async () => {
+  it('should throw an error when the wallet does not exist', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',
@@ -52,7 +52,7 @@ describe('UpdateWalletBalancesUseCase', () => {
     ).rejects.toBeInstanceOf(WalletNotFoundError);
   });
 
-  it('deve lançar erro quando algum saldo informado for inválido', async () => {
+  it('should throw an error when any provided balance is invalid', async () => {
     const wallet = Wallet.create({
       id: 'wallet-1',
       userId: 'user-1',

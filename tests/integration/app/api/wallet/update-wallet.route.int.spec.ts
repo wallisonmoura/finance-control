@@ -31,7 +31,7 @@ describe('PUT /api/wallet', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar 200 e atualizar a wallet do usuário autenticado', async () => {
+  it('should return 200 and update the authenticated user wallet', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -81,7 +81,7 @@ describe('PUT /api/wallet', () => {
     expect(Number(walletInDatabase?.receivableBalance)).toBe(300);
   });
 
-  it('deve retornar 400 quando o payload for inválido', async () => {
+  it('should return 400 when the payload is invalid', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -107,7 +107,7 @@ describe('PUT /api/wallet', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 401 quando o usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest('http://localhost:3000/api/wallet', {
@@ -127,7 +127,7 @@ describe('PUT /api/wallet', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 404 quando tentar atualizar wallet inexistente do usuário autenticado', async () => {
+  it('should return 404 when trying to update a nonexistent wallet for the authenticated user', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
