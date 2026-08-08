@@ -37,7 +37,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
   });
 
   describe('PUT /api/finance/incomes/[id]', () => {
-    it('deve atualizar uma income com sucesso', async () => {
+    it('should update an income successfully', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -93,7 +93,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(updated?.description).toBe('Receita atualizada');
     });
 
-    it('deve retornar 401 quando não estiver autenticado', async () => {
+    it('should return 401 when not authenticated', async () => {
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
       const request = new NextRequest(
@@ -118,7 +118,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(response.status).toBe(401);
     });
 
-    it('deve retornar 400 para payload inválido', async () => {
+    it('should return 400 for invalid payload', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -155,7 +155,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(response.status).toBe(400);
     });
 
-    it('deve retornar 404 quando a income não existir', async () => {
+    it('should return 404 when the income does not exist', async () => {
       const user = await createTestUser();
 
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -184,7 +184,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(response.status).toBe(404);
     });
 
-    it('deve retornar 404 quando a income pertencer a outro usuário', async () => {
+    it('should return 404 when the income belongs to another user', async () => {
       const user = await createTestUser();
       const otherUser = await createTestUser();
 
@@ -227,7 +227,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
   });
 
   describe('DELETE /api/finance/incomes/[id]', () => {
-    it('deve excluir uma income com sucesso', async () => {
+    it('should delete an income successfully', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -264,7 +264,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(deleted).toBeNull();
     });
 
-    it('deve retornar 401 quando não estiver autenticado', async () => {
+    it('should return 401 when not authenticated', async () => {
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
       const request = new NextRequest(
@@ -281,7 +281,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(response.status).toBe(401);
     });
 
-    it('deve retornar 404 quando a income não existir', async () => {
+    it('should return 404 when the income does not exist', async () => {
       const user = await createTestUser();
 
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -302,7 +302,7 @@ describe('PUT/DELETE /api/finance/incomes/[id]', () => {
       expect(response.status).toBe(404);
     });
 
-    it('deve retornar 404 quando a income pertencer a outro usuário', async () => {
+    it('should return 404 when the income belongs to another user', async () => {
       const user = await createTestUser();
       const otherUser = await createTestUser();
 

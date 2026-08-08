@@ -18,7 +18,7 @@ describe('DeleteExpenseController', () => {
     controller = new DeleteExpenseController(useCase as DeleteExpenseUseCase);
   });
 
-  it('deve chamar o use case com input correto e retornar 204', async () => {
+  it('should call the use case with correct input and return 204', async () => {
     const response = await controller.handle({
       userId: 'user-id',
       params: {

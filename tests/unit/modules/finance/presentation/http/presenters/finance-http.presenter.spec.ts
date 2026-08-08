@@ -15,7 +15,7 @@ describe('FinanceHttpPresenter', () => {
     updatedAt: new Date('2026-03-23T10:00:00.000Z'),
   };
 
-  it('deve converter FinancialEntryOutput para resposta HTTP', () => {
+  it('should convert FinancialEntryOutput to HTTP response', () => {
     const response = FinanceHttpPresenter.toResponse(baseOutput);
 
     expect(response).toEqual({
@@ -33,7 +33,7 @@ describe('FinanceHttpPresenter', () => {
     });
   });
 
-  it('deve retornar categoryId e notes como null quando não estiverem preenchidos', () => {
+  it('should return categoryId and notes as null when not filled', () => {
     const response = FinanceHttpPresenter.toResponse({
       ...baseOutput,
       categoryId: undefined as unknown as null,
@@ -44,7 +44,7 @@ describe('FinanceHttpPresenter', () => {
     expect(response.notes).toBeNull();
   });
 
-  it('deve converter uma lista de FinancialEntryOutput para lista de resposta HTTP', () => {
+  it('should convert a list of FinancialEntryOutput to a list of HTTP responses', () => {
     const secondOutput = {
       ...baseOutput,
       id: 'entry-2',
@@ -64,7 +64,7 @@ describe('FinanceHttpPresenter', () => {
     expect(response[1].date).toBe('2026-03-24');
   });
 
-  it('deve retornar lista vazia quando não houver entradas', () => {
+  it('should return an empty list when there are no entries', () => {
     expect(FinanceHttpPresenter.toResponseList([])).toEqual([]);
   });
 });

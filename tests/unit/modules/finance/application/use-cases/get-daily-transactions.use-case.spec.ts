@@ -4,7 +4,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { GetDailyTransactionsUseCase } from '@/modules/finance/application/use-cases/get-daily-transactions.use-case';
 
 describe('GetDailyTransactionsUseCase', () => {
-  it('Deve retornar os lançamentos do dia com total e lucro diário', async () => {
+  it('should return the entries of the day with total and daily profit', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'income-1',
@@ -57,7 +57,7 @@ describe('GetDailyTransactionsUseCase', () => {
     expect(output.dailyProfit).toBe(150);
   });
 
-  it('deve retornar zero quando não houver movimentações no dia', async () => {
+  it('should return zero when there are no entries for the day', async () => {
     const repository = new InMemoryFinancialEntryRepository();
     const useCase = new GetDailyTransactionsUseCase(repository);
 

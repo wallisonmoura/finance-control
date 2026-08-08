@@ -1,7 +1,7 @@
 import { getDailyTransactionsQuerySchema } from '@/modules/finance/presentation/http/schemas/get-daily-transactions-query.schema';
 
 describe('getDailyTransactionsQuerySchema', () => {
-  it('deve aceitar query válida', () => {
+  it('should accept a valid query', () => {
     const result = getDailyTransactionsQuerySchema.safeParse({
       date: '2026-03-23',
     });
@@ -15,13 +15,13 @@ describe('getDailyTransactionsQuerySchema', () => {
     }
   });
 
-  it('deve rejeitar date ausente', () => {
+  it('should reject missing date', () => {
     const result = getDailyTransactionsQuerySchema.safeParse({});
 
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar date inválida', () => {
+  it('should reject invalid date', () => {
     const result = getDailyTransactionsQuerySchema.safeParse({
       date: '2026-03-23T10:00:00Z',
     });

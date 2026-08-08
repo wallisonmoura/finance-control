@@ -1,7 +1,7 @@
 import { calculateMonthlySummaryQuerySchema } from '@/modules/finance/presentation/http/schemas/calculate-monthly-summary-query.schema';
 
 describe('calculateMonthlySummaryQuerySchema', () => {
-  it('deve aceitar year com 4 dígitos e month sem zero à esquerda', () => {
+  it('should accept year with 4 digits and month without leading zero', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       year: '2026',
       month: '3',
@@ -17,7 +17,7 @@ describe('calculateMonthlySummaryQuerySchema', () => {
     }
   });
 
-  it('deve aceitar month com zero à esquerda', () => {
+  it('should accept month with leading zero', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       year: '2026',
       month: '03',
@@ -30,7 +30,7 @@ describe('calculateMonthlySummaryQuerySchema', () => {
     }
   });
 
-  it('deve rejeitar year ausente', () => {
+  it('should reject missing year', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       month: '3',
     });
@@ -38,7 +38,7 @@ describe('calculateMonthlySummaryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar month ausente', () => {
+  it('should reject missing month', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       year: '2026',
     });
@@ -46,7 +46,7 @@ describe('calculateMonthlySummaryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar year com menos de 4 dígitos', () => {
+  it('should reject year with fewer than 4 digits', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       year: '26',
       month: '3',
@@ -55,7 +55,7 @@ describe('calculateMonthlySummaryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar month menor que 1', () => {
+  it('should reject month lower than 1', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       year: '2026',
       month: '0',
@@ -64,7 +64,7 @@ describe('calculateMonthlySummaryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar month maior que 12', () => {
+  it('should reject month greater than 12', () => {
     const result = calculateMonthlySummaryQuerySchema.safeParse({
       year: '2026',
       month: '13',

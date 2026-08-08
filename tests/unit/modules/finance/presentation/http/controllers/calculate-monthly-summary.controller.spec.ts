@@ -15,7 +15,7 @@ describe('CalculateMonthlySummaryController', () => {
     controller = new CalculateMonthlySummaryController(useCase);
   });
 
-  it('deve retornar status 200 com o resumo mensal', async () => {
+  it('should return status 200 with the monthly summary', async () => {
     const output: MonthlySummaryOutput = {
       month: 4,
       year: 2026,
@@ -49,7 +49,7 @@ describe('CalculateMonthlySummaryController', () => {
     });
   });
 
-  it('deve aceitar mês com zero à esquerda', async () => {
+  it('should accept month with leading zero', async () => {
     const output: MonthlySummaryOutput = {
       month: 4,
       year: 2026,
@@ -75,7 +75,7 @@ describe('CalculateMonthlySummaryController', () => {
     });
   });
 
-  it('deve lançar erro quando o mês for inválido', async () => {
+  it('should throw an error when the month is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -87,7 +87,7 @@ describe('CalculateMonthlySummaryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando o ano for inválido', async () => {
+  it('should throw an error when the year is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -99,7 +99,7 @@ describe('CalculateMonthlySummaryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando faltar o mês', async () => {
+  it('should throw an error when the month is missing', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -110,7 +110,7 @@ describe('CalculateMonthlySummaryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando faltar o ano', async () => {
+  it('should throw an error when the year is missing', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',

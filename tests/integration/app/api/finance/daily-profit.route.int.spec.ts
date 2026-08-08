@@ -37,7 +37,7 @@ describe('GET /api/finance/daily-profit', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar o lucro diário da data informada', async () => {
+  it('should return the daily profit for the given date', async () => {
     const user = await createTestUser();
     const wallet = await createTestWallet({
       userId: user.id,
@@ -98,7 +98,7 @@ describe('GET /api/finance/daily-profit', () => {
     expect(body.date).toContain('2026-04-06');
   });
 
-  it('deve retornar 401 quando não estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -113,7 +113,7 @@ describe('GET /api/finance/daily-profit', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 400 quando a query date estiver ausente', async () => {
+  it('should return 400 when the date query is missing', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -130,7 +130,7 @@ describe('GET /api/finance/daily-profit', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando a query date estiver em formato inválido', async () => {
+  it('should return 400 when the date query is in an invalid format', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -147,7 +147,7 @@ describe('GET /api/finance/daily-profit', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve considerar apenas os lançamentos do usuário autenticado', async () => {
+  it("should consider only the authenticated user's entries", async () => {
     const user1 = await createTestUser({
       email: 'daily-profit-user1@test.com',
     });

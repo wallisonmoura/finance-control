@@ -12,7 +12,7 @@ describe('ExpenseCategory', () => {
     updatedAt: new Date('2026-03-23T10:00:00Z'),
   };
 
-  it('deve criar uma categoria válida', () => {
+  it('should create a valid category', () => {
     const category = ExpenseCategory.create(baseProps);
 
     expect(category.id).toBe(baseProps.id);
@@ -24,7 +24,7 @@ describe('ExpenseCategory', () => {
     expect(category.updatedAt).toEqual(baseProps.updatedAt);
   });
 
-  it('deve falhar ao criar categoria sem userId', () => {
+  it('should fail to create a category without userId', () => {
     expect(() =>
       ExpenseCategory.create({
         ...baseProps,
@@ -33,7 +33,7 @@ describe('ExpenseCategory', () => {
     ).toThrow('ID do usuário é obrigatório.');
   });
 
-  it('deve falhar ao criar categoria com userId contendo apenas espaços', () => {
+  it('should fail to create a category with userId containing only spaces', () => {
     expect(() =>
       ExpenseCategory.create({
         ...baseProps,
@@ -42,7 +42,7 @@ describe('ExpenseCategory', () => {
     ).toThrow('ID do usuário é obrigatório.');
   });
 
-  it('deve falhar ao criar categoria sem nome', () => {
+  it('should fail to create a category without a name', () => {
     expect(() =>
       ExpenseCategory.create({
         ...baseProps,
@@ -51,7 +51,7 @@ describe('ExpenseCategory', () => {
     ).toThrow(InvalidExpenseCategoryNameError);
   });
 
-  it('deve falhar ao criar categoria com nome contendo apenas espaços', () => {
+  it('should fail to create a category with name containing only spaces', () => {
     expect(() =>
       ExpenseCategory.create({
         ...baseProps,
@@ -60,7 +60,7 @@ describe('ExpenseCategory', () => {
     ).toThrow(InvalidExpenseCategoryNameError);
   });
 
-  it('deve falhar ao criar categoria sem slug', () => {
+  it('should fail to create a category without a slug', () => {
     expect(() =>
       ExpenseCategory.create({
         ...baseProps,
@@ -69,7 +69,7 @@ describe('ExpenseCategory', () => {
     ).toThrow('Slug da categoria de despesa é obrigatório.');
   });
 
-  it('deve falhar ao criar categoria com slug contendo apenas espaços', () => {
+  it('should fail to create a category with slug containing only spaces', () => {
     expect(() =>
       ExpenseCategory.create({
         ...baseProps,
@@ -78,7 +78,7 @@ describe('ExpenseCategory', () => {
     ).toThrow('Slug da categoria de despesa é obrigatório.');
   });
 
-  it('deve ativar uma categoria inativa', () => {
+  it('should activate an inactive category', () => {
     const category = ExpenseCategory.create({
       ...baseProps,
       isActive: false,
@@ -93,7 +93,7 @@ describe('ExpenseCategory', () => {
     );
   });
 
-  it('deve desativar uma categoria ativa', () => {
+  it('should deactivate an active category', () => {
     const category = ExpenseCategory.create(baseProps);
 
     const deactivated = category.deactivate();
@@ -105,7 +105,7 @@ describe('ExpenseCategory', () => {
     );
   });
 
-  it('deve atualizar nome e slug da categoria', () => {
+  it('should update the category name and slug', () => {
     const category = ExpenseCategory.create(baseProps);
 
     const updated = category.update({
@@ -124,7 +124,7 @@ describe('ExpenseCategory', () => {
     );
   });
 
-  it('deve manter nome e slug atuais quando update for chamado sem dados', () => {
+  it('should keep the current name and slug when update is called without data', () => {
     const category = ExpenseCategory.create(baseProps);
 
     const updated = category.update({});
@@ -133,7 +133,7 @@ describe('ExpenseCategory', () => {
     expect(updated.slug).toBe(baseProps.slug);
   });
 
-  it('deve validar nome ao atualizar categoria', () => {
+  it('should validate the name when updating a category', () => {
     const category = ExpenseCategory.create(baseProps);
 
     expect(() =>
@@ -143,7 +143,7 @@ describe('ExpenseCategory', () => {
     ).toThrow(InvalidExpenseCategoryNameError);
   });
 
-  it('deve validar slug ao atualizar categoria', () => {
+  it('should validate the slug when updating a category', () => {
     const category = ExpenseCategory.create(baseProps);
 
     expect(() =>
@@ -153,7 +153,7 @@ describe('ExpenseCategory', () => {
     ).toThrow('Slug da categoria de despesa é obrigatório.');
   });
 
-  it('deve retornar os dados da categoria em toJSON', () => {
+  it('should return the category data in toJSON', () => {
     const category = ExpenseCategory.create(baseProps);
 
     expect(category.toJSON()).toEqual(baseProps);

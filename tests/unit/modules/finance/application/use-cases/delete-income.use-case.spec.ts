@@ -45,7 +45,7 @@ describe('DeleteIncomeUseCase', () => {
     });
   };
 
-  it('deve excluir um ganho com sucesso', async () => {
+  it('should delete an income successfully', async () => {
     const repository = new InMemoryFinancialEntryRepository([makeIncome()]);
     const useCase = new DeleteIncomeUseCase(repository);
 
@@ -59,7 +59,7 @@ describe('DeleteIncomeUseCase', () => {
     expect(found).toBeNull();
   });
 
-  it('deve lançar erro quando o ganho não existir', async () => {
+  it('should throw an error when the income does not exist', async () => {
     const repository = new InMemoryFinancialEntryRepository();
     const useCase = new DeleteIncomeUseCase(repository);
 
@@ -71,7 +71,7 @@ describe('DeleteIncomeUseCase', () => {
     ).rejects.toThrow(FinancialEntryNotFoundError);
   });
 
-  it('deve lançar erro quando o ganho pertencer a outro usuário', async () => {
+  it('should throw an error when the income belongs to another user', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       makeIncome({
         id: 'income-1',
@@ -93,7 +93,7 @@ describe('DeleteIncomeUseCase', () => {
     expect(found).not.toBeNull();
   });
 
-  it('deve lançar erro quando o lançamento não for um ganho', async () => {
+  it('should throw an error when the entry is not an income', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       makeExpense({
         id: 'expense-1',

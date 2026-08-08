@@ -21,7 +21,7 @@ function makeCategory(input: {
 }
 
 describe('ListExpenseCategoriesUseCase', () => {
-  it('deve listar apenas categorias ativas do usuario informado', async () => {
+  it('should list only active categories of the given user', async () => {
     const repository = new InMemoryExpenseCategoryRepository([
       makeCategory({
         id: 'category-1',

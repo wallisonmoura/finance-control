@@ -37,7 +37,7 @@ describe('GET /api/finance/history', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar o histórico do período informado sem filtro de type', async () => {
+  it('should return the history for the given period without a type filter', async () => {
     const user = await createTestUser();
     const wallet = await createTestWallet({
       userId: user.id,
@@ -108,7 +108,7 @@ describe('GET /api/finance/history', () => {
     ).toBe(true);
   });
 
-  it('deve incluir lançamentos realizados no próprio endDate informado', async () => {
+  it('should include entries made on the given endDate itself', async () => {
     const user = await createTestUser({
       email: 'history-inclusive-end-date@test.com',
     });
@@ -154,7 +154,7 @@ describe('GET /api/finance/history', () => {
     expect(body.entries[0].description).toBe('Receita no fim do período');
   });
 
-  it('deve retornar o histórico filtrado por type', async () => {
+  it('should return the history filtered by type', async () => {
     const user = await createTestUser({
       email: 'history-type@test.com',
     });
@@ -219,7 +219,7 @@ describe('GET /api/finance/history', () => {
     ).toBe(true);
   });
 
-  it('deve filtrar o histórico por categoria quando categoryId for informado', async () => {
+  it('should filter the history by category when categoryId is informed', async () => {
     const user = await createTestUser({
       email: 'history-category-filter@test.com',
     });
@@ -275,7 +275,7 @@ describe('GET /api/finance/history', () => {
     expect(body.totalExpense).toBe(150);
   });
 
-  it('deve retornar vazio quando categoryId não tiver lançamentos no período', async () => {
+  it('should return empty when categoryId has no entries in the period', async () => {
     const user = await createTestUser({
       email: 'history-category-empty@test.com',
     });
@@ -314,7 +314,7 @@ describe('GET /api/finance/history', () => {
     expect(body.entries).toHaveLength(0);
   });
 
-  it('deve retornar vazio quando categoryId pertencer a outro usuário', async () => {
+  it('should return empty when categoryId belongs to another user', async () => {
     const user = await createTestUser({
       email: 'history-category-owner@test.com',
     });
@@ -380,7 +380,7 @@ describe('GET /api/finance/history', () => {
     expect(body.totalExpense).toBe(0);
   });
 
-  it('deve retornar 400 quando categoryId for inválido', async () => {
+  it('should return 400 when categoryId is invalid', async () => {
     const user = await createTestUser({
       email: 'history-category-invalid@test.com',
     });
@@ -397,7 +397,7 @@ describe('GET /api/finance/history', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 401 quando não estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -410,7 +410,7 @@ describe('GET /api/finance/history', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 400 quando faltar startDate', async () => {
+  it('should return 400 when startDate is missing', async () => {
     const user = await createTestUser({
       email: 'history-missing-start@test.com',
     });
@@ -427,7 +427,7 @@ describe('GET /api/finance/history', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando faltar endDate', async () => {
+  it('should return 400 when endDate is missing', async () => {
     const user = await createTestUser({
       email: 'history-missing-end@test.com',
     });
@@ -444,7 +444,7 @@ describe('GET /api/finance/history', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando startDate for maior que endDate', async () => {
+  it('should return 400 when startDate is greater than endDate', async () => {
     const user = await createTestUser({
       email: 'history-invalid-range@test.com',
     });
@@ -461,7 +461,7 @@ describe('GET /api/finance/history', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando type for inválido', async () => {
+  it('should return 400 when type is invalid', async () => {
     const user = await createTestUser({
       email: 'history-invalid-type@test.com',
     });
@@ -478,7 +478,7 @@ describe('GET /api/finance/history', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve considerar apenas os lançamentos do usuário autenticado', async () => {
+  it("should consider only the authenticated user's entries", async () => {
     const user1 = await createTestUser({
       email: 'history-user1@test.com',
     });

@@ -4,7 +4,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { CalculateMonthlySummaryUseCase } from '@/modules/finance/application/use-cases/calculate-monthly-summary.use-case';
 
 describe('CalculateMonthlySummaryUseCase', () => {
-  it('deve calcular corretamente o resumo do mês e ano informados', async () => {
+  it('should correctly calculate the summary for the given month and year', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'entry-1',
@@ -59,7 +59,7 @@ describe('CalculateMonthlySummaryUseCase', () => {
     expect(output.result).toBe(300);
   });
 
-  it('não deve misturar o mesmo mês de anos diferentes', async () => {
+  it('should not mix the same month from different years', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'entry-1',

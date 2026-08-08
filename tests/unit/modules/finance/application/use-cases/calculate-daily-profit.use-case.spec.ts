@@ -4,7 +4,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { CalculateDailyProfitUseCase } from '@/modules/finance/application/use-cases/calculate-daily-profit.use-case';
 
 describe('CalculateDailyProfitUseCase', () => {
-  it('deve calcular lucro diário positivo', async () => {
+  it('should calculate a positive daily profit', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'income-1',
@@ -44,7 +44,7 @@ describe('CalculateDailyProfitUseCase', () => {
     expect(output.profit).toBe(180);
   });
 
-  it('deve calcular lucro diário negativo', async () => {
+  it('should calculate a negative daily profit', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'income-1',
@@ -84,7 +84,7 @@ describe('CalculateDailyProfitUseCase', () => {
     expect(output.profit).toBe(-80);
   });
 
-  it('deve retornar zero quando não houver movimentações no dia', async () => {
+  it('should return zero when there are no entries for the day', async () => {
     const repository = new InMemoryFinancialEntryRepository();
     const useCase = new CalculateDailyProfitUseCase(repository);
 

@@ -6,7 +6,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 
 describe('RegisterExpenseUseCase', () => {
-  it('deve registrar uma despesa com sucesso', async () => {
+  it('should register an expense successfully', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
     const expenseCategoryRepository = new InMemoryExpenseCategoryRepository([
       ExpenseCategory.create({
@@ -39,7 +39,7 @@ describe('RegisterExpenseUseCase', () => {
     expect(output.categoryId).toBe('category-1');
   });
 
-  it('deve falhar quando a categoria não existir', async () => {
+  it('should fail when the category does not exist', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
     const expenseCategoryRepository = new InMemoryExpenseCategoryRepository();
 
@@ -59,7 +59,7 @@ describe('RegisterExpenseUseCase', () => {
     ).rejects.toThrow(ExpenseCategoryNotFoundError);
   });
 
-  it('deve falhar quando a categoria pertencer a outro usuário', async () => {
+  it('should fail when the category belongs to another user', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
     const expenseCategoryRepository = new InMemoryExpenseCategoryRepository([
       ExpenseCategory.create({

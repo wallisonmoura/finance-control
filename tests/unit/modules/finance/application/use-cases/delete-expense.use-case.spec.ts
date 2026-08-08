@@ -46,7 +46,7 @@ describe('DeleteExpenseUseCase', () => {
     });
   };
 
-  it('deve excluir uma despesa com sucesso', async () => {
+  it('should delete an expense successfully', async () => {
     const repository = new InMemoryFinancialEntryRepository([makeExpense()]);
     const useCase = new DeleteExpenseUseCase(repository);
 
@@ -60,7 +60,7 @@ describe('DeleteExpenseUseCase', () => {
     expect(found).toBeNull();
   });
 
-  it('deve lançar erro quando a despesa não existir', async () => {
+  it('should throw an error when the expense does not exist', async () => {
     const repository = new InMemoryFinancialEntryRepository();
     const useCase = new DeleteExpenseUseCase(repository);
 
@@ -72,7 +72,7 @@ describe('DeleteExpenseUseCase', () => {
     ).rejects.toThrow(FinancialEntryNotFoundError);
   });
 
-  it('deve lançar erro quando a despesa pertencer a outro usuário', async () => {
+  it('should throw an error when the expense belongs to another user', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       makeExpense({
         id: 'expense-1',
@@ -94,7 +94,7 @@ describe('DeleteExpenseUseCase', () => {
     expect(found).not.toBeNull();
   });
 
-  it('deve lançar erro quando o lançamento não for uma despesa', async () => {
+  it('should throw an error when the entry is not an expense', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       makeIncome({
         id: 'income-1',
@@ -116,7 +116,7 @@ describe('DeleteExpenseUseCase', () => {
     expect(found).not.toBeNull();
   });
 
-  it('deve lançar erro quando a despesa estiver vinculada a uma dívida paga', async () => {
+  it('should throw an error when the expense is linked to a paid debt', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       makeExpense({
         id: 'expense-1',

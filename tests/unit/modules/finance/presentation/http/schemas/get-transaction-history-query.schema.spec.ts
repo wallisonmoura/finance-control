@@ -2,7 +2,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { getTransactionHistoryQuerySchema } from '@/modules/finance/presentation/http/schemas/get-transaction-history-query.schema';
 
 describe('getTransactionHistoryQuerySchema', () => {
-  it('deve aceitar query válida sem type', () => {
+  it('should accept a valid query without type', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-03-01',
       endDate: '2026-03-31',
@@ -18,7 +18,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     }
   });
 
-  it('deve aceitar query válida com type INCOME', () => {
+  it('should accept a valid query with type INCOME', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-03-01',
       endDate: '2026-03-31',
@@ -32,7 +32,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     }
   });
 
-  it('deve aceitar query válida com type EXPENSE', () => {
+  it('should accept a valid query with type EXPENSE', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-03-01',
       endDate: '2026-03-31',
@@ -46,7 +46,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     }
   });
 
-  it('deve rejeitar startDate ausente', () => {
+  it('should reject missing startDate', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       endDate: '2026-03-31',
     });
@@ -54,7 +54,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar endDate ausente', () => {
+  it('should reject missing endDate', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-03-01',
     });
@@ -62,7 +62,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar startDate inválida', () => {
+  it('should reject invalid startDate', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '01/03/2026',
       endDate: '2026-03-31',
@@ -71,7 +71,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar endDate inválida', () => {
+  it('should reject invalid endDate', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-03-01',
       endDate: '31/03/2026',
@@ -80,7 +80,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar type inválido', () => {
+  it('should reject invalid type', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-03-01',
       endDate: '2026-03-31',
@@ -90,7 +90,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar quando startDate for maior que endDate', () => {
+  it('should reject when startDate is greater than endDate', () => {
     const result = getTransactionHistoryQuerySchema.safeParse({
       startDate: '2026-04-01',
       endDate: '2026-03-31',
@@ -106,7 +106,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     }
   });
 
-  it('deve aceitar categoryId quando for um UUID válido', () => {
+  it('should accept categoryId when it is a valid UUID', () => {
     const result = getTransactionHistoryQuerySchema.parse({
       startDate: '2026-04-01',
       endDate: '2026-04-30',
@@ -117,7 +117,7 @@ describe('getTransactionHistoryQuerySchema', () => {
     expect(result.categoryId).toBe('11111111-1111-4111-8111-111111111111');
   });
 
-  it('deve rejeitar categoryId que não seja UUID', () => {
+  it('should reject categoryId that is not a UUID', () => {
     expect(() =>
       getTransactionHistoryQuerySchema.parse({
         startDate: '2026-04-01',

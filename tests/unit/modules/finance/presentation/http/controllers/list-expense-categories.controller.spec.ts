@@ -2,7 +2,7 @@ import { ListExpenseCategoriesUseCase } from '@/modules/finance/application/use-
 import { ListExpenseCategoriesController } from '@/modules/finance/presentation/http/controllers/list-expense-categories.controller';
 
 describe('ListExpenseCategoriesController', () => {
-  it('deve retornar status 200 com categorias de despesa', async () => {
+  it('should return status 200 with expense categories', async () => {
     const output = [
       {
         id: 'category-id',

@@ -15,7 +15,7 @@ describe('GetTransactionHistoryController', () => {
     controller = new GetTransactionHistoryController(useCase);
   });
 
-  it('deve retornar status 200 com histórico filtrado por período e tipo', async () => {
+  it('should return status 200 with history filtered by period and type', async () => {
     const output: TransactionHistoryOutput = {
       entries: [
         {
@@ -67,7 +67,7 @@ describe('GetTransactionHistoryController', () => {
     ]);
   });
 
-  it('deve retornar status 200 quando o tipo não for informado', async () => {
+  it('should return status 200 when the type is not informed', async () => {
     const output: TransactionHistoryOutput = {
       entries: [],
       totalIncome: 0,
@@ -91,7 +91,7 @@ describe('GetTransactionHistoryController', () => {
     expect(input.type).toBeUndefined();
   });
 
-  it('deve lançar erro quando faltar startDate', async () => {
+  it('should throw an error when startDate is missing', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -103,7 +103,7 @@ describe('GetTransactionHistoryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando faltar endDate', async () => {
+  it('should throw an error when endDate is missing', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -115,7 +115,7 @@ describe('GetTransactionHistoryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando startDate for maior que endDate', async () => {
+  it('should throw an error when startDate is greater than endDate', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -128,7 +128,7 @@ describe('GetTransactionHistoryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando o type for inválido', async () => {
+  it('should throw an error when the type is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -141,7 +141,7 @@ describe('GetTransactionHistoryController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve repassar categoryId para o use case', async () => {
+  it('should forward categoryId to the use case', async () => {
     const output: TransactionHistoryOutput = {
       entries: [],
       totalIncome: 0,
