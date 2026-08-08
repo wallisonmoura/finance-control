@@ -41,7 +41,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     await prisma.$disconnect();
   });
 
-  it('deve pagar uma dívida usando BANK, criar expense e debitar a wallet', async () => {
+  it('should pay a debt using BANK, create an expense and debit the wallet', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -144,7 +144,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(Number(walletOnDatabase?.receivableBalance)).toBe(500);
   });
 
-  it('deve pagar uma dívida usando CASH e debitar cashBalance', async () => {
+  it('should pay a debt using CASH and debit cashBalance', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -211,7 +211,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(Number(walletOnDatabase?.receivableBalance)).toBe(500);
   });
 
-  it('deve pagar uma dívida usando RECEIVABLE e debitar receivableBalance', async () => {
+  it('should pay a debt using RECEIVABLE and debit receivableBalance', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -278,7 +278,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(Number(walletOnDatabase?.receivableBalance)).toBe(250);
   });
 
-  it('deve retornar 401 quando o usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -305,7 +305,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 400 quando o id da dívida for inválido', async () => {
+  it('should return 400 when the debt id is invalid', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -334,7 +334,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(body.message).toBe('Erro de validação.');
   });
 
-  it('deve retornar 400 quando o payload for inválido', async () => {
+  it('should return 400 when the payload is invalid', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -364,7 +364,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(body.issues).toBeDefined();
   });
 
-  it('deve retornar 404 quando a dívida não existir ou pertencer a outro usuário', async () => {
+  it('should return 404 when the debt does not exist or belongs to another user', async () => {
     const user = await createTestUser();
 
     const category = await createTestExpenseCategory({
@@ -400,7 +400,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 409 ao tentar pagar uma dívida já paga', async () => {
+  it('should return 409 when trying to pay an already paid debt', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -464,7 +464,7 @@ describe('PATCH /api/debts/[id]/pay', () => {
     expect(transactions).toHaveLength(0);
   });
 
-  it('deve retornar 422 e manter rollback quando a wallet não tiver saldo suficiente', async () => {
+  it('should return 422 and keep a rollback when the wallet has insufficient balance', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({

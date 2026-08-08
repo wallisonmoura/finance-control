@@ -17,7 +17,7 @@ describe('DeleteDebtController', () => {
     controller = new DeleteDebtController(useCase as DeleteDebtUseCase);
   });
 
-  it('deve excluir uma dívida e retornar 204', async () => {
+  it('should delete a debt and return 204', async () => {
     execute.mockResolvedValue(undefined);
 
     const response = await controller.handle({
@@ -38,7 +38,7 @@ describe('DeleteDebtController', () => {
     });
   });
 
-  it('deve propagar erro de validação quando o id for inválido', async () => {
+  it('should propagate a validation error when the id is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',

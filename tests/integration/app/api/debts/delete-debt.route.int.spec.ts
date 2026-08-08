@@ -40,7 +40,7 @@ describe('DELETE /api/debts/[id]', () => {
     await prisma.$disconnect();
   });
 
-  it('deve excluir uma dívida pendente do usuário autenticado', async () => {
+  it('should delete a pending debt of the authenticated user', async () => {
     const user = await createTestUser();
     const wallet = await createTestWallet({
       userId: user.id,
@@ -85,7 +85,7 @@ describe('DELETE /api/debts/[id]', () => {
     expect(debtOnDatabase).toBeNull();
   });
 
-  it('deve retornar 409 ao tentar excluir uma dívida paga', async () => {
+  it('should return 409 when trying to delete a paid debt', async () => {
     const user = await createTestUser();
     const wallet = await createTestWallet({
       userId: user.id,
@@ -133,7 +133,7 @@ describe('DELETE /api/debts/[id]', () => {
     expect(debtOnDatabase).not.toBeNull();
   });
 
-  it('deve retornar 401 quando o usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -155,7 +155,7 @@ describe('DELETE /api/debts/[id]', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 400 quando o id for inválido', async () => {
+  it('should return 400 when the id is invalid', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -179,7 +179,7 @@ describe('DELETE /api/debts/[id]', () => {
     expect(body.message).toBe('Erro de validação.');
   });
 
-  it('deve retornar 404 quando a dívida não existir ou pertencer a outro usuário', async () => {
+  it('should return 404 when the debt does not exist or belongs to another user', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);

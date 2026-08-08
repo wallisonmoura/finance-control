@@ -13,7 +13,7 @@ describe('ListDebtUseCase', () => {
     sut = new ListDebtsUseCase(debtRepository);
   });
 
-  it('deve listar apenas as dívidas do usuário ordenadas por vencimento', async () => {
+  it('should list only the user debts ordered by due date', async () => {
     await debtRepository.create(
       Debt.create({
         id: 'debt-1',
@@ -72,7 +72,7 @@ describe('ListDebtUseCase', () => {
     expect(output[1].id).toBe('debt-1');
   });
 
-  it('deve retornar array vazio quando não houver dívidas', async () => {
+  it('should return an empty array when there are no debts', async () => {
     const output = await sut.execute({ userId: 'user-1' });
 
     expect(output).toEqual([]);

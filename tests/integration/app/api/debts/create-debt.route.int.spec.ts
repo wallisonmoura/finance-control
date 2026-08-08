@@ -38,7 +38,7 @@ describe('POST /api/debts', () => {
     await prisma.$disconnect();
   });
 
-  it('deve criar uma dívida para o usuário autenticado', async () => {
+  it('should create a debt for the authenticated user', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,
@@ -85,7 +85,7 @@ describe('POST /api/debts', () => {
     expect(debtOnDatabase?.userId).toBe(user.id);
   });
 
-  it('deve retornar 401 quando o usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest('http://localhost:3000/api/debts', {
@@ -106,7 +106,7 @@ describe('POST /api/debts', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 400 quando o payload for inválido', async () => {
+  it('should return 400 when the payload is invalid', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,
@@ -132,7 +132,7 @@ describe('POST /api/debts', () => {
     expect(body.issues).toBeDefined();
   });
 
-  it('deve retornar 400 quando o payload de cadastro for inválido', async () => {
+  it('should return 400 when the registration payload is invalid', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);

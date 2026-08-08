@@ -26,7 +26,7 @@ describe('PayDebtUseCase Integration', () => {
     await prisma.$disconnect();
   });
 
-  it('deve pagar uma dívida, criar uma despesa real e debitar a Wallet em uma transação atômica', async () => {
+  it('should pay a debt, create a real expense, and debit the Wallet in an atomic transaction', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -103,7 +103,7 @@ describe('PayDebtUseCase Integration', () => {
     expect(updatedWallet?.receivableBalance.toNumber()).toBe(200);
   });
 
-  it('deve fazer rollback quando a Wallet não tiver saldo suficiente na origem escolhida', async () => {
+  it('should roll back when the Wallet has insufficient balance in the chosen source', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -169,7 +169,7 @@ describe('PayDebtUseCase Integration', () => {
     expect(persistedWallet?.receivableBalance.toNumber()).toBe(200);
   });
 
-  it('deve fazer rollback quando a categoria de despesa não pertencer ao usuário', async () => {
+  it('should roll back when the expense category does not belong to the user', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({

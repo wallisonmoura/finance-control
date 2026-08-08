@@ -30,7 +30,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     await prisma.$disconnect();
   });
 
-  it('deve debitar bankBalance quando paymentSource for BANK', async () => {
+  it('should debit bankBalance when paymentSource is BANK', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -57,7 +57,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     expect(updatedWallet?.receivableBalance.toNumber()).toBe(200);
   });
 
-  it('deve debitar cashBalance quando paymentSource for CASH', async () => {
+  it('should debit cashBalance when paymentSource is CASH', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -84,7 +84,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     expect(updatedWallet?.receivableBalance.toNumber()).toBe(200);
   });
 
-  it('deve debitar receivableBalance quando paymentSource for RECEIVABLE', async () => {
+  it('should debit receivableBalance when paymentSource is RECEIVABLE', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -111,7 +111,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     expect(updatedWallet?.receivableBalance.toNumber()).toBe(50);
   });
 
-  it('deve lançar DefaultWalletNotFoundError quando não existir wallet default', async () => {
+  it('should throw DefaultWalletNotFoundError when there is no default wallet', async () => {
     const user = await createTestUser();
 
     await expect(
@@ -123,7 +123,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     ).rejects.toBeInstanceOf(DefaultWalletNotFoundError);
   });
 
-  it('deve lançar InsufficientWalletBalanceError quando BANK não tiver saldo suficiente', async () => {
+  it('should throw InsufficientWalletBalanceError when BANK has insufficient balance', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -142,7 +142,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     ).rejects.toBeInstanceOf(InsufficientWalletBalanceError);
   });
 
-  it('deve lançar InsufficientWalletBalanceError quando CASH não tiver saldo suficiente', async () => {
+  it('should throw InsufficientWalletBalanceError when CASH has insufficient balance', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -161,7 +161,7 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
     ).rejects.toBeInstanceOf(InsufficientWalletBalanceError);
   });
 
-  it('deve lançar InsufficientWalletBalanceError quando RECEIVABLE não tiver saldo suficiente', async () => {
+  it('should throw InsufficientWalletBalanceError when RECEIVABLE has insufficient balance', async () => {
     const user = await createTestUser();
 
     await createTestWallet({

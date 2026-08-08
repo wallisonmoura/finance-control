@@ -17,7 +17,7 @@ describe('DeleteDebtUseCase', () => {
     sut = new DeleteDebtUseCase(debtRepository);
   });
 
-  it('deve excluir uma dívida pendente com sucesso', async () => {
+  it('should delete a pending debt successfully', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-1',
@@ -43,7 +43,7 @@ describe('DeleteDebtUseCase', () => {
     expect(debtRepository.items).toHaveLength(0);
   });
 
-  it('deve lançar erro quando a dívida não existir', async () => {
+  it('should throw an error when the debt does not exist', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',
@@ -52,7 +52,7 @@ describe('DeleteDebtUseCase', () => {
     ).rejects.toBeInstanceOf(DebtNotFoundError);
   });
 
-  it('deve lançar erro quando a dívida pertencer a outro usuário', async () => {
+  it('should throw an error when the debt belongs to another user', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-2',
@@ -78,7 +78,7 @@ describe('DeleteDebtUseCase', () => {
     ).rejects.toBeInstanceOf(UnauthorizedDebtAccessError);
   });
 
-  it('deve lançar erro ao tentar excluir uma dívida paga', async () => {
+  it('should throw an error when trying to delete a paid debt', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-1',

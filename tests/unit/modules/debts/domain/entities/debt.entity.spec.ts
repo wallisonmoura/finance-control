@@ -25,7 +25,7 @@ describe('Debt entity', () => {
     updatedAt: new Date('2026-04-01T10:00:00.000Z'),
   };
 
-  it('deve criar uma dívida válida com sucesso', () => {
+  it('should create a valid debt successfully', () => {
     const debt = Debt.create(baseProps);
 
     expect(debt.id).toBe(baseProps.id);
@@ -42,7 +42,7 @@ describe('Debt entity', () => {
     expect(debt.updatedAt).toEqual(baseProps.updatedAt);
   });
 
-  it('deve lançar erro quando a descrição estiver vazia', () => {
+  it('should throw an error when the description is empty', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -51,7 +51,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtDescriptionError);
   });
 
-  it('deve lançar erro quando a descrição tiver apenas espaços', () => {
+  it('should throw an error when the description contains only spaces', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -60,7 +60,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtDescriptionError);
   });
 
-  it('deve lançar erro quando o valor for zero', () => {
+  it('should throw an error when the amount is zero', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -69,7 +69,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtAmountError);
   });
 
-  it('deve lançar erro quando o valor for negativo', () => {
+  it('should throw an error when the amount is negative', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -78,7 +78,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtAmountError);
   });
 
-  it('deve lançar erro quando o valor não for um número finito', () => {
+  it('should throw an error when the amount is not a finite number', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -87,7 +87,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtAmountError);
   });
 
-  it('deve lançar erro quando a dueDate for inválida', () => {
+  it('should throw an error when the dueDate is invalid', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -96,7 +96,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtDueDateError);
   });
 
-  it('deve lançar erro quando uma dívida pendente possuir paidAt', () => {
+  it('should throw an error when a pending debt has paidAt', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -105,7 +105,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtPendingStateError);
   });
 
-  it('deve lançar erro quando uma dívida pendente possuir paymentSource', () => {
+  it('should throw an error when a pending debt has paymentSource', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -114,7 +114,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtPendingStateError);
   });
 
-  it('deve lançar erro quando uma dívida paga não possuir paidAt', () => {
+  it('should throw an error when a paid debt has no paidAt', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -125,7 +125,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtPaidStateError);
   });
 
-  it('deve lançar erro quando uma dívida paga não possuir paymentSource', () => {
+  it('should throw an error when a paid debt has no paymentSource', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -136,7 +136,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtPaidStateError);
   });
 
-  it('deve retornar true para isPending quando a dívida estiver pendente', () => {
+  it('should return true for isPending when the debt is pending', () => {
     const debt = Debt.create({
       ...baseProps,
       status: DebtStatus.PENDING,
@@ -146,7 +146,7 @@ describe('Debt entity', () => {
     expect(debt.isPaid()).toBe(false);
   });
 
-  it('deve retornar true para isPaid quando a dívida estiver paga', () => {
+  it('should return true for isPaid when the debt is paid', () => {
     const debt = Debt.create({
       ...baseProps,
       status: DebtStatus.PAID,
@@ -158,7 +158,7 @@ describe('Debt entity', () => {
     expect(debt.isPending()).toBe(false);
   });
 
-  it('deve atualizar uma dívida pendente com sucesso', () => {
+  it('should update a pending debt successfully', () => {
     const debt = Debt.create(baseProps);
 
     const updatedDebt = debt.update({
@@ -182,7 +182,7 @@ describe('Debt entity', () => {
     );
   });
 
-  it('deve lançar erro ao atualizar uma dívida paga', () => {
+  it('should throw an error when updating a paid debt', () => {
     const debt = Debt.create({
       ...baseProps,
       status: DebtStatus.PAID,
@@ -197,7 +197,7 @@ describe('Debt entity', () => {
     ).toThrow(DebtAlreadyPaidError);
   });
 
-  it('deve lançar erro ao atualizar com descrição inválida', () => {
+  it('should throw an error when updating with an invalid description', () => {
     const debt = Debt.create(baseProps);
 
     expect(() =>
@@ -207,7 +207,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtDescriptionError);
   });
 
-  it('deve lançar erro ao atualizar com valor inválido', () => {
+  it('should throw an error when updating with an invalid amount', () => {
     const debt = Debt.create(baseProps);
 
     expect(() =>
@@ -217,7 +217,7 @@ describe('Debt entity', () => {
     ).toThrow(InvalidDebtAmountError);
   });
 
-  it('deve marcar uma dívida pendente como paga', () => {
+  it('should mark a pending debt as paid', () => {
     const debt = Debt.create(baseProps);
     const paidAt = new Date('2026-04-18');
 
@@ -233,7 +233,7 @@ describe('Debt entity', () => {
     expect(paidDebt.isPending()).toBe(false);
   });
 
-  it('deve lançar erro ao tentar pagar uma dívida já paga', () => {
+  it('should throw an error when trying to pay an already paid debt', () => {
     const debt = Debt.create({
       ...baseProps,
       status: DebtStatus.PAID,
@@ -249,7 +249,7 @@ describe('Debt entity', () => {
     ).toThrow(DebtAlreadyPaidError);
   });
 
-  it('deve retornar os dados corretamente no toJSON', () => {
+  it('should return the correct data in toJSON', () => {
     const debt = Debt.create(baseProps);
 
     expect(debt.toJSON()).toEqual({
@@ -268,7 +268,7 @@ describe('Debt entity', () => {
     });
   });
 
-  it('deve falhar ao criar dívida sem userId', () => {
+  it('should fail to create a debt without userId', () => {
     expect(() =>
       Debt.create({
         ...baseProps,
@@ -277,7 +277,7 @@ describe('Debt entity', () => {
     ).toThrow('ID do usuário é obrigatório.');
   });
 
-  it('deve falhar ao criar dívida com userId contendo apenas espaços', () => {
+  it('should fail to create a debt with userId containing only spaces', () => {
     expect(() =>
       Debt.create({
         ...baseProps,

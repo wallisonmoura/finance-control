@@ -35,7 +35,7 @@ describe('PrismaDebtRepository', () => {
     await prisma.$disconnect();
   });
 
-  it('deve criar uma dívida vinculando a wallet default internamente', async () => {
+  it('should create a debt linking the default wallet internally', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -76,7 +76,7 @@ describe('PrismaDebtRepository', () => {
     expect(persistedDebt?.walletId).toBe(wallet.id);
   });
 
-  it('deve buscar uma dívida por id', async () => {
+  it('should find a debt by id', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -101,13 +101,13 @@ describe('PrismaDebtRepository', () => {
     expect(foundDebt?.status).toBe(DebtStatus.PENDING);
   });
 
-  it('deve retornar null ao buscar uma dívida inexistente por id', async () => {
+  it('should return null when finding a non-existent debt by id', async () => {
     const foundDebt = await repository.findById(randomUUID());
 
     expect(foundDebt).toBeNull();
   });
 
-  it('deve listar dívidas por userId', async () => {
+  it('should list debts by userId', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -153,7 +153,7 @@ describe('PrismaDebtRepository', () => {
     expect(debts.every((debt) => debt.userId === user.id)).toBe(true);
   });
 
-  it('deve listar apenas dívidas pendentes por userId', async () => {
+  it('should list only pending debts by userId', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -189,7 +189,7 @@ describe('PrismaDebtRepository', () => {
     expect(pendingDebts[0].paymentSource).toBeNull();
   });
 
-  it('deve atualizar uma dívida pendente', async () => {
+  it('should update a pending debt', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -228,7 +228,7 @@ describe('PrismaDebtRepository', () => {
     expect(result.status).toBe(DebtStatus.PENDING);
   });
 
-  it('deve atualizar uma dívida para paga', async () => {
+  it('should update a debt to paid', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -260,7 +260,7 @@ describe('PrismaDebtRepository', () => {
     expect(result.paymentSource).toBe(DebtPaymentSource.BANK);
   });
 
-  it('deve excluir uma dívida', async () => {
+  it('should delete a debt', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -281,7 +281,7 @@ describe('PrismaDebtRepository', () => {
     expect(foundDebt).toBeNull();
   });
 
-  it('deve lançar DefaultWalletNotFoundError ao criar dívida sem wallet default para o usuário', async () => {
+  it('should throw DefaultWalletNotFoundError when creating a debt without a default wallet for the user', async () => {
     const user = await createTestUser();
 
     const debt = makeTestDebtEntity({

@@ -23,7 +23,7 @@ describe('PayDebtController', () => {
     controller = new PayDebtController(useCase);
   });
 
-  it('deve pagar uma dívida e retornar 200', async () => {
+  it('should pay a debt and return 200', async () => {
     const output: DebtOutput = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       userId: 'user-id',
@@ -71,7 +71,7 @@ describe('PayDebtController', () => {
     });
   });
 
-  it('deve propagar erro de validação quando o id da dívida for inválido', async () => {
+  it('should propagate a validation error when the debt id is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',
@@ -89,7 +89,7 @@ describe('PayDebtController', () => {
     expect(execute).not.toHaveBeenCalled();
   });
 
-  it('deve propagar erro de validação quando o payload for inválido', async () => {
+  it('should propagate a validation error when the payload is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',

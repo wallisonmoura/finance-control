@@ -19,7 +19,7 @@ describe('RegisterDebtController', () => {
     controller = new RegisterDebtController(useCase as RegisterDebtUseCase);
   });
 
-  it('deve registrar uma dívida e retornar 201', async () => {
+  it('should register a debt and return 201', async () => {
     const output = {
       id: 'debt-id',
       userId: 'user-id',
@@ -66,7 +66,7 @@ describe('RegisterDebtController', () => {
     });
   });
 
-  it('deve propagar erro de validação quando o payload for inválido', async () => {
+  it('should propagate a validation error when the payload is invalid', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',

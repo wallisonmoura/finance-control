@@ -18,7 +18,7 @@ describe('ListDebtsController', () => {
     controller = new ListDebtsController(useCase as ListDebtsUseCase);
   });
 
-  it('deve listar as dívidas do usuário autenticado e retornar 200', async () => {
+  it('should list the authenticated user debts and return 200', async () => {
     const output = [
       {
         id: 'debt-id',

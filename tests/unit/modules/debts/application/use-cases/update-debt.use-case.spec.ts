@@ -17,7 +17,7 @@ describe('UpdateDebtUseCase', () => {
     sut = new UpdateDebtUseCase(debtRepository);
   });
 
-  it('deve atualizar uma dívida pendente com sucesso', async () => {
+  it('should update a pending debt successfully', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-1',
@@ -50,7 +50,7 @@ describe('UpdateDebtUseCase', () => {
     expect(output.paymentSource).toBeNull();
   });
 
-  it('deve lançar erro quando a dívida não existir', async () => {
+  it('should throw an error when the debt does not exist', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',
@@ -60,7 +60,7 @@ describe('UpdateDebtUseCase', () => {
     ).rejects.toBeInstanceOf(DebtNotFoundError);
   });
 
-  it('deve lançar erro quando a dívida pertencer a outro usuário', async () => {
+  it('should throw an error when the debt belongs to another user', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-2',
@@ -87,7 +87,7 @@ describe('UpdateDebtUseCase', () => {
     ).rejects.toBeInstanceOf(UnauthorizedDebtAccessError);
   });
 
-  it('deve lançar erro ao tentar atualizar uma dívida paga', async () => {
+  it('should throw an error when trying to update a paid debt', async () => {
     const debt = Debt.create({
       id: 'debt-1',
       userId: 'user-1',

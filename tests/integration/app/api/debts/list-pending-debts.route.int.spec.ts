@@ -40,7 +40,7 @@ describe('GET /api/debts/pending', () => {
     await prisma.$disconnect();
   });
 
-  it('deve listar apenas as dívidas pendentes do usuário autenticado', async () => {
+  it('should list only the authenticated user pending debts', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -94,7 +94,7 @@ describe('GET /api/debts/pending', () => {
     });
   });
 
-  it('deve retornar lista vazia quando o usuário não possuir dívidas pendentes', async () => {
+  it('should return an empty list when the user has no pending debts', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -127,7 +127,7 @@ describe('GET /api/debts/pending', () => {
     expect(body).toEqual([]);
   });
 
-  it('deve retornar 401 quando o usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest('http://localhost:3000/api/debts/pending', {
