@@ -40,4 +40,24 @@ describe('isoDateStringSchema', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it('deve rejeitar data com mês inexistente', () => {
+    const result = isoDateStringSchema.safeParse('2026-99-99');
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Data inválida.');
+    }
+  });
+
+  it('deve rejeitar data com dia inexistente no mês', () => {
+    const result = isoDateStringSchema.safeParse('2026-02-30');
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Data inválida.');
+    }
+  });
 });
