@@ -1,14 +1,12 @@
 import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
-import { PayDebtInput } from '@/modules/debts/application/dtos/pay-debt.input';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
-import { PayDebtController } from '@/modules/debts/presentation/http/controllers/pay-debt.controller';
+import {
+  PayDebtController,
+  PayDebtUseCaseContract,
+} from '@/modules/debts/presentation/http/controllers/pay-debt.controller';
 import { ZodError } from 'zod';
-
-type PayDebtUseCaseContract = {
-  execute(input: PayDebtInput): Promise<DebtOutput>;
-};
 
 describe('PayDebtController', () => {
   let execute: jest.Mock;

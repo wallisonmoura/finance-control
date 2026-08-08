@@ -8,7 +8,12 @@ import { debtIdParamSchema } from '../schemas/debt-id-param.schema';
 import { payDebtSchema, PayDebtSchemaData } from '../schemas/pay-debt.schema';
 import { PayDebtInput } from '@/modules/debts/application/dtos/pay-debt.input';
 
-type PayDebtUseCaseContract = {
+// PayDebtUseCase is composed transactionally by makePayDebtUseCase() (see
+// make-pay-debt-use-case.ts), which returns Pick<PayDebtUseCase, 'execute'>
+// rather than a concrete instance because its dependencies are constructed
+// per-transaction. The controller depends on that narrower contract on
+// purpose — it cannot depend on the concrete class here.
+export type PayDebtUseCaseContract = {
   execute(input: PayDebtInput): Promise<DebtOutput>;
 };
 
