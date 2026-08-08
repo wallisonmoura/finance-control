@@ -13,13 +13,13 @@ describe('SignOutController', () => {
     controller = new SignOutController(useCase);
   });
 
-  it('deve chamar o SignOutUseCase', async () => {
+  it('should call SignOutUseCase', async () => {
     await controller.handle();
 
     expect(useCase.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('deve retornar 200 com mensagem de sucesso', async () => {
+  it('should return 200 with a success message', async () => {
     const response = await controller.handle();
 
     expect(response).toEqual({

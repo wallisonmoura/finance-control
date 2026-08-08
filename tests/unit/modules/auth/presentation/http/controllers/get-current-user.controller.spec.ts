@@ -16,7 +16,7 @@ describe('GetCurrentUserController', () => {
     controller = new GetCurrentUserController(useCase);
   });
 
-  it('deve chamar o GetCurrentUserUseCase com o input correto', async () => {
+  it('should call GetCurrentUserUseCase with the correct input', async () => {
     const output: GetCurrentUserOutput = {
       user: {
         id: 'user-1',
@@ -37,7 +37,7 @@ describe('GetCurrentUserController', () => {
     expect(useCase.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('deve retornar 200 com o usuário autenticado', async () => {
+  it('should return 200 with the authenticated user', async () => {
     const output: GetCurrentUserOutput = {
       user: {
         id: 'user-1',
