@@ -40,7 +40,7 @@ describe('GET /api/auth/me', () => {
     jest.clearAllMocks();
   });
 
-  it('deve retornar o usuário autenticado com token válido', async () => {
+  it('should return the authenticated user with a valid token', async () => {
     const execute = jest.fn().mockResolvedValue({
       user: {
         id: 'user-1',
@@ -87,7 +87,7 @@ describe('GET /api/auth/me', () => {
     });
   });
 
-  it('deve retornar 401 sem token', async () => {
+  it('should return 401 without a token', async () => {
     getAuthTokenFromRequestMock.mockReturnValue(null);
 
     const request = new NextRequest('http://localhost:3000/api/auth/me', {
@@ -101,7 +101,7 @@ describe('GET /api/auth/me', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 401 com token inválido', async () => {
+  it('should return 401 with an invalid token', async () => {
     const execute = jest.fn();
 
     const verifyAccessToken = jest
@@ -130,7 +130,7 @@ describe('GET /api/auth/me', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 401 quando o usuário do token não existir', async () => {
+  it('should return 401 when the token user does not exist', async () => {
     const execute = jest.fn().mockRejectedValue(new UserNotFoundError());
 
     const verifyAccessToken = jest.fn().mockResolvedValue({

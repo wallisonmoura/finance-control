@@ -9,7 +9,7 @@ jest.mock('@/modules/auth/infra/factories/make-sign-in-use-case', () => ({
 }));
 
 describe('POST /api/auth/sign-in', () => {
-  it('deve autenticar com credenciais válidas e definir cookie', async () => {
+  it('should authenticate with valid credentials and set cookie', async () => {
     const execute = jest.fn().mockResolvedValue({
       accessToken: 'fake-access-token',
     });
@@ -37,7 +37,7 @@ describe('POST /api/auth/sign-in', () => {
     expect(setCookie).toContain(`${AUTH_COOKIE_NAME}=fake-access-token`);
   });
 
-  it('deve retornar 401 com credenciais inválidas', async () => {
+  it('should return 401 with invalid credentials', async () => {
     const execute = jest.fn().mockRejectedValue(new InvalidCredentialsError());
 
     (makeSignInUseCase as jest.Mock).mockReturnValue({
@@ -62,7 +62,7 @@ describe('POST /api/auth/sign-in', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar 400 quando o payload for inválido', async () => {
+  it('should return 400 when payload is invalid', async () => {
     const request = new NextRequest('http://localhost:3000/api/auth/sign-in', {
       method: 'POST',
       body: JSON.stringify({
@@ -84,7 +84,7 @@ describe('POST /api/auth/sign-in', () => {
     });
   });
 
-  it('deve retornar 500 quando ocorrer erro inesperado no sign-in', async () => {
+  it('should return 500 when an unexpected error occurs during sign-in', async () => {
     const execute = jest.fn().mockRejectedValue(new Error('Unexpected error'));
 
     (makeSignInUseCase as jest.Mock).mockReturnValue({
