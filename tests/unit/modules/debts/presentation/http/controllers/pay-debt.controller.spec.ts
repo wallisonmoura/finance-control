@@ -63,7 +63,11 @@ describe('PayDebtController', () => {
 
     expect(response).toEqual({
       statusCode: 200,
-      body: output,
+      body: {
+        ...output,
+        dueDate: '2026-05-12',
+        paidAt: '2026-05-12',
+      },
     });
   });
 

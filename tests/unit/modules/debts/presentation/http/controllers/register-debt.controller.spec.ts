@@ -59,7 +59,10 @@ describe('RegisterDebtController', () => {
 
     expect(response).toEqual({
       statusCode: 201,
-      body: output,
+      body: {
+        ...output,
+        dueDate: '2026-05-10',
+      },
     });
   });
 

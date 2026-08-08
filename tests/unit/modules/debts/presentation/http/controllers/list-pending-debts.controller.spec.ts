@@ -50,7 +50,10 @@ describe('ListPendingDebtsController', () => {
 
     expect(response).toEqual({
       statusCode: 200,
-      body: output,
+      body: output.map((debt) => ({
+        ...debt,
+        dueDate: '2026-05-10',
+      })),
     });
   });
 });
