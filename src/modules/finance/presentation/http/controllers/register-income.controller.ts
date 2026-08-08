@@ -1,7 +1,7 @@
 import { RegisterIncomeUseCase } from '@/modules/finance/application/use-cases/register-income.use-case';
 import {
   FinanceHttpPresenter,
-  FinancialEntryHttpResponse,
+  FinancialEntryResponseBody,
 } from '../presenters/finance-http.presenter';
 import {
   registerIncomeSchema,
@@ -17,13 +17,13 @@ import { Controller } from '@/shared/presentation/http/controller';
 
 export class RegisterIncomeController implements Controller<
   HttpRequest,
-  FinancialEntryHttpResponse
+  FinancialEntryResponseBody
 > {
   constructor(private readonly registerIncomeUseCase: RegisterIncomeUseCase) {}
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<FinancialEntryHttpResponse>> {
+  ): Promise<HttpResponse<FinancialEntryResponseBody>> {
     const data: RegisterIncomeSchemaData = registerIncomeSchema.parse(
       request.body,
     );

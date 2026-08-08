@@ -3,7 +3,7 @@ import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-sou
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 
-export interface DebtHttpResponse {
+export interface DebtResponseBody {
   id: string;
   userId: string;
   description: string;
@@ -19,7 +19,7 @@ export interface DebtHttpResponse {
 }
 
 export class DebtHttpPresenter {
-  static toResponse(debt: DebtOutput): DebtHttpResponse {
+  static toResponse(debt: DebtOutput): DebtResponseBody {
     return {
       id: debt.id,
       userId: debt.userId,
@@ -36,7 +36,7 @@ export class DebtHttpPresenter {
     };
   }
 
-  static toResponseList(debts: DebtOutput[]): DebtHttpResponse[] {
+  static toResponseList(debts: DebtOutput[]): DebtResponseBody[] {
     return debts.map((debt) => DebtHttpPresenter.toResponse(debt));
   }
 }
