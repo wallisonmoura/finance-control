@@ -268,7 +268,6 @@ GET  /api/auth/me
 ```txt
 GET /api/wallet
 PUT /api/wallet
-GET /api/wallet/summary
 ```
 
 ### Finance
