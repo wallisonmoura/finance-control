@@ -32,7 +32,7 @@ describe('PrismaBalanceSummaryRepository', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar os dados-base da wallet e a soma das dívidas pendentes', async () => {
+  it('should return the wallet base data and the sum of pending debts', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -84,7 +84,7 @@ describe('PrismaBalanceSummaryRepository', () => {
     });
   });
 
-  it('deve retornar pendingDebts zero quando o usuário não possuir dívidas pendentes', async () => {
+  it('should return pendingDebts zero when the user has no pending debts', async () => {
     const user = await createTestUser();
 
     await createTestWallet({
@@ -104,7 +104,7 @@ describe('PrismaBalanceSummaryRepository', () => {
     });
   });
 
-  it('deve retornar null quando o usuário não possuir wallet default', async () => {
+  it('should return null when the user has no default wallet', async () => {
     const user = await createTestUser();
 
     const output = await sut.findByUserId(user.id);
@@ -112,7 +112,7 @@ describe('PrismaBalanceSummaryRepository', () => {
     expect(output).toBeNull();
   });
 
-  it('não deve considerar dívidas pendentes de outro usuário', async () => {
+  it('should not consider pending debts from another user', async () => {
     const user = await createTestUser();
 
     const anotherUser = await createTestUser();

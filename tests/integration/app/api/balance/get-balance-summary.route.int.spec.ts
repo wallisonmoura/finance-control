@@ -38,7 +38,7 @@ describe('GET /api/balance/summary', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar 200 com o balance summary do usuário autenticado', async () => {
+  it('should return 200 with the balance summary of the authenticated user', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -86,7 +86,7 @@ describe('GET /api/balance/summary', () => {
     });
   });
 
-  it('deve retornar 200 com finalBalance negativo quando pendingDebts for maior que walletTotal', async () => {
+  it('should return 200 with a negative finalBalance when pendingDebts is greater than walletTotal', async () => {
     const user = await createTestUser();
 
     const wallet = await createTestWallet({
@@ -127,7 +127,7 @@ describe('GET /api/balance/summary', () => {
     });
   });
 
-  it('deve retornar 401 quando usuário não estiver autenticado', async () => {
+  it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest('http://localhost/api/balance/summary', {
@@ -141,7 +141,7 @@ describe('GET /api/balance/summary', () => {
     expect(body).toHaveProperty('message');
   });
 
-  it('deve retornar erro quando o usuário não possuir wallet', async () => {
+  it('should return an error when the user has no wallet', async () => {
     const user = await createTestUser();
 
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
