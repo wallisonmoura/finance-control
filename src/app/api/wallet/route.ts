@@ -9,13 +9,13 @@ import { toNextResponse } from '@/shared/presentation/http/to-next-response';
 import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  const userId = await getAuthenticatedUserIdFromRequest(request);
+
+  if (!userId) {
+    return unauthorizedResponse();
+  }
+
   try {
-    const userId = await getAuthenticatedUserIdFromRequest(request);
-
-    if (!userId) {
-      return unauthorizedResponse();
-    }
-
     const useCase = makeGetWalletUseCase();
     const controller = new GetWalletController(useCase);
 
@@ -28,13 +28,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const userId = await getAuthenticatedUserIdFromRequest(request);
+
+  if (!userId) {
+    return unauthorizedResponse();
+  }
+
   try {
-    const userId = await getAuthenticatedUserIdFromRequest(request);
-
-    if (!userId) {
-      return unauthorizedResponse();
-    }
-
     const body = await request.json();
 
     const useCase = makeUpdateWalletBalancesUseCase();
