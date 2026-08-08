@@ -36,7 +36,7 @@ describe('GET /api/finance/expense-categories', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar categorias ativas do usuario autenticado', async () => {
+  it('should return active categories of the authenticated user', async () => {
     const user = await createTestUser({
       email: 'expense-categories@test.com',
     });
@@ -81,7 +81,7 @@ describe('GET /api/finance/expense-categories', () => {
     ]);
   });
 
-  it('deve retornar 401 quando nao estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(

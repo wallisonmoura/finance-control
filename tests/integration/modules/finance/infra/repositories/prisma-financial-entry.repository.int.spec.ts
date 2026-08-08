@@ -33,7 +33,7 @@ describe('PrismaFinancialEntryRepository', () => {
   });
 
   describe('create', () => {
-    it('deve criar uma income usando a wallet padrão do usuário', async () => {
+    it("should create an income using the user's default wallet", async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -70,7 +70,7 @@ describe('PrismaFinancialEntryRepository', () => {
       expect(persisted?.expenseCategoryId).toBeNull();
     });
 
-    it('deve criar uma expense persistindo a categoria', async () => {
+    it('should create an expense persisting the category', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -107,7 +107,7 @@ describe('PrismaFinancialEntryRepository', () => {
       expect(persisted?.expenseCategoryId).toBe(category.id);
     });
 
-    it('deve lançar DefaultWalletNotFoundError quando o usuário não possuir wallet padrão', async () => {
+    it('should throw DefaultWalletNotFoundError when the user has no default wallet', async () => {
       const user = await createTestUser();
 
       const entry = makeTestFinancialEntryEntity({
@@ -127,7 +127,7 @@ describe('PrismaFinancialEntryRepository', () => {
   });
 
   describe('findById', () => {
-    it('deve retornar um lançamento por id', async () => {
+    it('should return an entry by id', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -151,7 +151,7 @@ describe('PrismaFinancialEntryRepository', () => {
       expect(found?.amount).toBe(120);
     });
 
-    it('deve retornar null quando o lançamento não existir', async () => {
+    it('should return null when the entry does not exist', async () => {
       const found = await repository.findById(
         '550e8400-e29b-41d4-a716-446655440000',
       );
@@ -161,7 +161,7 @@ describe('PrismaFinancialEntryRepository', () => {
   });
 
   describe('update', () => {
-    it('deve atualizar uma income corretamente', async () => {
+    it('should update an income correctly', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -204,7 +204,7 @@ describe('PrismaFinancialEntryRepository', () => {
       expect(persisted?.description).toBe('Receita atualizada');
     });
 
-    it('deve atualizar uma expense corretamente', async () => {
+    it('should update an expense correctly', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -254,7 +254,7 @@ describe('PrismaFinancialEntryRepository', () => {
       expect(persisted?.expenseCategoryId).toBe(category.id);
     });
 
-    it('deve lançar FinancialEntryNotFoundError quando o lançamento não existir', async () => {
+    it('should throw FinancialEntryNotFoundError when the entry does not exist', async () => {
       const entry = makeTestFinancialEntryEntity({
         id: '550e8400-e29b-41d4-a716-446655440000',
         userId: '550e8400-e29b-41d4-a716-446655440001',
@@ -273,7 +273,7 @@ describe('PrismaFinancialEntryRepository', () => {
   });
 
   describe('delete', () => {
-    it('deve remover um lançamento existente', async () => {
+    it('should remove an existing entry', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -297,7 +297,7 @@ describe('PrismaFinancialEntryRepository', () => {
   });
 
   describe('findByUserId', () => {
-    it('deve retornar apenas os lançamentos do usuário informado', async () => {
+    it("should return only the given user's entries", async () => {
       const user = await createTestUser();
       const otherUser = await createTestUser();
 

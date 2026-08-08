@@ -37,7 +37,7 @@ describe('POST /api/finance/expenses', () => {
     await prisma.$disconnect();
   });
 
-  it('deve criar uma expense com sucesso para usuário autenticado', async () => {
+  it('should create an expense successfully for the authenticated user', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,
@@ -90,7 +90,7 @@ describe('POST /api/finance/expenses', () => {
     expect(persisted?.expenseCategoryId).toBe(category.id);
   });
 
-  it('deve retornar 401 quando não estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -114,7 +114,7 @@ describe('POST /api/finance/expenses', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 400 para payload inválido', async () => {
+  it('should return 400 for invalid payload', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,
@@ -144,7 +144,7 @@ describe('POST /api/finance/expenses', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 404 quando a categoria não existir', async () => {
+  it('should return 404 when the category does not exist', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,
@@ -173,7 +173,7 @@ describe('POST /api/finance/expenses', () => {
     expect(response.status).toBe(404);
   });
 
-  it('deve retornar 404 quando a categoria pertencer a outro usuário', async () => {
+  it('should return 404 when the category belongs to another user', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,

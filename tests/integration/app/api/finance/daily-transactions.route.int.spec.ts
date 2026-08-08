@@ -37,7 +37,7 @@ describe('GET /api/finance/daily-transactions', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar as movimentações do dia informado', async () => {
+  it('should return the entries for the given day', async () => {
     const user = await createTestUser();
     const wallet = await createTestWallet({
       userId: user.id,
@@ -114,7 +114,7 @@ describe('GET /api/finance/daily-transactions', () => {
     ).toBe(true);
   });
 
-  it('deve retornar 401 quando não estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -129,7 +129,7 @@ describe('GET /api/finance/daily-transactions', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 400 quando faltar a query date', async () => {
+  it('should return 400 when the date query is missing', async () => {
     const user = await createTestUser({
       email: 'daily-transactions-missing-date@test.com',
     });
@@ -148,7 +148,7 @@ describe('GET /api/finance/daily-transactions', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando a query date estiver em formato inválido', async () => {
+  it('should return 400 when the date query is in an invalid format', async () => {
     const user = await createTestUser({
       email: 'daily-transactions-invalid-date@test.com',
     });
@@ -167,7 +167,7 @@ describe('GET /api/finance/daily-transactions', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve considerar apenas os lançamentos do usuário autenticado', async () => {
+  it("should consider only the authenticated user's entries", async () => {
     const user1 = await createTestUser({
       email: 'daily-transactions-user1@test.com',
     });

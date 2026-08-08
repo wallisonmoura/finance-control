@@ -15,7 +15,7 @@ describe('FinancialEntry', () => {
     updatedAt: new Date('2026-03-23T10:00:00Z'),
   };
 
-  it('deve criar uma receita válida', () => {
+  it('should create a valid income', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -35,7 +35,7 @@ describe('FinancialEntry', () => {
     expect(entry.isExpense()).toBe(false);
   });
 
-  it('deve criar uma despesa válida com categoria', () => {
+  it('should create a valid expense with category', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.EXPENSE,
@@ -50,7 +50,7 @@ describe('FinancialEntry', () => {
     expect(entry.isExpense()).toBe(true);
   });
 
-  it('deve definir categoryId e notes como null quando omitidos', () => {
+  it('should set categoryId and notes to null when omitted', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -60,7 +60,7 @@ describe('FinancialEntry', () => {
     expect(entry.notes).toBeNull();
   });
 
-  it('deve falhar ao criar lançamento com tipo inválido', () => {
+  it('should fail to create an entry with invalid type', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -69,7 +69,7 @@ describe('FinancialEntry', () => {
     ).toThrow(InvalidFinancialEntryTypeError);
   });
 
-  it('deve falhar ao criar lançamento com valor zero', () => {
+  it('should fail to create an entry with zero amount', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -79,7 +79,7 @@ describe('FinancialEntry', () => {
     ).toThrow(InvalidFinancialEntryAmountError);
   });
 
-  it('deve falhar ao criar lançamento com valor negativo', () => {
+  it('should fail to create an entry with negative amount', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -89,7 +89,7 @@ describe('FinancialEntry', () => {
     ).toThrow(InvalidFinancialEntryAmountError);
   });
 
-  it('deve falhar ao criar lançamento com valor não finito', () => {
+  it('should fail to create an entry with non-finite amount', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -99,7 +99,7 @@ describe('FinancialEntry', () => {
     ).toThrow(InvalidFinancialEntryAmountError);
   });
 
-  it('deve falhar ao criar lançamento sem userId', () => {
+  it('should fail to create an entry without userId', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -109,7 +109,7 @@ describe('FinancialEntry', () => {
     ).toThrow('ID do usuário é obrigatório.');
   });
 
-  it('deve falhar ao criar lançamento com userId contendo apenas espaços', () => {
+  it('should fail to create an entry with userId containing only spaces', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -119,7 +119,7 @@ describe('FinancialEntry', () => {
     ).toThrow('ID do usuário é obrigatório.');
   });
 
-  it('deve falhar ao criar lançamento sem descrição', () => {
+  it('should fail to create an entry without a description', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -129,7 +129,7 @@ describe('FinancialEntry', () => {
     ).toThrow('Descrição é obrigatória.');
   });
 
-  it('deve falhar ao criar lançamento com descrição contendo apenas espaços', () => {
+  it('should fail to create an entry with description containing only spaces', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -139,7 +139,7 @@ describe('FinancialEntry', () => {
     ).toThrow('Descrição é obrigatória.');
   });
 
-  it('deve falhar ao criar lançamento com date inválida', () => {
+  it('should fail to create an entry with invalid date', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -149,7 +149,7 @@ describe('FinancialEntry', () => {
     ).toThrow('Data válida é obrigatória.');
   });
 
-  it('deve falhar ao criar lançamento com date que não é Date', () => {
+  it('should fail to create an entry with date that is not a Date', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -159,7 +159,7 @@ describe('FinancialEntry', () => {
     ).toThrow('Data válida é obrigatória.');
   });
 
-  it('deve falhar ao criar despesa sem categoria', () => {
+  it('should fail to create an expense without a category', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -168,7 +168,7 @@ describe('FinancialEntry', () => {
     ).toThrow(ExpenseCategoryRequiredError);
   });
 
-  it('deve falhar ao criar despesa com categoryId null', () => {
+  it('should fail to create an expense with categoryId null', () => {
     expect(() =>
       FinancialEntry.create({
         ...baseProps,
@@ -178,7 +178,7 @@ describe('FinancialEntry', () => {
     ).toThrow(ExpenseCategoryRequiredError);
   });
 
-  it('deve limpar categoryId quando for receita', () => {
+  it('should clear categoryId when it is an income', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -188,7 +188,7 @@ describe('FinancialEntry', () => {
     expect(entry.categoryId).toBeNull();
   });
 
-  it('deve atualizar uma despesa mantendo consistência', () => {
+  it('should update an expense keeping consistency', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.EXPENSE,
@@ -212,7 +212,7 @@ describe('FinancialEntry', () => {
     );
   });
 
-  it('deve atualizar data, categoria e observações de uma despesa', () => {
+  it('should update date, category and notes of an expense', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.EXPENSE,
@@ -233,7 +233,7 @@ describe('FinancialEntry', () => {
     expect(updated.notes).toBe('New notes');
   });
 
-  it('deve manter os dados atuais quando update for chamado sem dados', () => {
+  it('should keep the current data when update is called without data', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.EXPENSE,
@@ -250,7 +250,7 @@ describe('FinancialEntry', () => {
     expect(updated.notes).toBe(entry.notes);
   });
 
-  it('deve manter categoryId null ao atualizar uma receita', () => {
+  it('should keep categoryId null when updating an income', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -265,7 +265,7 @@ describe('FinancialEntry', () => {
     expect(updated.notes).toBe('Updated income');
   });
 
-  it('deve validar valor ao atualizar lançamento', () => {
+  it('should validate amount when updating an entry', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -278,7 +278,7 @@ describe('FinancialEntry', () => {
     ).toThrow(InvalidFinancialEntryAmountError);
   });
 
-  it('deve validar descrição ao atualizar lançamento', () => {
+  it('should validate description when updating an entry', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -291,7 +291,7 @@ describe('FinancialEntry', () => {
     ).toThrow('Descrição é obrigatória.');
   });
 
-  it('deve validar data ao atualizar lançamento', () => {
+  it('should validate date when updating an entry', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.INCOME,
@@ -304,7 +304,7 @@ describe('FinancialEntry', () => {
     ).toThrow('Data válida é obrigatória.');
   });
 
-  it('deve retornar os dados do lançamento em toJSON', () => {
+  it('should return the entry data in toJSON', () => {
     const entry = FinancialEntry.create({
       ...baseProps,
       type: FinancialEntryType.EXPENSE,

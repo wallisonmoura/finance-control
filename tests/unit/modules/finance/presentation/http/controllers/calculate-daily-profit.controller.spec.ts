@@ -14,7 +14,7 @@ describe('CalculateDailyProfitController', () => {
     controller = new CalculateDailyProfitController(useCase);
   });
 
-  it('deve retornar status 200 com o lucro diário', async () => {
+  it('should return status 200 with the daily profit', async () => {
     const output: DailyProfitOutput = {
       date: new Date(2026, 3, 6),
       totalIncome: 300,
@@ -45,7 +45,7 @@ describe('CalculateDailyProfitController', () => {
     });
   });
 
-  it('deve lançar erro quando faltar a data', async () => {
+  it('should throw an error when the date is missing', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -54,7 +54,7 @@ describe('CalculateDailyProfitController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando a data estiver em formato inválido', async () => {
+  it('should throw an error when the date is in an invalid format', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',

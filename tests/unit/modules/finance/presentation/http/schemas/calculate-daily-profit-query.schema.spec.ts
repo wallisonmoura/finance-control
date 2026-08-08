@@ -1,7 +1,7 @@
 import { calculateDailyProfitQuerySchema } from '@/modules/finance/presentation/http/schemas/calculate-daily-profit-query.schema';
 
 describe('calculateDailyProfitQuerySchema', () => {
-  it('deve aceitar query válida', () => {
+  it('should accept a valid query', () => {
     const result = calculateDailyProfitQuerySchema.safeParse({
       date: '2026-03-23',
     });
@@ -15,13 +15,13 @@ describe('calculateDailyProfitQuerySchema', () => {
     }
   });
 
-  it('deve rejeitar date ausente', () => {
+  it('should reject missing date', () => {
     const result = calculateDailyProfitQuerySchema.safeParse({});
 
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar date inválida', () => {
+  it('should reject invalid date', () => {
     const result = calculateDailyProfitQuerySchema.safeParse({
       date: '23/03/2026',
     });

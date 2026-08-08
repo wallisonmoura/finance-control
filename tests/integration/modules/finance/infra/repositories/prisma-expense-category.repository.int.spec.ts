@@ -27,7 +27,7 @@ describe('PrismaExpenseCategoryRepository', () => {
   });
 
   describe('findById', () => {
-    it('deve retornar uma categoria por id', async () => {
+    it('should return a category by id', async () => {
       const user = await createTestUser();
 
       const category = await createTestExpenseCategory({
@@ -45,7 +45,7 @@ describe('PrismaExpenseCategoryRepository', () => {
       expect(found?.slug).toBe('combustivel');
     });
 
-    it('deve retornar null quando a categoria não existir', async () => {
+    it('should return null when the category does not exist', async () => {
       const found = await repository.findById(
         '550e8400-e29b-41d4-a716-446655440000',
       );
@@ -55,7 +55,7 @@ describe('PrismaExpenseCategoryRepository', () => {
   });
 
   describe('findByUserId', () => {
-    it('deve retornar apenas as categorias do usuário informado', async () => {
+    it("should return only the given user's categories", async () => {
       const user = await createTestUser({
         email: 'category-user-1@test.com',
       });
@@ -95,7 +95,7 @@ describe('PrismaExpenseCategoryRepository', () => {
       ]);
     });
 
-    it('deve retornar lista vazia quando o usuário não possuir categorias', async () => {
+    it('should return an empty list when the user has no categories', async () => {
       const user = await createTestUser();
 
       const categories = await repository.findByUserId(user.id);
@@ -105,7 +105,7 @@ describe('PrismaExpenseCategoryRepository', () => {
   });
 
   describe('findActiveByUserId', () => {
-    it('deve retornar apenas categorias ativas do usuario informado', async () => {
+    it('should return only active categories of the given user', async () => {
       const user = await createTestUser({
         email: 'active-category-user-1@test.com',
       });

@@ -68,7 +68,7 @@ describe('UpdateExpenseUseCase', () => {
     });
   };
 
-  it('deve atualizar uma despesa com sucesso', async () => {
+  it('should update an expense successfully', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);
@@ -102,7 +102,7 @@ describe('UpdateExpenseUseCase', () => {
     expect(output.notes).toBe('empresa');
   });
 
-  it('deve persistir a atualização da despesa no repositório', async () => {
+  it('should persist the expense update in the repository', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);
@@ -136,7 +136,7 @@ describe('UpdateExpenseUseCase', () => {
     expect(found?.notes).toBe('persistido');
   });
 
-  it('deve definir notes como null quando notes não for informado', async () => {
+  it('should set notes to null when notes is not informed', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense({
         notes: 'observação antiga',
@@ -164,7 +164,7 @@ describe('UpdateExpenseUseCase', () => {
     expect(output.notes).toBeNull();
   });
 
-  it('deve falhar se a despesa não existir', async () => {
+  it('should fail if the expense does not exist', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
 
     const expenseCategoryRepository = new InMemoryExpenseCategoryRepository([
@@ -188,7 +188,7 @@ describe('UpdateExpenseUseCase', () => {
     ).rejects.toThrow(FinancialEntryNotFoundError);
   });
 
-  it('deve falhar se a despesa pertencer a outro usuário', async () => {
+  it('should fail if the expense belongs to another user', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense({
         id: 'expense-1',
@@ -217,7 +217,7 @@ describe('UpdateExpenseUseCase', () => {
     ).rejects.toThrow(UnauthorizedFinancialEntryAccessError);
   });
 
-  it('deve falhar se o lançamento não for uma despesa', async () => {
+  it('should fail if the entry is not an expense', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome({
         id: 'income-1',
@@ -254,7 +254,7 @@ describe('UpdateExpenseUseCase', () => {
     expect(found?.categoryId).toBeNull();
   });
 
-  it('deve falhar se a despesa estiver vinculada a uma dívida paga', async () => {
+  it('should fail if the expense is linked to a paid debt', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense({
         id: 'expense-1',
@@ -289,7 +289,7 @@ describe('UpdateExpenseUseCase', () => {
     expect(found?.debtId).toBe('debt-1');
   });
 
-  it('deve falhar se a categoria não existir', async () => {
+  it('should fail if the category does not exist', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);
@@ -313,7 +313,7 @@ describe('UpdateExpenseUseCase', () => {
     ).rejects.toThrow(ExpenseCategoryNotFoundError);
   });
 
-  it('deve falhar se a categoria pertencer a outro usuário', async () => {
+  it('should fail if the category belongs to another user', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);
@@ -342,7 +342,7 @@ describe('UpdateExpenseUseCase', () => {
     ).rejects.toThrow(ExpenseCategoryNotFoundError);
   });
 
-  it('deve falhar se o valor atualizado for inválido', async () => {
+  it('should fail if the updated amount is invalid', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);
@@ -368,7 +368,7 @@ describe('UpdateExpenseUseCase', () => {
     ).rejects.toThrow(InvalidFinancialEntryAmountError);
   });
 
-  it('deve falhar se a descrição atualizada for inválida', async () => {
+  it('should fail if the updated description is invalid', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);
@@ -394,7 +394,7 @@ describe('UpdateExpenseUseCase', () => {
     ).rejects.toThrow('Descrição é obrigatória.');
   });
 
-  it('deve falhar se a data atualizada for inválida', async () => {
+  it('should fail if the updated date is invalid', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense(),
     ]);

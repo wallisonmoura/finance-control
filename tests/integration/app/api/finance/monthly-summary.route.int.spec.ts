@@ -37,7 +37,7 @@ describe('GET /api/finance/monthly-summary', () => {
     await prisma.$disconnect();
   });
 
-  it('deve retornar o resumo mensal do mês e ano informados', async () => {
+  it('should return the monthly summary for the given month and year', async () => {
     const user = await createTestUser();
     const wallet = await createTestWallet({
       userId: user.id,
@@ -109,7 +109,7 @@ describe('GET /api/finance/monthly-summary', () => {
     });
   });
 
-  it('deve considerar o ano corretamente no resumo mensal', async () => {
+  it('should consider the year correctly in the monthly summary', async () => {
     const user = await createTestUser({
       email: 'monthly-summary-year@test.com',
     });
@@ -175,7 +175,7 @@ describe('GET /api/finance/monthly-summary', () => {
     });
   });
 
-  it('deve retornar 401 quando não estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(
@@ -190,7 +190,7 @@ describe('GET /api/finance/monthly-summary', () => {
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 400 quando o mês for inválido', async () => {
+  it('should return 400 when the month is invalid', async () => {
     const user = await createTestUser({
       email: 'monthly-summary-invalid-month@test.com',
     });
@@ -209,7 +209,7 @@ describe('GET /api/finance/monthly-summary', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando o ano for inválido', async () => {
+  it('should return 400 when the year is invalid', async () => {
     const user = await createTestUser({
       email: 'monthly-summary-invalid-year@test.com',
     });
@@ -228,7 +228,7 @@ describe('GET /api/finance/monthly-summary', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando faltar o mês', async () => {
+  it('should return 400 when the month is missing', async () => {
     const user = await createTestUser({
       email: 'monthly-summary-missing-month@test.com',
     });
@@ -247,7 +247,7 @@ describe('GET /api/finance/monthly-summary', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 quando faltar o ano', async () => {
+  it('should return 400 when the year is missing', async () => {
     const user = await createTestUser({
       email: 'monthly-summary-missing-year@test.com',
     });
@@ -266,7 +266,7 @@ describe('GET /api/finance/monthly-summary', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve considerar apenas os lançamentos do usuário autenticado', async () => {
+  it("should consider only the authenticated user's entries", async () => {
     const user1 = await createTestUser({
       email: 'monthly-summary-user1@test.com',
     });

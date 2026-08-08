@@ -12,7 +12,7 @@ const mockedGetCurrentBusinessDateValue =
   getCurrentBusinessDateValue as jest.Mock;
 
 describe('getCurrentOperationalSummaryFilters', () => {
-  it('deriva { year, month } do dia de negócio atual', () => {
+  it('should derive { year, month } from the current business day', () => {
     mockedGetCurrentBusinessDateValue.mockReturnValueOnce('2026-07-31');
 
     expect(getCurrentOperationalSummaryFilters()).toEqual({
@@ -21,7 +21,7 @@ describe('getCurrentOperationalSummaryFilters', () => {
     });
   });
 
-  it('lida corretamente com a virada de ano', () => {
+  it('should handle the year change correctly', () => {
     mockedGetCurrentBusinessDateValue.mockReturnValueOnce('2026-12-31');
 
     expect(getCurrentOperationalSummaryFilters()).toEqual({

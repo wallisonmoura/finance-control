@@ -4,7 +4,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { GetTransactionHistoryUseCase } from '@/modules/finance/application/use-cases/get-transaction-history.use-case';
 
 describe('GetTransactionHistoryUseCase', () => {
-  it('deve retornar lançamentos do período ordenados por data decrescente', async () => {
+  it('should return entries from the period sorted by date descending', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'entry-1',
@@ -61,7 +61,7 @@ describe('GetTransactionHistoryUseCase', () => {
     expect(output.balance).toBe(350);
   });
 
-  it('deve filtrar por tipo quando informado', async () => {
+  it('should filter by type when informed', async () => {
     const repository = new InMemoryFinancialEntryRepository([
       FinancialEntry.create({
         id: 'entry-1',
@@ -105,7 +105,7 @@ describe('GetTransactionHistoryUseCase', () => {
     expect(output.balance).toBe(-100);
   });
 
-  it('deve filtrar por categoria quando categoryId for informado', async () => {
+  it('should filter by category when categoryId is informed', async () => {
     const repository = new InMemoryFinancialEntryRepository();
     const useCase = new GetTransactionHistoryUseCase(repository);
 

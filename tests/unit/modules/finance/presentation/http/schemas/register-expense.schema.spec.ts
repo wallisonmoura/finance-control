@@ -10,7 +10,7 @@ describe('registerExpenseSchema', () => {
     notes: 'Posto',
   };
 
-  it('deve aceitar payload válido de despesa', () => {
+  it('should accept a valid expense payload', () => {
     const result = registerExpenseSchema.safeParse(validPayload);
 
     expect(result.success).toBe(true);
@@ -20,7 +20,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve aceitar payload válido sem notes', () => {
+  it('should accept a valid payload without notes', () => {
     const { notes, ...payloadWithoutNotes } = validPayload;
 
     const result = registerExpenseSchema.safeParse(payloadWithoutNotes);
@@ -32,7 +32,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve converter amount string numérica para number', () => {
+  it('should convert numeric amount string to number', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       amount: '50.75',
@@ -45,7 +45,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar amount inválido', () => {
+  it('should reject invalid amount', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       amount: 0,
@@ -54,7 +54,7 @@ describe('registerExpenseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar description ausente', () => {
+  it('should reject missing description', () => {
     const { description, ...payloadWithoutDescription } = validPayload;
 
     const result = registerExpenseSchema.safeParse(payloadWithoutDescription);
@@ -66,7 +66,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar description vazia', () => {
+  it('should reject empty description', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       description: '',
@@ -79,7 +79,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar date inválida', () => {
+  it('should reject invalid date', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       date: '2026-02-30',
@@ -88,7 +88,7 @@ describe('registerExpenseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar categoryId ausente', () => {
+  it('should reject missing categoryId', () => {
     const { categoryId, ...payloadWithoutCategory } = validPayload;
 
     const result = registerExpenseSchema.safeParse(payloadWithoutCategory);
@@ -102,7 +102,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar categoryId inválido', () => {
+  it('should reject invalid categoryId', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       categoryId: 'category-1',
@@ -117,7 +117,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar notes que não seja string', () => {
+  it('should reject notes that is not a string', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       notes: 123,
@@ -132,7 +132,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar notes acima de 1000 caracteres', () => {
+  it('should reject notes above 1000 characters', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       notes: 'a'.repeat(1001),
@@ -147,7 +147,7 @@ describe('registerExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar campos extras', () => {
+  it('should reject extra fields', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       extraField: true,
@@ -156,7 +156,7 @@ describe('registerExpenseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar description que não seja string', () => {
+  it('should reject description that is not a string', () => {
     const result = registerExpenseSchema.safeParse({
       ...validPayload,
       description: 123,

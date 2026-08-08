@@ -4,7 +4,7 @@ import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-ent
 import { InvalidFinancialEntryAmountError } from '@/modules/finance/domain/errors/invalid-financial-entry-amount.error';
 
 describe('RegisterIncomeUseCase', () => {
-  it('deve registrar uma receita com sucesso', async () => {
+  it('should register an income successfully', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
     const useCase = new RegisterIncomeUseCase(financialEntryRepository);
 
@@ -21,7 +21,7 @@ describe('RegisterIncomeUseCase', () => {
     expect(output.categoryId).toBeNull();
   });
 
-  it('deve falhar ao registrar receita com valor inválido', async () => {
+  it('should fail to register an income with invalid amount', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
     const useCase = new RegisterIncomeUseCase(financialEntryRepository);
 

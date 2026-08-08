@@ -1,35 +1,35 @@
 import { financeAmountSchema } from '@/modules/finance/presentation/http/schemas/shared/finance-amount.schema';
 
 describe('financeAmountSchema', () => {
-  it('deve aceitar valor numérico positivo', () => {
+  it('should accept a positive numeric value', () => {
     const result = financeAmountSchema.safeParse(100);
 
     expect(result.success).toBe(true);
     expect(result.data).toBe(100);
   });
 
-  it('deve converter string numérica válida para number', () => {
+  it('should convert a valid numeric string to number', () => {
     const result = financeAmountSchema.safeParse('100.50');
 
     expect(result.success).toBe(true);
     expect(result.data).toBe(100.5);
   });
 
-  it('deve aceitar valores decimais que sofrem imprecisão de ponto flutuante', () => {
+  it('should accept decimal values affected by floating-point imprecision', () => {
     const result = financeAmountSchema.safeParse(0.54);
 
     expect(result.success).toBe(true);
     expect(result.data).toBe(0.54);
   });
 
-  it('deve aceitar valores com duas casas decimais no limite da validação', () => {
+  it('should accept values with two decimal places at the validation limit', () => {
     const result = financeAmountSchema.safeParse(560.55);
 
     expect(result.success).toBe(true);
     expect(result.data).toBe(560.55);
   });
 
-  it('deve rejeitar valor zero', () => {
+  it('should reject a zero value', () => {
     const result = financeAmountSchema.safeParse(0);
 
     expect(result.success).toBe(false);
@@ -41,7 +41,7 @@ describe('financeAmountSchema', () => {
     }
   });
 
-  it('deve rejeitar valor negativo', () => {
+  it('should reject a negative value', () => {
     const result = financeAmountSchema.safeParse(-10);
 
     expect(result.success).toBe(false);
@@ -53,7 +53,7 @@ describe('financeAmountSchema', () => {
     }
   });
 
-  it('deve rejeitar valor não numérico', () => {
+  it('should reject a non-numeric value', () => {
     const result = financeAmountSchema.safeParse('abc');
 
     expect(result.success).toBe(false);
@@ -63,7 +63,7 @@ describe('financeAmountSchema', () => {
     }
   });
 
-  it('deve rejeitar valor com mais de 2 casas decimais', () => {
+  it('should reject a value with more than 2 decimal places', () => {
     const result = financeAmountSchema.safeParse(10.999);
 
     expect(result.success).toBe(false);
@@ -75,7 +75,7 @@ describe('financeAmountSchema', () => {
     }
   });
 
-  it('deve rejeitar valor acima do limite permitido', () => {
+  it('should reject a value above the allowed limit', () => {
     const result = financeAmountSchema.safeParse(1000000000000);
 
     expect(result.success).toBe(false);

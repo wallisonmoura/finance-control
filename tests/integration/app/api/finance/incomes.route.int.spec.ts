@@ -35,7 +35,7 @@ describe('POST /api/finance/incomes', () => {
     await prisma.$disconnect();
   });
 
-  it('deve criar uma income com sucesso para usuário autenticado', async () => {
+  it('should create an income successfully for the authenticated user', async () => {
     const user = await createTestUser();
     await createTestWallet({
       userId: user.id,
@@ -70,7 +70,7 @@ describe('POST /api/finance/incomes', () => {
     });
   });
 
-  it('deve retornar 401 quando não estiver autenticado', async () => {
+  it('should return 401 when not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
     const request = new NextRequest(

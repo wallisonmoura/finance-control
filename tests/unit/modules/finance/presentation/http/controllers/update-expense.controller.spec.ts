@@ -19,7 +19,7 @@ describe('UpdateExpenseController', () => {
     controller = new UpdateExpenseController(useCase as UpdateExpenseUseCase);
   });
 
-  it('deve chamar o use case com input correto e retornar 200', async () => {
+  it('should call the use case with correct input and return 200', async () => {
     execute.mockResolvedValue({
       id: expenseId,
       userId: 'user-id',
@@ -66,7 +66,7 @@ describe('UpdateExpenseController', () => {
     });
   });
 
-  it('deve lançar ZodError para payload inválido', async () => {
+  it('should throw ZodError for invalid payload', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',

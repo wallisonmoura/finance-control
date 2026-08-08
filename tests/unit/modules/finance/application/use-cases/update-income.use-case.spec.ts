@@ -46,7 +46,7 @@ describe('UpdateIncomeUseCase', () => {
     });
   };
 
-  it('deve atualizar um ganho com sucesso', async () => {
+  it('should update an income successfully', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome(),
     ]);
@@ -72,7 +72,7 @@ describe('UpdateIncomeUseCase', () => {
     expect(output.notes).toBe('ajuste');
   });
 
-  it('deve persistir a atualização do ganho no repositório', async () => {
+  it('should persist the income update in the repository', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome(),
     ]);
@@ -98,7 +98,7 @@ describe('UpdateIncomeUseCase', () => {
     expect(found?.notes).toBe('persistido');
   });
 
-  it('deve definir notes como null quando notes não for informado', async () => {
+  it('should set notes to null when notes is not informed', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome({
         notes: 'observação antiga',
@@ -118,7 +118,7 @@ describe('UpdateIncomeUseCase', () => {
     expect(output.notes).toBeNull();
   });
 
-  it('deve manter categoryId null mesmo se a receita anterior tiver categoryId inconsistente', async () => {
+  it('should keep categoryId null even if the previous income has an inconsistent categoryId', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome({
         categoryId: 'category-1',
@@ -139,7 +139,7 @@ describe('UpdateIncomeUseCase', () => {
     expect(output.categoryId).toBeNull();
   });
 
-  it('deve falhar se o ganho não existir', async () => {
+  it('should fail if the income does not exist', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository();
     const useCase = new UpdateIncomeUseCase(financialEntryRepository);
 
@@ -154,7 +154,7 @@ describe('UpdateIncomeUseCase', () => {
     ).rejects.toThrow(FinancialEntryNotFoundError);
   });
 
-  it('deve falhar se o ganho pertencer a outro usuário', async () => {
+  it('should fail if the income belongs to another user', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome({
         id: 'income-1',
@@ -175,7 +175,7 @@ describe('UpdateIncomeUseCase', () => {
     ).rejects.toThrow(UnauthorizedFinancialEntryAccessError);
   });
 
-  it('deve falhar se o lançamento não for um ganho', async () => {
+  it('should fail if the entry is not an income', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeExpense({
         id: 'expense-1',
@@ -204,7 +204,7 @@ describe('UpdateIncomeUseCase', () => {
     expect(found?.categoryId).toBe('category-1');
   });
 
-  it('deve falhar se o valor atualizado for inválido', async () => {
+  it('should fail if the updated amount is invalid', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome(),
     ]);
@@ -222,7 +222,7 @@ describe('UpdateIncomeUseCase', () => {
     ).rejects.toThrow(InvalidFinancialEntryAmountError);
   });
 
-  it('deve falhar se a descrição atualizada for inválida', async () => {
+  it('should fail if the updated description is invalid', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome(),
     ]);
@@ -240,7 +240,7 @@ describe('UpdateIncomeUseCase', () => {
     ).rejects.toThrow('Descrição é obrigatória.');
   });
 
-  it('deve falhar se a data atualizada for inválida', async () => {
+  it('should fail if the updated date is invalid', async () => {
     const financialEntryRepository = new InMemoryFinancialEntryRepository([
       makeIncome(),
     ]);

@@ -1,7 +1,7 @@
 import { financialEntryIdParamSchema } from '@/modules/finance/presentation/http/schemas/financial-entry-id-param.schema';
 
 describe('financialEntryIdParamSchema', () => {
-  it('deve aceitar id UUID válido', () => {
+  it('should accept a valid UUID id', () => {
     const result = financialEntryIdParamSchema.safeParse({
       id: '4d1af925-d603-4db1-9dde-5c56505101fc',
     });
@@ -13,13 +13,13 @@ describe('financialEntryIdParamSchema', () => {
     }
   });
 
-  it('deve rejeitar id ausente', () => {
+  it('should reject missing id', () => {
     const result = financialEntryIdParamSchema.safeParse({});
 
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar id inválido', () => {
+  it('should reject invalid id', () => {
     const result = financialEntryIdParamSchema.safeParse({
       id: 'entry-1',
     });

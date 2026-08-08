@@ -15,7 +15,7 @@ describe('GetDailyTransactionsController', () => {
     controller = new GetDailyTransactionsController(useCase);
   });
 
-  it('deve retornar status 200 com as movimentações do dia', async () => {
+  it('should return status 200 with the entries of the day', async () => {
     const output: DailyTransactionsOutput = {
       date: new Date(2026, 3, 6),
       entries: [
@@ -73,7 +73,7 @@ describe('GetDailyTransactionsController', () => {
     ]);
   });
 
-  it('deve lançar erro quando faltar a data', async () => {
+  it('should throw an error when the date is missing', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',
@@ -82,7 +82,7 @@ describe('GetDailyTransactionsController', () => {
     ).rejects.toThrow();
   });
 
-  it('deve lançar erro quando a data estiver em formato inválido', async () => {
+  it('should throw an error when the date is in an invalid format', async () => {
     await expect(
       controller.handle({
         userId: 'user-123',

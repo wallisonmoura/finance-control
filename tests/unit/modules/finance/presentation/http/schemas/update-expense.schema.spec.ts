@@ -10,7 +10,7 @@ describe('updateExpenseSchema', () => {
     notes: 'ajuste',
   };
 
-  it('deve aceitar payload válido de atualização de despesa', () => {
+  it('should accept a valid expense update payload', () => {
     const result = updateExpenseSchema.safeParse(validPayload);
 
     expect(result.success).toBe(true);
@@ -20,7 +20,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve aceitar payload válido sem notes', () => {
+  it('should accept a valid payload without notes', () => {
     const { notes, ...payloadWithoutNotes } = validPayload;
 
     const result = updateExpenseSchema.safeParse(payloadWithoutNotes);
@@ -32,7 +32,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve converter amount string numérica para number', () => {
+  it('should convert numeric amount string to number', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       amount: '120.75',
@@ -45,7 +45,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar amount inválido', () => {
+  it('should reject invalid amount', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       amount: 0,
@@ -54,7 +54,7 @@ describe('updateExpenseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar description ausente', () => {
+  it('should reject missing description', () => {
     const { description, ...payloadWithoutDescription } = validPayload;
 
     const result = updateExpenseSchema.safeParse(payloadWithoutDescription);
@@ -66,7 +66,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar description vazia', () => {
+  it('should reject empty description', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       description: '',
@@ -79,7 +79,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar description apenas com espaços', () => {
+  it('should reject description with only spaces', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       description: '   ',
@@ -92,7 +92,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar description acima de 255 caracteres', () => {
+  it('should reject description above 255 characters', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       description: 'a'.repeat(256),
@@ -107,7 +107,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar date inválida', () => {
+  it('should reject invalid date', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       date: '2026-02-30',
@@ -116,7 +116,7 @@ describe('updateExpenseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar categoryId ausente', () => {
+  it('should reject missing categoryId', () => {
     const { categoryId, ...payloadWithoutCategory } = validPayload;
 
     const result = updateExpenseSchema.safeParse(payloadWithoutCategory);
@@ -130,7 +130,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar categoryId inválido', () => {
+  it('should reject invalid categoryId', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       categoryId: 'category-1',
@@ -145,7 +145,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar notes que não seja string', () => {
+  it('should reject notes that is not a string', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       notes: 123,
@@ -160,7 +160,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar notes acima de 1000 caracteres', () => {
+  it('should reject notes above 1000 characters', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       notes: 'a'.repeat(1001),
@@ -175,7 +175,7 @@ describe('updateExpenseSchema', () => {
     }
   });
 
-  it('deve rejeitar campos extras', () => {
+  it('should reject extra fields', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       extraField: true,
@@ -184,7 +184,7 @@ describe('updateExpenseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('deve rejeitar description que não seja string', () => {
+  it('should reject description that is not a string', () => {
     const result = updateExpenseSchema.safeParse({
       ...validPayload,
       description: 123,

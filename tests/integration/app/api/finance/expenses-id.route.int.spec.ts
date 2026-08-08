@@ -41,7 +41,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
   });
 
   describe('PUT /api/finance/expenses/[id]', () => {
-    it('deve atualizar uma expense com sucesso', async () => {
+    it('should update an expense successfully', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -105,7 +105,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(updated?.expenseCategoryId).toBe(category.id);
     });
 
-    it('deve retornar 401 quando não estiver autenticado', async () => {
+    it('should return 401 when not authenticated', async () => {
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
       const request = new NextRequest(
@@ -131,7 +131,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(401);
     });
 
-    it('deve retornar 400 para payload inválido', async () => {
+    it('should return 400 for invalid payload', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -174,7 +174,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(400);
     });
 
-    it('deve retornar 404 quando a expense não existir', async () => {
+    it('should return 404 when the expense does not exist', async () => {
       const user = await createTestUser();
       const category = await createTestExpenseCategory({
         userId: user.id,
@@ -207,7 +207,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(404);
     });
 
-    it('deve retornar 404 quando a expense pertencer a outro usuário', async () => {
+    it('should return 404 when the expense belongs to another user', async () => {
       const user = await createTestUser();
       const otherUser = await createTestUser();
 
@@ -252,7 +252,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(404);
     });
 
-    it('deve retornar 409 quando a expense estiver vinculada a uma dívida paga', async () => {
+    it('should return 409 when the expense is linked to a paid debt', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -309,7 +309,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
   });
 
   describe('DELETE /api/finance/expenses/[id]', () => {
-    it('deve excluir uma expense com sucesso', async () => {
+    it('should delete an expense successfully', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,
@@ -351,7 +351,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(deleted).toBeNull();
     });
 
-    it('deve retornar 401 quando não estiver autenticado', async () => {
+    it('should return 401 when not authenticated', async () => {
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 
       const request = new NextRequest(
@@ -368,7 +368,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(401);
     });
 
-    it('deve retornar 404 quando a expense não existir', async () => {
+    it('should return 404 when the expense does not exist', async () => {
       const user = await createTestUser();
 
       mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
@@ -389,7 +389,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(404);
     });
 
-    it('deve retornar 404 quando a expense pertencer a outro usuário', async () => {
+    it('should return 404 when the expense belongs to another user', async () => {
       const user = await createTestUser();
       const otherUser = await createTestUser();
 
@@ -425,7 +425,7 @@ describe('PUT/DELETE /api/finance/expenses/[id]', () => {
       expect(response.status).toBe(404);
     });
 
-    it('deve retornar 409 quando a expense estiver vinculada a uma dívida paga', async () => {
+    it('should return 409 when the expense is linked to a paid debt', async () => {
       const user = await createTestUser();
       const wallet = await createTestWallet({
         userId: user.id,

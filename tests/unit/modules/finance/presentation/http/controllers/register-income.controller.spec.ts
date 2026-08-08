@@ -17,7 +17,7 @@ describe('RegisterIncomeController', () => {
     controller = new RegisterIncomeController(useCase as RegisterIncomeUseCase);
   });
 
-  it('deve chamar o use case com input correto e retornar 201', async () => {
+  it('should call the use case with correct input and return 201', async () => {
     execute.mockResolvedValue({
       id: 'income-id',
       userId: 'user-id',
@@ -59,7 +59,7 @@ describe('RegisterIncomeController', () => {
     });
   });
 
-  it('deve lançar ZodError para payload inválido', async () => {
+  it('should throw ZodError for invalid payload', async () => {
     await expect(
       controller.handle({
         userId: 'user-id',
