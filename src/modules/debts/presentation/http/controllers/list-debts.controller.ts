@@ -7,18 +7,18 @@ import {
 } from '@/shared/presentation/http/http.types';
 import {
   DebtHttpPresenter,
-  DebtHttpResponse,
+  DebtResponseBody,
 } from '../presenters/debt-http.presenter';
 
 export class ListDebtsController implements Controller<
   HttpRequest,
-  DebtHttpResponse[]
+  DebtResponseBody[]
 > {
   constructor(private readonly listDebtsUseCase: ListDebtsUseCase) {}
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<DebtHttpResponse[]>> {
+  ): Promise<HttpResponse<DebtResponseBody[]>> {
     const input: ListDebtsInput = {
       userId: request.userId!,
     };

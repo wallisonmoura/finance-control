@@ -5,7 +5,7 @@ import { GetDailyTransactionsInput } from '@/modules/finance/application/dtos/ge
 import { parseDateFromQuery } from '../schemas/shared/parse-date-from-query';
 import {
   FinanceHttpPresenter,
-  FinancialEntryHttpResponse,
+  FinancialEntryResponseBody,
 } from '../presenters/finance-http.presenter';
 import {
   HttpRequest,
@@ -13,14 +13,14 @@ import {
 } from '@/shared/presentation/http/http.types';
 import { Controller } from '@/shared/presentation/http/controller';
 
-export interface DailyTransactionsHttpResponse
+export interface DailyTransactionsResponseBody
   extends Omit<DailyTransactionsOutput, 'entries'> {
-  entries: FinancialEntryHttpResponse[];
+  entries: FinancialEntryResponseBody[];
 }
 
 export class GetDailyTransactionsController implements Controller<
   HttpRequest,
-  DailyTransactionsHttpResponse
+  DailyTransactionsResponseBody
 > {
   constructor(
     private readonly getDailyTransactionsUseCase: GetDailyTransactionsUseCase,
@@ -28,7 +28,7 @@ export class GetDailyTransactionsController implements Controller<
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<DailyTransactionsHttpResponse>> {
+  ): Promise<HttpResponse<DailyTransactionsResponseBody>> {
     const query = getDailyTransactionsQuerySchema.parse(request.query);
 
     const input: GetDailyTransactionsInput = {

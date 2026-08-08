@@ -8,7 +8,7 @@ import {
 } from '../schemas/shared/parse-date-from-query';
 import {
   FinanceHttpPresenter,
-  FinancialEntryHttpResponse,
+  FinancialEntryResponseBody,
 } from '../presenters/finance-http.presenter';
 import {
   HttpRequest,
@@ -16,14 +16,14 @@ import {
 } from '@/shared/presentation/http/http.types';
 import { Controller } from '@/shared/presentation/http/controller';
 
-export interface TransactionHistoryHttpResponse
+export interface TransactionHistoryResponseBody
   extends Omit<TransactionHistoryOutput, 'entries'> {
-  entries: FinancialEntryHttpResponse[];
+  entries: FinancialEntryResponseBody[];
 }
 
 export class GetTransactionHistoryController implements Controller<
   HttpRequest,
-  TransactionHistoryHttpResponse
+  TransactionHistoryResponseBody
 > {
   constructor(
     private readonly getTransactionHistoryUseCase: GetTransactionHistoryUseCase,
@@ -31,7 +31,7 @@ export class GetTransactionHistoryController implements Controller<
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<TransactionHistoryHttpResponse>> {
+  ): Promise<HttpResponse<TransactionHistoryResponseBody>> {
     const query = getTransactionHistoryQuerySchema.parse(request.query);
 
     const input: GetTransactionHistoryInput = {

@@ -1,6 +1,6 @@
 import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financial-entry.output';
 
-export interface FinancialEntryHttpResponse {
+export interface FinancialEntryResponseBody {
   id: string;
   userId: string;
   type: string;
@@ -15,7 +15,7 @@ export interface FinancialEntryHttpResponse {
 }
 
 export class FinanceHttpPresenter {
-  static toResponse(entry: FinancialEntryOutput): FinancialEntryHttpResponse {
+  static toResponse(entry: FinancialEntryOutput): FinancialEntryResponseBody {
     return {
       id: entry.id,
       userId: entry.userId,
@@ -33,7 +33,7 @@ export class FinanceHttpPresenter {
 
   static toResponseList(
     entries: FinancialEntryOutput[],
-  ): FinancialEntryHttpResponse[] {
+  ): FinancialEntryResponseBody[] {
     return entries.map((entry) => FinanceHttpPresenter.toResponse(entry));
   }
 }

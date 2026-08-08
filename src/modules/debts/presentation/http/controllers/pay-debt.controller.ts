@@ -7,7 +7,7 @@ import {
 import { debtIdParamSchema } from '../schemas/debt-id-param.schema';
 import {
   DebtHttpPresenter,
-  DebtHttpResponse,
+  DebtResponseBody,
 } from '../presenters/debt-http.presenter';
 import { payDebtSchema, PayDebtSchemaData } from '../schemas/pay-debt.schema';
 import { PayDebtInput } from '@/modules/debts/application/dtos/pay-debt.input';
@@ -23,13 +23,13 @@ export type PayDebtUseCaseContract = {
 
 export class PayDebtController implements Controller<
   HttpRequest,
-  DebtHttpResponse
+  DebtResponseBody
 > {
   constructor(private readonly payDebtUseCase: PayDebtUseCaseContract) {}
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<DebtHttpResponse>> {
+  ): Promise<HttpResponse<DebtResponseBody>> {
     const params = debtIdParamSchema.parse(request.params);
     const data: PayDebtSchemaData = payDebtSchema.parse(request.body);
 

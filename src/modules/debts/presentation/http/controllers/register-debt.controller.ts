@@ -6,7 +6,7 @@ import {
 } from '@/shared/presentation/http/http.types';
 import {
   DebtHttpPresenter,
-  DebtHttpResponse,
+  DebtResponseBody,
 } from '../presenters/debt-http.presenter';
 import {
   registerDebtSchema,
@@ -16,13 +16,13 @@ import { RegisterDebtInput } from '@/modules/debts/application/dtos/register-deb
 
 export class RegisterDebtController implements Controller<
   HttpRequest,
-  DebtHttpResponse
+  DebtResponseBody
 > {
   constructor(private readonly registerDebtUseCase: RegisterDebtUseCase) {}
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<DebtHttpResponse>> {
+  ): Promise<HttpResponse<DebtResponseBody>> {
     const data: RegisterDebtSchemaData = registerDebtSchema.parse(request.body);
 
     const input: RegisterDebtInput = {

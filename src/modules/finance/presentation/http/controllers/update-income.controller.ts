@@ -1,7 +1,7 @@
 import { UpdateIncomeUseCase } from '@/modules/finance/application/use-cases/update-income.use-case';
 import {
   FinanceHttpPresenter,
-  FinancialEntryHttpResponse,
+  FinancialEntryResponseBody,
 } from '../presenters/finance-http.presenter';
 import {
   updateIncomeSchema,
@@ -18,13 +18,13 @@ import {
 
 export class UpdateIncomeController implements Controller<
   HttpRequest,
-  FinancialEntryHttpResponse
+  FinancialEntryResponseBody
 > {
   constructor(private readonly updateIncomeUseCase: UpdateIncomeUseCase) {}
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<FinancialEntryHttpResponse>> {
+  ): Promise<HttpResponse<FinancialEntryResponseBody>> {
     const params = financialEntryIdParamSchema.parse(request.params);
     const data: UpdateIncomeSchemaData = updateIncomeSchema.parse(request.body);
 

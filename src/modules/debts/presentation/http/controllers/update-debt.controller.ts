@@ -7,7 +7,7 @@ import {
 import { debtIdParamSchema } from '../schemas/debt-id-param.schema';
 import {
   DebtHttpPresenter,
-  DebtHttpResponse,
+  DebtResponseBody,
 } from '../presenters/debt-http.presenter';
 import {
   updateDebtSchema,
@@ -17,13 +17,13 @@ import { UpdateDebtInput } from '@/modules/debts/application/dtos/update-debt.in
 
 export class UpdateDebtController implements Controller<
   HttpRequest,
-  DebtHttpResponse
+  DebtResponseBody
 > {
   constructor(private readonly updateDebtUseCase: UpdateDebtUseCase) {}
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<DebtHttpResponse>> {
+  ): Promise<HttpResponse<DebtResponseBody>> {
     const params = debtIdParamSchema.parse(request.params);
     const data: UpdateDebtSchemaData = updateDebtSchema.parse(request.body);
 
