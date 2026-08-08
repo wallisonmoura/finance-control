@@ -31,7 +31,7 @@ async function readJson(response: Response) {
 }
 
 describe('toErrorNextResponse', () => {
-  it('deve retornar 400 para ZodError', async () => {
+  it('should return 400 for ZodError', async () => {
     const schema = z.object({
       amount: z.number().positive(),
     });
@@ -53,7 +53,7 @@ describe('toErrorNextResponse', () => {
     expect(body).toBeDefined();
   });
 
-  it('deve retornar 404 para DebtNotFoundError', async () => {
+  it('should return 404 for DebtNotFoundError', async () => {
     const response = toErrorNextResponse(new DebtNotFoundError());
     const body = await readJson(response);
 
@@ -61,7 +61,7 @@ describe('toErrorNextResponse', () => {
     expect(JSON.stringify(body)).toContain('Dívida não encontrada');
   });
 
-  it('deve retornar 404 para UnauthorizedDebtAccessError', async () => {
+  it('should return 404 for UnauthorizedDebtAccessError', async () => {
     const response = toErrorNextResponse(new UnauthorizedDebtAccessError());
     const body = await readJson(response);
 
@@ -69,7 +69,7 @@ describe('toErrorNextResponse', () => {
     expect(JSON.stringify(body)).toContain('não tem acesso a esta dívida');
   });
 
-  it('deve retornar 409 para DebtAlreadyPaidError', async () => {
+  it('should return 409 for DebtAlreadyPaidError', async () => {
     const response = toErrorNextResponse(new DebtAlreadyPaidError());
     const body = await readJson(response);
 
@@ -77,37 +77,37 @@ describe('toErrorNextResponse', () => {
     expect(JSON.stringify(body)).toContain('já está paga');
   });
 
-  it('deve retornar 409 para InvalidDebtPendingStateError', async () => {
+  it('should return 409 for InvalidDebtPendingStateError', async () => {
     const response = toErrorNextResponse(new InvalidDebtPendingStateError());
 
     expect(response.status).toBe(409);
   });
 
-  it('deve retornar 409 para InvalidDebtPaidStateError', async () => {
+  it('should return 409 for InvalidDebtPaidStateError', async () => {
     const response = toErrorNextResponse(new InvalidDebtPaidStateError());
 
     expect(response.status).toBe(409);
   });
 
-  it('deve retornar 400 para InvalidDebtAmountError', async () => {
+  it('should return 400 for InvalidDebtAmountError', async () => {
     const response = toErrorNextResponse(new InvalidDebtAmountError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 para InvalidDebtDescriptionError', async () => {
+  it('should return 400 for InvalidDebtDescriptionError', async () => {
     const response = toErrorNextResponse(new InvalidDebtDescriptionError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 para InvalidDebtDueDateError', async () => {
+  it('should return 400 for InvalidDebtDueDateError', async () => {
     const response = toErrorNextResponse(new InvalidDebtDueDateError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 404 para WalletNotFoundError', async () => {
+  it('should return 404 for WalletNotFoundError', async () => {
     const response = toErrorNextResponse(new WalletNotFoundError());
     const body = await readJson(response);
 
@@ -115,31 +115,31 @@ describe('toErrorNextResponse', () => {
     expect(JSON.stringify(body)).toContain('Wallet');
   });
 
-  it('deve retornar 404 para DefaultWalletNotFoundError', async () => {
+  it('should return 404 for DefaultWalletNotFoundError', async () => {
     const response = toErrorNextResponse(new DefaultWalletNotFoundError());
 
     expect(response.status).toBe(404);
   });
 
-  it('deve retornar 422 para InsufficientWalletBalanceError', async () => {
+  it('should return 422 for InsufficientWalletBalanceError', async () => {
     const response = toErrorNextResponse(new InsufficientWalletBalanceError());
 
     expect(response.status).toBe(422);
   });
 
-  it('deve retornar 404 para FinancialEntryNotFoundError', async () => {
+  it('should return 404 for FinancialEntryNotFoundError', async () => {
     const response = toErrorNextResponse(new FinancialEntryNotFoundError());
 
     expect(response.status).toBe(404);
   });
 
-  it('deve retornar 404 para ExpenseCategoryNotFoundError', async () => {
+  it('should return 404 for ExpenseCategoryNotFoundError', async () => {
     const response = toErrorNextResponse(new ExpenseCategoryNotFoundError());
 
     expect(response.status).toBe(404);
   });
 
-  it('deve retornar 404 para UnauthorizedFinancialEntryAccessError', async () => {
+  it('should return 404 for UnauthorizedFinancialEntryAccessError', async () => {
     const response = toErrorNextResponse(
       new UnauthorizedFinancialEntryAccessError(),
     );
@@ -147,19 +147,19 @@ describe('toErrorNextResponse', () => {
     expect(response.status).toBe(404);
   });
 
-  it('deve retornar 400 para ExpenseCategoryRequiredError', async () => {
+  it('should return 400 for ExpenseCategoryRequiredError', async () => {
     const response = toErrorNextResponse(new ExpenseCategoryRequiredError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 para InvalidFinancialEntryTypeError', async () => {
+  it('should return 400 for InvalidFinancialEntryTypeError', async () => {
     const response = toErrorNextResponse(new InvalidFinancialEntryTypeError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 para InvalidWalletBalanceError', async () => {
+  it('should return 400 for InvalidWalletBalanceError', async () => {
     const response = toErrorNextResponse(
       new InvalidWalletBalanceError('bankBalance', -10),
     );
@@ -167,13 +167,13 @@ describe('toErrorNextResponse', () => {
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 400 para InvalidExpenseCategoryNameError', async () => {
+  it('should return 400 for InvalidExpenseCategoryNameError', async () => {
     const response = toErrorNextResponse(new InvalidExpenseCategoryNameError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 401 para InvalidCredentialsError', async () => {
+  it('should return 401 for InvalidCredentialsError', async () => {
     const response = toErrorNextResponse(new InvalidCredentialsError());
     const body = await readJson(response);
 
@@ -181,19 +181,19 @@ describe('toErrorNextResponse', () => {
     expect(JSON.stringify(body)).toContain('Credenciais inválidas');
   });
 
-  it('deve retornar 401 para UserNotFoundError', async () => {
+  it('should return 401 for UserNotFoundError', async () => {
     const response = toErrorNextResponse(new UserNotFoundError());
 
     expect(response.status).toBe(401);
   });
 
-  it('deve retornar 400 para InvalidEmailError', async () => {
+  it('should return 400 for InvalidEmailError', async () => {
     const response = toErrorNextResponse(new InvalidEmailError());
 
     expect(response.status).toBe(400);
   });
 
-  it('deve retornar 500 para erro desconhecido', async () => {
+  it('should return 500 for an unknown error', async () => {
     const response = toErrorNextResponse(new Error('Unexpected error'));
     const body = await readJson(response);
 

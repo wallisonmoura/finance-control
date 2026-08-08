@@ -22,7 +22,7 @@ function mockDateGettersAsIfUtc(
 }
 
 describe('formatLocalDateValue', () => {
-  it('usa os componentes locais da data, não os de UTC', () => {
+  it('should use the local date components, not UTC', () => {
     // Data "fake" que só expõe os getters locais. Garante que a função use
     // getFullYear/getMonth/getDate — e não toISOString(), que converteria
     // para UTC e adiantaria o dia em fusos negativos no fim da noite.
@@ -35,7 +35,7 @@ describe('formatLocalDateValue', () => {
     expect(formatLocalDateValue(localDate)).toBe('2026-07-18');
   });
 
-  it('formata mês e dia com zero à esquerda', () => {
+  it('should format month and day with a leading zero', () => {
     const localDate = {
       getFullYear: () => 2026,
       getMonth: () => 2, // março (0-based)
@@ -47,7 +47,7 @@ describe('formatLocalDateValue', () => {
 });
 
 describe('getTodayDateValue', () => {
-  it('retorna a data de hoje em horário local no formato YYYY-MM-DD', () => {
+  it('should return today\'s date in local time as YYYY-MM-DD', () => {
     const now = new Date();
     const expected = `${now.getFullYear()}-${String(
       now.getMonth() + 1,
@@ -62,7 +62,7 @@ describe('getCurrentBusinessDateValue', () => {
     jest.restoreAllMocks();
   });
 
-  it('resolve o dia de calendário do fuso do produto (America/Sao_Paulo), não o do processo', () => {
+  it("should resolve the product timezone's (America/Sao_Paulo) calendar day, not the process's", () => {
     // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08).
     // Simula um processo cujos getters locais leem em UTC (ex.: servidor
     // rodando em produção), mockando apenas Date.prototype — a função deve
@@ -73,7 +73,7 @@ describe('getCurrentBusinessDateValue', () => {
     expect(getCurrentBusinessDateValue(instant)).toBe('2026-07-31');
   });
 
-  it('resolve o ano correto na virada de ano, mesmo quando o processo já leria o ano seguinte', () => {
+  it('should resolve the correct year at year-end, even when the process would already read the next year', () => {
     // 23:10 em São Paulo (31/12/2026) já é 02:10 UTC de 01/01/2027 — a
     // variante mais grave deste bug, que erraria mês e ano juntos.
     const instant = new Date('2026-12-31T23:10:00-03:00');
@@ -82,7 +82,7 @@ describe('getCurrentBusinessDateValue', () => {
     expect(getCurrentBusinessDateValue(instant)).toBe('2026-12-31');
   });
 
-  it('usa a data atual quando nenhuma data é passada', () => {
+  it('should use the current date when no date is passed', () => {
     const now = new Date();
     const expected = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'America/Sao_Paulo',
@@ -101,7 +101,7 @@ describe('getDaysUntil', () => {
     jest.restoreAllMocks();
   });
 
-  it('não conta um dia a mais quando o processo já leria o dia seguinte (fuso do produto ainda não virou)', () => {
+  it("should not count an extra day when the process would already read the next day (product timezone hasn't rolled over yet)", () => {
     // 22:38 em São Paulo (31/07) já é 01:38 UTC do dia seguinte (01/08).
     // Simula um processo cujos getters locais leem em UTC (ex.: servidor em
     // produção, no SSR do sino de dívidas vencendo em breve): se
@@ -126,19 +126,19 @@ describe('getDaysUntil', () => {
     ).toISOString();
   }
 
-  it('retorna 0 quando a data é hoje', () => {
+  it('should return 0 when the date is today', () => {
     expect(getDaysUntil(buildIsoDateOffsetFromToday(0))).toBe(0);
   });
 
-  it('retorna a quantidade de dias que faltam para uma data futura', () => {
+  it('should return the number of days remaining until a future date', () => {
     expect(getDaysUntil(buildIsoDateOffsetFromToday(2))).toBe(2);
   });
 
-  it('retorna um número negativo para uma data que já passou', () => {
+  it('should return a negative number for a date that has already passed', () => {
     expect(getDaysUntil(buildIsoDateOffsetFromToday(-3))).toBe(-3);
   });
 
-  it('considera só a parte de data (YYYY-MM-DD) da string ISO, ignorando o horário', () => {
+  it('should only consider the date part (YYYY-MM-DD) of the ISO string, ignoring the time', () => {
     const now = new Date();
     const dueDateWithTime = new Date(
       Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + 1, 23, 59, 59),

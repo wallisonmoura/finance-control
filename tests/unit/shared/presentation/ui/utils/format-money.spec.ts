@@ -1,14 +1,14 @@
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 describe('formatMoney', () => {
-  it('deve formatar valor monetário em BRL', () => {
+  it('should format a monetary value in BRL', () => {
     const result = formatMoney(1234.56);
 
     expect(result).toContain('R$');
     expect(result).toContain('1.234,56');
   });
 
-  it('deve formatar zero em BRL', () => {
+  it('should format zero in BRL', () => {
     const result = formatMoney(0);
 
     expect(result).toContain('R$');
