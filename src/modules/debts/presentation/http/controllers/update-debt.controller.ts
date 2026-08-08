@@ -1,4 +1,3 @@
-import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { UpdateDebtUseCase } from '@/modules/debts/application/use-cases/update-debt.use-case';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
@@ -7,6 +6,10 @@ import {
 } from '@/shared/presentation/http/http.types';
 import { debtIdParamSchema } from '../schemas/debt-id-param.schema';
 import {
+  DebtHttpPresenter,
+  DebtHttpResponse,
+} from '../presenters/debt-http.presenter';
+import {
   updateDebtSchema,
   UpdateDebtSchemaData,
 } from '../schemas/update-debt.schema';
@@ -14,11 +17,13 @@ import { UpdateDebtInput } from '@/modules/debts/application/dtos/update-debt.in
 
 export class UpdateDebtController implements Controller<
   HttpRequest,
-  DebtOutput
+  DebtHttpResponse
 > {
   constructor(private readonly updateDebtUseCase: UpdateDebtUseCase) {}
 
-  async handle(request: HttpRequest): Promise<HttpResponse<DebtOutput>> {
+  async handle(
+    request: HttpRequest,
+  ): Promise<HttpResponse<DebtHttpResponse>> {
     const params = debtIdParamSchema.parse(request.params);
     const data: UpdateDebtSchemaData = updateDebtSchema.parse(request.body);
 
@@ -36,7 +41,7 @@ export class UpdateDebtController implements Controller<
 
     return {
       statusCode: 200,
-      body: output,
+      body: DebtHttpPresenter.toResponse(output),
     };
   }
 }

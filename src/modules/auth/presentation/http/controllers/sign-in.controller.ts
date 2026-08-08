@@ -1,7 +1,7 @@
 import { SignInInput } from '@/modules/auth/application/dtos/sign-in.input';
 import { SignInOutput } from '@/modules/auth/application/dtos/sign-in.output';
 import { SignInUseCase } from '@/modules/auth/application/use-cases/sign-in.use-case';
-import { signInSchema } from '@/modules/auth/presentation/http/schemas/sign-in.schema';
+import { signInSchema } from '../schemas/sign-in.schema';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
   HttpRequest,

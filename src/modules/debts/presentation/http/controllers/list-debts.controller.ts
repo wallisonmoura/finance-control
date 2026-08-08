@@ -1,4 +1,3 @@
-import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { ListDebtsInput } from '@/modules/debts/application/dtos/list-debts.input';
 import { ListDebtsUseCase } from '@/modules/debts/application/use-cases/list-debts.use-case';
 import { Controller } from '@/shared/presentation/http/controller';
@@ -6,14 +5,20 @@ import {
   HttpRequest,
   HttpResponse,
 } from '@/shared/presentation/http/http.types';
+import {
+  DebtHttpPresenter,
+  DebtHttpResponse,
+} from '../presenters/debt-http.presenter';
 
 export class ListDebtsController implements Controller<
   HttpRequest,
-  DebtOutput[]
+  DebtHttpResponse[]
 > {
   constructor(private readonly listDebtsUseCase: ListDebtsUseCase) {}
 
-  async handle(request: HttpRequest): Promise<HttpResponse<DebtOutput[]>> {
+  async handle(
+    request: HttpRequest,
+  ): Promise<HttpResponse<DebtHttpResponse[]>> {
     const input: ListDebtsInput = {
       userId: request.userId!,
     };
@@ -22,7 +27,7 @@ export class ListDebtsController implements Controller<
 
     return {
       statusCode: 200,
-      body: output,
+      body: DebtHttpPresenter.toResponseList(output),
     };
   }
 }

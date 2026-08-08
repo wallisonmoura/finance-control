@@ -1,8 +1,8 @@
-import { debtIdParamSchema } from '@/modules/debts/presentation/http/schemas/debt-id-param.schema';
+import { financialEntryIdParamSchema } from '@/modules/finance/presentation/http/schemas/financial-entry-id-param.schema';
 
-describe('debtIdParamSchema', () => {
+describe('financialEntryIdParamSchema', () => {
   it('deve aceitar id UUID válido', () => {
-    const result = debtIdParamSchema.safeParse({
+    const result = financialEntryIdParamSchema.safeParse({
       id: '4d1af925-d603-4db1-9dde-5c56505101fc',
     });
 
@@ -14,14 +14,14 @@ describe('debtIdParamSchema', () => {
   });
 
   it('deve rejeitar id ausente', () => {
-    const result = debtIdParamSchema.safeParse({});
+    const result = financialEntryIdParamSchema.safeParse({});
 
     expect(result.success).toBe(false);
   });
 
   it('deve rejeitar id inválido', () => {
-    const result = debtIdParamSchema.safeParse({
-      id: 'debt-1',
+    const result = financialEntryIdParamSchema.safeParse({
+      id: 'entry-1',
     });
 
     expect(result.success).toBe(false);

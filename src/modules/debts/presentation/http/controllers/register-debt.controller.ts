@@ -1,10 +1,13 @@
-import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { RegisterDebtUseCase } from '@/modules/debts/application/use-cases/register-debt.use-case';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
   HttpRequest,
   HttpResponse,
 } from '@/shared/presentation/http/http.types';
+import {
+  DebtHttpPresenter,
+  DebtHttpResponse,
+} from '../presenters/debt-http.presenter';
 import {
   registerDebtSchema,
   RegisterDebtSchemaData,
@@ -13,11 +16,13 @@ import { RegisterDebtInput } from '@/modules/debts/application/dtos/register-deb
 
 export class RegisterDebtController implements Controller<
   HttpRequest,
-  DebtOutput
+  DebtHttpResponse
 > {
   constructor(private readonly registerDebtUseCase: RegisterDebtUseCase) {}
 
-  async handle(request: HttpRequest): Promise<HttpResponse<DebtOutput>> {
+  async handle(
+    request: HttpRequest,
+  ): Promise<HttpResponse<DebtHttpResponse>> {
     const data: RegisterDebtSchemaData = registerDebtSchema.parse(request.body);
 
     const input: RegisterDebtInput = {
@@ -33,7 +38,7 @@ export class RegisterDebtController implements Controller<
 
     return {
       statusCode: 201,
-      body: output,
+      body: DebtHttpPresenter.toResponse(output),
     };
   }
 }

@@ -63,7 +63,10 @@ describe('UpdateDebtController', () => {
 
     expect(response).toEqual({
       statusCode: 200,
-      body: output,
+      body: {
+        ...output,
+        dueDate: '2026-05-12',
+      },
     });
   });
 

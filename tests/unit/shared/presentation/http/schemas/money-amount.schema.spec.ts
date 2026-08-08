@@ -1,0 +1,89 @@
+import { moneyAmountSchema } from '@/shared/presentation/http/schemas/money-amount.schema';
+
+describe('moneyAmountSchema', () => {
+  it('deve aceitar valor numérico positivo', () => {
+    const result = moneyAmountSchema.safeParse(100);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(100);
+  });
+
+  it('deve converter string numérica válida para number', () => {
+    const result = moneyAmountSchema.safeParse('100.50');
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(100.5);
+  });
+
+  it('deve aceitar valores decimais que sofrem imprecisão de ponto flutuante', () => {
+    const result = moneyAmountSchema.safeParse(0.54);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(0.54);
+  });
+
+  it('deve aceitar valores com duas casas decimais no limite da validação', () => {
+    const result = moneyAmountSchema.safeParse(560.55);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(560.55);
+  });
+
+  it('deve rejeitar valor zero', () => {
+    const result = moneyAmountSchema.safeParse(0);
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Valor deve ser maior que zero.',
+      );
+    }
+  });
+
+  it('deve rejeitar valor negativo', () => {
+    const result = moneyAmountSchema.safeParse(-10);
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Valor deve ser maior que zero.',
+      );
+    }
+  });
+
+  it('deve rejeitar valor não numérico', () => {
+    const result = moneyAmountSchema.safeParse('abc');
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Valor deve ser numérico.');
+    }
+  });
+
+  it('deve rejeitar valor com mais de 2 casas decimais', () => {
+    const result = moneyAmountSchema.safeParse(10.999);
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Valor deve ter no máximo 2 casas decimais.',
+      );
+    }
+  });
+
+  it('deve rejeitar valor acima do limite permitido', () => {
+    const result = moneyAmountSchema.safeParse(1000000000000);
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Valor excede o limite permitido.',
+      );
+    }
+  });
+});

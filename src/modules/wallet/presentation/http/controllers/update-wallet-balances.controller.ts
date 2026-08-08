@@ -1,4 +1,5 @@
 import { UpdateWalletBalancesUseCase } from '@/modules/wallet/application/use-cases/update-wallet-balances.use-case';
+import { WalletOutput } from '@/modules/wallet/application/dtos/wallet.output';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
   HttpRequest,
@@ -9,13 +10,13 @@ import { UpdateWalletBalancesInput } from '@/modules/wallet/application/dtos/upd
 
 export class UpdateWalletBalancesController implements Controller<
   HttpRequest,
-  unknown
+  WalletOutput
 > {
   constructor(
     private readonly updateWalletBalancesUseCase: UpdateWalletBalancesUseCase,
   ) {}
 
-  async handle(request: HttpRequest): Promise<HttpResponse> {
+  async handle(request: HttpRequest): Promise<HttpResponse<WalletOutput>> {
     const body = updateWalletBalancesBodySchema.parse(request.body);
 
     const input: UpdateWalletBalancesInput = {

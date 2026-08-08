@@ -1,11 +1,9 @@
-import {
-  GetBalanceSummaryController,
-  GetBalanceSummaryUseCaseContract,
-} from '@/modules/balance/presentation/http/controllers/get-balance-summary.controller';
+import { GetBalanceSummaryUseCase } from '@/modules/balance/application/use-cases/get-balance-summary.use-case';
+import { GetBalanceSummaryController } from '@/modules/balance/presentation/http/controllers/get-balance-summary.controller';
 
 describe('GetBalanceSummaryController', () => {
   let execute: jest.Mock;
-  let useCase: Pick<GetBalanceSummaryUseCaseContract, 'execute'>;
+  let useCase: Pick<GetBalanceSummaryUseCase, 'execute'>;
   let controller: GetBalanceSummaryController;
 
   beforeEach(() => {
@@ -15,7 +13,9 @@ describe('GetBalanceSummaryController', () => {
       execute,
     };
 
-    controller = new GetBalanceSummaryController(useCase);
+    controller = new GetBalanceSummaryController(
+      useCase as GetBalanceSummaryUseCase,
+    );
   });
 
   it('deve retornar 200 com o balance summary', async () => {
