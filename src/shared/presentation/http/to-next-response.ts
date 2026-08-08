@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-
-type HttpResponse<T = unknown> = {
-  statusCode: number;
-  body: T | null;
-};
+import { HttpResponse } from './http.types';
 
 export function toNextResponse<T>(response: HttpResponse<T>): NextResponse {
   if (response.body === null) {
