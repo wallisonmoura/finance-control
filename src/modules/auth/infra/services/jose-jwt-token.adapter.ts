@@ -2,7 +2,7 @@ import { jwtVerify, SignJWT } from 'jose';
 import {
   TokenPayload,
   TokenService,
-} from '../../domain/services/token.service';
+} from '../../domain/services/token.port';
 import { AUTH_TOKEN_EXPIRES_IN } from '../../constants/auth.constants';
 
 export class JoseJwtTokenService implements TokenService {

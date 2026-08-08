@@ -117,17 +117,24 @@ Regras importantes:
 ```txt
 src/
   app/
+    (private)/
+      debts/
+      finance/
+      wallet/
+    (public)/
+      login/
     api/
-    dashboard/
-    debts/
-    finance/
-    login/
-    wallet/
+      auth/
+      balance/
+      debts/
+      finance/
+      wallet/
   modules/
     auth/
-    wallet/
-    finance/
+    balance/
     debts/
+    finance/
+    wallet/
   shared/
     infra/
     presentation/
@@ -268,7 +275,6 @@ GET  /api/auth/me
 ```txt
 GET /api/wallet
 PUT /api/wallet
-GET /api/wallet/summary
 ```
 
 ### Finance
@@ -323,9 +329,9 @@ O MVP funcional esta implementado:
 
 ## Deploy com Vercel e Supabase
 
-O deploy planejado usa Vercel para a aplicacao Next.js e Supabase apenas como PostgreSQL gerenciado.
+O deploy usa Vercel para a aplicacao Next.js e Supabase como PostgreSQL gerenciado em producao. Cada PR gera um deploy de preview automatico; merges em `main` disparam deploy de producao.
 
-Ambientes recomendados:
+Ambientes:
 
 - local: PostgreSQL via Docker;
 - teste local: PostgreSQL via Docker com banco `finance_control_test`;

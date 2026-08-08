@@ -27,11 +27,6 @@ GET {{baseUrl}}/api/wallet
 Cookie: {{authCookieName}}={{authToken}}
 
 ###
-# @name getWalletSummary
-GET {{baseUrl}}/api/wallet/summary
-Cookie: {{authCookieName}}={{authToken}}
-
-###
 # @name updateWalletInvalid
 PUT {{baseUrl}}/api/wallet
 Content-Type: {{contentType}}

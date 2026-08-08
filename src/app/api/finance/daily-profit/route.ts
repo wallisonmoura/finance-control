@@ -7,13 +7,13 @@ import { toNextResponse } from '@/shared/presentation/http/to-next-response';
 import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  const userId = await getAuthenticatedUserIdFromRequest(request);
+
+  if (!userId) {
+    return unauthorizedResponse();
+  }
+
   try {
-    const userId = await getAuthenticatedUserIdFromRequest(request);
-
-    if (!userId) {
-      return unauthorizedResponse();
-    }
-
     const useCase = makeCalculateDailyProfitUseCase();
     const controller = new CalculateDailyProfitController(useCase);
 

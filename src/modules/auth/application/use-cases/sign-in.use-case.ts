@@ -1,7 +1,7 @@
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { PasswordHasher } from '../../domain/services/password-hasher';
-import { TokenService } from '../../domain/services/token.service';
+import { PasswordHasher } from '../../domain/services/password-hasher.port';
+import { TokenService } from '../../domain/services/token.port';
 import { Email } from '../../domain/value-objects/email.vo';
 import { SignInInput } from '../dtos/sign-in.input';
 import { SignInOutput } from '../dtos/sign-in.output';

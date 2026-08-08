@@ -1,7 +1,7 @@
 import {
   TokenPayload,
   TokenService,
-} from '@/modules/auth/domain/services/token.service';
+} from '@/modules/auth/domain/services/token.port';
 
 export class FakeTokenService implements TokenService {
   async generateAccessToken(payload: TokenPayload): Promise<string> {

@@ -5,7 +5,7 @@ jest.mock(
   }),
 );
 
-jest.mock('@/modules/auth/infra/services/jose-jwt-token.service', () => ({
+jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
   JoseJwtTokenService: jest.fn(),
 }));
 
@@ -19,7 +19,7 @@ jest.mock(
 import { GET } from '@/app/api/auth/me/route';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
-import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.service';
+import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
 import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
 import { NextRequest } from 'next/server';
 
