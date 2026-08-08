@@ -124,7 +124,7 @@ export async function getCurrentUserExpenseCategories(): Promise<CurrentUserExpe
 
   try {
     const useCase = makeListExpenseCategoriesUseCase();
-    const categories = await useCase.execute(auth.userId);
+    const categories = await useCase.execute({ userId: auth.userId });
 
     return {
       data: categories,

@@ -325,7 +325,7 @@ describe('getCurrentUserExpenseCategories', () => {
       data: categories,
     });
 
-    expect(execute).toHaveBeenCalledWith('user-id');
+    expect(execute).toHaveBeenCalledWith({ userId: 'user-id' });
   });
 
   it('should return generic error message when categories loading fails', async () => {

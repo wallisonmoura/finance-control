@@ -16,9 +16,9 @@ export class ListExpenseCategoriesController
   async handle(
     request: HttpRequest,
   ): Promise<HttpResponse<ExpenseCategoryOutput[]>> {
-    const categories = await this.listExpenseCategoriesUseCase.execute(
-      request.userId!,
-    );
+    const categories = await this.listExpenseCategoriesUseCase.execute({
+      userId: request.userId!,
+    });
 
     return {
       statusCode: 200,

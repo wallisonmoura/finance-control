@@ -1,4 +1,4 @@
-import { DebtOutput } from '@/modules/debts/application/dto/debt.output';
+import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
   HttpRequest,
@@ -6,7 +6,7 @@ import {
 } from '@/shared/presentation/http/http.types';
 import { debtIdParamSchema } from '../schemas/debt-id-param.schema';
 import { payDebtSchema, PayDebtSchemaData } from '../schemas/pay-debt.schema';
-import { PayDebtInput } from '@/modules/debts/application/dto/pay-debt.input';
+import { PayDebtInput } from '@/modules/debts/application/dtos/pay-debt.input';
 
 type PayDebtUseCaseContract = {
   execute(input: PayDebtInput): Promise<DebtOutput>;

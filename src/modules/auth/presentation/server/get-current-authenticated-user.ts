@@ -1,4 +1,4 @@
-import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user.use-case';
+import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
 
 import { AuthenticatedUser } from '../ui/types/auth-ui.types';
 import { getAuthenticatedUserId } from './get-authenticated-user-id';

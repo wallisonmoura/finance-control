@@ -5,7 +5,7 @@ import {
   HttpResponse,
 } from '@/shared/presentation/http/http.types';
 import { debtIdParamSchema } from '../schemas/debt-id-param.schema';
-import { DeleteDebtInput } from '@/modules/debts/application/dto/delete-debt.input';
+import { DeleteDebtInput } from '@/modules/debts/application/dtos/delete-debt.input';
 
 export class DeleteDebtController implements Controller<HttpRequest, null> {
   constructor(private readonly deleteDebtUseCase: DeleteDebtUseCase) {}

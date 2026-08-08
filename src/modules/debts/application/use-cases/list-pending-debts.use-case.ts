@@ -1,6 +1,6 @@
 import { DebtRepository } from '../../domain/repositories/debt.repository';
-import { DebtOutput } from '../dto/debt.output';
-import { ListPendingDebtsInput } from '../dto/list-pending-debts.input';
+import { DebtOutput } from '../dtos/debt.output';
+import { ListPendingDebtsInput } from '../dtos/list-pending-debts.input';
 
 export class ListPendingDebtsUseCase {
   constructor(private readonly debtRepository: DebtRepository) {}

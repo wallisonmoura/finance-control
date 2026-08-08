@@ -16,7 +16,7 @@ export class PrismaDebtMapper {
       id: raw.id,
       userId: raw.userId,
       description: raw.description,
-      amount: raw.amount.toNumber(),
+      amount: Number(raw.amount),
       dueDate: raw.dueDate,
       type: raw.type as DebtType,
       status: raw.status as DebtStatus,

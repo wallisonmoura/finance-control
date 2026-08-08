@@ -2,7 +2,7 @@ import { DebtAlreadyPaidError } from '../../domain/errors/debt-already-paid.erro
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
 import { UnauthorizedDebtAccessError } from '../../domain/errors/unauthorized-debt-access.error';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
-import { DeleteDebtInput } from '../dto/delete-debt.input';
+import { DeleteDebtInput } from '../dtos/delete-debt.input';
 
 export class DeleteDebtUseCase {
   constructor(private readonly debtRepository: DebtRepository) {}

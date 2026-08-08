@@ -1,4 +1,4 @@
-import { BalanceSummaryOutput } from '@/modules/balance/application/dto/balance-summary.output';
+import { BalanceSummaryOutput } from '@/modules/balance/application/dtos/balance-summary.output';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
   HttpRequest,

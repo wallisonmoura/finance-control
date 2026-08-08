@@ -1,4 +1,4 @@
-import { DebtOutput } from '@/modules/debts/application/dto/debt.output';
+import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { UpdateDebtUseCase } from '@/modules/debts/application/use-cases/update-debt.use-case';
 import { Controller } from '@/shared/presentation/http/controller';
 import {
@@ -10,7 +10,7 @@ import {
   updateDebtSchema,
   UpdateDebtSchemaData,
 } from '../schemas/update-debt.schema';
-import { UpdateDebtInput } from '@/modules/debts/application/dto/update-debt.input';
+import { UpdateDebtInput } from '@/modules/debts/application/dtos/update-debt.input';
 
 export class UpdateDebtController implements Controller<
   HttpRequest,

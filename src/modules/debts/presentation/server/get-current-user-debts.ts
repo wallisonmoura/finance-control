@@ -1,5 +1,5 @@
 import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
-import { DebtOutput } from '@/modules/debts/application/dto/debt.output';
+import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { makeListDebtsUseCase } from '@/modules/debts/infra/factories/make-list-debts-use-case';
 import { makeListPendingDebtsUseCase } from '@/modules/debts/infra/factories/make-list-pending-debts-use-case';
 
