@@ -3,9 +3,9 @@ import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-cr
 import {
   TokenPayload,
   TokenService,
-} from '@/modules/auth/domain/services/token.service';
+} from '@/modules/auth/domain/services/token.port';
 import { PrismaUserRepository } from '@/modules/auth/infra/repositories/prisma-user.repository';
-import { BcryptPasswordHasher } from '@/modules/auth/infra/services/bcrypt-password-hasher';
+import { BcryptPasswordHasher } from '@/modules/auth/infra/services/bcrypt-password-hasher.adapter';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { hash } from 'bcryptjs';
 
