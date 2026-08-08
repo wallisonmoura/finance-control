@@ -27,7 +27,7 @@ describe('wallet-api.service', () => {
   });
 
   describe('getWallet', () => {
-    it('deve buscar a Wallet do usuário autenticado', async () => {
+    it('should fetch the authenticated user Wallet', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         json: async () => walletResponse,
@@ -48,7 +48,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar mensagem de erro vinda de body.message', async () => {
+    it('should return the error message coming from body.message', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => ({
@@ -63,7 +63,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar mensagem de erro vinda de body.error', async () => {
+    it('should return the error message coming from body.error', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => ({
@@ -78,7 +78,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar mensagem padrão quando o body de erro não for JSON válido', async () => {
+    it('should return the default message when the error body is not valid JSON', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => {
@@ -93,7 +93,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar mensagem padrão quando o body não possuir message nem error', async () => {
+    it('should return the default message when the body has neither message nor error', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => ({}),
@@ -108,7 +108,7 @@ describe('wallet-api.service', () => {
   });
 
   describe('updateWalletBalances', () => {
-    it('deve atualizar os saldos-base da Wallet', async () => {
+    it('should update the Wallet base balances', async () => {
       const payload = {
         bankBalance: 1500,
         cashBalance: 200,
@@ -144,7 +144,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar erro quando a atualização falhar com body.message', async () => {
+    it('should return an error when the update fails with body.message', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => ({
@@ -163,7 +163,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar erro quando a atualização falhar com body.error', async () => {
+    it('should return an error when the update fails with body.error', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => ({
@@ -182,7 +182,7 @@ describe('wallet-api.service', () => {
       });
     });
 
-    it('deve retornar mensagem padrão quando o body de erro da atualização não for JSON válido', async () => {
+    it('should return the default message when the update error body is not valid JSON', async () => {
       jest.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         json: async () => {

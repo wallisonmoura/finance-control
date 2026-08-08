@@ -16,7 +16,7 @@ describe('GetWalletController', () => {
     controller = new GetWalletController(useCase);
   });
 
-  it('deve chamar o GetWalletUseCase com o input correto', async () => {
+  it('should call GetWalletUseCase with the correct input', async () => {
     const output: WalletOutput = {
       id: 'wallet-1',
       userId: 'user-1',
@@ -44,7 +44,7 @@ describe('GetWalletController', () => {
     expect(useCase.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('deve retornar 200 com a wallet', async () => {
+  it('should return 200 with the wallet', async () => {
     const output: WalletOutput = {
       id: 'wallet-1',
       userId: 'user-1',

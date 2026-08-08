@@ -12,7 +12,7 @@ describe('GetWalletUseCase', () => {
     sut = new GetWalletUseCase(walletRepository);
   });
 
-  it('deve retornar a wallet do usuário', async () => {
+  it('should return the user wallet', async () => {
     const wallet = Wallet.create({
       id: 'wallet-1',
       userId: 'user-1',
@@ -41,7 +41,7 @@ describe('GetWalletUseCase', () => {
     });
   });
 
-  it('deve lançar erro quando a wallet não existir', async () => {
+  it('should throw an error when the wallet does not exist', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',

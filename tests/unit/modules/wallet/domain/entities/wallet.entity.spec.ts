@@ -13,7 +13,7 @@ describe('Wallet entity', () => {
       updatedAt: new Date('2026-04-20T00:00:00.000Z'),
     });
 
-  it('deve criar uma wallet válida', () => {
+  it('should create a valid wallet', () => {
     const wallet = makeWallet();
 
     expect(wallet.id).toBe('wallet-1');
@@ -25,13 +25,13 @@ describe('Wallet entity', () => {
     expect(wallet.updatedAt).toEqual(new Date('2026-04-20T00:00:00.000Z'));
   });
 
-  it('deve calcular corretamente o walletTotal', () => {
+  it('should correctly calculate the walletTotal', () => {
     const wallet = makeWallet();
 
     expect(wallet.getWalletTotal()).toBe(1500);
   });
 
-  it('deve lançar erro quando bankBalance for menor que zero', () => {
+  it('should throw an error when bankBalance is less than zero', () => {
     expect(() =>
       Wallet.create({
         id: 'wallet-1',
@@ -45,7 +45,7 @@ describe('Wallet entity', () => {
     ).toThrow(InvalidWalletBalanceError);
   });
 
-  it('deve lançar erro quando cashBalance for menor que zero', () => {
+  it('should throw an error when cashBalance is less than zero', () => {
     expect(() =>
       Wallet.create({
         id: 'wallet-1',
@@ -59,7 +59,7 @@ describe('Wallet entity', () => {
     ).toThrow(InvalidWalletBalanceError);
   });
 
-  it('deve lançar erro quando receivableBalance for menor que zero', () => {
+  it('should throw an error when receivableBalance is less than zero', () => {
     expect(() =>
       Wallet.create({
         id: 'wallet-1',
@@ -73,7 +73,7 @@ describe('Wallet entity', () => {
     ).toThrow(InvalidWalletBalanceError);
   });
 
-  it('deve lançar erro quando bankBalance não for um número finito', () => {
+  it('should throw an error when bankBalance is not a finite number', () => {
     expect(() =>
       Wallet.create({
         id: 'wallet-1',
@@ -87,7 +87,7 @@ describe('Wallet entity', () => {
     ).toThrow(InvalidWalletBalanceError);
   });
 
-  it('deve lançar erro quando userId estiver vazio', () => {
+  it('should throw an error when userId is empty', () => {
     expect(() =>
       Wallet.create({
         id: 'wallet-1',
@@ -101,7 +101,7 @@ describe('Wallet entity', () => {
     ).toThrow('ID do usuário é obrigatório.');
   });
 
-  it('deve atualizar os saldos da wallet', () => {
+  it('should update the wallet balances', () => {
     const wallet = makeWallet();
 
     const updatedWallet = wallet.update({
@@ -116,7 +116,7 @@ describe('Wallet entity', () => {
     expect(updatedWallet.getWalletTotal()).toBe(2100);
   });
 
-  it('deve manter os valores anteriores quando update receber apenas parte dos campos', () => {
+  it('should keep the previous values when update receives only part of the fields', () => {
     const wallet = makeWallet();
 
     const updatedWallet = wallet.update({
@@ -129,7 +129,7 @@ describe('Wallet entity', () => {
     expect(updatedWallet.getWalletTotal()).toBe(1800);
   });
 
-  it('deve retornar nova instância ao atualizar a wallet', () => {
+  it('should return a new instance when updating the wallet', () => {
     const wallet = makeWallet();
 
     const updatedWallet = wallet.update({
@@ -142,7 +142,7 @@ describe('Wallet entity', () => {
     );
   });
 
-  it('deve retornar os dados base no toJSON', () => {
+  it('should return the base data in toJSON', () => {
     const wallet = makeWallet();
 
     expect(wallet.toJSON()).toEqual({

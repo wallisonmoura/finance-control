@@ -17,7 +17,7 @@ describe('UpdateWalletBalancesController', () => {
     controller = new UpdateWalletBalancesController(useCase);
   });
 
-  it('deve chamar o UpdateWalletBalancesUseCase com o input correto', async () => {
+  it('should call UpdateWalletBalancesUseCase with the correct input', async () => {
     const output: WalletOutput = {
       id: 'wallet-1',
       userId: 'user-1',
@@ -53,7 +53,7 @@ describe('UpdateWalletBalancesController', () => {
     expect(useCase.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('deve retornar 200 com a wallet atualizada', async () => {
+  it('should return 200 with the updated wallet', async () => {
     const output: WalletOutput = {
       id: 'wallet-1',
       userId: 'user-1',
@@ -82,7 +82,7 @@ describe('UpdateWalletBalancesController', () => {
     });
   });
 
-  it('deve lançar erro quando o payload for inválido', async () => {
+  it('should throw an error when the payload is invalid', async () => {
     const request: HttpRequest = {
       userId: 'user-1',
       body: {
