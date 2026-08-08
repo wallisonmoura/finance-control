@@ -11,7 +11,7 @@ describe('GetBalanceSummaryUseCase', () => {
     sut = new GetBalanceSummaryUseCase(balanceSummaryRepository);
   });
 
-  it('deve retornar o resumo de saldo com walletTotal, pendingDebts e finalBalance', async () => {
+  it('should return the balance summary with walletTotal, pendingDebts and finalBalance', async () => {
     balanceSummaryRepository.setBalanceSummary('user-1', {
       bankBalance: 1000,
       cashBalance: 200,
@@ -37,7 +37,7 @@ describe('GetBalanceSummaryUseCase', () => {
     });
   });
 
-  it('deve permitir finalBalance negativo quando pendingDebts for maior que walletTotal', async () => {
+  it('should allow a negative finalBalance when pendingDebts is greater than walletTotal', async () => {
     balanceSummaryRepository.setBalanceSummary('user-1', {
       bankBalance: 100,
       cashBalance: 50,
@@ -54,7 +54,7 @@ describe('GetBalanceSummaryUseCase', () => {
     expect(output.finalBalance).toBe(-300);
   });
 
-  it('deve retornar pendingDebts zero quando não houver dívidas pendentes', async () => {
+  it('should return pendingDebts zero when there are no pending debts', async () => {
     balanceSummaryRepository.setBalanceSummary('user-1', {
       bankBalance: 1000,
       cashBalance: 500,
@@ -71,7 +71,7 @@ describe('GetBalanceSummaryUseCase', () => {
     expect(output.finalBalance).toBe(1750);
   });
 
-  it('deve lançar WalletNotFoundError quando não existir wallet para o usuário', async () => {
+  it('should throw WalletNotFoundError when there is no wallet for the user', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',
@@ -79,7 +79,7 @@ describe('GetBalanceSummaryUseCase', () => {
     ).rejects.toBeInstanceOf(WalletNotFoundError);
   });
 
-  it('deve incluir o userId na mensagem de WalletNotFoundError', async () => {
+  it('should include the userId in the WalletNotFoundError message', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',

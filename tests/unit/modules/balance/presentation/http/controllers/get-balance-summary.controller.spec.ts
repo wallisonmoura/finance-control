@@ -18,7 +18,7 @@ describe('GetBalanceSummaryController', () => {
     );
   });
 
-  it('deve retornar 200 com o balance summary', async () => {
+  it('should return 200 with the balance summary', async () => {
     const output = {
       wallet: {
         bankBalance: 1000,
@@ -48,7 +48,7 @@ describe('GetBalanceSummaryController', () => {
     });
   });
 
-  it('deve propagar erro lançado pelo use case', async () => {
+  it('should propagate error thrown by the use case', async () => {
     execute.mockRejectedValue(new Error('Any error'));
 
     await expect(
