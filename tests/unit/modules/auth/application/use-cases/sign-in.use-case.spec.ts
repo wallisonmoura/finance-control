@@ -81,6 +81,20 @@ describe('SignInUseCase', () => {
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 
+  it('should compare against a dummy hash when user does not exist, to avoid leaking account existence through response timing', async () => {
+    const { useCase, passwordHasher } = makeSut([]);
+    const compareSpy = jest.spyOn(passwordHasher, 'compare');
+
+    await expect(
+      useCase.execute({
+        email: 'naoexiste@email.com',
+        password: '123456',
+      }),
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
+
+    expect(compareSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('should throw InvalidCredentialsError when password is invalid', async () => {
     const user = makeUser();
     const { useCase } = makeSut([user]);
