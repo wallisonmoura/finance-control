@@ -6,6 +6,12 @@ import { Email } from '../../domain/value-objects/email.vo';
 import { SignInInput } from '../dtos/sign-in.input';
 import { SignInOutput } from '../dtos/sign-in.output';
 
+// Not a real user's password hash — only used so that comparing against a
+// missing user takes roughly the same time as comparing against an existing
+// one, preventing response-timing from revealing whether an email is registered.
+const DUMMY_PASSWORD_HASH =
+  '$2b$10$BksvFDYGzVrqMpw719rlNuOYhaQ8T/UW4KOi7h7J.WgSiI1ThnpMO';
+
 export class SignInUseCase {
   constructor(
     private readonly userRepository: UserRepository,
@@ -19,6 +25,7 @@ export class SignInUseCase {
     const user = await this.userRepository.findByEmail(email.getValue());
 
     if (!user) {
+      await this.passwordHasher.compare(input.password, DUMMY_PASSWORD_HASH);
       throw new InvalidCredentialsError();
     }
 
