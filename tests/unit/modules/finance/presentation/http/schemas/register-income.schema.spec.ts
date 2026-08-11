@@ -115,6 +115,25 @@ describe('registerIncomeSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('should reject a date in the future', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-03-23T12:00:00-03:00'));
+
+    const result = registerIncomeSchema.safeParse({
+      ...validPayload,
+      date: '2026-03-24',
+    });
+
+    jest.useRealTimers();
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Data não pode ser uma data futura.',
+      );
+    }
+  });
+
   it('should reject notes that is not a string', () => {
     const result = registerIncomeSchema.safeParse({
       ...validPayload,

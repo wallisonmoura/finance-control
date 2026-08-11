@@ -1,6 +1,32 @@
 import { financeDateSchema } from '@/modules/finance/presentation/http/schemas/shared/finance-date.schema';
 
 describe('financeDateSchema', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('should reject a date in the future', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-06-15T12:00:00-03:00'));
+
+    const result = financeDateSchema.safeParse('2026-06-16');
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Data não pode ser uma data futura.',
+      );
+    }
+  });
+
+  it("should accept today's date", () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-06-15T12:00:00-03:00'));
+
+    const result = financeDateSchema.safeParse('2026-06-15');
+
+    expect(result.success).toBe(true);
+  });
+
   it('should accept a valid date in YYYY-MM-DD format', () => {
     const result = financeDateSchema.safeParse('2026-03-23');
 
