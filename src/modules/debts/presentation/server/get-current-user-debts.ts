@@ -2,6 +2,7 @@ import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-a
 import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { makeListDebtsUseCase } from '@/modules/debts/infra/factories/make-list-debts-use-case';
 import { makeListPendingDebtsUseCase } from '@/modules/debts/infra/factories/make-list-pending-debts-use-case';
+import { cache } from 'react';
 
 import { DebtUi } from '../ui/types/debt-ui.types';
 
@@ -57,25 +58,27 @@ export async function getCurrentUserDebts(): Promise<CurrentUserDebtsResult> {
   }
 }
 
-export async function getCurrentUserPendingDebts(): Promise<CurrentUserDebtsResult> {
-  const auth = await getCurrentUserIdOrError();
+export const getCurrentUserPendingDebts = cache(
+  async (): Promise<CurrentUserDebtsResult> => {
+    const auth = await getCurrentUserIdOrError();
 
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+    if ('error' in auth) {
+      return {
+        error: auth.error,
+      };
+    }
 
-  try {
-    const useCase = makeListPendingDebtsUseCase();
-    const debts = await useCase.execute({ userId: auth.userId });
+    try {
+      const useCase = makeListPendingDebtsUseCase();
+      const debts = await useCase.execute({ userId: auth.userId });
 
-    return {
-      data: debts.map(toDebtUi),
-    };
-  } catch {
-    return {
-      error: 'Não foi possível carregar dívidas pendentes.',
-    };
-  }
-}
+      return {
+        data: debts.map(toDebtUi),
+      };
+    } catch {
+      return {
+        error: 'Não foi possível carregar dívidas pendentes.',
+      };
+    }
+  },
+);
