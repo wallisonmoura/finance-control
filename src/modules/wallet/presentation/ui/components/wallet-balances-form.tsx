@@ -55,7 +55,9 @@ function isValidAmount(value: string) {
 
   const amount = parseAmount(value);
 
-  return Number.isFinite(amount) && amount >= 0;
+  return (
+    Number.isFinite(amount) && amount >= 0 && amount <= 999999999999.99
+  );
 }
 
 const amountSchema = z.string().refine(isValidAmount, {
