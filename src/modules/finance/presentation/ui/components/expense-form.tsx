@@ -58,7 +58,11 @@ function isFutureDate(value: string) {
 
 const expenseFormSchema = z.object({
   categoryId: z.string().min(1, 'Selecione uma categoria.'),
-  description: z.string().trim().min(1, 'Informe a descrição.'),
+  description: z
+    .string()
+    .trim()
+    .min(1, 'Informe a descrição.')
+    .max(255, 'Descrição deve ter no máximo 255 caracteres.'),
   amount: z
     .string()
     .trim()
@@ -68,6 +72,9 @@ const expenseFormSchema = z.object({
     })
     .refine((value) => parseMoneyInput(value) > 0, {
       message: 'Informe um valor maior que zero.',
+    })
+    .refine((value) => parseMoneyInput(value) <= 999999999999.99, {
+      message: 'Informe um valor de até R$ 999.999.999.999,99.',
     }),
   date: z
     .string()
@@ -75,7 +82,9 @@ const expenseFormSchema = z.object({
     .refine((value) => !isFutureDate(value), {
       message: 'Informe uma data de hoje ou anterior.',
     }),
-  notes: z.string(),
+  notes: z
+    .string()
+    .max(1000, 'Observações devem ter no máximo 1000 caracteres.'),
 });
 
 type ExpenseFormValues = z.infer<typeof expenseFormSchema>;
@@ -296,8 +305,20 @@ export function ExpenseForm({
               id='expense-notes'
               label='Observação (opcional)'
               placeholder='Adicione uma observação...'
+              aria-invalid={Boolean(errors.notes)}
+              aria-describedby={
+                errors.notes ? 'expense-notes-error' : undefined
+              }
               {...register('notes')}
             />
+            {errors.notes?.message ? (
+              <p
+                id='expense-notes-error'
+                className='mt-1 text-sm font-medium text-destructive'
+              >
+                {errors.notes.message}
+              </p>
+            ) : null}
           </div>
         </div>
 

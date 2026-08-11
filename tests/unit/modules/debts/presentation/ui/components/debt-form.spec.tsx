@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { DebtForm } from '@/modules/debts/presentation/ui/components/debt-form';
@@ -149,5 +149,190 @@ describe('DebtForm', () => {
     );
 
     expect(screen.getByLabelText('Valor')).toHaveValue('919,10');
+  });
+
+  it('should reject an amount above the allowed ceiling', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtForm />);
+
+    await user.selectOptions(screen.getByLabelText('Tipo'), 'ONE_TIME');
+    await user.type(screen.getByLabelText('Descrição'), 'Seguro do carro');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '1000000000000');
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    expect(
+      await screen.findByText('Informe um valor de até R$ 999.999.999.999,99.'),
+    ).toBeInTheDocument();
+
+    expect(registerDebtMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept an amount at the allowed ceiling', async () => {
+    const user = userEvent.setup();
+
+    registerDebtMock.mockResolvedValueOnce({
+      data: {
+        id: 'debt-id',
+        userId: 'user-id',
+        description: 'Seguro do carro',
+        amount: 999999999999.99,
+        dueDate: '2026-05-20',
+        type: 'ONE_TIME',
+        status: 'PENDING',
+        notes: null,
+        paidAt: null,
+        paymentSource: null,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(<DebtForm />);
+
+    await user.selectOptions(screen.getByLabelText('Tipo'), 'ONE_TIME');
+    await user.type(screen.getByLabelText('Descrição'), 'Seguro do carro');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '999999999999,99');
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    await waitFor(() => {
+      expect(registerDebtMock).toHaveBeenCalledWith(
+        expect.objectContaining({ amount: 999999999999.99 }),
+      );
+    });
+  });
+
+  it('should reject a description longer than 255 characters', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtForm />);
+
+    fireEvent.change(screen.getByLabelText('Descrição'), {
+      target: { value: 'a'.repeat(256) },
+    });
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '300');
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    expect(
+      await screen.findByText('Descrição deve ter no máximo 255 caracteres.'),
+    ).toBeInTheDocument();
+
+    expect(registerDebtMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept a description at exactly 255 characters', async () => {
+    const user = userEvent.setup();
+    const description = 'a'.repeat(255);
+
+    registerDebtMock.mockResolvedValueOnce({
+      data: {
+        id: 'debt-id',
+        userId: 'user-id',
+        description,
+        amount: 300,
+        dueDate: '2026-05-20',
+        type: 'ONE_TIME',
+        status: 'PENDING',
+        notes: null,
+        paidAt: null,
+        paymentSource: null,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(<DebtForm />);
+
+    fireEvent.change(screen.getByLabelText('Descrição'), {
+      target: { value: description },
+    });
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '300');
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    await waitFor(() => {
+      expect(registerDebtMock).toHaveBeenCalledWith(
+        expect.objectContaining({ description }),
+      );
+    });
+  });
+
+  it('should reject notes longer than 1000 characters', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtForm />);
+
+    await user.type(screen.getByLabelText('Descrição'), 'Seguro do carro');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '300');
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
+    fireEvent.change(screen.getByLabelText('Observações'), {
+      target: { value: 'a'.repeat(1001) },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    expect(
+      await screen.findByText('Observações devem ter no máximo 1000 caracteres.'),
+    ).toBeInTheDocument();
+
+    expect(registerDebtMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept notes at exactly 1000 characters', async () => {
+    const user = userEvent.setup();
+    const notes = 'a'.repeat(1000);
+
+    registerDebtMock.mockResolvedValueOnce({
+      data: {
+        id: 'debt-id',
+        userId: 'user-id',
+        description: 'Seguro do carro',
+        amount: 300,
+        dueDate: '2026-05-20',
+        type: 'ONE_TIME',
+        status: 'PENDING',
+        notes,
+        paidAt: null,
+        paymentSource: null,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(<DebtForm />);
+
+    await user.type(screen.getByLabelText('Descrição'), 'Seguro do carro');
+    await user.clear(screen.getByLabelText('Valor'));
+    await user.type(screen.getByLabelText('Valor'), '300');
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-20');
+    fireEvent.change(screen.getByLabelText('Observações'), {
+      target: { value: notes },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    await waitFor(() => {
+      expect(registerDebtMock).toHaveBeenCalledWith(
+        expect.objectContaining({ notes }),
+      );
+    });
   });
 });
