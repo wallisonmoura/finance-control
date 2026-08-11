@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
-import { debtDateSchema } from './shared/debt-date.schema';
+import { debtPaymentDateSchema } from './shared/debt-payment-date.schema';
 
 export const payDebtSchema = z
   .object({
-    paidAt: debtDateSchema,
+    paidAt: debtPaymentDateSchema,
     expenseCategoryId: z.uuid({
       error: 'Categoria de despesa inválida.',
     }),

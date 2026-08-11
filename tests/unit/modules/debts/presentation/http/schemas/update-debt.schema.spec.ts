@@ -145,6 +145,19 @@ describe('updateDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('should accept a dueDate in the future, unlike a realized event date', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-04-01T12:00:00-03:00'));
+
+    const result = updateDebtSchema.safeParse({
+      ...validPayload,
+      dueDate: '2026-12-31',
+    });
+
+    jest.useRealTimers();
+
+    expect(result.success).toBe(true);
+  });
+
   it('should reject a missing type', () => {
     const { type, ...payloadWithoutType } = validPayload;
 

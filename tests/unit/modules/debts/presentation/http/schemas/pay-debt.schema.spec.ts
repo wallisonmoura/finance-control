@@ -71,6 +71,38 @@ describe('payDebtSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('should reject a paidAt date in the future', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-04-10T12:00:00-03:00'));
+
+    const result = payDebtSchema.safeParse({
+      ...validPayload,
+      paidAt: '2026-04-11',
+    });
+
+    jest.useRealTimers();
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        'Data não pode ser uma data futura.',
+      );
+    }
+  });
+
+  it('should accept a paidAt date equal to today', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-04-10T12:00:00-03:00'));
+
+    const result = payDebtSchema.safeParse({
+      ...validPayload,
+      paidAt: '2026-04-10',
+    });
+
+    jest.useRealTimers();
+
+    expect(result.success).toBe(true);
+  });
+
   it('should reject a missing expenseCategoryId', () => {
     const { expenseCategoryId, ...payloadWithoutCategory } = validPayload;
 
