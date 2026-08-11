@@ -47,7 +47,11 @@ function getOptionalNotes(notes: string) {
 }
 
 const debtFormSchema = z.object({
-  description: z.string().trim().min(1, 'Informe a descrição.'),
+  description: z
+    .string()
+    .trim()
+    .min(1, 'Informe a descrição.')
+    .max(255, 'Descrição deve ter no máximo 255 caracteres.'),
   amount: z
     .string()
     .trim()
@@ -57,10 +61,15 @@ const debtFormSchema = z.object({
     })
     .refine((value) => parseMoneyInput(value) > 0, {
       message: 'Informe um valor maior que zero.',
+    })
+    .refine((value) => parseMoneyInput(value) <= 999999999999.99, {
+      message: 'Informe um valor de até R$ 999.999.999.999,99.',
     }),
   dueDate: z.string().min(1, 'Informe o vencimento.'),
   type: z.enum(['ONE_TIME', 'RECURRING']),
-  notes: z.string(),
+  notes: z
+    .string()
+    .max(1000, 'Observações devem ter no máximo 1000 caracteres.'),
 });
 
 type DebtFormValues = z.infer<typeof debtFormSchema>;
@@ -222,7 +231,21 @@ export function DebtForm({
           </div>
 
           <div className='md:col-span-2'>
-            <Input id='debt-notes' label='Observações' {...register('notes')} />
+            <Input
+              id='debt-notes'
+              label='Observações'
+              aria-invalid={Boolean(errors.notes)}
+              aria-describedby={errors.notes ? 'debt-notes-error' : undefined}
+              {...register('notes')}
+            />
+            {errors.notes?.message ? (
+              <p
+                id='debt-notes-error'
+                className='mt-1 text-sm font-medium text-destructive'
+              >
+                {errors.notes.message}
+              </p>
+            ) : null}
           </div>
         </div>
 

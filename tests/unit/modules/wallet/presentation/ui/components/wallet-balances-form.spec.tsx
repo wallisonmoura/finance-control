@@ -152,6 +152,68 @@ describe('WalletBalancesForm', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it('should reject an amount above the allowed ceiling', async () => {
+    const user = userEvent.setup();
+    const onSubmit = jest.fn();
+
+    render(
+      <WalletBalancesForm
+        wallet={wallet}
+        isUpdating={false}
+        onSubmit={onSubmit}
+        onCancel={jest.fn()}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText('Saldo em Banco'));
+    await user.type(
+      screen.getByLabelText('Saldo em Banco'),
+      '1000000000000',
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Salvar saldos',
+      }),
+    );
+
+    expect(
+      screen.getByText('Informe valores válidos maiores ou iguais a zero.'),
+    ).toBeInTheDocument();
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('should accept an amount at the allowed ceiling', async () => {
+    const user = userEvent.setup();
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+
+    render(
+      <WalletBalancesForm
+        wallet={wallet}
+        isUpdating={false}
+        onSubmit={onSubmit}
+        onCancel={jest.fn()}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText('Saldo em Banco'));
+    await user.type(
+      screen.getByLabelText('Saldo em Banco'),
+      '999999999999,99',
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Salvar saldos',
+      }),
+    );
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ bankBalance: 999999999999.99 }),
+    );
+  });
+
   it('deve chamar onCancel ao clicar em Cancelar', async () => {
     const user = userEvent.setup();
     const onCancel = jest.fn();

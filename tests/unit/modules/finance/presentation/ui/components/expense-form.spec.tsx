@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ExpenseForm } from '@/modules/finance/presentation/ui/components/expense-form';
@@ -187,6 +187,189 @@ describe('ExpenseForm', () => {
     ).toBeInTheDocument();
 
     expect(registerExpenseMock).not.toHaveBeenCalled();
+  });
+
+  it('should reject an amount above the allowed ceiling', async () => {
+    const user = userEvent.setup();
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Combustivel');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '1000000000000');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
+
+    expect(
+      await screen.findByText('Informe um valor de até R$ 999.999.999.999,99.'),
+    ).toBeInTheDocument();
+
+    expect(registerExpenseMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept an amount at the allowed ceiling', async () => {
+    const user = userEvent.setup();
+
+    registerExpenseMock.mockResolvedValueOnce({
+      data: {
+        id: 'expense-id',
+        userId: 'user-id',
+        type: 'EXPENSE',
+        amount: 999999999999.99,
+        description: 'Combustivel',
+        date: '2026-05-16',
+        categoryId: 'category-id',
+        notes: null,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Combustivel');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '999999999999,99');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
+
+    await waitFor(() => {
+      expect(registerExpenseMock).toHaveBeenCalledWith(
+        expect.objectContaining({ amount: 999999999999.99 }),
+      );
+    });
+  });
+
+  it('should reject a description longer than 255 characters', async () => {
+    const user = userEvent.setup();
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    fireEvent.change(screen.getByLabelText(descriptionLabel), {
+      target: { value: 'a'.repeat(256) },
+    });
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '120');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
+
+    expect(
+      await screen.findByText('Descrição deve ter no máximo 255 caracteres.'),
+    ).toBeInTheDocument();
+
+    expect(registerExpenseMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept a description at exactly 255 characters', async () => {
+    const user = userEvent.setup();
+    const description = 'a'.repeat(255);
+
+    registerExpenseMock.mockResolvedValueOnce({
+      data: {
+        id: 'expense-id',
+        userId: 'user-id',
+        type: 'EXPENSE',
+        amount: 120,
+        description,
+        date: '2026-05-16',
+        categoryId: 'category-id',
+        notes: null,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    fireEvent.change(screen.getByLabelText(descriptionLabel), {
+      target: { value: description },
+    });
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '120');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
+
+    await waitFor(() => {
+      expect(registerExpenseMock).toHaveBeenCalledWith(
+        expect.objectContaining({ description }),
+      );
+    });
+  });
+
+  it('should reject notes longer than 1000 characters', async () => {
+    const user = userEvent.setup();
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Combustivel');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '120');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+    fireEvent.change(screen.getByLabelText(notesLabel), {
+      target: { value: 'a'.repeat(1001) },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
+
+    expect(
+      await screen.findByText('Observações devem ter no máximo 1000 caracteres.'),
+    ).toBeInTheDocument();
+
+    expect(registerExpenseMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept notes at exactly 1000 characters', async () => {
+    const user = userEvent.setup();
+    const notes = 'a'.repeat(1000);
+
+    registerExpenseMock.mockResolvedValueOnce({
+      data: {
+        id: 'expense-id',
+        userId: 'user-id',
+        type: 'EXPENSE',
+        amount: 120,
+        description: 'Combustivel',
+        date: '2026-05-16',
+        categoryId: 'category-id',
+        notes,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(<ExpenseForm categories={categories} />);
+
+    await user.selectOptions(screen.getByLabelText(categoryLabel), 'category-id');
+    await user.type(screen.getByLabelText(descriptionLabel), 'Combustivel');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '120');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-05-16');
+    fireEvent.change(screen.getByLabelText(notesLabel), {
+      target: { value: notes },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Salvar despesa' }));
+
+    await waitFor(() => {
+      expect(registerExpenseMock).toHaveBeenCalledWith(
+        expect.objectContaining({ notes }),
+      );
+    });
   });
 
   it('should render category loading error', () => {

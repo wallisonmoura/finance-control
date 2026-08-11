@@ -1,4 +1,10 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { toast } from 'sonner';
 
@@ -152,6 +158,183 @@ describe('IncomeForm', () => {
     ).toBeInTheDocument();
 
     expect(registerIncomeMock).not.toHaveBeenCalled();
+  });
+
+  it('should reject an amount above the allowed ceiling', async () => {
+    const user = userEvent.setup();
+
+    render(<IncomeForm />);
+
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '1000000000000');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
+
+    expect(
+      await screen.findByText('Informe um valor de até R$ 999.999.999.999,99.'),
+    ).toBeInTheDocument();
+
+    expect(registerIncomeMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept an amount at the allowed ceiling', async () => {
+    const user = userEvent.setup();
+
+    registerIncomeMock.mockResolvedValueOnce({
+      data: {
+        id: 'income-id',
+        userId: 'user-id',
+        type: 'INCOME',
+        amount: 999999999999.99,
+        description: 'Corrida Nova',
+        date: '2026-04-10',
+        categoryId: null,
+        notes: null,
+        createdAt: '2026-05-07T19:43:27.751Z',
+        updatedAt: '2026-05-07T19:43:27.751Z',
+      },
+    });
+
+    render(<IncomeForm />);
+
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '999999999999,99');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
+
+    await waitFor(() => {
+      expect(registerIncomeMock).toHaveBeenCalledWith(
+        expect.objectContaining({ amount: 999999999999.99 }),
+      );
+    });
+  });
+
+  it('should reject a description longer than 255 characters', async () => {
+    const user = userEvent.setup();
+
+    render(<IncomeForm />);
+
+    fireEvent.change(screen.getByLabelText(descriptionLabel), {
+      target: { value: 'a'.repeat(256) },
+    });
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
+
+    expect(
+      await screen.findByText('Descrição deve ter no máximo 255 caracteres.'),
+    ).toBeInTheDocument();
+
+    expect(registerIncomeMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept a description at exactly 255 characters', async () => {
+    const user = userEvent.setup();
+    const description = 'a'.repeat(255);
+
+    registerIncomeMock.mockResolvedValueOnce({
+      data: {
+        id: 'income-id',
+        userId: 'user-id',
+        type: 'INCOME',
+        amount: 100,
+        description,
+        date: '2026-04-10',
+        categoryId: null,
+        notes: null,
+        createdAt: '2026-05-07T19:43:27.751Z',
+        updatedAt: '2026-05-07T19:43:27.751Z',
+      },
+    });
+
+    render(<IncomeForm />);
+
+    fireEvent.change(screen.getByLabelText(descriptionLabel), {
+      target: { value: description },
+    });
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
+
+    await waitFor(() => {
+      expect(registerIncomeMock).toHaveBeenCalledWith(
+        expect.objectContaining({ description }),
+      );
+    });
+  });
+
+  it('should reject notes longer than 1000 characters', async () => {
+    const user = userEvent.setup();
+
+    render(<IncomeForm />);
+
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+    fireEvent.change(screen.getByLabelText(notesLabel), {
+      target: { value: 'a'.repeat(1001) },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
+
+    expect(
+      await screen.findByText('Observações devem ter no máximo 1000 caracteres.'),
+    ).toBeInTheDocument();
+
+    expect(registerIncomeMock).not.toHaveBeenCalled();
+  });
+
+  it('should accept notes at exactly 1000 characters', async () => {
+    const user = userEvent.setup();
+    const notes = 'a'.repeat(1000);
+
+    registerIncomeMock.mockResolvedValueOnce({
+      data: {
+        id: 'income-id',
+        userId: 'user-id',
+        type: 'INCOME',
+        amount: 100,
+        description: 'Corrida Nova',
+        date: '2026-04-10',
+        categoryId: null,
+        notes,
+        createdAt: '2026-05-07T19:43:27.751Z',
+        updatedAt: '2026-05-07T19:43:27.751Z',
+      },
+    });
+
+    render(<IncomeForm />);
+
+    await user.type(screen.getByLabelText(descriptionLabel), 'Corrida Nova');
+    await user.clear(screen.getByLabelText(amountLabel));
+    await user.type(screen.getByLabelText(amountLabel), '100');
+    await user.clear(screen.getByLabelText(dateLabel));
+    await user.type(screen.getByLabelText(dateLabel), '2026-04-10');
+    fireEvent.change(screen.getByLabelText(notesLabel), {
+      target: { value: notes },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Salvar receita' }));
+
+    await waitFor(() => {
+      expect(registerIncomeMock).toHaveBeenCalledWith(
+        expect.objectContaining({ notes }),
+      );
+    });
   });
 
   it('should validate future date before submitting', async () => {
