@@ -12,6 +12,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
+import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { cn } from '@/shared/presentation/ui/lib/utils';
 import { formatDate } from '@/shared/presentation/ui/lib/format-date';
@@ -30,6 +31,7 @@ type FinanceEntryListProps = {
   onDelete: (entry: FinanceEntryUi) => void;
   onConfirmDelete: () => void | Promise<void>;
   onCancelDelete: () => void;
+  onRetry: () => void;
 };
 
 type FinanceEntryListConfig = {
@@ -111,6 +113,7 @@ export function FinanceEntryList({
   onDelete,
   onConfirmDelete,
   onCancelDelete,
+  onRetry,
 }: FinanceEntryListProps) {
   const config = FINANCE_ENTRY_LIST_CONFIG[type];
 
@@ -120,7 +123,7 @@ export function FinanceEntryList({
         <p className='text-sm text-muted-foreground'>{config.loadingText}</p>
       )}
 
-      {error && <FormErrorMessage message={error} />}
+      {error && <LoadErrorState message={error} onRetry={onRetry} />}
 
       {actionError && <FormErrorMessage message={actionError} />}
 

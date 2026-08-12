@@ -97,6 +97,7 @@ export function FinanceIncomesPageContent({
         onDelete={handleDelete}
         onConfirmDelete={confirmDelete}
         onCancelDelete={cancelDelete}
+        onRetry={refresh}
       />
     </div>
   );

@@ -13,8 +13,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
-import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
+import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
@@ -284,8 +284,15 @@ export function FinanceSummaryPageContent({
     ],
   );
 
-  const { filters, monthlySummary, dailyRows, isLoading, error, applyFilters } =
-    useFinanceOperationalSummary(hookInitialParams);
+  const {
+    filters,
+    monthlySummary,
+    dailyRows,
+    isLoading,
+    error,
+    applyFilters,
+    refresh,
+  } = useFinanceOperationalSummary(hookInitialParams);
 
   const handleApplyFilters = useCallback(
     async (nextFilters: FinanceOperationalSummaryFilters) => {
@@ -319,7 +326,7 @@ export function FinanceSummaryPageContent({
         onApplyFilters={handleApplyFilters}
       />
 
-      {error && <FormErrorMessage message={error} />}
+      {error && <LoadErrorState message={error} onRetry={refresh} />}
 
       {isLoading && (
         <p className='text-sm text-muted-foreground'>

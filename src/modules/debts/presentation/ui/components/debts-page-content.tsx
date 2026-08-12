@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
+import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useDebts } from '../hooks/use-debts';
@@ -159,7 +160,7 @@ export function DebtsPageContent({
         <p className='text-sm text-muted-foreground'>Carregando dívidas...</p>
       )}
 
-      {error && <FormErrorMessage message={error} />}
+      {error && <LoadErrorState message={error} onRetry={refresh} />}
 
       {actionError && <FormErrorMessage message={actionError} />}
 
