@@ -5,23 +5,7 @@ import {
   RegisterDebtUiInput,
   UpdateDebtUiInput,
 } from '../types/debt-ui.types';
-
-type ApiErrorResponse = {
-  message?: string;
-  error?: string;
-};
-
-async function parseErrorResponse(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as ApiErrorResponse;
-
-    return (
-      body.message || body.error || 'Não foi possível concluir a operação.'
-    );
-  } catch {
-    return 'Não foi possível concluir a operação.';
-  }
-}
+import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function getDebts(): Promise<DebtApiResponse<DebtUi[]>> {
   const response = await fetch('/api/debts', {
@@ -34,7 +18,7 @@ export async function getDebts(): Promise<DebtApiResponse<DebtUi[]>> {
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -54,7 +38,7 @@ export async function getPendingDebts(): Promise<DebtApiResponse<DebtUi[]>> {
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -78,7 +62,7 @@ export async function registerDebt(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -103,7 +87,7 @@ export async function updateDebt(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -123,7 +107,7 @@ export async function deleteDebt(id: string): Promise<DebtApiResponse<void>> {
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -148,7 +132,7 @@ export async function payDebt(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 

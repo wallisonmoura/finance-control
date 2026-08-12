@@ -2,11 +2,7 @@ import {
   UpdateWalletBalancesPayload,
   WalletUi,
 } from '../types/wallet-ui.types';
-
-type ApiErrorResponse = {
-  message?: string;
-  error?: string;
-};
+import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export type WalletApiResponse<T> = {
   data?: T;
@@ -15,19 +11,8 @@ export type WalletApiResponse<T> = {
 
 const WALLET_API_URL = '/api/wallet';
 
-async function getErrorMessage(response: Response) {
-  try {
-    const body = (await response.json()) as ApiErrorResponse;
-
-    return (
-      body.message ||
-      body.error ||
-      'Não foi possível processar a solicitação da Carteira.'
-    );
-  } catch {
-    return 'Não foi possível processar a solicitação da Carteira.';
-  }
-}
+const WALLET_ERROR_FALLBACK_MESSAGE =
+  'Não foi possível processar a solicitação da Carteira.';
 
 export async function getWallet(): Promise<WalletApiResponse<WalletUi>> {
   const response = await fetch(WALLET_API_URL, {
@@ -40,7 +25,7 @@ export async function getWallet(): Promise<WalletApiResponse<WalletUi>> {
 
   if (!response.ok) {
     return {
-      error: await getErrorMessage(response),
+      error: await parseApiError(response, WALLET_ERROR_FALLBACK_MESSAGE),
     };
   }
 
@@ -66,7 +51,7 @@ export async function updateWalletBalances(
 
   if (!response.ok) {
     return {
-      error: await getErrorMessage(response),
+      error: await parseApiError(response, WALLET_ERROR_FALLBACK_MESSAGE),
     };
   }
 

@@ -14,6 +14,7 @@ import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { cn } from '@/shared/presentation/ui/lib/utils';
+import { formatDate } from '@/shared/presentation/ui/lib/format-date';
 
 import { FinanceEntryTypeUi, FinanceEntryUi } from '../types/finance-ui.types';
 
@@ -93,12 +94,6 @@ const FINANCE_ENTRY_LIST_CONFIG: Record<
     moneyClassName: 'text-left text-xl font-bold text-income sm:text-right',
   },
 };
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'UTC',
-  }).format(new Date(date));
-}
 
 function isDebtPaymentExpense(entry: FinanceEntryUi) {
   return entry.type === 'EXPENSE' && Boolean(entry.debtId);

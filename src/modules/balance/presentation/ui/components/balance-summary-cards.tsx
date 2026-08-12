@@ -15,6 +15,7 @@ import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { cn } from '@/shared/presentation/ui/lib/utils';
+import { formatDate } from '@/shared/presentation/ui/lib/format-date';
 import Link from 'next/link';
 
 type BalanceSummaryCardsProps = {
@@ -29,12 +30,6 @@ type SummaryItem = {
   icon: typeof Building2;
   valueClassName: string;
 };
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'UTC',
-  }).format(new Date(date));
-}
 
 function getTransactionStatus(entry: FinanceEntryUi) {
   return entry.type === 'INCOME' ? 'Recebido' : 'Pago';

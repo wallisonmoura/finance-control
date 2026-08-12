@@ -12,6 +12,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { cn } from '@/shared/presentation/ui/lib/utils';
+import { formatDate } from '@/shared/presentation/ui/lib/format-date';
 
 import { DebtUi } from '../types/debt-ui.types';
 
@@ -25,12 +26,6 @@ type DebtListProps = {
   renderExpandedContent?: (debt: DebtUi) => ReactNode;
   title?: string | null;
 };
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'UTC',
-  }).format(new Date(date));
-}
 
 function getDebtTypeLabel(type: DebtUi['type']) {
   return type === 'ONE_TIME' ? 'Única' : 'Recorrente';
