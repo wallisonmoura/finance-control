@@ -4,7 +4,7 @@ import {
   PayDebtUiInput,
   RegisterDebtUiInput,
   UpdateDebtUiInput,
-} from '../types/debt-ui.types';
+} from '../types/debts-ui.types';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function getDebts(): Promise<DebtApiResponse<DebtUi[]>> {

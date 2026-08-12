@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 
 import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.types';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 
 import { DesktopSidebar } from './desktop-sidebar';
 import { MobileMenu } from './mobile-menu';

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { DebtApiResponse, DebtUi } from '../types/debt-ui.types';
+import { DebtApiResponse, DebtUi } from '../types/debts-ui.types';
 
 type UseDebtListStateParams = {
   fetchDebts: () => Promise<DebtApiResponse<DebtUi[]>>;

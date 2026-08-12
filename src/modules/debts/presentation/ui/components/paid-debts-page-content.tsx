@@ -7,7 +7,7 @@ import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display'
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { formatDateOrFallback } from '@/shared/presentation/ui/lib/format-date';
 
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 import { DebtList } from './debt-list';
 
 type PaidDebtsPageContentProps = {

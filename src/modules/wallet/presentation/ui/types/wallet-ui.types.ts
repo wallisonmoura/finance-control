@@ -14,3 +14,8 @@ export type UpdateWalletBalancesPayload = {
   cashBalance: number;
   receivableBalance: number;
 };
+
+export type WalletApiResponse<T> = {
+  data?: T;
+  error?: string;
+};

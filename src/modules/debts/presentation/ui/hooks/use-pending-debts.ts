@@ -1,5 +1,5 @@
 import { getPendingDebts } from '../services/debt-api.service';
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 import { useDebtListState } from './use-debt-list-state';
 
 type UsePendingDebtsParams = {

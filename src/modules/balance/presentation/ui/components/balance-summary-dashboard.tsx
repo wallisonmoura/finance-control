@@ -1,7 +1,7 @@
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { StatusMessage } from '@/shared/presentation/ui/components/status-message';
 
-import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
+import { BalanceSummaryUi } from '../types/balance-ui.types';
 import { BalanceSummaryCards } from './balance-summary-cards';
 import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 
