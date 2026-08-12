@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Pencil, RotateCw } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
-import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
+import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 
 import { useWallet } from '../hooks/use-wallet';
 import { WalletUi } from '../types/wallet-ui.types';
@@ -54,16 +54,7 @@ export function WalletPageContent({
           description='Visualize e atualize seus saldos-base.'
         />
 
-        <Card>
-          <div className='space-y-4'>
-            <FormErrorMessage message={error} />
-
-            <Button type='button' onClick={refetch}>
-              <RotateCw aria-hidden='true' className='size-4' />
-              Tentar novamente
-            </Button>
-          </div>
-        </Card>
+        <LoadErrorState message={error} onRetry={refetch} />
       </div>
     );
   }
