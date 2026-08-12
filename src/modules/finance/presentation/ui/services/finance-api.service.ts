@@ -11,23 +11,7 @@ import {
   UpdateExpenseUiInput,
   UpdateIncomeUiInput,
 } from '../types/finance-ui.types';
-
-type ApiErrorResponse = {
-  message?: string;
-  error?: string;
-};
-
-async function parseErrorResponse(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as ApiErrorResponse;
-
-    return (
-      body.message || body.error || 'Não foi possível concluir a operação.'
-    );
-  } catch {
-    return 'Não foi possível concluir a operação.';
-  }
-}
+import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function registerIncome(
   input: RegisterIncomeUiInput,
@@ -44,7 +28,7 @@ export async function registerIncome(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -68,7 +52,7 @@ export async function registerExpense(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -93,7 +77,7 @@ export async function updateIncome(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -118,7 +102,7 @@ export async function updateExpense(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -140,7 +124,7 @@ export async function deleteIncome(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -162,7 +146,7 @@ export async function deleteExpense(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -200,7 +184,7 @@ export async function getFinanceHistory(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -222,7 +206,7 @@ export async function getExpenseCategories(): Promise<
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -251,7 +235,7 @@ export async function getDailyProfit(
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 
@@ -282,7 +266,7 @@ export async function getMonthlySummary(input: {
 
   if (!response.ok) {
     return {
-      error: await parseErrorResponse(response),
+      error: await parseApiError(response),
     };
   }
 

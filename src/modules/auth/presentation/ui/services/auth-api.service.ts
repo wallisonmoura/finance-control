@@ -3,23 +3,7 @@ import type {
   GetCurrentUserResponse,
   SignInInput,
 } from '../types/auth-ui.types';
-
-type ApiErrorResponse = {
-  message?: string;
-  error?: string;
-};
-
-async function parseApiError(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as ApiErrorResponse;
-
-    return (
-      body.message || body.error || 'Não foi possível concluir a operação.'
-    );
-  } catch {
-    return 'Não foi possível concluir a operação.';
-  }
-}
+import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function signIn(
   input: SignInInput,
@@ -28,6 +12,7 @@ export async function signIn(
     method: 'POST',
     credentials: 'same-origin',
     headers: {
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(input),
@@ -48,6 +33,9 @@ export async function signOut(): Promise<AuthApiResponse<null>> {
   const response = await fetch('/api/auth/sign-out', {
     method: 'POST',
     credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+    },
   });
 
   if (!response.ok) {
@@ -67,6 +55,9 @@ export async function getCurrentUser(): Promise<
   const response = await fetch('/api/auth/me', {
     method: 'GET',
     credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+    },
   });
 
   if (!response.ok) {
