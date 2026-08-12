@@ -13,6 +13,8 @@ import {
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
 import { Card } from '@/shared/presentation/ui/components/card';
+import { HeroCard } from '@/shared/presentation/ui/components/hero-card';
+import { StatCardGrid } from '@/shared/presentation/ui/components/stat-card-grid';
 import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { cn } from '@/shared/presentation/ui/lib/utils';
 import { formatDate } from '@/shared/presentation/ui/lib/format-date';
@@ -67,92 +69,88 @@ export function BalanceSummaryCards({
       value: summary.wallet.bankBalance,
       description: 'Valor disponível em conta bancária.',
       icon: Building2,
-      valueClassName: 'text-foreground',
+      valueClassName: 'text-2xl font-semibold tracking-tight text-foreground',
     },
     {
       label: 'Saldo em Dinheiro',
       value: summary.wallet.cashBalance,
       description: 'Valor disponível em dinheiro físico.',
       icon: Banknote,
-      valueClassName: 'text-foreground',
+      valueClassName: 'text-2xl font-semibold tracking-tight text-foreground',
     },
     {
       label: 'Valores a Receber',
       value: summary.wallet.receivableBalance,
       description: 'Valores previstos para recebimento.',
       icon: HandCoins,
-      valueClassName: 'text-accent',
+      valueClassName: 'text-2xl font-semibold tracking-tight text-accent',
     },
   ];
 
   return (
     <section aria-label='Resumo financeiro' className='space-y-7'>
-      <Card className='relative overflow-hidden border-primary/10 bg-primary p-0 text-primary-foreground shadow-xl shadow-border/80'>
-        <div
-          aria-hidden='true'
-          className='absolute inset-0 bg-[url("/images/dashboard-mobile-bg.png")] bg-cover bg-center lg:bg-[url("/images/dashboard-bg.png")]'
-        />
-        <div className='absolute inset-0 bg-primary/25' aria-hidden='true' />
-
-        <div className='relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center'>
-          <div className='space-y-5'>
-            <div className='flex items-center gap-3 text-sm font-medium text-primary-foreground'>
-              <span className='flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent'>
-                <Landmark aria-hidden='true' className='size-5' />
-              </span>
-              <p>Saldo Final</p>
-            </div>
-
-            <div className='space-y-2'>
-              <MoneyDisplay
-                value={summary.finalBalance}
-                className={`text-4xl text-primary-foreground sm:text-5xl ${
-                  summary.finalBalance < 0 ? 'text-destructive' : ''
-                }`}
-              />
-              <p className='max-w-2xl text-sm text-primary-foreground/90'>
-                Resultado após considerar dívidas pendentes.
-              </p>
-            </div>
+      <HeroCard
+        backgroundClassName='bg-[url("/images/dashboard-mobile-bg.png")] lg:bg-[url("/images/dashboard-bg.png")]'
+        overlayClassName='bg-primary/25'
+        contentClassName='lg:grid-cols-[1fr_auto] lg:items-center'
+      >
+        <div className='space-y-5'>
+          <div className='flex items-center gap-3 text-sm font-medium text-primary-foreground'>
+            <span className='flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent'>
+              <Landmark aria-hidden='true' className='size-5' />
+            </span>
+            <p>Saldo Final</p>
           </div>
 
-          <div className='grid gap-3 sm:grid-cols-2 lg:min-w-107.5'>
-            <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
-              <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
-                <WalletCards
-                  aria-hidden='true'
-                  className='size-5 text-accent'
-                />
-                <span>Valor Total da Carteira</span>
-              </div>
-              <MoneyDisplay
-                value={summary.wallet.walletTotal}
-                className='mt-4 text-2xl text-primary-foreground'
-              />
-              <p className='mt-2 text-sm text-primary-foreground/80'>
-                Disponível para uso
-              </p>
-            </div>
-
-            <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
-              <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
-                <BanknoteX
-                  aria-hidden='true'
-                  className='size-5 text-destructive'
-                />
-                <span>Dívidas Pendentes</span>
-              </div>
-              <MoneyDisplay
-                value={summary.debts.pendingDebts}
-                className='mt-4 text-2xl text-destructive'
-              />
-              <p className='mt-2 text-sm text-primary-foreground/80'>
-                Total a pagar
-              </p>
-            </div>
+          <div className='space-y-2'>
+            <MoneyDisplay
+              value={summary.finalBalance}
+              className={`text-4xl text-primary-foreground sm:text-5xl ${
+                summary.finalBalance < 0 ? 'text-destructive' : ''
+              }`}
+            />
+            <p className='max-w-2xl text-sm text-primary-foreground/90'>
+              Resultado após considerar dívidas pendentes.
+            </p>
           </div>
         </div>
-      </Card>
+
+        <div className='grid gap-3 sm:grid-cols-2 lg:min-w-107.5'>
+          <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
+            <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
+              <WalletCards
+                aria-hidden='true'
+                className='size-5 text-accent'
+              />
+              <span>Valor Total da Carteira</span>
+            </div>
+            <MoneyDisplay
+              value={summary.wallet.walletTotal}
+              className='mt-4 text-2xl text-primary-foreground'
+            />
+            <p className='mt-2 text-sm text-primary-foreground/80'>
+              Disponível para uso
+            </p>
+          </div>
+
+          <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
+            <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
+              <BanknoteX
+                aria-hidden='true'
+                className='size-5 text-destructive'
+              />
+              <span>Dívidas Pendentes</span>
+            </div>
+            <MoneyDisplay
+              value={summary.debts.pendingDebts}
+              className='mt-4 text-2xl text-destructive'
+            />
+            <p className='mt-2 text-sm text-primary-foreground/80'>
+              Total a pagar
+            </p>
+          </div>
+        </div>
+      </HeroCard>
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
@@ -160,35 +158,7 @@ export function BalanceSummaryCards({
           <h2>Composição dos saldos</h2>
         </div>
 
-        <div className='grid gap-4 lg:grid-cols-3'>
-          {availableItems.map((item) => (
-            <Card key={item.label} className='p-5'>
-              <div className='flex gap-4 lg:block lg:space-y-4'>
-                <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-accent ring-1 ring-accent/20'>
-                  <item.icon
-                    aria-hidden='true'
-                    className='size-6 text-accent'
-                  />
-                </div>
-
-                <div className='min-w-0 space-y-3'>
-                  <p className='text-sm font-medium text-foreground'>
-                    {item.label}
-                  </p>
-
-                  <MoneyDisplay
-                    value={item.value}
-                    className={`text-2xl font-semibold tracking-tight ${item.valueClassName}`}
-                  />
-
-                  <p className='text-sm leading-6 text-muted-foreground'>
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <StatCardGrid items={availableItems} />
       </div>
 
       <div className='space-y-3'>
