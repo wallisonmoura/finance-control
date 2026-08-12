@@ -2,7 +2,7 @@ import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-a
 import { makeGetBalanceSummaryUseCase } from '@/modules/balance/infra/factories/make-get-balance-summary-use-case';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 
-import { BalanceSummaryUi } from '../ui/types/balance-summary-ui.types';
+import { BalanceSummaryUi } from '../ui/types/balance-ui.types';
 
 type CurrentUserBalanceSummaryResult = {
   data?: BalanceSummaryUi;

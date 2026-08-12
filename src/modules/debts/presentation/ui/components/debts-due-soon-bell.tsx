@@ -14,7 +14,7 @@ import {
 } from '@/shared/presentation/ui/primitives/popover';
 import { getDaysUntil } from '@/shared/presentation/ui/lib/date';
 
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 
 type DebtsDueSoonBellProps = {
   initialDebts?: DebtUi[];

@@ -14,7 +14,7 @@ import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display'
 import { cn } from '@/shared/presentation/ui/lib/utils';
 import { formatDate } from '@/shared/presentation/ui/lib/format-date';
 
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 
 type DebtListProps = {
   debts: DebtUi[];

@@ -8,7 +8,7 @@ import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/curre
 import { SignOutButton } from '@/modules/auth/presentation/ui/components/sign-out-button';
 import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.types';
 import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
 
 import { NavigationLink } from './navigation-link';

@@ -15,7 +15,7 @@ import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { payDebt } from '../services/debt-api.service';
-import { DebtPaymentSourceUi, DebtUi } from '../types/debt-ui.types';
+import { DebtPaymentSourceUi, DebtUi } from '../types/debts-ui.types';
 
 type DebtPaymentFormProps = {
   debt: DebtUi;

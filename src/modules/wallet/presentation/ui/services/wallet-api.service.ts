@@ -1,13 +1,9 @@
 import {
   UpdateWalletBalancesPayload,
+  WalletApiResponse,
   WalletUi,
 } from '../types/wallet-ui.types';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
-
-export type WalletApiResponse<T> = {
-  data?: T;
-  error?: string;
-};
 
 const WALLET_API_URL = '/api/wallet';
 

@@ -10,7 +10,7 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { useDebts } from '../hooks/use-debts';
 import { deleteDebt } from '../services/debt-api.service';
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 import {
   filterDebtsByMonth,
   getDebtsMonthFromUrlSearchParams,

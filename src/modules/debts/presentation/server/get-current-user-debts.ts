@@ -4,7 +4,7 @@ import { makeListDebtsUseCase } from '@/modules/debts/infra/factories/make-list-
 import { makeListPendingDebtsUseCase } from '@/modules/debts/infra/factories/make-list-pending-debts-use-case';
 import { cache } from 'react';
 
-import { DebtUi } from '../ui/types/debt-ui.types';
+import { DebtUi } from '../ui/types/debts-ui.types';
 
 type CurrentUserDebtsResult = {
   data?: DebtUi[];

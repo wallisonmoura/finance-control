@@ -2,7 +2,7 @@ import { BanknoteX, CircleX } from 'lucide-react';
 
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 
 type DebtsMonthSummaryProps = {
   debts: DebtUi[];

@@ -7,7 +7,7 @@ import {
   getPreviousMonthValue,
   isValidMonthValue,
 } from '@/modules/debts/presentation/ui/utils/debt-filters';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 
 function buildDebt(overrides: Partial<DebtUi> = {}): DebtUi {
   return {

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
-import { BalanceSummaryUi } from '../types/balance-summary-ui.types';
+import { BalanceSummaryUi } from '../types/balance-ui.types';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { HeroCard } from '@/shared/presentation/ui/components/hero-card';
 import { StatCardGrid } from '@/shared/presentation/ui/components/stat-card-grid';

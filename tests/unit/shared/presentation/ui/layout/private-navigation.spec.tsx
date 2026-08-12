@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 
 import { PrivateNavigation } from '@/shared/presentation/ui/layout/private-navigation';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 
 const mockUsePathname = jest.fn();
 

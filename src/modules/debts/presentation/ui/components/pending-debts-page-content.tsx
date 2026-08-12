@@ -9,7 +9,7 @@ import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-s
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { usePendingDebts } from '../hooks/use-pending-debts';
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 import { DebtList } from './debt-list';
 import { DebtPaymentForm } from './debt-payment-form';
 

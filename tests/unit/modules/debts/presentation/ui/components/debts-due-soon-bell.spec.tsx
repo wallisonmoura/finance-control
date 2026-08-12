@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debt-ui.types';
+import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 
 function buildIsoDateOffsetFromToday(daysFromToday: number): string {
   const now = new Date();

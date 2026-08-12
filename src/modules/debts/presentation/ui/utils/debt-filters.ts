@@ -1,4 +1,4 @@
-import { DebtUi } from '../types/debt-ui.types';
+import { DebtUi } from '../types/debts-ui.types';
 
 const MONTH_ONLY_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
 
