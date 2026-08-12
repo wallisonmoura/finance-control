@@ -5,6 +5,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { cn } from '@/shared/presentation/ui/lib/utils';
+import { formatDate } from '@/shared/presentation/ui/lib/format-date';
 
 import { ExpenseCategoryUi, FinanceEntryUi } from '../types/finance-ui.types';
 
@@ -18,12 +19,6 @@ type FinanceHistoryListProps = {
   deletingIncomeId?: string | null;
   deletingExpenseId?: string | null;
 };
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'UTC',
-  }).format(new Date(date));
-}
 
 function formatLongDate(date: string) {
   return new Intl.DateTimeFormat('pt-BR', {

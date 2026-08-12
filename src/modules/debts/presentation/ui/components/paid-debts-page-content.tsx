@@ -5,6 +5,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { formatDateOrFallback } from '@/shared/presentation/ui/lib/format-date';
 
 import { DebtUi } from '../types/debt-ui.types';
 import { DebtList } from './debt-list';
@@ -16,16 +17,6 @@ type PaidDebtsPageContentProps = {
 
 function sumDebts(debts: DebtUi[]) {
   return debts.reduce((total, debt) => total + debt.amount, 0);
-}
-
-function formatDate(date: string | null) {
-  if (!date) {
-    return '-';
-  }
-
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'UTC',
-  }).format(new Date(date));
 }
 
 function getLastPaymentDate(debts: DebtUi[]) {
@@ -98,7 +89,7 @@ export function PaidDebtsPageContent({
                     Último pagamento
                   </p>
                   <strong className='mt-1 block text-xl font-bold text-foreground'>
-                    {formatDate(lastPaymentDate)}
+                    {formatDateOrFallback(lastPaymentDate)}
                   </strong>
                 </div>
               </div>
