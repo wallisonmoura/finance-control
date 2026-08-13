@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
-import { BackLink } from '@/shared/presentation/ui/components/back-link';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { usePendingDebts } from '../hooks/use-pending-debts';
 import { DebtUi } from '../types/debts-ui.types';
+import { DebtsBackLink } from './debts-back-link';
 import { DebtList } from './debt-list';
 import { DebtPaymentForm } from './debt-payment-form';
 
@@ -54,7 +54,7 @@ export function PendingDebtsPageContent({
 
   return (
     <div className='space-y-6'>
-      <BackLink href='/debts'>Voltar para dívidas</BackLink>
+      <DebtsBackLink />
 
       <PageTitle
         title='Dívidas pendentes'

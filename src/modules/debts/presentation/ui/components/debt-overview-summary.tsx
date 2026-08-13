@@ -3,21 +3,18 @@ import { CheckCircle2, CircleX, BanknoteX, BanknoteArrowDown } from 'lucide-reac
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 
 import { DebtUi } from '../types/debts-ui.types';
+import { sumDebtAmounts } from '../utils/debt-amounts';
 
 type DebtOverviewSummaryProps = {
   debts: DebtUi[];
 };
 
-function sumDebts(debts: DebtUi[]) {
-  return debts.reduce((total, debt) => total + debt.amount, 0);
-}
-
 export function DebtOverviewSummary({ debts }: DebtOverviewSummaryProps) {
   const pendingDebts = debts.filter((debt) => debt.status === 'PENDING');
   const paidDebts = debts.filter((debt) => debt.status === 'PAID');
 
-  const pendingTotal = sumDebts(pendingDebts);
-  const paidTotal = sumDebts(paidDebts);
+  const pendingTotal = sumDebtAmounts(pendingDebts);
+  const paidTotal = sumDebtAmounts(paidDebts);
 
   return (
     <section className='overflow-hidden rounded-xl bg-[radial-gradient(circle_at_85%_15%,rgba(16,185,129,0.22),transparent_30%),linear-gradient(135deg,#020617_0%,#06152f_56%,#042f2e_100%)] p-5 text-primary-foreground shadow-xl shadow-border/80 ring-1 ring-primary-foreground/10 sm:p-6 xl:p-8'>
