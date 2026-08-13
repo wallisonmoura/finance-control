@@ -15,7 +15,7 @@ const wallet: WalletUi = {
 };
 
 describe('WalletSummaryCard', () => {
-  it('deve renderizar a região de resumo da Wallet', () => {
+  it('should render the Wallet summary region', () => {
     render(<WalletSummaryCard wallet={wallet} />);
 
     expect(
@@ -25,7 +25,7 @@ describe('WalletSummaryCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve renderizar os labels dos saldos da Wallet', () => {
+  it('should render the Wallet balance labels', () => {
     render(<WalletSummaryCard wallet={wallet} />);
 
     expect(screen.getByText('Valor Total da Carteira')).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('WalletSummaryCard', () => {
     expect(screen.getByText('Valores a Receber')).toBeInTheDocument();
   });
 
-  it('deve renderizar as descrições dos cards', () => {
+  it('should render the card descriptions', () => {
     render(<WalletSummaryCard wallet={wallet} />);
 
     expect(
@@ -54,7 +54,7 @@ describe('WalletSummaryCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve renderizar os valores monetários formatados', () => {
+  it('should render the formatted monetary values', () => {
     render(<WalletSummaryCard wallet={wallet} />);
 
     expect(screen.getByText(/2.150,00/)).toBeInTheDocument();

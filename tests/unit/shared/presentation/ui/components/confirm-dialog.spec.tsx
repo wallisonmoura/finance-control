@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 
 describe('ConfirmDialog', () => {
-  it('deve renderizar o texto de confirmacao informado', () => {
+  it('should render the given confirmation text', () => {
     render(
       <ConfirmDialog
         open
@@ -19,7 +19,7 @@ describe('ConfirmDialog', () => {
     expect(screen.getByRole('button', { name: 'Continuar' })).toBeEnabled();
   });
 
-  it('deve renderizar o texto de carregamento customizado', () => {
+  it('should render the custom loading text', () => {
     render(
       <ConfirmDialog
         open

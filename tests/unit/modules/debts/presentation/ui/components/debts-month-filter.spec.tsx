@@ -8,13 +8,13 @@ import {
 } from '@/modules/debts/presentation/ui/utils/debt-filters';
 
 describe('DebtsMonthFilter', () => {
-  it('deve renderizar o rótulo do mês formatado', () => {
+  it('should render the formatted month label', () => {
     render(<DebtsMonthFilter month='2026-07' onMonthChange={jest.fn()} />);
 
     expect(screen.getByText('Julho de 2026')).toBeInTheDocument();
   });
 
-  it('deve chamar onMonthChange com o mês anterior', async () => {
+  it('should call onMonthChange with the previous month', async () => {
     const user = userEvent.setup();
     const onMonthChange = jest.fn();
 
@@ -25,7 +25,7 @@ describe('DebtsMonthFilter', () => {
     expect(onMonthChange).toHaveBeenCalledWith('2026-06');
   });
 
-  it('deve chamar onMonthChange com o próximo mês', async () => {
+  it('should call onMonthChange with the next month', async () => {
     const user = userEvent.setup();
     const onMonthChange = jest.fn();
 
@@ -36,7 +36,7 @@ describe('DebtsMonthFilter', () => {
     expect(onMonthChange).toHaveBeenCalledWith('2026-08');
   });
 
-  it('não deve mostrar o botão de reset quando já está no mês atual', () => {
+  it('should not show the reset button when already on the current month', () => {
     render(
       <DebtsMonthFilter
         month={getCurrentMonthValue()}
@@ -49,7 +49,7 @@ describe('DebtsMonthFilter', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('deve mostrar o botão de reset e voltar para o mês atual ao clicar', async () => {
+  it('should show the reset button and go back to the current month on click', async () => {
     const user = userEvent.setup();
     const onMonthChange = jest.fn();
     const notCurrentMonth = getPreviousMonthValue(getCurrentMonthValue());

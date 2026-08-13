@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 describe('SelectField', () => {
-  it('deve renderizar select associado ao label', () => {
+  it('should render a select associated with the label', () => {
     render(
       <SelectField
         id='category'
@@ -15,7 +15,7 @@ describe('SelectField', () => {
     expect(screen.getByLabelText('Categoria')).toBeInTheDocument();
   });
 
-  it('deve renderizar placeholder e opções', () => {
+  it('should render the placeholder and options', () => {
     render(
       <SelectField
         id='payment-source'

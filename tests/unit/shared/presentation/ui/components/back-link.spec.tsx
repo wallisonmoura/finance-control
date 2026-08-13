@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { BackLink } from '@/shared/presentation/ui/components/back-link';
 
 describe('BackLink', () => {
-  it('deve renderizar o link de retorno', () => {
+  it('should render the back link', () => {
     render(<BackLink href='/finance'>Voltar para financeiro</BackLink>);
 
     expect(

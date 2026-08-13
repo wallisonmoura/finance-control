@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { RouteLoadingRegion } from '@/shared/presentation/ui/components/skeletons/route-loading-region';
 
 describe('RouteLoadingRegion', () => {
-  it('deve expor role de status com nome acessível para leitores de tela', () => {
+  it('should expose a status role with an accessible name for screen readers', () => {
     render(
       <RouteLoadingRegion>
         <p>conteúdo interno</p>
@@ -15,7 +15,7 @@ describe('RouteLoadingRegion', () => {
     );
   });
 
-  it('deve renderizar os filhos recebidos', () => {
+  it('should render the given children', () => {
     render(
       <RouteLoadingRegion>
         <p>conteúdo interno</p>

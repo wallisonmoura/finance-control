@@ -14,7 +14,7 @@ const baseFilters = {
   endDate: '2026-04-30',
 };
 
-it('mantém o select de categoria desabilitado quando o tipo não é Despesas', () => {
+it('keeps the category select disabled when the type is not Expenses', () => {
   render(
     <FinanceHistoryFilters
       filters={baseFilters}
@@ -26,7 +26,7 @@ it('mantém o select de categoria desabilitado quando o tipo não é Despesas', 
   expect(screen.getByLabelText('Categoria')).toBeDisabled();
 });
 
-it('habilita a categoria ao escolher Despesas e emite categoryId ao aplicar', async () => {
+it('enables the category when choosing Expenses and emits categoryId on apply', async () => {
   const user = userEvent.setup();
   const onApplyFilters = jest.fn();
 
@@ -55,7 +55,7 @@ it('habilita a categoria ao escolher Despesas e emite categoryId ao aplicar', as
   );
 });
 
-it('limpa a categoria ao trocar o tipo para diferente de Despesas', async () => {
+it('clears the category when changing the type away from Expenses', async () => {
   const user = userEvent.setup();
   const onApplyFilters = jest.fn();
 

@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { HeroCardSkeleton } from '@/shared/presentation/ui/components/skeletons/hero-card-skeleton';
 
 describe('HeroCardSkeleton', () => {
-  it('deve renderizar os 4 blocos base quando subStatsCount não for informado', () => {
+  it('should render the 4 base blocks when subStatsCount is not given', () => {
     const { container } = render(<HeroCardSkeleton />);
 
     expect(
@@ -11,7 +11,7 @@ describe('HeroCardSkeleton', () => {
     ).toHaveLength(4);
   });
 
-  it('deve renderizar blocos extras de sub-estatística quando subStatsCount for maior que zero', () => {
+  it('should render extra sub-stat blocks when subStatsCount is greater than zero', () => {
     const { container } = render(<HeroCardSkeleton subStatsCount={3} />);
 
     expect(
@@ -19,7 +19,7 @@ describe('HeroCardSkeleton', () => {
     ).toHaveLength(4 + 3 * 3);
   });
 
-  it('não deve renderizar blocos extras quando subStatsCount for zero', () => {
+  it('should not render extra blocks when subStatsCount is zero', () => {
     const { container } = render(<HeroCardSkeleton subStatsCount={0} />);
 
     expect(

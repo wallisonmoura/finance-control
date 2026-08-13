@@ -16,7 +16,7 @@ const wallet: WalletUi = {
 };
 
 describe('WalletBalancesForm', () => {
-  it('deve renderizar os campos com os valores atuais da Wallet', () => {
+  it('should render the fields with the current Wallet values', () => {
     render(
       <WalletBalancesForm
         wallet={wallet}
@@ -31,7 +31,7 @@ describe('WalletBalancesForm', () => {
     expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450,00');
   });
 
-  it('deve enviar os novos saldos-base ao submeter o formulário', async () => {
+  it('should submit the new base balances when the form is submitted', async () => {
     const user = userEvent.setup();
     const onSubmit = jest.fn().mockResolvedValue(undefined);
 
@@ -66,7 +66,7 @@ describe('WalletBalancesForm', () => {
     });
   });
 
-  it('deve aceitar valores decimais com vírgula', async () => {
+  it('should accept decimal values with a comma', async () => {
     const user = userEvent.setup();
     const onSubmit = jest.fn().mockResolvedValue(undefined);
 
@@ -95,7 +95,7 @@ describe('WalletBalancesForm', () => {
     });
   });
 
-  it('deve exibir erro quando algum valor estiver vazio', async () => {
+  it('should display an error when a value is empty', async () => {
     const user = userEvent.setup();
     const onSubmit = jest.fn();
 
@@ -123,7 +123,7 @@ describe('WalletBalancesForm', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('deve exibir erro quando algum valor for negativo', async () => {
+  it('should display an error when a value is negative', async () => {
     const user = userEvent.setup();
     const onSubmit = jest.fn();
 
@@ -214,7 +214,7 @@ describe('WalletBalancesForm', () => {
     );
   });
 
-  it('deve chamar onCancel ao clicar em Cancelar', async () => {
+  it('should call onCancel when clicking Cancelar', async () => {
     const user = userEvent.setup();
     const onCancel = jest.fn();
 
@@ -232,7 +232,7 @@ describe('WalletBalancesForm', () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
-  it('deve desabilitar o botão enquanto estiver atualizando', () => {
+  it('should disable the button while updating', () => {
     render(
       <WalletBalancesForm
         wallet={wallet}

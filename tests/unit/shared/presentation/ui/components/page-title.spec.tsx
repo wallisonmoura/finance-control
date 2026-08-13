@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 describe('PageTitle', () => {
-  it('deve renderizar título', () => {
+  it('should render the title', () => {
     render(<PageTitle title='Dashboard' />);
 
     expect(
@@ -11,7 +11,7 @@ describe('PageTitle', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve renderizar descrição quando informada', () => {
+  it('should render the description when given', () => {
     render(<PageTitle title='Dashboard' description='Resumo financeiro.' />);
 
     expect(screen.getByText('Resumo financeiro.')).toBeInTheDocument();
