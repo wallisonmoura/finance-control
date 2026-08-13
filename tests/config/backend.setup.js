@@ -1,2 +1,2 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-require('dotenv/config');
+require('dotenv').config({ quiet: true });
