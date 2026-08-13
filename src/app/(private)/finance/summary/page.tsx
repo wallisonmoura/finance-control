@@ -1,8 +1,13 @@
+import type { Metadata } from 'next';
 import { FinanceSummaryPageContent } from '@/modules/finance/presentation/ui/components/finance-summary-page-content';
 import { getCurrentUserOperationalSummary } from '@/modules/finance/presentation/server/get-current-user-finance-data';
 import { getOperationalSummaryFiltersFromSearchParamsRecord } from '@/modules/finance/presentation/ui/utils/finance-operational-summary';
 import { LoadingState } from '@/shared/presentation/ui/components/loading-state';
 import { Suspense } from 'react';
+
+export const metadata: Metadata = {
+  title: 'Resumo operacional',
+};
 
 type FinanceSummaryPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
