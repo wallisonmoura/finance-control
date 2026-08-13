@@ -1,4 +1,9 @@
+import type { Metadata } from 'next';
 import { LoginForm } from '@/modules/auth/presentation/ui/components/login-form';
+
+export const metadata: Metadata = {
+  title: 'Entrar',
+};
 
 type LoginPageProps = {
   searchParams: Promise<{

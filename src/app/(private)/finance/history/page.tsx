@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { FinanceHistoryPageContent } from '@/modules/finance/presentation/ui/components/finance-history-page-content';
 import {
   getCurrentUserExpenseCategories,
@@ -6,6 +7,10 @@ import {
 import { getFinanceHistoryFiltersFromSearchParamsRecord } from '@/modules/finance/presentation/ui/utils/finance-filters';
 import { LoadingState } from '@/shared/presentation/ui/components/loading-state';
 import { Suspense } from 'react';
+
+export const metadata: Metadata = {
+  title: 'Histórico',
+};
 
 type FinanceHistoryPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
