@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 
 describe('StatCardGridSkeleton', () => {
-  it('deve renderizar 3 cards com 4 blocos cada quando count não for informado', () => {
+  it('should render 3 cards with 4 blocks each when count is not given', () => {
     const { container } = render(<StatCardGridSkeleton />);
 
     expect(
@@ -11,7 +11,7 @@ describe('StatCardGridSkeleton', () => {
     ).toHaveLength(3 * 4);
   });
 
-  it('deve renderizar a quantidade de cards informada em count', () => {
+  it('should render the number of cards given in count', () => {
     const { container } = render(<StatCardGridSkeleton count={2} />);
 
     expect(

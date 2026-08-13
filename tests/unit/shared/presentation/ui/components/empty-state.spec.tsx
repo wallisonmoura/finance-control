@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 
 describe('EmptyState', () => {
-  it('deve renderizar titulo e descricao', () => {
+  it('should render title and description', () => {
     render(
       <EmptyState
         title='Nenhum registro'

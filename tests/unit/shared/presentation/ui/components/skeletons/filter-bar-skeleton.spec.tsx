@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { FilterBarSkeleton } from '@/shared/presentation/ui/components/skeletons/filter-bar-skeleton';
 
 describe('FilterBarSkeleton', () => {
-  it('deve renderizar 3 blocos de campo quando fieldCount não for informado', () => {
+  it('should render 3 field blocks when fieldCount is not given', () => {
     const { container } = render(<FilterBarSkeleton />);
 
     expect(
@@ -11,7 +11,7 @@ describe('FilterBarSkeleton', () => {
     ).toHaveLength(3);
   });
 
-  it('deve renderizar a quantidade de campos informada em fieldCount', () => {
+  it('should render the number of fields given in fieldCount', () => {
     const { container } = render(<FilterBarSkeleton fieldCount={1} />);
 
     expect(

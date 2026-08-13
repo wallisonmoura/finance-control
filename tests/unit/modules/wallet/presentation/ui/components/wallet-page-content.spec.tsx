@@ -45,7 +45,7 @@ describe('WalletPageContent', () => {
     jest.clearAllMocks();
   });
 
-  it('deve renderizar erro quando não existir wallet carregada', async () => {
+  it('should render an error when no wallet is loaded', async () => {
     const user = userEvent.setup();
     const refetch = jest.fn();
 
@@ -68,7 +68,7 @@ describe('WalletPageContent', () => {
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
-  it('deve renderizar estado vazio quando não existir wallet nem erro', () => {
+  it('should render an empty state when there is no wallet and no error', () => {
     mockUseWalletState({
       wallet: null,
       error: null,
@@ -81,7 +81,7 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve iniciar com o resumo e o formulário fechado', () => {
+  it('should start with the summary shown and the form closed', () => {
     mockUseWalletState();
 
     render(<WalletPageContent />);
@@ -108,7 +108,7 @@ describe('WalletPageContent', () => {
     expect(screen.queryByText('Atualizar saldos-base')).not.toBeInTheDocument();
   });
 
-  it('deve abrir o formulário ao clicar em Atualizar saldos', async () => {
+  it('should open the form when clicking Atualizar saldos', async () => {
     const user = userEvent.setup();
 
     mockUseWalletState();
@@ -125,7 +125,7 @@ describe('WalletPageContent', () => {
     expect(screen.getByLabelText('Valores a Receber')).toHaveValue('450,00');
   });
 
-  it('deve fechar o formulário ao clicar em Cancelar', async () => {
+  it('should close the form when clicking Cancelar', async () => {
     const user = userEvent.setup();
 
     mockUseWalletState();
@@ -146,7 +146,7 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve fechar o formulário quando a atualização for concluída com sucesso', async () => {
+  it('should close the form when the update completes successfully', async () => {
     const user = userEvent.setup();
 
     mockUseWalletState();
@@ -171,7 +171,7 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve exibir toast de sucesso quando houver atualização concluída', () => {
+  it('should show a success toast when an update completes', () => {
     mockUseWalletState({
       successMessage: 'Saldos da Carteira atualizados com sucesso.',
     });
@@ -183,7 +183,7 @@ describe('WalletPageContent', () => {
     );
   });
 
-  it('deve renderizar erro com wallet carregada', () => {
+  it('should render an error with a wallet loaded', () => {
     mockUseWalletState({
       error: 'Payload inválido.',
     });
@@ -199,7 +199,7 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('deve repassar updateBalances para o formulário', async () => {
+  it('should pass updateBalances through to the form', async () => {
     const user = userEvent.setup();
     const updateBalances = jest.fn().mockResolvedValue(undefined);
 
@@ -235,7 +235,7 @@ describe('WalletPageContent', () => {
     });
   });
 
-  it('deve inicializar o hook com os dados recebidos do servidor', () => {
+  it('should initialize the hook with the data received from the server', () => {
     mockUseWalletState();
 
     render(<WalletPageContent initialWallet={wallet} initialError={null} />);

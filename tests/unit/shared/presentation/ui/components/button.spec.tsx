@@ -3,19 +3,19 @@ import { render, screen } from '@testing-library/react';
 import { Button } from '@/shared/presentation/ui/components/button';
 
 describe('Button', () => {
-  it('deve renderizar o texto informado', () => {
+  it('should render the given text', () => {
     render(<Button>Entrar</Button>);
 
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
   });
 
-  it('deve renderizar desabilitado quando disabled for informado', () => {
+  it('should render disabled when disabled is given', () => {
     render(<Button disabled>Salvando</Button>);
 
     expect(screen.getByRole('button', { name: 'Salvando' })).toBeDisabled();
   });
 
-  it('deve manter variant custom sem estilos visuais de ghost', () => {
+  it('should keep the custom variant without ghost visual styles', () => {
     render(
       <Button variant='custom' className='bg-income hover:bg-income/90'>
         Salvar
