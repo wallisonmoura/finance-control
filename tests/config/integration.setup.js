@@ -4,6 +4,7 @@ const { config } = require('dotenv');
 config({
   path: '.env.test',
   override: true,
+  quiet: true,
 });
 
 const databaseUrl = process.env.DATABASE_URL;
