@@ -1,6 +1,5 @@
 import { CalendarDays, CheckCircle2, WalletCards } from 'lucide-react';
 
-import { BackLink } from '@/shared/presentation/ui/components/back-link';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
@@ -8,16 +7,14 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { formatDateOrFallback } from '@/shared/presentation/ui/lib/format-date';
 
 import { DebtUi } from '../types/debts-ui.types';
+import { sumDebtAmounts } from '../utils/debt-amounts';
+import { DebtsBackLink } from './debts-back-link';
 import { DebtList } from './debt-list';
 
 type PaidDebtsPageContentProps = {
   debts: DebtUi[];
   error?: string | null;
 };
-
-function sumDebts(debts: DebtUi[]) {
-  return debts.reduce((total, debt) => total + debt.amount, 0);
-}
 
 function getLastPaymentDate(debts: DebtUi[]) {
   return (
@@ -33,12 +30,12 @@ export function PaidDebtsPageContent({
   error = null,
 }: PaidDebtsPageContentProps) {
   const paidDebts = debts.filter((debt) => debt.status === 'PAID');
-  const totalPaid = sumDebts(paidDebts);
+  const totalPaid = sumDebtAmounts(paidDebts);
   const lastPaymentDate = getLastPaymentDate(paidDebts);
 
   return (
     <div className='space-y-6'>
-      <BackLink href='/debts'>Voltar para dívidas</BackLink>
+      <DebtsBackLink />
 
       <PageTitle
         title='Dívidas pagas'

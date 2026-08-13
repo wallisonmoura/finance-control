@@ -3,6 +3,7 @@ import { BanknoteX, CircleX } from 'lucide-react';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 
 import { DebtUi } from '../types/debts-ui.types';
+import { sumDebtAmounts } from '../utils/debt-amounts';
 
 type DebtsMonthSummaryProps = {
   debts: DebtUi[];
@@ -10,10 +11,7 @@ type DebtsMonthSummaryProps = {
 
 export function DebtsMonthSummary({ debts }: DebtsMonthSummaryProps) {
   const pendingDebts = debts.filter((debt) => debt.status === 'PENDING');
-  const pendingTotal = pendingDebts.reduce(
-    (total, debt) => total + debt.amount,
-    0,
-  );
+  const pendingTotal = sumDebtAmounts(pendingDebts);
 
   return (
     <div className='grid gap-3 sm:grid-cols-2'>
