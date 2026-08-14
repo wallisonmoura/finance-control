@@ -127,6 +127,50 @@ async function main() {
       slug: 'parcelas',
     },
     {
+      name: 'Bebida alcoólica',
+      slug: 'bebida-alcoolica',
+    },
+    {
+      name: 'Bebida não alcoólica',
+      slug: 'bebida-nao-alcoolica',
+    },
+    {
+      name: 'Empréstimo pessoal',
+      slug: 'emprestimo-pessoal',
+    },
+    {
+      name: 'Assinaturas',
+      slug: 'assinaturas',
+    },
+    {
+      name: 'Seguros',
+      slug: 'seguros',
+    },
+    {
+      name: 'Cuidados pessoais',
+      slug: 'cuidados-pessoais',
+    },
+    {
+      name: 'Pet',
+      slug: 'pet',
+    },
+    {
+      name: 'Lazer / Entretenimento',
+      slug: 'lazer-entretenimento',
+    },
+    {
+      name: 'Vestuário',
+      slug: 'vestuario',
+    },
+    {
+      name: 'Educação',
+      slug: 'educacao',
+    },
+    {
+      name: 'Presentes',
+      slug: 'presentes',
+    },
+    {
       name: 'Outros',
       slug: 'outros',
     },
