@@ -17,6 +17,8 @@ import { Input } from '@/shared/presentation/ui/components/input';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
+import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import {
@@ -329,9 +331,10 @@ export function FinanceSummaryPageContent({
       {error && <LoadErrorState message={error} onRetry={refresh} />}
 
       {isLoading && (
-        <p className='text-sm text-muted-foreground'>
-          Carregando resumo financeiro...
-        </p>
+        <div className='space-y-6'>
+          <StatCardGridSkeleton count={3} />
+          <ListRowsSkeleton count={5} />
+        </div>
       )}
 
       {!isLoading && !error && (

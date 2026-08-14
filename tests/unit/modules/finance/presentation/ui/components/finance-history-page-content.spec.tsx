@@ -58,15 +58,18 @@ describe('FinanceHistoryPageContent', () => {
       refresh: jest.fn(),
     });
 
-    render(<FinanceHistoryPageContent />);
+    const { container } = render(<FinanceHistoryPageContent />);
 
     expect(screen.getByText('Histórico')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Voltar para financeiro' }),
     ).toHaveAttribute('href', '/finance');
     expect(
-      screen.getByText('Carregando histórico financeiro...'),
-    ).toBeInTheDocument();
+      screen.queryByText('Carregando histórico financeiro...'),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelectorAll('[data-slot="skeleton"]').length,
+    ).toBeGreaterThan(0);
   });
 
   it('should render error state', () => {

@@ -165,9 +165,14 @@ describe('FinanceSummaryPageContent', () => {
       refresh: jest.fn(),
     });
 
-    render(<FinanceSummaryPageContent />);
+    const { container } = render(<FinanceSummaryPageContent />);
 
-    expect(screen.getByText('Carregando resumo financeiro...')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Carregando resumo financeiro...'),
+    ).not.toBeInTheDocument();
+    expect(
+      container.querySelectorAll('[data-slot="skeleton"]').length,
+    ).toBeGreaterThan(0);
   });
 
   it('should render error state', () => {
