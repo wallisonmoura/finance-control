@@ -17,7 +17,6 @@ import { Input } from '@/shared/presentation/ui/components/input';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
-import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import {
@@ -32,6 +31,7 @@ import {
   toMonthInputValue,
 } from '../utils/finance-operational-summary';
 import { FinanceBackLink } from './finance-back-link';
+import { FinanceSummaryCardsSkeleton } from './finance-summary-cards-skeleton';
 import { FinanceSummaryTableSkeleton } from './finance-summary-table-skeleton';
 
 function toFinanceSummaryUrl(filters: FinanceOperationalSummaryFilters) {
@@ -332,7 +332,7 @@ export function FinanceSummaryPageContent({
 
       {isLoading && (
         <div className='space-y-6'>
-          <StatCardGridSkeleton count={3} />
+          <FinanceSummaryCardsSkeleton />
           <FinanceSummaryTableSkeleton rowCount={5} />
         </div>
       )}
