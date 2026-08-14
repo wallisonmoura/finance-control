@@ -3,7 +3,7 @@ import { BackLinkSkeleton } from '@/shared/presentation/ui/components/skeletons/
 import { PageTitleSkeleton } from '@/shared/presentation/ui/components/skeletons/page-title-skeleton';
 import { FilterBarSkeleton } from '@/shared/presentation/ui/components/skeletons/filter-bar-skeleton';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
-import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
+import { FinanceHistorySummarySkeleton } from '@/modules/finance/presentation/ui/components/finance-history-summary-skeleton';
 
 export default function FinanceHistoryLoading() {
   return (
@@ -11,7 +11,7 @@ export default function FinanceHistoryLoading() {
       <BackLinkSkeleton />
       <PageTitleSkeleton />
       <FilterBarSkeleton fieldCount={4} />
-      <StatCardGridSkeleton count={4} />
+      <FinanceHistorySummarySkeleton />
       <ListRowsSkeleton count={5} />
     </RouteLoadingRegion>
   );
