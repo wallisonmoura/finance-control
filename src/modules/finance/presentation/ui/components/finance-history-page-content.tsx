@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
 
 import {
   getFinanceHistoryFiltersFromUrlSearchParams,
@@ -12,6 +13,7 @@ import { useFinanceHistory } from '../hooks/use-finance-history';
 import { FinanceHistoryFilters } from './finance-history-filters';
 import { FinanceHistoryList } from './finance-history-list';
 import { FinanceHistorySummary } from './finance-history-summary';
+import { FinanceHistorySummarySkeleton } from './finance-history-summary-skeleton';
 import {
   ExpenseCategoryUi,
   FinanceHistoryFiltersUi,
@@ -128,9 +130,10 @@ export function FinanceHistoryPageContent({
       />
 
       {isLoading && (
-        <p className='text-sm text-muted-foreground'>
-          Carregando histórico financeiro...
-        </p>
+        <div className='space-y-6'>
+          <FinanceHistorySummarySkeleton />
+          <ListRowsSkeleton count={5} />
+        </div>
       )}
 
       {error && <LoadErrorState message={error} onRetry={refresh} />}

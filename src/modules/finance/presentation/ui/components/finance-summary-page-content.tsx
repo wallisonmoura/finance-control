@@ -31,6 +31,8 @@ import {
   toMonthInputValue,
 } from '../utils/finance-operational-summary';
 import { FinanceBackLink } from './finance-back-link';
+import { FinanceSummaryCardsSkeleton } from './finance-summary-cards-skeleton';
+import { FinanceSummaryTableSkeleton } from './finance-summary-table-skeleton';
 
 function toFinanceSummaryUrl(filters: FinanceOperationalSummaryFilters) {
   const searchParams = new URLSearchParams({
@@ -329,9 +331,10 @@ export function FinanceSummaryPageContent({
       {error && <LoadErrorState message={error} onRetry={refresh} />}
 
       {isLoading && (
-        <p className='text-sm text-muted-foreground'>
-          Carregando resumo financeiro...
-        </p>
+        <div className='space-y-6'>
+          <FinanceSummaryCardsSkeleton />
+          <FinanceSummaryTableSkeleton rowCount={5} />
+        </div>
       )}
 
       {!isLoading && !error && (
