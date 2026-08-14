@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
+import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 
 import {
   getFinanceHistoryFiltersFromUrlSearchParams,
@@ -128,7 +129,12 @@ export function FinanceHistoryPageContent({
         onApplyFilters={handleApplyFilters}
       />
 
-      {isLoading && <ListRowsSkeleton count={5} />}
+      {isLoading && (
+        <div className='space-y-6'>
+          <StatCardGridSkeleton count={4} />
+          <ListRowsSkeleton count={5} />
+        </div>
+      )}
 
       {error && <LoadErrorState message={error} onRetry={refresh} />}
 
