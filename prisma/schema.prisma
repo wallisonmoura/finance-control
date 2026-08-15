@@ -43,6 +43,15 @@ model User {
   @@map("users")
 }
 
+model LoginAttempt {
+  id        String   @id @default(uuid()) @db.Uuid
+  ip        String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([ip, createdAt])
+  @@map("login_attempts")
+}
+
 model Wallet {
   id                String        @id @default(uuid()) @db.Uuid
   userId            String        @map("user_id") @db.Uuid

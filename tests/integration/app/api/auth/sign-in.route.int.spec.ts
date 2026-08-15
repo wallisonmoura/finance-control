@@ -1,6 +1,7 @@
 import { POST } from '@/app/api/auth/sign-in/route';
 import { AUTH_COOKIE_NAME } from '@/modules/auth/constants/auth.constants';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
+import { makeLoginRateLimiter } from '@/modules/auth/infra/factories/make-login-rate-limiter';
 import { makeSignInUseCase } from '@/modules/auth/infra/factories/make-sign-in-use-case';
 import { NextRequest } from 'next/server';
 
@@ -8,7 +9,18 @@ jest.mock('@/modules/auth/infra/factories/make-sign-in-use-case', () => ({
   makeSignInUseCase: jest.fn(),
 }));
 
+jest.mock('@/modules/auth/infra/factories/make-login-rate-limiter', () => ({
+  makeLoginRateLimiter: jest.fn(),
+}));
+
 describe('POST /api/auth/sign-in', () => {
+  beforeEach(() => {
+    (makeLoginRateLimiter as jest.Mock).mockReturnValue({
+      isBlocked: jest.fn().mockResolvedValue(false),
+      registerFailedAttempt: jest.fn().mockResolvedValue(undefined),
+    });
+  });
+
   it('should authenticate with valid credentials and set cookie', async () => {
     const execute = jest.fn().mockResolvedValue({
       accessToken: 'fake-access-token',
