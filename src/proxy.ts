@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import {
   AUTH_COOKIE_NAME,
+  AUTH_CSRF_ORIGIN_MISMATCH_MESSAGE,
   AUTH_PUBLIC_API_PATHS,
   AUTH_PUBLIC_PAGE_PATHS,
   AUTH_UNAUTHORIZED_MESSAGE,
 } from '@/modules/auth/constants/auth.constants';
+
+const MUTATING_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 function isPublicApiPath(pathname: string) {
   return AUTH_PUBLIC_API_PATHS.some((path) => pathname.startsWith(path));
@@ -28,6 +31,30 @@ function isPublicPath(pathname: string) {
   return isPublicApiPath(pathname) || isPublicPagePath(pathname);
 }
 
+function isMutatingMethod(method: string) {
+  return MUTATING_METHODS.includes(method);
+}
+
+function isOriginMismatch(request: NextRequest) {
+  const origin = request.headers.get('origin');
+
+  if (!origin) {
+    return false;
+  }
+
+  const host = request.headers.get('host');
+
+  if (!host) {
+    return false;
+  }
+
+  try {
+    return new URL(origin).host !== host;
+  } catch {
+    return true;
+  }
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -37,6 +64,17 @@ export function proxy(request: NextRequest) {
 
   if (isPublicPath(pathname)) {
     return NextResponse.next();
+  }
+
+  if (
+    pathname.startsWith('/api') &&
+    isMutatingMethod(request.method) &&
+    isOriginMismatch(request)
+  ) {
+    return NextResponse.json(
+      { message: AUTH_CSRF_ORIGIN_MISMATCH_MESSAGE },
+      { status: 403 },
+    );
   }
 
   const authCookie = request.cookies.get(AUTH_COOKIE_NAME)?.value;

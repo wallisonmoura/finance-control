@@ -18,3 +18,6 @@ export const AUTH_LOGIN_RATE_LIMIT_WINDOW_MINUTES = 15;
 
 export const AUTH_TOO_MANY_ATTEMPTS_MESSAGE =
   'Muitas tentativas de login. Tente novamente em alguns minutos.';
+
+export const AUTH_CSRF_ORIGIN_MISMATCH_MESSAGE =
+  'Origem da requisição não permitida.';
