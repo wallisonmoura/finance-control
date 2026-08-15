@@ -25,6 +25,7 @@ const config: Config = {
         '^@/(.*)$': '<rootDir>/src/$1',
       },
       testMatch: [
+        '<rootDir>/tests/unit/*.spec.ts',
         '<rootDir>/tests/unit/modules/**/*.spec.ts',
         '<rootDir>/tests/unit/shared/**/*.spec.ts',
       ],
