@@ -1,5 +1,6 @@
 import {
   AUTH_COOKIE_NAME,
+  AUTH_JWT_EXPIRES_IN,
   AUTH_TOO_MANY_ATTEMPTS_MESSAGE,
 } from '@/modules/auth/constants/auth.constants';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: parseDurationToSeconds(process.env.JWT_EXPIRES_IN ?? '7d'),
+      maxAge: parseDurationToSeconds(AUTH_JWT_EXPIRES_IN),
     });
 
     return nextResponse;

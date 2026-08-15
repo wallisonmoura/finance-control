@@ -3,12 +3,11 @@ import {
   TokenPayload,
   TokenService,
 } from '../../domain/services/token.port';
-import { AUTH_TOKEN_EXPIRES_IN } from '../../constants/auth.constants';
 
 export class JoseJwtTokenService implements TokenService {
   constructor(
     private readonly secret: string,
-    private readonly expiresIn: string = AUTH_TOKEN_EXPIRES_IN,
+    private readonly expiresIn: string,
   ) {}
 
   async generateAccessToken(payload: TokenPayload): Promise<string> {

@@ -2,7 +2,7 @@ export const AUTH_COOKIE_NAME = 'fc_access_token';
 
 export const AUTH_TOKEN_SECRET = process.env.JWT_SECRET!;
 
-export const AUTH_TOKEN_EXPIRES_IN = '7d';
+export const AUTH_JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '7d';
 
 export const AUTH_UNAUTHORIZED_MESSAGE = 'Não autenticado';
 
