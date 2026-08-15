@@ -7,6 +7,7 @@ import { makeLoginRateLimiter } from '@/modules/auth/infra/factories/make-login-
 import { makeSignInUseCase } from '@/modules/auth/infra/factories/make-sign-in-use-case';
 import { getClientIpFromRequest } from '@/modules/auth/presentation/http/helpers/get-client-ip-from-request';
 import { SignInController } from '@/modules/auth/presentation/http/controllers/sign-in.controller';
+import { parseDurationToSeconds } from '@/shared/domain/duration/parse-duration-to-seconds';
 import { toErrorNextResponse } from '@/shared/presentation/http/to-error-next-response';
 import { toNextResponse } from '@/shared/presentation/http/to-next-response';
 import { NextRequest, NextResponse } from 'next/server';
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
+      maxAge: parseDurationToSeconds(process.env.JWT_EXPIRES_IN ?? '7d'),
     });
 
     return nextResponse;
