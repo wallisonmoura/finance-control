@@ -34,7 +34,13 @@ async function main() {
 
   const passwordHash = await hash('123456', 10);
 
-  const user = await prisma.user.upsert({
+  // The default wallet and the 26 default expense categories are no longer
+  // created here — a DB-level trigger (see
+  // prisma/migrations/*_add_user_provisioning_trigger) provisions both
+  // automatically as soon as the user row below is inserted. On a fresh
+  // database this upsert's `create` branch is a real INSERT, so the trigger
+  // fires and produces the same end state this file used to build by hand.
+  await prisma.user.upsert({
     where: {
       email: 'admin@financecontrol.com',
     },
@@ -48,154 +54,6 @@ async function main() {
       passwordHash,
     },
   });
-
-  const existingDefaultWallet = await prisma.wallet.findFirst({
-    where: {
-      userId: user.id,
-      isDefault: true,
-    },
-  });
-
-  if (!existingDefaultWallet) {
-    await prisma.wallet.create({
-      data: {
-        userId: user.id,
-        name: 'Carteira Principal',
-        isDefault: true,
-        bankBalance: 0,
-        cashBalance: 0,
-        receivableBalance: 0,
-      },
-    });
-  }
-
-  const categories = [
-    {
-      name: 'Combustível',
-      slug: 'combustivel',
-    },
-    {
-      name: 'Alimentação',
-      slug: 'alimentacao',
-    },
-    {
-      name: 'Manutenção',
-      slug: 'manutencao',
-    },
-    {
-      name: 'Transporte',
-      slug: 'transporte',
-    },
-    {
-      name: 'Moradia / Aluguel',
-      slug: 'moradia-aluguel',
-    },
-    {
-      name: 'Energia',
-      slug: 'energia',
-    },
-    {
-      name: 'Água',
-      slug: 'agua',
-    },
-    {
-      name: 'Internet / Telefone',
-      slug: 'internet-telefone',
-    },
-    {
-      name: 'Compras / Insumos',
-      slug: 'compras-insumos',
-    },
-    {
-      name: 'Taxas / Impostos',
-      slug: 'taxas-impostos',
-    },
-    {
-      name: 'Equipamentos',
-      slug: 'equipamentos',
-    },
-    {
-      name: 'Marketing',
-      slug: 'marketing',
-    },
-    {
-      name: 'Saúde',
-      slug: 'saude',
-    },
-    {
-      name: 'Parcelas',
-      slug: 'parcelas',
-    },
-    {
-      name: 'Bebida alcoólica',
-      slug: 'bebida-alcoolica',
-    },
-    {
-      name: 'Bebida não alcoólica',
-      slug: 'bebida-nao-alcoolica',
-    },
-    {
-      name: 'Empréstimo pessoal',
-      slug: 'emprestimo-pessoal',
-    },
-    {
-      name: 'Assinaturas',
-      slug: 'assinaturas',
-    },
-    {
-      name: 'Seguros',
-      slug: 'seguros',
-    },
-    {
-      name: 'Cuidados pessoais',
-      slug: 'cuidados-pessoais',
-    },
-    {
-      name: 'Pet',
-      slug: 'pet',
-    },
-    {
-      name: 'Lazer / Entretenimento',
-      slug: 'lazer-entretenimento',
-    },
-    {
-      name: 'Vestuário',
-      slug: 'vestuario',
-    },
-    {
-      name: 'Educação',
-      slug: 'educacao',
-    },
-    {
-      name: 'Presentes',
-      slug: 'presentes',
-    },
-    {
-      name: 'Outros',
-      slug: 'outros',
-    },
-  ];
-
-  for (const category of categories) {
-    await prisma.expenseCategory.upsert({
-      where: {
-        userId_slug: {
-          userId: user.id,
-          slug: category.slug,
-        },
-      },
-      update: {
-        name: category.name,
-        isActive: true,
-      },
-      create: {
-        userId: user.id,
-        name: category.name,
-        slug: category.slug,
-        isActive: true,
-      },
-    });
-  }
 }
 
 main()
