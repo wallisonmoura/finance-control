@@ -40,6 +40,8 @@ export class GetTransactionHistoryController implements Controller<
       endDate: parseExclusiveEndDateFromQuery(query.endDate),
       type: query.type,
       categoryId: query.categoryId,
+      page: query.page,
+      pageSize: query.pageSize,
     };
 
     const result = await this.getTransactionHistoryUseCase.execute(input);

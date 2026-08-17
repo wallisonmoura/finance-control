@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
         endDate: request.nextUrl.searchParams.get('endDate') ?? undefined,
         type: request.nextUrl.searchParams.get('type') ?? undefined,
         categoryId: request.nextUrl.searchParams.get('categoryId') ?? undefined,
+        page: request.nextUrl.searchParams.get('page') ?? undefined,
+        pageSize: request.nextUrl.searchParams.get('pageSize') ?? undefined,
       },
     });
 

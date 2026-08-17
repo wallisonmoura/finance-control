@@ -3,6 +3,13 @@ import { GetTransactionHistoryUseCase } from '@/modules/finance/application/use-
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { GetTransactionHistoryController } from '@/modules/finance/presentation/http/controllers/get-transaction-history.controller';
 
+const emptyPagination = {
+  page: 1,
+  pageSize: 20,
+  totalCount: 0,
+  totalPages: 0,
+};
+
 describe('GetTransactionHistoryController', () => {
   let useCase: jest.Mocked<GetTransactionHistoryUseCase>;
   let controller: GetTransactionHistoryController;
@@ -34,6 +41,7 @@ describe('GetTransactionHistoryController', () => {
       totalIncome: 200,
       totalExpense: 0,
       balance: 200,
+      pagination: { page: 1, pageSize: 20, totalCount: 1, totalPages: 1 },
     };
 
     useCase.execute.mockResolvedValue(output);
@@ -65,6 +73,12 @@ describe('GetTransactionHistoryController', () => {
     expect(response.body?.entries).toEqual([
       expect.objectContaining({ id: 'entry-1', date: '2026-04-01' }),
     ]);
+    expect(response.body?.pagination).toEqual({
+      page: 1,
+      pageSize: 20,
+      totalCount: 1,
+      totalPages: 1,
+    });
   });
 
   it('should return status 200 when the type is not informed', async () => {
@@ -73,6 +87,7 @@ describe('GetTransactionHistoryController', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: emptyPagination,
     };
 
     useCase.execute.mockResolvedValue(output);
@@ -147,6 +162,7 @@ describe('GetTransactionHistoryController', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: emptyPagination,
     };
 
     useCase.execute.mockResolvedValue(output);
@@ -164,5 +180,70 @@ describe('GetTransactionHistoryController', () => {
     const input = useCase.execute.mock.calls[0][0];
 
     expect(input.categoryId).toBe('11111111-1111-4111-8111-111111111111');
+  });
+
+  it('should default page to 1 and pageSize to 20 when not informed', async () => {
+    const output: TransactionHistoryOutput = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      pagination: emptyPagination,
+    };
+
+    useCase.execute.mockResolvedValue(output);
+
+    await controller.handle({
+      userId: 'user-123',
+      query: {
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+      },
+    });
+
+    const input = useCase.execute.mock.calls[0][0];
+
+    expect(input.page).toBe(1);
+    expect(input.pageSize).toBe(20);
+  });
+
+  it('should forward page and pageSize to the use case', async () => {
+    const output: TransactionHistoryOutput = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      pagination: emptyPagination,
+    };
+
+    useCase.execute.mockResolvedValue(output);
+
+    await controller.handle({
+      userId: 'user-123',
+      query: {
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        page: '2',
+        pageSize: '10',
+      },
+    });
+
+    const input = useCase.execute.mock.calls[0][0];
+
+    expect(input.page).toBe(2);
+    expect(input.pageSize).toBe(10);
+  });
+
+  it('should throw an error when pageSize exceeds the upper bound', async () => {
+    await expect(
+      controller.handle({
+        userId: 'user-123',
+        query: {
+          startDate: '2026-04-01',
+          endDate: '2026-04-30',
+          pageSize: '101',
+        },
+      }),
+    ).rejects.toThrow();
   });
 });

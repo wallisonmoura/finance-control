@@ -567,4 +567,103 @@ describe('GET /api/finance/history', () => {
       ),
     ).toBe(true);
   });
+
+  it('should default to page 1 with pageSize 20 and include pagination metadata', async () => {
+    const user = await createTestUser({
+      email: 'history-pagination-default@test.com',
+    });
+    const wallet = await createTestWallet({
+      userId: user.id,
+      isDefault: true,
+    });
+
+    await prisma.transaction.createMany({
+      data: [
+        {
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'INCOME',
+          amount: 100,
+          description: 'Receita única',
+          transactionDate: new Date(2026, 3, 10),
+        },
+      ],
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30',
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.pagination).toEqual({
+      page: 1,
+      pageSize: 20,
+      totalCount: 1,
+      totalPages: 1,
+    });
+  });
+
+  it('should return the requested page and keep totals over the whole period', async () => {
+    const user = await createTestUser({
+      email: 'history-pagination-page@test.com',
+    });
+    const wallet = await createTestWallet({
+      userId: user.id,
+      isDefault: true,
+    });
+
+    await prisma.transaction.createMany({
+      data: Array.from({ length: 25 }, (_, index) => ({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME' as const,
+        amount: 10,
+        description: `Receita ${index + 1}`,
+        transactionDate: new Date(2026, 3, index + 1),
+      })),
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&page=2&pageSize=20',
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.entries).toHaveLength(5);
+    expect(body.totalIncome).toBe(250);
+    expect(body.pagination).toEqual({
+      page: 2,
+      pageSize: 20,
+      totalCount: 25,
+      totalPages: 2,
+    });
+  });
+
+  it('should return 400 when pageSize exceeds the upper bound', async () => {
+    const user = await createTestUser({
+      email: 'history-pagination-invalid-page-size@test.com',
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&pageSize=101',
+      { method: 'GET' },
+    );
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(400);
+  });
 });
