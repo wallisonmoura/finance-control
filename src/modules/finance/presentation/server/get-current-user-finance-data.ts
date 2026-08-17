@@ -25,6 +25,13 @@ import {
   type FinanceOperationalSummaryFilters,
 } from '../ui/utils/finance-operational-summary';
 
+// GetTransactionHistoryUseCase agora pagina por padrão (contrato da API
+// GET /api/finance/history). As páginas Server Component deste arquivo ainda
+// listam o período inteiro sem controle de paginação na UI — um pageSize
+// generoso preserva esse comportamento até o acompanhamento de frontend
+// trazer paginação real para essas telas.
+export const FULL_PERIOD_PAGE_SIZE = 10_000;
+
 type CurrentUserFinanceHistoryResult = {
   data?: FinanceHistoryUi;
   error?: string;
@@ -101,6 +108,8 @@ export async function getCurrentUserFinanceHistory(
       endDate: parseExclusiveEndDateFromQuery(filters.endDate),
       type: toFinancialEntryType(filters.type),
       categoryId: filters.categoryId,
+      page: 1,
+      pageSize: FULL_PERIOD_PAGE_SIZE,
     });
 
     return {
@@ -162,6 +171,8 @@ export async function getCurrentUserOperationalSummary(
         userId: auth.userId,
         startDate: parseDateFromQuery(period.startDate),
         endDate: parseExclusiveEndDateFromQuery(period.endDate),
+        page: 1,
+        pageSize: FULL_PERIOD_PAGE_SIZE,
       }),
     ]);
 

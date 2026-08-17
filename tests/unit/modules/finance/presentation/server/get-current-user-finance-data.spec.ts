@@ -3,6 +3,7 @@ import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/fact
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
 import {
+  FULL_PERIOD_PAGE_SIZE,
   getCurrentUserExpenseCategories,
   getCurrentUserFinanceHistory,
   getCurrentUserOperationalSummary,
@@ -125,6 +126,11 @@ describe('getCurrentUserFinanceHistory', () => {
       endDate: new Date('2026-06-01T00:00:00.000Z'),
       type: 'INCOME',
       categoryId: undefined,
+      // Este helper alimenta páginas que ainda listam o período inteiro sem
+      // controle de paginação na UI (ver seguimento de frontend). pageSize
+      // grande preserva esse comportamento em vez de truncar em 20 itens.
+      page: 1,
+      pageSize: FULL_PERIOD_PAGE_SIZE,
     });
   });
 
@@ -276,6 +282,10 @@ describe('getCurrentUserOperationalSummary', () => {
       // Fim exclusivo: sem isso o último dia do mês fica de fora e a linha
       // correspondente do resumo diário aparece zerada.
       endDate: new Date('2026-06-01T00:00:00.000Z'),
+      // O resumo diário precisa de todos os lançamentos do mês para agrupar
+      // por dia corretamente — nunca só a primeira página.
+      page: 1,
+      pageSize: FULL_PERIOD_PAGE_SIZE,
     });
   });
 
