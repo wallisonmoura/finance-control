@@ -84,4 +84,16 @@ describe('proxy — CSRF origin check', () => {
 
     expect(response.status).toBe(200);
   });
+
+  it('should treat /api/auth/register as a public api path', () => {
+    const request = makeAuthedRequest({
+      pathname: '/api/auth/register',
+      origin: 'https://evil.example.com',
+      host: 'app.financecontrol.com',
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(200);
+  });
 });

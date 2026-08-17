@@ -1,10 +1,10 @@
 import {
   AUTH_COOKIE_NAME,
   AUTH_JWT_EXPIRES_IN,
-  AUTH_TOO_MANY_ATTEMPTS_MESSAGE,
+  AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE,
 } from '@/modules/auth/constants/auth.constants';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
-import { makeLoginRateLimiter } from '@/modules/auth/infra/factories/make-login-rate-limiter';
+import { makeAuthRateLimiter } from '@/modules/auth/infra/factories/make-auth-rate-limiter';
 import { makeSignInUseCase } from '@/modules/auth/infra/factories/make-sign-in-use-case';
 import { getClientIpFromRequest } from '@/modules/auth/presentation/http/helpers/get-client-ip-from-request';
 import { SignInController } from '@/modules/auth/presentation/http/controllers/sign-in.controller';
@@ -15,11 +15,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const ip = getClientIpFromRequest(request);
-  const rateLimiter = makeLoginRateLimiter();
+  const rateLimiter = makeAuthRateLimiter();
+  const rateLimitKey = `signin:${ip}`;
 
-  if (await rateLimiter.isBlocked(ip)) {
+  if (await rateLimiter.isBlocked(rateLimitKey)) {
     return NextResponse.json(
-      { message: AUTH_TOO_MANY_ATTEMPTS_MESSAGE },
+      { message: AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE },
       { status: 429 },
     );
   }
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
     return nextResponse;
   } catch (error) {
     if (error instanceof InvalidCredentialsError) {
-      await rateLimiter.registerFailedAttempt(ip);
+      await rateLimiter.registerAttempt(rateLimitKey);
     }
 
     return toErrorNextResponse(error);
