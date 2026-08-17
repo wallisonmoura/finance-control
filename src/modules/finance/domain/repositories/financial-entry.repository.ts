@@ -15,4 +15,25 @@ export interface FinancialEntryRepository {
     type?: FinancialEntryType,
     categoryId?: string,
   ): Promise<FinancialEntry[]>;
+  getPeriodTotals(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    type?: FinancialEntryType,
+    categoryId?: string,
+  ): Promise<PeriodTotals>;
+  findByUserIdAndPeriodPaginated(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    type: FinancialEntryType | undefined,
+    categoryId: string | undefined,
+    pagination: { skip: number; take: number },
+  ): Promise<FinancialEntry[]>;
+}
+
+export interface PeriodTotals {
+  totalIncome: number;
+  totalExpense: number;
+  count: number;
 }

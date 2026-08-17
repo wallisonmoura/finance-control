@@ -1,9 +1,12 @@
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { FinancialEntry } from '../../domain/entities/financial-entry.entity';
 import { PrismaFinancialEntryMapper } from '../mappers/prisma-financial-entry.mapper';
-import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
+import {
+  FinancialEntryRepository,
+  PeriodTotals,
+} from '../../domain/repositories/financial-entry.repository';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
-import { TransactionType } from '@prisma/client';
+import { Prisma, TransactionType } from '@prisma/client';
 import { DefaultWalletNotFoundError } from '../../../../shared/infra/errors/default-wallet-not-found.error';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
 import { WalletRepository } from '@/modules/wallet/domain/repositories/wallet.repository';
@@ -109,25 +112,107 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
     categoryId?: string,
   ): Promise<FinancialEntry[]> {
     const transactions = await prisma.transaction.findMany({
-      where: {
+      where: this.buildPeriodWhere(
         userId,
-        transactionDate: {
-          gte: startDate,
-          lt: endDate,
-        },
-        ...(type
-          ? {
-              type:
-                type === FinancialEntryType.INCOME
-                  ? TransactionType.INCOME
-                  : TransactionType.EXPENSE,
-            }
-          : {}),
-        ...(categoryId ? { expenseCategoryId: categoryId } : {}),
-      },
+        startDate,
+        endDate,
+        type,
+        categoryId,
+      ),
       orderBy: [{ transactionDate: 'asc' }, { createdAt: 'asc' }],
     });
 
     return transactions.map(PrismaFinancialEntryMapper.toDomain);
+  }
+
+  async getPeriodTotals(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    type?: FinancialEntryType,
+    categoryId?: string,
+  ): Promise<PeriodTotals> {
+    const where = this.buildPeriodWhere(
+      userId,
+      startDate,
+      endDate,
+      type,
+      categoryId,
+    );
+
+    const [sumsByType, count] = await Promise.all([
+      prisma.transaction.groupBy({
+        by: ['type'],
+        where,
+        _sum: { amount: true },
+      }),
+      prisma.transaction.count({ where }),
+    ]);
+
+    const totalIncome = this.sumForType(sumsByType, TransactionType.INCOME);
+    const totalExpense = this.sumForType(sumsByType, TransactionType.EXPENSE);
+
+    return { totalIncome, totalExpense, count };
+  }
+
+  async findByUserIdAndPeriodPaginated(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    type: FinancialEntryType | undefined,
+    categoryId: string | undefined,
+    pagination: { skip: number; take: number },
+  ): Promise<FinancialEntry[]> {
+    const transactions = await prisma.transaction.findMany({
+      where: this.buildPeriodWhere(
+        userId,
+        startDate,
+        endDate,
+        type,
+        categoryId,
+      ),
+      orderBy: [{ transactionDate: 'desc' }, { createdAt: 'desc' }],
+      skip: pagination.skip,
+      take: pagination.take,
+    });
+
+    return transactions.map(PrismaFinancialEntryMapper.toDomain);
+  }
+
+  private buildPeriodWhere(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    type?: FinancialEntryType,
+    categoryId?: string,
+  ): Prisma.TransactionWhereInput {
+    return {
+      userId,
+      transactionDate: {
+        gte: startDate,
+        lt: endDate,
+      },
+      ...(type
+        ? {
+            type:
+              type === FinancialEntryType.INCOME
+                ? TransactionType.INCOME
+                : TransactionType.EXPENSE,
+          }
+        : {}),
+      ...(categoryId ? { expenseCategoryId: categoryId } : {}),
+    };
+  }
+
+  private sumForType(
+    sumsByType: Array<{
+      type: TransactionType;
+      _sum: { amount: Prisma.Decimal | null };
+    }>,
+    type: TransactionType,
+  ): number {
+    const match = sumsByType.find((entry) => entry.type === type);
+
+    return Number(match?._sum.amount ?? 0);
   }
 }
