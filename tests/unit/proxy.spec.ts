@@ -97,3 +97,28 @@ describe('proxy — CSRF origin check', () => {
     expect(response.status).toBe(200);
   });
 });
+
+describe('proxy — public page paths', () => {
+  it('should allow an unauthenticated visitor to reach /register without redirecting to /login', () => {
+    const request = new NextRequest('http://app.financecontrol.com/register', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should redirect an unauthenticated visitor away from a private page', () => {
+    const request = new NextRequest('http://app.financecontrol.com/wallet', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/login');
+  });
+});

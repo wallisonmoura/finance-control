@@ -2,6 +2,7 @@ import {
   getCurrentUser,
   signIn,
   signOut,
+  signUp,
 } from '@/modules/auth/presentation/ui/services/auth-api.service';
 
 const mockFetch = jest.fn();
@@ -108,6 +109,58 @@ describe('AuthApiService', () => {
 
       expect(result).toEqual({
         error: 'Não foi possível concluir a operação.',
+      });
+    });
+  });
+
+  describe('signUp', () => {
+    it('should call register API and return data when request succeeds', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn(),
+      });
+
+      const result = await signUp({
+        name: 'Admin Local',
+        email: 'admin@financecontrol.com',
+        password: '12345678',
+      });
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/register', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Admin Local',
+          email: 'admin@financecontrol.com',
+          password: '12345678',
+        }),
+      });
+
+      expect(result).toEqual({
+        data: null,
+      });
+    });
+
+    it('should return error message when register API fails', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        json: jest.fn().mockResolvedValueOnce({
+          message: 'E-mail já cadastrado',
+        }),
+      });
+
+      const result = await signUp({
+        name: 'Admin Local',
+        email: 'admin@financecontrol.com',
+        password: '12345678',
+      });
+
+      expect(result).toEqual({
+        error: 'E-mail já cadastrado',
       });
     });
   });

@@ -3,6 +3,12 @@ export type SignInInput = {
   password: string;
 };
 
+export type SignUpInput = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 export type AuthenticatedUser = {
   id: string;
   name: string;
