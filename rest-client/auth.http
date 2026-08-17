@@ -2,7 +2,69 @@
 @email = admin@financecontrol.com
 @password = 123456
 
-@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGZpbmFuY2Vjb250cm9sLmNvbSIsInN1YiI6ImM2NmY3ZTViLTc4YWMtNGM5Ny1iNzBhLWIxNjRmZWUzM2MxMiIsImlhdCI6MTc3NzUyODczOSwiZXhwIjoxNzc4MTMzNTM5fQ.HvofKOj0h4hQjg-nnjG7GJN4NZDqmo8c7muLwcAABFI
+@newUserName = Novo Usuário
+@newUserEmail = novo-usuario@financecontrol.local
+@newUserPassword = 12345678
+
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5vdm8tdXN1YXJpb0BmaW5hbmNlY29udHJvbC5sb2NhbCIsInN1YiI6IjU5MjMzNGViLWY2OTMtNDZlZC1iZjk3LTVmMzYyY2I5MjZkYSIsImlhdCI6MTc4NjkzMTkxMiwiZXhwIjoxNzg3NTM2NzEyfQ.IRcTe4Mthhk5OoDC2E2qbzc2QrFa_j_aZ8aiGu-SAOU
+
+### Register - sucesso
+# Cria a conta e já autentica (cookie definido na resposta, igual ao sign-in).
+# Se rodar de novo com o mesmo @newUserEmail, cai no caso de e-mail duplicado abaixo.
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "{{newUserName}}",
+  "email": "{{newUserEmail}}",
+  "password": "{{newUserPassword}}"
+}
+
+###
+
+### Register - e-mail duplicado
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "{{newUserName}}",
+  "email": "{{email}}",
+  "password": "{{newUserPassword}}"
+}
+
+###
+
+### Register - senha curta (menos de 8 caracteres)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "{{newUserName}}",
+  "email": "outro-novo@financecontrol.local",
+  "password": "1234567"
+}
+
+###
+
+### Register - payload inválido
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "email-invalido",
+  "password": ""
+}
+
+###
+
+### Get current user - logo após o register
+# Execute após "Register - sucesso" (mesmo cookie da sessão do REST Client).
+# Confirma que o cookie/token emitido pelo /register autentica normalmente,
+# sem precisar passar pelo /sign-in.
+GET {{baseUrl}}/api/auth/me
+
+###
 
 ### Sign in - sucesso
 POST {{baseUrl}}/api/auth/sign-in
@@ -11,6 +73,18 @@ Content-Type: application/json
 {
   "email": "{{email}}",
   "password": "{{password}}"
+}
+
+###
+
+### Sign in - usuário criado via /register
+# Execute após "Register - sucesso" (usa as mesmas credenciais do novo usuário).
+POST {{baseUrl}}/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "{{newUserEmail}}",
+  "password": "{{newUserPassword}}"
 }
 
 ###
