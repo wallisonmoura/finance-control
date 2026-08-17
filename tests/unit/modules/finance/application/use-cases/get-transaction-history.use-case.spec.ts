@@ -50,6 +50,8 @@ describe('GetTransactionHistoryUseCase', () => {
       userId: 'user-1',
       startDate: new Date('2026-03-20T00:00:00.000Z'),
       endDate: new Date('2026-03-22T23:59:59.999Z'),
+      page: 1,
+      pageSize: 20,
     });
 
     expect(output.entries).toHaveLength(3);
@@ -96,6 +98,8 @@ describe('GetTransactionHistoryUseCase', () => {
       startDate: new Date('2026-03-20T00:00:00.000Z'),
       endDate: new Date('2026-03-21T23:59:59.999Z'),
       type: FinancialEntryType.EXPENSE,
+      page: 1,
+      pageSize: 20,
     });
 
     expect(output.entries).toHaveLength(1);
@@ -148,10 +152,196 @@ describe('GetTransactionHistoryUseCase', () => {
       endDate: new Date('2026-04-30T00:00:00.000Z'),
       type: FinancialEntryType.EXPENSE,
       categoryId,
+      page: 1,
+      pageSize: 20,
     });
 
     expect(result.entries).toHaveLength(1);
     expect(result.entries[0].description).toBe('Gasolina');
     expect(result.totalExpense).toBe(100);
+  });
+
+  describe('pagination', () => {
+    function makeEntries(count: number): FinancialEntry[] {
+      return Array.from({ length: count }, (_, index) =>
+        FinancialEntry.create({
+          id: `entry-${index + 1}`,
+          userId: 'user-1',
+          type: FinancialEntryType.INCOME,
+          amount: 10,
+          description: `Entry ${index + 1}`,
+          // dia crescente: entry-1 é o mais antigo, entry-N o mais recente.
+          date: new Date(2026, 3, index + 1),
+          categoryId: null,
+          notes: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }),
+      );
+    }
+
+    it('should return only the requested page of entries', async () => {
+      const repository = new InMemoryFinancialEntryRepository(
+        makeEntries(25),
+      );
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const output = await useCase.execute({
+        userId: 'user-1',
+        startDate: new Date(2026, 3, 1),
+        endDate: new Date(2026, 3, 30),
+        page: 1,
+        pageSize: 20,
+      });
+
+      expect(output.entries).toHaveLength(20);
+      // Ordenação desc por data: entry-25 (mais recente) é o primeiro da página 1.
+      expect(output.entries[0].id).toBe('entry-25');
+      expect(output.entries[19].id).toBe('entry-6');
+    });
+
+    it('should return the remaining entries on the second page', async () => {
+      const repository = new InMemoryFinancialEntryRepository(
+        makeEntries(25),
+      );
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const output = await useCase.execute({
+        userId: 'user-1',
+        startDate: new Date(2026, 3, 1),
+        endDate: new Date(2026, 3, 30),
+        page: 2,
+        pageSize: 20,
+      });
+
+      expect(output.entries).toHaveLength(5);
+      expect(output.entries[0].id).toBe('entry-5');
+      expect(output.entries[4].id).toBe('entry-1');
+    });
+
+    it('should return pagination metadata reflecting the full period, not just the page', async () => {
+      const repository = new InMemoryFinancialEntryRepository(
+        makeEntries(25),
+      );
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const output = await useCase.execute({
+        userId: 'user-1',
+        startDate: new Date(2026, 3, 1),
+        endDate: new Date(2026, 3, 30),
+        page: 1,
+        pageSize: 20,
+      });
+
+      expect(output.pagination).toEqual({
+        page: 1,
+        pageSize: 20,
+        totalCount: 25,
+        totalPages: 2,
+      });
+    });
+
+    it('should compute totals over the full period, not just the returned page', async () => {
+      const repository = new InMemoryFinancialEntryRepository(
+        makeEntries(25),
+      );
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const output = await useCase.execute({
+        userId: 'user-1',
+        startDate: new Date(2026, 3, 1),
+        endDate: new Date(2026, 3, 30),
+        page: 1,
+        pageSize: 20,
+      });
+
+      expect(output.totalIncome).toBe(250);
+    });
+
+    it('should return an empty page with totalPages 0 when there are no entries in the period', async () => {
+      const repository = new InMemoryFinancialEntryRepository();
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const output = await useCase.execute({
+        userId: 'user-1',
+        startDate: new Date(2026, 3, 1),
+        endDate: new Date(2026, 3, 30),
+        page: 1,
+        pageSize: 20,
+      });
+
+      expect(output.entries).toHaveLength(0);
+      expect(output.pagination).toEqual({
+        page: 1,
+        pageSize: 20,
+        totalCount: 0,
+        totalPages: 0,
+      });
+    });
+
+    it('should return an empty page when requesting a page beyond available data', async () => {
+      const repository = new InMemoryFinancialEntryRepository(
+        makeEntries(5),
+      );
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const output = await useCase.execute({
+        userId: 'user-1',
+        startDate: new Date(2026, 3, 1),
+        endDate: new Date(2026, 3, 30),
+        page: 3,
+        pageSize: 20,
+      });
+
+      expect(output.entries).toHaveLength(0);
+      expect(output.pagination).toEqual({
+        page: 3,
+        pageSize: 20,
+        totalCount: 5,
+        totalPages: 1,
+      });
+    });
+
+    it('should query totals and the paginated page in parallel with the same filters', async () => {
+      const repository = new InMemoryFinancialEntryRepository(
+        makeEntries(3),
+      );
+      const totalsSpy = jest.spyOn(repository, 'getPeriodTotals');
+      const paginatedSpy = jest.spyOn(
+        repository,
+        'findByUserIdAndPeriodPaginated',
+      );
+
+      const useCase = new GetTransactionHistoryUseCase(repository);
+
+      const startDate = new Date(2026, 3, 1);
+      const endDate = new Date(2026, 3, 30);
+
+      await useCase.execute({
+        userId: 'user-1',
+        startDate,
+        endDate,
+        type: FinancialEntryType.INCOME,
+        categoryId: undefined,
+        page: 2,
+        pageSize: 10,
+      });
+
+      expect(totalsSpy).toHaveBeenCalledWith(
+        'user-1',
+        startDate,
+        endDate,
+        FinancialEntryType.INCOME,
+        undefined,
+      );
+      expect(paginatedSpy).toHaveBeenCalledWith(
+        'user-1',
+        startDate,
+        endDate,
+        FinancialEntryType.INCOME,
+        undefined,
+        { skip: 10, take: 10 },
+      );
+    });
   });
 });

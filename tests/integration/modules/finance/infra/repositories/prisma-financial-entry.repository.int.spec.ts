@@ -332,4 +332,269 @@ describe('PrismaFinancialEntryRepository', () => {
       expect(entries[0].description).toBe('Receita do usuário');
     });
   });
+
+  describe('getPeriodTotals', () => {
+    it('should sum income and expense and count entries in the period', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+      const category = await createTestExpenseCategory({ userId: user.id });
+
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME',
+        amount: 1000,
+        transactionDate: new Date(2026, 3, 5),
+      });
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME',
+        amount: 500,
+        transactionDate: new Date(2026, 3, 10),
+      });
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        amount: 300,
+        categoryId: category.id,
+        transactionDate: new Date(2026, 3, 15),
+      });
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        amount: 999,
+        categoryId: category.id,
+        transactionDate: new Date(2026, 4, 1),
+      });
+
+      const totals = await repository.getPeriodTotals(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+      );
+
+      expect(totals.totalIncome).toBe(1500);
+      expect(totals.totalExpense).toBe(300);
+      expect(totals.count).toBe(3);
+    });
+
+    it('should apply type and category filters', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+      const categoryA = await createTestExpenseCategory({ userId: user.id });
+      const categoryB = await createTestExpenseCategory({ userId: user.id });
+
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        amount: 120,
+        categoryId: categoryA.id,
+        transactionDate: new Date(2026, 3, 5),
+      });
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        amount: 80,
+        categoryId: categoryB.id,
+        transactionDate: new Date(2026, 3, 6),
+      });
+
+      const totals = await repository.getPeriodTotals(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+        FinancialEntryType.EXPENSE,
+        categoryA.id,
+      );
+
+      expect(totals.totalIncome).toBe(0);
+      expect(totals.totalExpense).toBe(120);
+      expect(totals.count).toBe(1);
+    });
+
+    it('should return zeroed totals when the period has no entries', async () => {
+      const user = await createTestUser();
+
+      const totals = await repository.getPeriodTotals(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+      );
+
+      expect(totals).toEqual({ totalIncome: 0, totalExpense: 0, count: 0 });
+    });
+
+    it("should only consider the given user's entries", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+      const otherWallet = await createTestWallet({
+        userId: otherUser.id,
+        isDefault: true,
+      });
+
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME',
+        amount: 100,
+        transactionDate: new Date(2026, 3, 5),
+      });
+      await createTestFinancialEntry({
+        userId: otherUser.id,
+        walletId: otherWallet.id,
+        type: 'INCOME',
+        amount: 9999,
+        transactionDate: new Date(2026, 3, 5),
+      });
+
+      const totals = await repository.getPeriodTotals(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+      );
+
+      expect(totals.totalIncome).toBe(100);
+      expect(totals.count).toBe(1);
+    });
+  });
+
+  describe('findByUserIdAndPeriodPaginated', () => {
+    it('should return only the requested page, ordered by date/createdAt descending', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+
+      for (let day = 1; day <= 5; day += 1) {
+        await createTestFinancialEntry({
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'INCOME',
+          amount: 10,
+          description: `Entry day ${day}`,
+          transactionDate: new Date(2026, 3, day),
+        });
+      }
+
+      const firstPage = await repository.findByUserIdAndPeriodPaginated(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+        undefined,
+        undefined,
+        { skip: 0, take: 2 },
+      );
+
+      expect(firstPage).toHaveLength(2);
+      expect(firstPage[0].description).toBe('Entry day 5');
+      expect(firstPage[1].description).toBe('Entry day 4');
+
+      const secondPage = await repository.findByUserIdAndPeriodPaginated(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+        undefined,
+        undefined,
+        { skip: 2, take: 2 },
+      );
+
+      expect(secondPage).toHaveLength(2);
+      expect(secondPage[0].description).toBe('Entry day 3');
+      expect(secondPage[1].description).toBe('Entry day 2');
+    });
+
+    it('should apply type and category filters', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+      const category = await createTestExpenseCategory({ userId: user.id });
+
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME',
+        description: 'Receita',
+        transactionDate: new Date(2026, 3, 5),
+      });
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'EXPENSE',
+        description: 'Despesa',
+        categoryId: category.id,
+        transactionDate: new Date(2026, 3, 6),
+      });
+
+      const page = await repository.findByUserIdAndPeriodPaginated(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+        FinancialEntryType.EXPENSE,
+        category.id,
+        { skip: 0, take: 10 },
+      );
+
+      expect(page).toHaveLength(1);
+      expect(page[0].description).toBe('Despesa');
+    });
+
+    it('should return an empty array when the page is beyond the available data', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        isDefault: true,
+      });
+
+      await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME',
+        transactionDate: new Date(2026, 3, 5),
+      });
+
+      const page = await repository.findByUserIdAndPeriodPaginated(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+        undefined,
+        undefined,
+        { skip: 10, take: 10 },
+      );
+
+      expect(page).toHaveLength(0);
+    });
+
+    it('should return an empty array when the period has no entries', async () => {
+      const user = await createTestUser();
+
+      const page = await repository.findByUserIdAndPeriodPaginated(
+        user.id,
+        new Date(2026, 3, 1),
+        new Date(2026, 3, 30),
+        undefined,
+        undefined,
+        { skip: 0, take: 10 },
+      );
+
+      expect(page).toHaveLength(0);
+    });
+  });
 });

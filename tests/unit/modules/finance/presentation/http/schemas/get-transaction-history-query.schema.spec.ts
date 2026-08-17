@@ -14,6 +14,8 @@ describe('getTransactionHistoryQuerySchema', () => {
       expect(result.data).toEqual({
         startDate: '2026-03-01',
         endDate: '2026-03-31',
+        page: 1,
+        pageSize: 20,
       });
     }
   });
@@ -125,5 +127,99 @@ describe('getTransactionHistoryQuerySchema', () => {
         categoryId: 'not-a-uuid',
       }),
     ).toThrow();
+  });
+
+  describe('pagination params', () => {
+    it('should default page to 1 and pageSize to 20 when absent', () => {
+      const result = getTransactionHistoryQuerySchema.parse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+      });
+
+      expect(result.page).toBe(1);
+      expect(result.pageSize).toBe(20);
+    });
+
+    it('should coerce page and pageSize from query string values', () => {
+      const result = getTransactionHistoryQuerySchema.parse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        page: '3',
+        pageSize: '50',
+      });
+
+      expect(result.page).toBe(3);
+      expect(result.pageSize).toBe(50);
+    });
+
+    it('should reject page 0', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        page: '0',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject a negative page', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        page: '-1',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject a non-integer page', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        page: '1.5',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject pageSize 0', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        pageSize: '0',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject pageSize above the upper bound of 100', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        pageSize: '101',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should accept pageSize at the upper bound of 100', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        pageSize: '100',
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject a non-numeric page', () => {
+      const result = getTransactionHistoryQuerySchema.safeParse({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        page: 'abc',
+      });
+
+      expect(result.success).toBe(false);
+    });
   });
 });

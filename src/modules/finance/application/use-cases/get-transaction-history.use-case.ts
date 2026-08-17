@@ -1,4 +1,3 @@
-import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { GetTransactionHistoryInput } from '../dtos/get-transaction-history.input';
 import { TransactionHistoryOutput } from '../dtos/transaction-history.output';
@@ -11,31 +10,41 @@ export class GetTransactionHistoryUseCase {
   async execute(
     input: GetTransactionHistoryInput,
   ): Promise<TransactionHistoryOutput> {
-    const entries = await this.financialEntryRepository.findByUserIdAndPeriod(
-      input.userId,
-      input.startDate,
-      input.endDate,
-      input.type,
-      input.categoryId,
-    );
+    const skip = (input.page - 1) * input.pageSize;
 
-    const sortedEntries = [...entries].sort(
-      (a, b) => b.date.getTime() - a.date.getTime(),
-    );
-
-    const totalIncome = sortedEntries
-      .filter((entry) => entry.type === FinancialEntryType.INCOME)
-      .reduce((sum, entry) => sum + entry.amount, 0);
-
-    const totalExpense = sortedEntries
-      .filter((entry) => entry.type === FinancialEntryType.EXPENSE)
-      .reduce((sum, entry) => sum + entry.amount, 0);
+    const [totals, entries] = await Promise.all([
+      this.financialEntryRepository.getPeriodTotals(
+        input.userId,
+        input.startDate,
+        input.endDate,
+        input.type,
+        input.categoryId,
+      ),
+      this.financialEntryRepository.findByUserIdAndPeriodPaginated(
+        input.userId,
+        input.startDate,
+        input.endDate,
+        input.type,
+        input.categoryId,
+        { skip, take: input.pageSize },
+      ),
+    ]);
 
     return {
-      entries: sortedEntries.map((entry) => entry.toJSON()),
-      totalIncome,
-      totalExpense,
-      balance: totalIncome - totalExpense,
+      entries: entries.map((entry) => entry.toJSON()),
+      totalIncome: totals.totalIncome,
+      totalExpense: totals.totalExpense,
+      balance: totals.totalIncome - totals.totalExpense,
+      pagination: {
+        page: input.page,
+        pageSize: input.pageSize,
+        totalCount: totals.count,
+        // Sem registros no período, não existe página nenhuma (0), em vez de
+        // uma "página 1 vazia" — evita sugerir ao consumidor que há algo pra
+        // paginar quando o período está genuinamente vazio.
+        totalPages:
+          totals.count === 0 ? 0 : Math.ceil(totals.count / input.pageSize),
+      },
     };
   }
 }
