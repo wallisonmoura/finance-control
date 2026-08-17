@@ -27,7 +27,7 @@ describe('PrismaLoginRateLimiterAdapter', () => {
     const sut = makeSut(5, 15);
 
     for (let i = 0; i < 4; i += 1) {
-      await sut.registerFailedAttempt(ip);
+      await sut.registerAttempt(ip);
     }
 
     expect(await sut.isBlocked(ip)).toBe(false);
@@ -37,7 +37,7 @@ describe('PrismaLoginRateLimiterAdapter', () => {
     const sut = makeSut(5, 15);
 
     for (let i = 0; i < 5; i += 1) {
-      await sut.registerFailedAttempt(ip);
+      await sut.registerAttempt(ip);
     }
 
     expect(await sut.isBlocked(ip)).toBe(true);
@@ -47,7 +47,7 @@ describe('PrismaLoginRateLimiterAdapter', () => {
     const sut = makeSut(5, 15);
 
     for (let i = 0; i < 5; i += 1) {
-      await sut.registerFailedAttempt(ip);
+      await sut.registerAttempt(ip);
     }
 
     expect(await sut.isBlocked('198.51.100.20')).toBe(false);
@@ -79,7 +79,7 @@ describe('PrismaLoginRateLimiterAdapter', () => {
     });
 
     const sut = makeSut(5, 15);
-    await sut.registerFailedAttempt(ip);
+    await sut.registerAttempt(ip);
 
     const remaining = await prisma.loginAttempt.findMany();
 

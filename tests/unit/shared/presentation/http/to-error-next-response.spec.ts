@@ -1,3 +1,4 @@
+import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
@@ -191,6 +192,14 @@ describe('toErrorNextResponse', () => {
     const response = toErrorNextResponse(new InvalidEmailError());
 
     expect(response.status).toBe(400);
+  });
+
+  it('should return 409 for EmailAlreadyInUseError', async () => {
+    const response = toErrorNextResponse(new EmailAlreadyInUseError());
+    const body = await readJson(response);
+
+    expect(response.status).toBe(409);
+    expect(JSON.stringify(body)).toContain('já está em uso');
   });
 
   it('should return 500 for an unknown error', async () => {

@@ -1,5 +1,5 @@
 import { POST } from '@/app/api/auth/sign-in/route';
-import { AUTH_TOO_MANY_ATTEMPTS_MESSAGE } from '@/modules/auth/constants/auth.constants';
+import { AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE } from '@/modules/auth/constants/auth.constants';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { makeSignInUseCase } from '@/modules/auth/infra/factories/make-sign-in-use-case';
 import { prisma } from '@/shared/infra/database/prisma/client';
@@ -55,7 +55,7 @@ describe('POST /api/auth/sign-in — rate limiting', () => {
     const body = await response.json();
 
     expect(response.status).toBe(429);
-    expect(body).toEqual({ message: AUTH_TOO_MANY_ATTEMPTS_MESSAGE });
+    expect(body).toEqual({ message: AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE });
   });
 
   it('should not block a different ip', async () => {

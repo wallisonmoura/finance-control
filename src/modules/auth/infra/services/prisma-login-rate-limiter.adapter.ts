@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
 import {
-  AUTH_LOGIN_RATE_LIMIT_MAX_ATTEMPTS,
-  AUTH_LOGIN_RATE_LIMIT_WINDOW_MINUTES,
+  AUTH_RATE_LIMIT_MAX_ATTEMPTS,
+  AUTH_RATE_LIMIT_WINDOW_MINUTES,
 } from '../../constants/auth.constants';
 import { RateLimiterPort } from '../../domain/services/rate-limiter.port';
 import { prisma } from '@/shared/infra/database/prisma/client';
@@ -10,8 +10,8 @@ import { prisma } from '@/shared/infra/database/prisma/client';
 export class PrismaLoginRateLimiterAdapter implements RateLimiterPort {
   constructor(
     private readonly client: PrismaClient = prisma,
-    private readonly maxAttempts: number = AUTH_LOGIN_RATE_LIMIT_MAX_ATTEMPTS,
-    private readonly windowMinutes: number = AUTH_LOGIN_RATE_LIMIT_WINDOW_MINUTES,
+    private readonly maxAttempts: number = AUTH_RATE_LIMIT_MAX_ATTEMPTS,
+    private readonly windowMinutes: number = AUTH_RATE_LIMIT_WINDOW_MINUTES,
   ) {}
 
   async isBlocked(key: string): Promise<boolean> {
@@ -27,7 +27,7 @@ export class PrismaLoginRateLimiterAdapter implements RateLimiterPort {
     return attempts >= this.maxAttempts;
   }
 
-  async registerFailedAttempt(key: string): Promise<void> {
+  async registerAttempt(key: string): Promise<void> {
     await this.client.loginAttempt.deleteMany({
       where: {
         createdAt: {
