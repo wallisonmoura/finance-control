@@ -4,4 +4,8 @@ export class FakePasswordHasher implements PasswordHasher {
   async compare(plainText: string, hash: string): Promise<boolean> {
     return plainText === hash;
   }
+
+  async hash(plainText: string): Promise<string> {
+    return `hashed-${plainText}`;
+  }
 }

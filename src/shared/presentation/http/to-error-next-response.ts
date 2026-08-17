@@ -1,3 +1,4 @@
+import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
@@ -63,6 +64,15 @@ export function toErrorNextResponse(error: unknown) {
         message: error.message,
       },
       { status: 400 },
+    );
+  }
+
+  if (error instanceof EmailAlreadyInUseError) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 409 },
     );
   }
 

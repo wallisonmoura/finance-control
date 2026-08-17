@@ -72,4 +72,23 @@ describe('PrismaUserRepository', () => {
 
     expect(user).toBeNull();
   });
+
+  it('should create a user', async () => {
+    const passwordHash = await hash('123456', 10);
+    const email = `wallison-create-${Date.now()}@email.com`;
+
+    const user = await repository.create({
+      name: 'Wallison',
+      email,
+      passwordHash,
+    });
+
+    expect(user.id).toEqual(expect.any(String));
+    expect(user.name).toBe('Wallison');
+    expect(user.email.getValue()).toBe(email);
+    expect(user.passwordHash).toBe(passwordHash);
+
+    const persisted = await prisma.user.findUnique({ where: { email } });
+    expect(persisted).not.toBeNull();
+  });
 });
