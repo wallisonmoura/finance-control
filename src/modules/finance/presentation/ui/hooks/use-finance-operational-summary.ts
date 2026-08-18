@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
-  getFinanceHistory,
+  getFullFinanceHistory,
   getMonthlySummary,
 } from '../services/finance-api.service';
 import { MonthlySummaryUi } from '../types/finance-ui.types';
@@ -65,7 +65,7 @@ export function useFinanceOperationalSummary(
           year: nextFilters.year,
           month: nextFilters.month,
         }),
-        getFinanceHistory({
+        getFullFinanceHistory({
           startDate: period.startDate,
           endDate: period.endDate,
         }),

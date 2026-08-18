@@ -1,4 +1,5 @@
 import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
+import { FULL_PERIOD_PAGE_SIZE } from '@/modules/finance/constants/finance.constants';
 import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financial-entry.output';
 import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/transaction-history.output';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
@@ -30,7 +31,9 @@ import {
 // listam o período inteiro sem controle de paginação na UI — um pageSize
 // generoso preserva esse comportamento até o acompanhamento de frontend
 // trazer paginação real para essas telas.
-export const FULL_PERIOD_PAGE_SIZE = 10_000;
+// Reexportado por compatibilidade — a fonte da constante é
+// `finance.constants.ts`, também usada por GetFullTransactionHistoryController.
+export { FULL_PERIOD_PAGE_SIZE };
 
 type CurrentUserFinanceHistoryResult = {
   data?: FinanceHistoryUi;

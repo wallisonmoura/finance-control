@@ -193,6 +193,46 @@ export async function getFinanceHistory(
   return { data };
 }
 
+// Contraparte de getFinanceHistory sem paginação — sempre retorna o período
+// inteiro (GET /api/finance/history/full não aceita page/pageSize).
+export async function getFullFinanceHistory(
+  filters: FinanceHistoryFiltersUi,
+): Promise<FinanceApiResponse<FinanceHistoryUi>> {
+  const searchParams = new URLSearchParams({
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  });
+
+  if (filters.type) {
+    searchParams.set('type', filters.type);
+  }
+
+  if (filters.categoryId) {
+    searchParams.set('categoryId', filters.categoryId);
+  }
+
+  const response = await fetch(
+    `/api/finance/history/full?${searchParams.toString()}`,
+    {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as FinanceHistoryUi;
+
+  return { data };
+}
+
 export async function getExpenseCategories(): Promise<
   FinanceApiResponse<ExpenseCategoryUi[]>
 > {
