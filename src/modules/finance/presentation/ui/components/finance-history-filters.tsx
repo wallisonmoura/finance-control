@@ -57,6 +57,9 @@ export function FinanceHistoryFilters({
       ...(isCategoryEnabled && categoryId !== ALL_CATEGORIES
         ? { categoryId }
         : {}),
+      // Trocar qualquer filtro (data, tipo, categoria) sempre volta para a
+      // primeira página — só a paginação em si muda de página.
+      page: 1,
     });
   }
 

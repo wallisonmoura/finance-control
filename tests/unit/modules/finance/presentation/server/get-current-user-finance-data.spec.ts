@@ -54,6 +54,7 @@ describe('getCurrentUserFinanceHistory', () => {
       getCurrentUserFinanceHistory({
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       }),
     ).resolves.toEqual({
       error: 'Não autenticado',
@@ -82,6 +83,12 @@ describe('getCurrentUserFinanceHistory', () => {
       totalIncome: 500,
       totalExpense: 0,
       balance: 500,
+      pagination: {
+        page: 1,
+        pageSize: FULL_PERIOD_PAGE_SIZE,
+        totalCount: 1,
+        totalPages: 1,
+      },
     });
 
     getAuthenticatedUserIdMock.mockResolvedValueOnce('user-id');
@@ -94,6 +101,7 @@ describe('getCurrentUserFinanceHistory', () => {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
         type: 'INCOME',
+        page: 1,
       }),
     ).resolves.toEqual({
       data: {
@@ -115,6 +123,12 @@ describe('getCurrentUserFinanceHistory', () => {
         totalIncome: 500,
         totalExpense: 0,
         balance: 500,
+        pagination: {
+          page: 1,
+          pageSize: FULL_PERIOD_PAGE_SIZE,
+          totalCount: 1,
+          totalPages: 1,
+        },
       },
     });
 
@@ -128,10 +142,48 @@ describe('getCurrentUserFinanceHistory', () => {
       categoryId: undefined,
       // Este helper alimenta páginas que ainda listam o período inteiro sem
       // controle de paginação na UI (ver seguimento de frontend). pageSize
-      // grande preserva esse comportamento em vez de truncar em 20 itens.
+      // grande preserva esse comportamento em vez de truncar em 20 itens
+      // quando nenhuma paginação explícita é passada.
       page: 1,
       pageSize: FULL_PERIOD_PAGE_SIZE,
     });
+  });
+
+  it('should forward an explicit pagination argument instead of the full-period default', async () => {
+    const execute = jest.fn().mockResolvedValueOnce({
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      pagination: { page: 3, pageSize: 20, totalCount: 60, totalPages: 3 },
+    });
+
+    getAuthenticatedUserIdMock.mockResolvedValueOnce('user-id');
+    makeGetTransactionHistoryUseCaseMock.mockReturnValueOnce({
+      execute,
+    } as unknown as ReturnType<typeof makeGetTransactionHistoryUseCase>);
+
+    const result = await getCurrentUserFinanceHistory(
+      {
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        page: 3,
+      },
+      { page: 3, pageSize: 20 },
+    );
+
+    expect(result.data?.pagination).toEqual({
+      page: 3,
+      pageSize: 20,
+      totalCount: 60,
+      totalPages: 3,
+    });
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 3,
+        pageSize: 20,
+      }),
+    );
   });
 
   it('should forward the category filter to the use case', async () => {
@@ -140,6 +192,12 @@ describe('getCurrentUserFinanceHistory', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: {
+        page: 1,
+        pageSize: FULL_PERIOD_PAGE_SIZE,
+        totalCount: 0,
+        totalPages: 0,
+      },
     });
 
     getAuthenticatedUserIdMock.mockResolvedValueOnce('user-id');
@@ -152,6 +210,7 @@ describe('getCurrentUserFinanceHistory', () => {
       endDate: '2026-05-31',
       type: 'EXPENSE',
       categoryId: '11111111-1111-4111-8111-111111111111',
+      page: 1,
     });
 
     expect(execute).toHaveBeenCalledWith(
@@ -173,6 +232,7 @@ describe('getCurrentUserFinanceHistory', () => {
       getCurrentUserFinanceHistory({
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       }),
     ).resolves.toEqual({
       error: 'Não foi possível carregar histórico financeiro.',

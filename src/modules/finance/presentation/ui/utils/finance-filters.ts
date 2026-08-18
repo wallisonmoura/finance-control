@@ -35,8 +35,25 @@ export function getCurrentMonthFilters(
   return {
     startDate,
     endDate,
+    page: 1,
     ...initialFilters,
   };
+}
+
+// Coerce/parse com segurança: um valor ausente, não-numérico, fracionário
+// ou menor que 1 sempre volta para a página 1, nunca lança nem produz NaN.
+function parsePageValue(value: string | null): number {
+  if (!value) {
+    return 1;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    return 1;
+  }
+
+  return parsed;
 }
 
 function getFirstSearchParamValue(
@@ -79,12 +96,14 @@ export function getFinanceHistoryFiltersFromUrlSearchParams(
   const endDate = searchParams.get('endDate');
   const type = searchParams.get('type');
   const categoryId = searchParams.get('categoryId');
+  const page = parsePageValue(searchParams.get('page'));
 
   return getCurrentMonthFilters({
     ...(isValidDateOnly(startDate) ? { startDate } : {}),
     ...(isValidDateOnly(endDate) ? { endDate } : {}),
     ...(isValidFinanceEntryType(type) ? { type } : {}),
     ...(isValidCategoryId(categoryId) ? { categoryId } : {}),
+    page,
   });
 }
 
@@ -95,11 +114,13 @@ export function getFinanceHistoryFiltersFromSearchParamsRecord(
   const endDate = getFirstSearchParamValue(searchParams, 'endDate');
   const type = getFirstSearchParamValue(searchParams, 'type');
   const categoryId = getFirstSearchParamValue(searchParams, 'categoryId');
+  const page = parsePageValue(getFirstSearchParamValue(searchParams, 'page'));
 
   return getCurrentMonthFilters({
     ...(isValidDateOnly(startDate) ? { startDate } : {}),
     ...(isValidDateOnly(endDate) ? { endDate } : {}),
     ...(isValidFinanceEntryType(type) ? { type } : {}),
     ...(isValidCategoryId(categoryId) ? { categoryId } : {}),
+    page,
   });
 }

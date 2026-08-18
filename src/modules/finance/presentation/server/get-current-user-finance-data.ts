@@ -27,10 +27,10 @@ import {
 } from '../ui/utils/finance-operational-summary';
 
 // GetTransactionHistoryUseCase agora pagina por padrão (contrato da API
-// GET /api/finance/history). As páginas Server Component deste arquivo ainda
-// listam o período inteiro sem controle de paginação na UI — um pageSize
-// generoso preserva esse comportamento até o acompanhamento de frontend
-// trazer paginação real para essas telas.
+// GET /api/finance/history). getCurrentUserFinanceHistory usa esse pageSize
+// generoso como default para preservar "período inteiro sem paginação" nas
+// telas que ainda não têm controle de página na UI (dashboard, despesas,
+// receitas) — /finance/history é a exceção e passa sua própria paginação.
 // Reexportado por compatibilidade — a fonte da constante é
 // `finance.constants.ts`, também usada por GetFullTransactionHistoryController.
 export { FULL_PERIOD_PAGE_SIZE };
@@ -92,8 +92,19 @@ async function getCurrentUserIdOrError(): Promise<
   return { userId };
 }
 
+type FinanceHistoryPagination = {
+  page: number;
+  pageSize: number;
+};
+
+const FULL_PERIOD_PAGINATION: FinanceHistoryPagination = {
+  page: 1,
+  pageSize: FULL_PERIOD_PAGE_SIZE,
+};
+
 export async function getCurrentUserFinanceHistory(
   filters: FinanceHistoryFiltersUi,
+  pagination: FinanceHistoryPagination = FULL_PERIOD_PAGINATION,
 ): Promise<CurrentUserFinanceHistoryResult> {
   const auth = await getCurrentUserIdOrError();
 
@@ -111,8 +122,8 @@ export async function getCurrentUserFinanceHistory(
       endDate: parseExclusiveEndDateFromQuery(filters.endDate),
       type: toFinancialEntryType(filters.type),
       categoryId: filters.categoryId,
-      page: 1,
-      pageSize: FULL_PERIOD_PAGE_SIZE,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
     });
 
     return {

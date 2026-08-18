@@ -185,10 +185,11 @@ describe('finance-api.service', () => {
       startDate: '2026-05-01',
       endDate: '2026-05-07',
       type: 'INCOME',
+      page: 1,
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/finance/history?startDate=2026-05-01&endDate=2026-05-07&type=INCOME',
+      '/api/finance/history?startDate=2026-05-01&endDate=2026-05-07&type=INCOME&page=1&pageSize=20',
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -221,10 +222,11 @@ describe('finance-api.service', () => {
       endDate: '2026-04-30',
       type: 'EXPENSE',
       categoryId: '11111111-1111-4111-8111-111111111111',
+      page: 1,
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=11111111-1111-4111-8111-111111111111',
+      '/api/finance/history?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=11111111-1111-4111-8111-111111111111&page=1&pageSize=20',
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -251,10 +253,37 @@ describe('finance-api.service', () => {
     await getFinanceHistory({
       startDate: '2026-05-01',
       endDate: '2026-05-31',
+      page: 1,
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/finance/history?startDate=2026-05-01&endDate=2026-05-31',
+      '/api/finance/history?startDate=2026-05-01&endDate=2026-05-31&page=1&pageSize=20',
+      expect.any(Object),
+    );
+  });
+
+  it('should include the requested page in the getFinanceHistory query', async () => {
+    const history = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      pagination: { page: 3, pageSize: 20, totalCount: 60, totalPages: 3 },
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => history,
+    });
+
+    await getFinanceHistory({
+      startDate: '2026-05-01',
+      endDate: '2026-05-31',
+      page: 3,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/history?startDate=2026-05-01&endDate=2026-05-31&page=3&pageSize=20',
       expect.any(Object),
     );
   });
@@ -270,6 +299,7 @@ describe('finance-api.service', () => {
     const response = await getFinanceHistory({
       startDate: 'invalid',
       endDate: '2026-05-31',
+      page: 1,
     });
 
     expect(response).toEqual({

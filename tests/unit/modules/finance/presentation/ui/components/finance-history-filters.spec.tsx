@@ -12,6 +12,7 @@ const categories: ExpenseCategoryUi[] = [
 const baseFilters = {
   startDate: '2026-04-01',
   endDate: '2026-04-30',
+  page: 1,
 };
 
 it('keeps the category select disabled when the type is not Expenses', () => {
@@ -77,5 +78,24 @@ it('clears the category when changing the type away from Expenses', async () => 
 
   expect(onApplyFilters).toHaveBeenCalledWith(
     expect.not.objectContaining({ categoryId: expect.anything() }),
+  );
+});
+
+it('resets the page back to 1 whenever a filter is applied', async () => {
+  const user = userEvent.setup();
+  const onApplyFilters = jest.fn();
+
+  render(
+    <FinanceHistoryFilters
+      filters={{ ...baseFilters, page: 3 }}
+      categories={categories}
+      onApplyFilters={onApplyFilters}
+    />,
+  );
+
+  await user.click(screen.getByRole('button', { name: /Aplicar filtros/ }));
+
+  expect(onApplyFilters).toHaveBeenCalledWith(
+    expect.objectContaining({ page: 1 }),
   );
 });
