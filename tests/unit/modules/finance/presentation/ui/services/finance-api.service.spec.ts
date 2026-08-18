@@ -4,6 +4,7 @@ import {
   getDailyProfit,
   getExpenseCategories,
   getFinanceHistory,
+  getFullFinanceHistory,
   getMonthlySummary,
   registerExpense,
   registerIncome,
@@ -267,6 +268,128 @@ describe('finance-api.service', () => {
     });
 
     const response = await getFinanceHistory({
+      startDate: 'invalid',
+      endDate: '2026-05-31',
+    });
+
+    expect(response).toEqual({
+      error: 'Invalid date range.',
+    });
+  });
+
+  it('should get the full finance history successfully without page or pageSize in the query', async () => {
+    const history = {
+      entries: [
+        {
+          id: 'income-id',
+          userId: 'user-id',
+          type: 'INCOME',
+          amount: 400,
+          description: 'ganho uber',
+          date: '2026-05-05T00:00:00.000Z',
+          categoryId: null,
+          notes: 'UBER',
+          createdAt: '2026-05-07T20:12:15.498Z',
+          updatedAt: '2026-05-07T20:12:15.498Z',
+        },
+      ],
+      totalIncome: 400,
+      totalExpense: 0,
+      balance: 400,
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => history,
+    });
+
+    const response = await getFullFinanceHistory({
+      startDate: '2026-05-01',
+      endDate: '2026-05-07',
+      type: 'INCOME',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/history/full?startDate=2026-05-01&endDate=2026-05-07&type=INCOME',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+
+    expect(response).toEqual({
+      data: history,
+    });
+  });
+
+  it('should include categoryId in the getFullFinanceHistory query', async () => {
+    const history = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => history,
+    });
+
+    await getFullFinanceHistory({
+      startDate: '2026-04-01',
+      endDate: '2026-04-30',
+      type: 'EXPENSE',
+      categoryId: '11111111-1111-4111-8111-111111111111',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/history/full?startDate=2026-04-01&endDate=2026-04-30&type=EXPENSE&categoryId=11111111-1111-4111-8111-111111111111',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+  });
+
+  it('should get the full finance history without a type filter', async () => {
+    const history = {
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+    };
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => history,
+    });
+
+    await getFullFinanceHistory({
+      startDate: '2026-05-01',
+      endDate: '2026-05-31',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/history/full?startDate=2026-05-01&endDate=2026-05-31',
+      expect.any(Object),
+    );
+  });
+
+  it('should return an error when getFullFinanceHistory fails with error field', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        error: 'Invalid date range.',
+      }),
+    });
+
+    const response = await getFullFinanceHistory({
       startDate: 'invalid',
       endDate: '2026-05-31',
     });

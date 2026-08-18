@@ -2,13 +2,13 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useFinanceOperationalSummary } from '@/modules/finance/presentation/ui/hooks/use-finance-operational-summary';
 import {
-  getFinanceHistory,
+  getFullFinanceHistory,
   getMonthlySummary,
 } from '@/modules/finance/presentation/ui/services/finance-api.service';
 
 jest.mock('@/modules/finance/presentation/ui/services/finance-api.service');
 
-const getFinanceHistoryMock = jest.mocked(getFinanceHistory);
+const getFullFinanceHistoryMock = jest.mocked(getFullFinanceHistory);
 const getMonthlySummaryMock = jest.mocked(getMonthlySummary);
 
 function createDeferred<T>() {
@@ -39,7 +39,7 @@ describe('useFinanceOperationalSummary', () => {
         result: 600,
       },
     });
-    getFinanceHistoryMock.mockResolvedValueOnce({
+    getFullFinanceHistoryMock.mockResolvedValueOnce({
       data: {
         entries: [
           {
@@ -90,7 +90,7 @@ describe('useFinanceOperationalSummary', () => {
       year: 2026,
       month: 5,
     });
-    expect(getFinanceHistoryMock).toHaveBeenCalledWith({
+    expect(getFullFinanceHistoryMock).toHaveBeenCalledWith({
       startDate: '2026-05-01',
       endDate: '2026-05-31',
     });
@@ -104,11 +104,69 @@ describe('useFinanceOperationalSummary', () => {
     });
   });
 
+  it('should reflect all daily rows for a month with more than 20 transactions, without truncation', async () => {
+    getMonthlySummaryMock.mockResolvedValueOnce({
+      data: {
+        year: 2026,
+        month: 5,
+        totalIncome: 250,
+        totalExpense: 0,
+        result: 250,
+      },
+    });
+    getFullFinanceHistoryMock.mockResolvedValueOnce({
+      data: {
+        entries: Array.from({ length: 25 }, (_, index) => ({
+          id: `income-${index + 1}`,
+          userId: 'user-id',
+          type: 'INCOME' as const,
+          amount: 10,
+          description: `Receita ${index + 1}`,
+          date: `2026-05-${String(index + 1).padStart(2, '0')}T00:00:00.000Z`,
+          categoryId: null,
+          notes: null,
+          createdAt: '2026-05-01T00:00:00.000Z',
+          updatedAt: '2026-05-01T00:00:00.000Z',
+        })),
+        totalIncome: 250,
+        totalExpense: 0,
+        balance: 250,
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useFinanceOperationalSummary({
+        year: 2026,
+        month: 5,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.dailyRows).toHaveLength(31);
+
+    // Day 25 falls beyond the old 20-item page cap — proves the daily table
+    // is built from the full period, not a truncated first page.
+    expect(result.current.dailyRows[24]).toMatchObject({
+      day: 25,
+      totalIncome: 10,
+    });
+
+    const totalIncomeAcrossDays = result.current.dailyRows.reduce(
+      (sum, row) => sum + row.totalIncome,
+      0,
+    );
+
+    expect(totalIncomeAcrossDays).toBe(250);
+  });
+
   it('should expose error when summary loading fails', async () => {
     getMonthlySummaryMock.mockResolvedValueOnce({
       error: 'Não foi possível carregar resumo mensal.',
     });
-    getFinanceHistoryMock.mockResolvedValueOnce({
+    getFullFinanceHistoryMock.mockResolvedValueOnce({
       data: {
         entries: [],
         totalIncome: 0,
@@ -166,7 +224,7 @@ describe('useFinanceOperationalSummary', () => {
         },
       });
 
-    getFinanceHistoryMock
+    getFullFinanceHistoryMock
       .mockReturnValueOnce(staleHistoryResponse.promise)
       .mockResolvedValueOnce({
         data: {
