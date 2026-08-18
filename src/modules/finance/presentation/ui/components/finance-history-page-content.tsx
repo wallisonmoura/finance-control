@@ -35,6 +35,8 @@ function toFinanceHistoryUrl(filters: FinanceHistoryFiltersUi): string {
     searchParams.set('categoryId', filters.categoryId);
   }
 
+  searchParams.set('page', String(filters.page));
+
   return `/finance/history?${searchParams.toString()}`;
 }
 
@@ -46,7 +48,8 @@ function areFiltersEqual(
     first.startDate === second.startDate &&
     first.endDate === second.endDate &&
     first.type === second.type &&
-    first.categoryId === second.categoryId
+    first.categoryId === second.categoryId &&
+    first.page === second.page
   );
 }
 
@@ -89,6 +92,7 @@ export function FinanceHistoryPageContent({
     totalIncome,
     totalExpense,
     balance,
+    pagination,
     filters,
     isLoading,
     error,
@@ -102,6 +106,19 @@ export function FinanceHistoryPageContent({
       await applyFilters(nextFilters);
     },
     [applyFilters, router],
+  );
+
+  const handlePageChange = useCallback(
+    async (nextPage: number) => {
+      const nextFilters: FinanceHistoryFiltersUi = {
+        ...filters,
+        page: nextPage,
+      };
+
+      router.push(toFinanceHistoryUrl(nextFilters));
+      await applyFilters(nextFilters);
+    },
+    [applyFilters, filters, router],
   );
 
   useEffect(() => {
@@ -144,10 +161,15 @@ export function FinanceHistoryPageContent({
             totalIncome={totalIncome}
             totalExpense={totalExpense}
             balance={balance}
-            totalEntries={entries.length}
+            totalEntries={pagination.totalCount}
           />
 
-          <FinanceHistoryList entries={entries} categories={initialCategories} />
+          <FinanceHistoryList
+            entries={entries}
+            categories={initialCategories}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+          />
         </>
       )}
     </div>

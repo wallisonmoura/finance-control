@@ -23,7 +23,10 @@ export default async function FinanceHistoryPage({
   const filters =
     getFinanceHistoryFiltersFromSearchParamsRecord(resolvedSearchParams);
   const [{ data, error }, categoriesResult] = await Promise.all([
-    getCurrentUserFinanceHistory(filters),
+    // Único caller que pagina de verdade — 20 espelha
+    // FINANCE_HISTORY_PAGE_SIZE em finance-api.service.ts, a UI não permite
+    // configurar isso.
+    getCurrentUserFinanceHistory(filters, { page: filters.page, pageSize: 20 }),
     getCurrentUserExpenseCategories(),
   ]);
 

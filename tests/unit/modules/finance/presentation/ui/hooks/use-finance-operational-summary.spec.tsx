@@ -70,6 +70,7 @@ describe('useFinanceOperationalSummary', () => {
         totalIncome: 300,
         totalExpense: 120,
         balance: 180,
+        pagination: { page: 1, pageSize: 20, totalCount: 2, totalPages: 1 },
       },
     });
 
@@ -131,6 +132,7 @@ describe('useFinanceOperationalSummary', () => {
         totalIncome: 250,
         totalExpense: 0,
         balance: 250,
+        pagination: { page: 1, pageSize: 25, totalCount: 25, totalPages: 1 },
       },
     });
 
@@ -172,6 +174,7 @@ describe('useFinanceOperationalSummary', () => {
         totalIncome: 0,
         totalExpense: 0,
         balance: 0,
+        pagination: { page: 1, pageSize: 20, totalCount: 0, totalPages: 0 },
       },
     });
 
@@ -209,6 +212,12 @@ describe('useFinanceOperationalSummary', () => {
         totalIncome: number;
         totalExpense: number;
         balance: number;
+        pagination: {
+          page: number;
+          pageSize: number;
+          totalCount: number;
+          totalPages: number;
+        };
       };
     }>();
 
@@ -232,6 +241,7 @@ describe('useFinanceOperationalSummary', () => {
           totalIncome: 0,
           totalExpense: 0,
           balance: 0,
+          pagination: { page: 1, pageSize: 20, totalCount: 0, totalPages: 0 },
         },
       });
 
@@ -271,6 +281,7 @@ describe('useFinanceOperationalSummary', () => {
           totalIncome: 1000,
           totalExpense: 400,
           balance: 600,
+          pagination: { page: 1, pageSize: 20, totalCount: 0, totalPages: 0 },
         },
       });
     });

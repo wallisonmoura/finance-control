@@ -155,6 +155,11 @@ export async function deleteExpense(
   };
 }
 
+// Fixo por decisão de produto: pageSize não é configurável pela UI. Mantenha
+// em sincronia com o default usado em use-finance-history.ts e no
+// (private)/finance/history/page.tsx.
+export const FINANCE_HISTORY_PAGE_SIZE = 20;
+
 export async function getFinanceHistory(
   filters: FinanceHistoryFiltersUi,
 ): Promise<FinanceApiResponse<FinanceHistoryUi>> {
@@ -170,6 +175,9 @@ export async function getFinanceHistory(
   if (filters.categoryId) {
     searchParams.set('categoryId', filters.categoryId);
   }
+
+  searchParams.set('page', String(filters.page));
+  searchParams.set('pageSize', String(FINANCE_HISTORY_PAGE_SIZE));
 
   const response = await fetch(
     `/api/finance/history?${searchParams.toString()}`,
@@ -194,9 +202,10 @@ export async function getFinanceHistory(
 }
 
 // Contraparte de getFinanceHistory sem paginação — sempre retorna o período
-// inteiro (GET /api/finance/history/full não aceita page/pageSize).
+// inteiro (GET /api/finance/history/full não aceita page/pageSize). `page`
+// fica de fora do tipo de propósito: essa função nunca usa esse campo.
 export async function getFullFinanceHistory(
-  filters: FinanceHistoryFiltersUi,
+  filters: Omit<FinanceHistoryFiltersUi, 'page'>,
 ): Promise<FinanceApiResponse<FinanceHistoryUi>> {
   const searchParams = new URLSearchParams({
     startDate: filters.startDate,

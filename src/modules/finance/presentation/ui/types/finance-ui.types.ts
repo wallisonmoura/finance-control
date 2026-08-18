@@ -34,6 +34,14 @@ export type FinanceHistoryFiltersUi = {
   endDate: string;
   type?: FinanceEntryTypeUi;
   categoryId?: string;
+  page: number;
+};
+
+export type FinanceHistoryPaginationUi = {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
 };
 
 export type FinanceHistoryUi = {
@@ -41,6 +49,7 @@ export type FinanceHistoryUi = {
   totalIncome: number;
   totalExpense: number;
   balance: number;
+  pagination: FinanceHistoryPaginationUi;
 };
 
 export type ExpenseCategoryUi = {

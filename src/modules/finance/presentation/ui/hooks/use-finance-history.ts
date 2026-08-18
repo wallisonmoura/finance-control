@@ -2,9 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getFinanceHistory } from '../services/finance-api.service';
+import {
+  FINANCE_HISTORY_PAGE_SIZE,
+  getFinanceHistory,
+} from '../services/finance-api.service';
 import {
   FinanceHistoryFiltersUi,
+  FinanceHistoryPaginationUi,
   FinanceHistoryUi,
 } from '../types/finance-ui.types';
 import { getCurrentMonthFilters } from '../utils/finance-filters';
@@ -12,6 +16,13 @@ import { getCurrentMonthFilters } from '../utils/finance-filters';
 type UseFinanceHistoryParams = Partial<FinanceHistoryFiltersUi> & {
   initialData?: FinanceHistoryUi | null;
   initialError?: string | null;
+};
+
+const DEFAULT_PAGINATION: FinanceHistoryPaginationUi = {
+  page: 1,
+  pageSize: FINANCE_HISTORY_PAGE_SIZE,
+  totalCount: 0,
+  totalPages: 0,
 };
 
 export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
@@ -22,6 +33,7 @@ export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
     endDate,
     type,
     categoryId,
+    page,
   } = initialFilters ?? {};
   const hasInitialResult = Boolean(initialData || initialError);
 
@@ -31,6 +43,7 @@ export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
       ...(endDate ? { endDate } : {}),
       ...(type ? { type } : {}),
       ...(categoryId ? { categoryId } : {}),
+      ...(page ? { page } : {}),
     }),
   );
 
@@ -101,6 +114,7 @@ export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
     totalIncome: data?.totalIncome ?? 0,
     totalExpense: data?.totalExpense ?? 0,
     balance: data?.balance ?? 0,
+    pagination: data?.pagination ?? DEFAULT_PAGINATION,
     filters,
     isLoading,
     error,

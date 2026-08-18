@@ -22,6 +22,13 @@ const useFinanceHistoryMock = jest.mocked(useFinanceHistory);
 const useRouterMock = jest.mocked(useRouter);
 const useSearchParamsMock = jest.mocked(useSearchParams);
 
+const defaultPagination = {
+  page: 1,
+  pageSize: 20,
+  totalCount: 0,
+  totalPages: 0,
+};
+
 describe('FinanceHistoryPageContent', () => {
   const push = jest.fn();
   const applyFilters = jest.fn();
@@ -48,9 +55,11 @@ describe('FinanceHistoryPageContent', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: defaultPagination,
       filters: {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       },
       isLoading: true,
       error: null,
@@ -79,9 +88,11 @@ describe('FinanceHistoryPageContent', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: defaultPagination,
       filters: {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       },
       isLoading: false,
       error: 'Erro ao carregar histórico.',
@@ -116,14 +127,17 @@ describe('FinanceHistoryPageContent', () => {
         totalIncome: 400,
         totalExpense: 0,
         balance: 400,
+        pagination: { page: 1, pageSize: 20, totalCount: 1, totalPages: 1 },
       },
       entries,
       totalIncome: 400,
       totalExpense: 0,
       balance: 400,
+      pagination: { page: 1, pageSize: 20, totalCount: 1, totalPages: 1 },
       filters: {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       },
       isLoading: false,
       error: null,
@@ -138,6 +152,10 @@ describe('FinanceHistoryPageContent', () => {
     expect(screen.getByText('Saldo no período')).toBeInTheDocument();
     expect(screen.getByText('Total de movimentações')).toBeInTheDocument();
     expect(screen.getByText('ganho uber')).toBeInTheDocument();
+    // totalEntries agora vem de pagination.totalCount, não de entries.length —
+    // com 1 página e 1 registro os dois coincidem aqui, mas é o valor certo
+    // que também se mantém correto quando o total ultrapassa o pageSize.
+    expect(screen.getByText('1')).toBeInTheDocument();
   });
 
   it('should initialize history filters from URL query params', () => {
@@ -155,10 +173,12 @@ describe('FinanceHistoryPageContent', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: defaultPagination,
       filters: {
         startDate: '2026-05-10',
         endDate: '2026-05-20',
         type: 'INCOME',
+        page: 1,
       },
       isLoading: false,
       error: null,
@@ -172,6 +192,7 @@ describe('FinanceHistoryPageContent', () => {
       startDate: '2026-05-10',
       endDate: '2026-05-20',
       type: 'INCOME',
+      page: 1,
     });
   });
 
@@ -184,14 +205,17 @@ describe('FinanceHistoryPageContent', () => {
         totalIncome: 0,
         totalExpense: 0,
         balance: 0,
+        pagination: defaultPagination,
       },
       entries: [],
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: defaultPagination,
       filters: {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       },
       isLoading: false,
       error: null,
@@ -211,12 +235,13 @@ describe('FinanceHistoryPageContent', () => {
     );
 
     expect(push).toHaveBeenCalledWith(
-      '/finance/history?startDate=2026-05-10&endDate=2026-05-20&type=EXPENSE',
+      '/finance/history?startDate=2026-05-10&endDate=2026-05-20&type=EXPENSE&page=1',
     );
     expect(applyFilters).toHaveBeenCalledWith({
       startDate: '2026-05-10',
       endDate: '2026-05-20',
       type: 'EXPENSE',
+      page: 1,
     });
   });
 
@@ -237,14 +262,17 @@ describe('FinanceHistoryPageContent', () => {
         totalIncome: 0,
         totalExpense: 0,
         balance: 0,
+        pagination: defaultPagination,
       },
       entries: [],
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: defaultPagination,
       filters: {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
+        page: 1,
       },
       isLoading: false,
       error: null,
@@ -273,6 +301,7 @@ describe('FinanceHistoryPageContent', () => {
     expect(applyFilters).toHaveBeenCalledWith(
       expect.objectContaining({
         categoryId: '11111111-1111-4111-8111-111111111111',
+        page: 1,
       }),
     );
   });
@@ -292,15 +321,18 @@ describe('FinanceHistoryPageContent', () => {
         totalIncome: 0,
         totalExpense: 0,
         balance: 0,
+        pagination: defaultPagination,
       },
       entries: [],
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      pagination: defaultPagination,
       filters: {
         startDate: '2026-05-01',
         endDate: '2026-05-31',
         type: 'EXPENSE',
+        page: 1,
       },
       isLoading: false,
       error: null,
@@ -329,6 +361,105 @@ describe('FinanceHistoryPageContent', () => {
         endDate: '2026-05-31',
         type: 'EXPENSE',
         categoryId: '11111111-1111-4111-8111-111111111111',
+        page: 1,
+      }),
+    );
+  });
+
+  it('should initialize history filters with the page from URL query params', () => {
+    useSearchParamsMock.mockReturnValue(
+      new URLSearchParams({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        page: '3',
+      }) as unknown as ReturnType<typeof useSearchParams>,
+    );
+
+    useFinanceHistoryMock.mockReturnValue({
+      data: {
+        entries: [],
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+        pagination: { page: 3, pageSize: 20, totalCount: 60, totalPages: 3 },
+      },
+      entries: [],
+      totalIncome: 0,
+      totalExpense: 0,
+      balance: 0,
+      pagination: { page: 3, pageSize: 20, totalCount: 60, totalPages: 3 },
+      filters: {
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        page: 3,
+      },
+      isLoading: false,
+      error: null,
+      applyFilters,
+      refresh: jest.fn(),
+    });
+
+    render(<FinanceHistoryPageContent />);
+
+    expect(useFinanceHistoryMock).toHaveBeenCalledWith({
+      startDate: '2026-05-01',
+      endDate: '2026-05-31',
+      page: 3,
+    });
+  });
+
+  it('should push the next page in the URL when a page control is used', async () => {
+    const user = userEvent.setup();
+
+    useFinanceHistoryMock.mockReturnValue({
+      data: {
+        entries: [],
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+        pagination: { page: 1, pageSize: 20, totalCount: 40, totalPages: 2 },
+      },
+      entries: [
+        {
+          id: 'income-id',
+          userId: 'user-id',
+          type: 'INCOME' as const,
+          amount: 400,
+          description: 'ganho uber',
+          date: '2026-05-05T00:00:00.000Z',
+          categoryId: null,
+          notes: null,
+          createdAt: '2026-05-07T20:12:15.498Z',
+          updatedAt: '2026-05-07T20:12:15.498Z',
+        },
+      ],
+      totalIncome: 400,
+      totalExpense: 0,
+      balance: 400,
+      pagination: { page: 1, pageSize: 20, totalCount: 40, totalPages: 2 },
+      filters: {
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        page: 1,
+      },
+      isLoading: false,
+      error: null,
+      applyFilters,
+      refresh: jest.fn(),
+    });
+
+    render(<FinanceHistoryPageContent />);
+
+    await user.click(screen.getByRole('button', { name: 'Próxima página' }));
+
+    expect(push).toHaveBeenCalledWith(
+      '/finance/history?startDate=2026-05-01&endDate=2026-05-31&page=2',
+    );
+    expect(applyFilters).toHaveBeenCalledWith(
+      expect.objectContaining({
+        startDate: '2026-05-01',
+        endDate: '2026-05-31',
+        page: 2,
       }),
     );
   });
