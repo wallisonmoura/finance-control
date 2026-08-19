@@ -237,12 +237,12 @@ describe('FinanceHistoryPageContent', () => {
     expect(push).toHaveBeenCalledWith(
       '/finance/history?startDate=2026-05-10&endDate=2026-05-20&type=EXPENSE&page=1',
     );
-    expect(applyFilters).toHaveBeenCalledWith({
-      startDate: '2026-05-10',
-      endDate: '2026-05-20',
-      type: 'EXPENSE',
-      page: 1,
-    });
+    // applyFilters is no longer called directly by the handler — the URL
+    // push above is the single source of truth, and the effect that reacts
+    // to urlFilters (covered separately) is what triggers the fetch. Calling
+    // it directly here too used to race that effect (see the dedicated
+    // filter-race regression test).
+    expect(applyFilters).not.toHaveBeenCalled();
   });
 
   it('should push categoryId in the URL when a category filter is applied', async () => {
@@ -298,12 +298,9 @@ describe('FinanceHistoryPageContent', () => {
         'categoryId=11111111-1111-4111-8111-111111111111',
       ),
     );
-    expect(applyFilters).toHaveBeenCalledWith(
-      expect.objectContaining({
-        categoryId: '11111111-1111-4111-8111-111111111111',
-        page: 1,
-      }),
-    );
+    // See the note in the previous test: the URL push is the trigger, not a
+    // direct applyFilters call.
+    expect(applyFilters).not.toHaveBeenCalled();
   });
 
   it('should re-apply filters when only the URL categoryId changes', () => {
@@ -455,12 +452,8 @@ describe('FinanceHistoryPageContent', () => {
     expect(push).toHaveBeenCalledWith(
       '/finance/history?startDate=2026-05-01&endDate=2026-05-31&page=2',
     );
-    expect(applyFilters).toHaveBeenCalledWith(
-      expect.objectContaining({
-        startDate: '2026-05-01',
-        endDate: '2026-05-31',
-        page: 2,
-      }),
-    );
+    // See the note on the filter-apply tests above: the URL push is the
+    // trigger, not a direct applyFilters call.
+    expect(applyFilters).not.toHaveBeenCalled();
   });
 });

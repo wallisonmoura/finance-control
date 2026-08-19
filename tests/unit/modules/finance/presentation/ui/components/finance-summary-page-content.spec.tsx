@@ -135,10 +135,11 @@ describe('FinanceSummaryPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Aplicar filtros' }));
 
     expect(push).toHaveBeenCalledWith('/finance/summary?month=2026-04');
-    expect(applyFilters).toHaveBeenCalledWith({
-      year: 2026,
-      month: 4,
-    });
+    // applyFilters is no longer called directly by the handler — the URL
+    // push above is the single source of truth, and the effect that reacts
+    // to urlFilters (covered separately) is what triggers the fetch. Calling
+    // it directly here too used to race that effect.
+    expect(applyFilters).not.toHaveBeenCalled();
   });
 
   it('should prevent clearing month filter by keyboard', async () => {

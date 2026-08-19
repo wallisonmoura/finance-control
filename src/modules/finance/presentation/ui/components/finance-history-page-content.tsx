@@ -100,25 +100,30 @@ export function FinanceHistoryPageContent({
     refresh,
   } = useFinanceHistory(hookInitialParams);
 
+  // The URL is the single source of truth for filters: pushing it here and
+  // letting the effect below react to the resulting urlFilters change is
+  // what actually triggers the fetch. Calling applyFilters directly here too
+  // used to race that effect — filters state update lands before the URL's
+  // searchParams catch up, so the effect would see a stale urlFilters and
+  // fire a spurious extra fetch with the old filters, then a third one once
+  // the URL caught up. See the regression test for the reproduction.
   const handleApplyFilters = useCallback(
-    async (nextFilters: FinanceHistoryFiltersUi) => {
+    (nextFilters: FinanceHistoryFiltersUi) => {
       router.push(toFinanceHistoryUrl(nextFilters));
-      await applyFilters(nextFilters);
     },
-    [applyFilters, router],
+    [router],
   );
 
   const handlePageChange = useCallback(
-    async (nextPage: number) => {
+    (nextPage: number) => {
       const nextFilters: FinanceHistoryFiltersUi = {
         ...filters,
         page: nextPage,
       };
 
       router.push(toFinanceHistoryUrl(nextFilters));
-      await applyFilters(nextFilters);
     },
-    [applyFilters, filters, router],
+    [filters, router],
   );
 
   useEffect(() => {
