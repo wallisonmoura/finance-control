@@ -31,3 +31,12 @@ This is a **deliberate, owner-approved exception to RG104** (infra must not rede
 **Do not duplicate this logic elsewhere.** A future `SignUpUseCase` must NOT re-create the default wallet/categories — the trigger already covers it; adding it there too would create the row twice and violate the `wallets` `userId` unique constraint.
 
 `tests/helpers/database/create-test-user.ts` deletes the trigger's output right after creating a test user, to preserve the pre-trigger "blank slate" contract most tests rely on. Tests that want to observe the trigger itself insert via `prisma.user.create()` directly (see `tests/integration/database/user-provisioning-trigger.int.spec.ts`).
+
+## Production connection: pooled runtime vs. direct migrations
+
+In production the app connects through Supabase's Supavisor pooler, split across two env vars read at different points — never merge them back into one:
+
+- `DATABASE_POOLED_URL` — Supavisor **transaction mode** (port 6543, `?pgbouncer=true`), read by `src/shared/infra/database/prisma/client.ts` for the app's runtime `PrismaClient`. Connections are held only per-query, so many concurrent Vercel function invocations can share the small connection budget Supabase's plan allows.
+- `DATABASE_URL` — session mode/direct connection, read by `prisma.config.ts` for the Prisma CLI (`migrate deploy`, etc.) and as the local dev/test fallback for the runtime client (local Postgres has no pooler).
+
+Root cause this split fixes: session-mode pooler connections are held for the whole session, not released between queries — under concurrent serverless traffic this exhausts the plan's connection cap fast (`(EMAXCONNSESSION) max clients reached in session mode`, seen in production 2026-08-19). Do not point `DATABASE_POOLED_URL` at a session-mode or direct connection string, and do not point Prisma CLI migrations at the transaction-mode pooler — transaction-mode pooling doesn't support the session-level features (advisory locks, etc.) migrations can need.
