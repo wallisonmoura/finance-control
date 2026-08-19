@@ -8,6 +8,10 @@ export default defineConfig({
     seed: 'tsx prisma/seed.ts',
   },
   datasource: {
-    url: process.env['DATABASE_URL'],
+    // Migrations need a session-mode/direct connection, not the
+    // transaction-mode pooler DATABASE_URL points the app's runtime client
+    // at — see src/shared/infra/database/prisma/client.ts. Falls back to
+    // DATABASE_URL locally, where there's no pooler and no DIRECT_URL set.
+    url: process.env['DIRECT_URL'] ?? process.env['DATABASE_URL'],
   },
 });

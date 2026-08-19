@@ -46,7 +46,7 @@ JWT_SECRET="your-local-secret"
 JWT_EXPIRES_IN="7d"
 ```
 
-**Production only** (Vercel env vars, not needed locally): `DATABASE_POOLED_URL` — Supabase's Supavisor pooler connection string in **transaction mode** (port 6543, with `?pgbouncer=true` appended), used by the app at runtime (`src/shared/infra/database/prisma/client.ts`). `DATABASE_URL` stays the session-mode/direct connection, used by the Prisma CLI for migrations (`prisma.config.ts`) and as the local dev/test fallback — local Postgres has no pooler, so there's nothing to point `DATABASE_POOLED_URL` at locally. See `.claude/rules/database.md` for why this split exists (Supavisor session mode holds a connection for the whole request lifetime and has a low connection cap; transaction mode releases it per-query).
+**Production only** (Vercel env vars, not needed locally): in production, `DATABASE_URL` is Supabase's Supavisor pooler connection string in **transaction mode** (port 6543, with `?pgbouncer=true` appended) — used by the app at runtime (`src/shared/infra/database/prisma/client.ts`). A separate `DIRECT_URL` (session-mode/direct connection, port 5432) is used only by the Prisma CLI for migrations (`prisma.config.ts`), which falls back to `DATABASE_URL` when `DIRECT_URL` is unset — so locally, where there's no pooler, a single `DATABASE_URL` still covers both. This matches Prisma's and Supabase's documented convention for serverless deployments. See `.claude/rules/database.md` for why this split exists (Supavisor session mode holds a connection for the whole request lifetime and has a low connection cap; transaction mode releases it per-query).
 
 Create the test DB:
 ```bash
