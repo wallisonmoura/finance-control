@@ -246,6 +246,11 @@ export function toErrorNextResponse(error: unknown) {
     );
   }
 
+  // Any error that isn't a recognized domain/validation error falls through
+  // here as a 500. Logging it is the only way to see what actually broke —
+  // the response body intentionally never leaks internals to the client.
+  console.error('Unhandled error in route handler:', error);
+
   return NextResponse.json(
     {
       message: 'Erro interno do servidor.',
