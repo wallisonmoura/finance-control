@@ -8,6 +8,7 @@ import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
 import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/invalid-debt-description.error';
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
+import { InvalidInstallmentCountError } from '@/modules/debts/domain/errors/invalid-installment-count.error';
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
@@ -198,7 +199,8 @@ export function toErrorNextResponse(error: unknown) {
     error instanceof InvalidDebtAmountError ||
     error instanceof InvalidDebtDescriptionError ||
     error instanceof InvalidDebtDueDateError ||
-    error instanceof InvalidDebtUserIdError
+    error instanceof InvalidDebtUserIdError ||
+    error instanceof InvalidInstallmentCountError
   ) {
     return NextResponse.json(
       {
