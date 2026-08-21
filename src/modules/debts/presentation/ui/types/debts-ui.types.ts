@@ -29,6 +29,14 @@ export type RegisterDebtUiInput = {
 
 export type UpdateDebtUiInput = RegisterDebtUiInput;
 
+export type RegisterInstallmentDebtUiInput = {
+  description: string;
+  amount: number;
+  dueDate: string;
+  installmentCount: number;
+  notes?: string | null;
+};
+
 export type PayDebtUiInput = {
   paidAt: string;
   expenseCategoryId: string;

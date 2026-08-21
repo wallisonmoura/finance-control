@@ -1,18 +1,27 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { DebtForm } from '@/modules/debts/presentation/ui/components/debt-form';
 import {
   registerDebt,
+  registerInstallmentDebt,
   updateDebt,
 } from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   registerDebt: jest.fn(),
+  registerInstallmentDebt: jest.fn(),
   updateDebt: jest.fn(),
 }));
 
 const registerDebtMock = jest.mocked(registerDebt);
+const registerInstallmentDebtMock = jest.mocked(registerInstallmentDebt);
 const updateDebtMock = jest.mocked(updateDebt);
 
 describe('DebtForm', () => {
@@ -334,5 +343,170 @@ describe('DebtForm', () => {
         expect.objectContaining({ notes }),
       );
     });
+  });
+
+  it('should show the installment count select and hide the type select when "Dividir em parcelas?" is checked', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtForm />);
+
+    expect(screen.getByLabelText('Tipo')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Número de parcelas')).not.toBeInTheDocument();
+
+    await user.click(screen.getByLabelText('Dividir em parcelas?'));
+
+    expect(screen.queryByLabelText('Tipo')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Número de parcelas')).toBeInTheDocument();
+    expect(screen.getByLabelText('Valor total')).toBeInTheDocument();
+    expect(screen.getByLabelText('Vencimento da 1ª parcela')).toBeInTheDocument();
+  });
+
+  it('should not show the "Dividir em parcelas?" checkbox while editing', () => {
+    render(
+      <DebtForm
+        editingDebt={{
+          id: 'debt-id',
+          userId: 'user-id',
+          description: 'Seguro do carro',
+          amount: 300,
+          dueDate: '2026-05-20T00:00:00.000Z',
+          type: 'ONE_TIME',
+          status: 'PENDING',
+          notes: null,
+          paidAt: null,
+          paymentSource: null,
+          createdAt: '2026-05-16T00:00:00.000Z',
+          updatedAt: '2026-05-16T00:00:00.000Z',
+        }}
+      />,
+    );
+
+    expect(
+      screen.queryByLabelText('Dividir em parcelas?'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should register a debt in installments successfully', async () => {
+    const user = userEvent.setup();
+    const onDebtCreated = jest.fn();
+
+    registerInstallmentDebtMock.mockResolvedValueOnce({
+      data: [
+        {
+          id: 'debt-1',
+          userId: 'user-id',
+          description: 'Cartão Letícia',
+          amount: 333.33,
+          dueDate: '2026-08-29',
+          type: 'RECURRING',
+          status: 'PENDING',
+          notes: 'Parcela 01/03',
+          paidAt: null,
+          paymentSource: null,
+          createdAt: '2026-08-21T00:00:00.000Z',
+          updatedAt: '2026-08-21T00:00:00.000Z',
+        },
+        {
+          id: 'debt-2',
+          userId: 'user-id',
+          description: 'Cartão Letícia',
+          amount: 333.33,
+          dueDate: '2026-09-29',
+          type: 'RECURRING',
+          status: 'PENDING',
+          notes: 'Parcela 02/03',
+          paidAt: null,
+          paymentSource: null,
+          createdAt: '2026-08-21T00:00:00.000Z',
+          updatedAt: '2026-08-21T00:00:00.000Z',
+        },
+        {
+          id: 'debt-3',
+          userId: 'user-id',
+          description: 'Cartão Letícia',
+          amount: 333.34,
+          dueDate: '2026-10-29',
+          type: 'RECURRING',
+          status: 'PENDING',
+          notes: 'Parcela 03/03',
+          paidAt: null,
+          paymentSource: null,
+          createdAt: '2026-08-21T00:00:00.000Z',
+          updatedAt: '2026-08-21T00:00:00.000Z',
+        },
+      ],
+    });
+
+    render(<DebtForm onDebtCreated={onDebtCreated} />);
+
+    await user.click(screen.getByLabelText('Dividir em parcelas?'));
+    await user.selectOptions(screen.getByLabelText('Número de parcelas'), '3');
+    await user.type(screen.getByLabelText('Descrição'), 'Cartão Letícia');
+    await user.clear(screen.getByLabelText('Valor total'));
+    await user.type(screen.getByLabelText('Valor total'), '1000');
+    await user.clear(screen.getByLabelText('Vencimento da 1ª parcela'));
+    await user.type(
+      screen.getByLabelText('Vencimento da 1ª parcela'),
+      '2026-08-29',
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Cadastrar dívida' }));
+
+    await waitFor(() => {
+      expect(registerInstallmentDebtMock).toHaveBeenCalledWith({
+        description: 'Cartão Letícia',
+        amount: 1000,
+        dueDate: '2026-08-29',
+        installmentCount: 3,
+      });
+    });
+
+    expect(registerDebtMock).not.toHaveBeenCalled();
+    expect(onDebtCreated).toHaveBeenCalledTimes(1);
+  });
+
+  it('should show an approximate per-installment preview as amount and installment count change', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtForm />);
+
+    await user.click(screen.getByLabelText('Dividir em parcelas?'));
+    await user.selectOptions(screen.getByLabelText('Número de parcelas'), '4');
+    await user.clear(screen.getByLabelText('Valor total'));
+    await user.type(screen.getByLabelText('Valor total'), '1200');
+
+    expect(
+      await screen.findByText(/4x de aprox\. R\$ 300,00 cada/),
+    ).toBeInTheDocument();
+  });
+
+  it('should update the installment count select options with the computed per-installment value', async () => {
+    const user = userEvent.setup();
+
+    render(<DebtForm />);
+
+    await user.click(screen.getByLabelText('Dividir em parcelas?'));
+
+    const installmentCountSelect = screen.getByLabelText(
+      'Número de parcelas',
+    ) as HTMLSelectElement;
+
+    expect(
+      within(installmentCountSelect).getByRole('option', { name: '2x' }),
+    ).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText('Valor total'));
+    await user.type(screen.getByLabelText('Valor total'), '1000');
+
+    expect(
+      within(installmentCountSelect).getByRole('option', {
+        name: '2x R$ 500,00',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(installmentCountSelect).getByRole('option', {
+        name: '4x R$ 250,00',
+      }),
+    ).toBeInTheDocument();
   });
 });

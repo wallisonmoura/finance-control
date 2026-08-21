@@ -117,7 +117,10 @@ describe('DebtsPageContent', () => {
     expect(screen.getByLabelText('Descrição')).toHaveValue('Seguro do carro');
     expect(screen.getByDisplayValue('300,00')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Parcela unica')).toBeInTheDocument();
-    expect(screen.getByLabelText('Tipo')).toHaveFocus();
+    // Focus lands on the form's first focusable field, in DOM order —
+    // Descrição, since the debt form fields were reordered (Descrição now
+    // comes before Tipo).
+    expect(screen.getByLabelText('Descrição')).toHaveFocus();
   });
 
   it('should delete a debt when confirmed', async () => {

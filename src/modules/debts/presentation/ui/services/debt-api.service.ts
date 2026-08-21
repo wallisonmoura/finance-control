@@ -3,6 +3,7 @@ import {
   DebtUi,
   PayDebtUiInput,
   RegisterDebtUiInput,
+  RegisterInstallmentDebtUiInput,
   UpdateDebtUiInput,
 } from '../types/debts-ui.types';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
@@ -67,6 +68,30 @@ export async function registerDebt(
   }
 
   const data = (await response.json()) as DebtUi;
+
+  return { data };
+}
+
+export async function registerInstallmentDebt(
+  input: RegisterInstallmentDebtUiInput,
+): Promise<DebtApiResponse<DebtUi[]>> {
+  const response = await fetch('/api/debts/installments', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as DebtUi[];
 
   return { data };
 }
