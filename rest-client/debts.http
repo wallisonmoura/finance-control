@@ -54,6 +54,62 @@ Cookie: {{authCookieName}}={{authToken}}
 
 ###
 
+### Criar dívida parcelada (3x de R$1.000,00 — confirma arredondamento: 333.33, 333.33, 333.34)
+POST {{baseUrl}}/api/debts/installments
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "description": "Cartão Letícia",
+  "amount": 1000,
+  "dueDate": "2026-08-29",
+  "installmentCount": 3
+}
+
+###
+
+### Criar dívida parcelada com observação (Loja Magazine — Parcela 01/02)
+POST {{baseUrl}}/api/debts/installments
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "description": "Compra TV",
+  "amount": 600,
+  "dueDate": "2026-08-29",
+  "installmentCount": 2,
+  "notes": "Loja Magazine"
+}
+
+###
+
+### Erro: número de parcelas fora do intervalo (2-12) -> 400
+POST {{baseUrl}}/api/debts/installments
+Content-Type: {{contentType}}
+Cookie: {{authCookieName}}={{authToken}}
+
+{
+  "description": "Cartão Letícia",
+  "amount": 1000,
+  "dueDate": "2026-08-29",
+  "installmentCount": 15
+}
+
+###
+
+### Erro: sem autenticação -> 401
+POST {{baseUrl}}/api/debts/installments
+Content-Type: {{contentType}}
+
+{
+  "description": "Cartão Letícia",
+  "amount": 1000,
+  "dueDate": "2026-08-29",
+  "installmentCount": 3
+}
+
+###
+
 ### Listar dívidas
 GET {{baseUrl}}/api/debts
 Cookie: {{authCookieName}}={{authToken}}
