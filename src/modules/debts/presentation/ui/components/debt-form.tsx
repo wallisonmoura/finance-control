@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, X } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -12,10 +12,22 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
 import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
+import { Label } from '@/shared/presentation/ui/primitives/label';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
-import { registerDebt, updateDebt } from '../services/debt-api.service';
-import { DebtTypeUi, DebtUi } from '../types/debts-ui.types';
+import {
+  registerDebt,
+  registerInstallmentDebt,
+  updateDebt,
+} from '../services/debt-api.service';
+import {
+  DebtTypeUi,
+  DebtUi,
+  RegisterInstallmentDebtUiInput,
+} from '../types/debts-ui.types';
+
+const MIN_INSTALLMENT_COUNT = 2;
+const MAX_INSTALLMENT_COUNT = 12;
 
 type DebtFormProps = {
   onDebtCreated?: () => void | Promise<void>;
@@ -44,6 +56,45 @@ function getOptionalNotes(notes: string) {
   const trimmedNotes = notes.trim();
 
   return trimmedNotes ? { notes: trimmedNotes } : {};
+}
+
+// Approximate preview only — the exact amount per installment (with the
+// rounding remainder on the last one) is always computed by the backend,
+// so this never needs to match it exactly.
+function formatInstallmentPreview(
+  amountInput: string,
+  installmentCount: string,
+): string | null {
+  const total = parseMoneyInput(amountInput);
+  const count = Number(installmentCount);
+
+  if (!Number.isFinite(total) || total <= 0 || !Number.isInteger(count)) {
+    return null;
+  }
+
+  const perInstallment = total / count;
+
+  return `${count}x de aprox. R$ ${formatMoneyInputValue(perInstallment)} cada (a última parcela pode variar alguns centavos)`;
+}
+
+// Same approximation as formatInstallmentPreview, applied per option — the
+// exact split (last installment absorbing the rounding remainder) is always
+// computed by the backend.
+function getInstallmentCountOptions(amountInput: string) {
+  const total = parseMoneyInput(amountInput);
+  const hasValidTotal = Number.isFinite(total) && total > 0;
+
+  return Array.from(
+    { length: MAX_INSTALLMENT_COUNT - MIN_INSTALLMENT_COUNT + 1 },
+    (_, index) => {
+      const count = MIN_INSTALLMENT_COUNT + index;
+      const label = hasValidTotal
+        ? `${count}x R$ ${formatMoneyInputValue(total / count)}`
+        : `${count}x`;
+
+      return { label, value: String(count) };
+    },
+  );
 }
 
 const debtFormSchema = z.object({
@@ -83,11 +134,16 @@ export function DebtForm({
   const isEditing = Boolean(editingDebt);
 
   const [error, setError] = useState<string | null>(null);
+  const [isInstallment, setIsInstallment] = useState(false);
+  const [installmentCount, setInstallmentCount] = useState(
+    String(MIN_INSTALLMENT_COUNT),
+  );
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<DebtFormValues>({
     resolver: zodResolver(debtFormSchema),
@@ -102,8 +158,49 @@ export function DebtForm({
     },
   });
 
+  const amountValue = useWatch({ control, name: 'amount' });
+  const installmentPreview =
+    isInstallment && !isEditing
+      ? formatInstallmentPreview(amountValue, installmentCount)
+      : null;
+  const installmentCountOptions = getInstallmentCountOptions(amountValue);
+
   async function handleDebtSubmit(values: DebtFormValues) {
     setError(null);
+
+    if (isInstallment && editingDebt === null) {
+      const installmentInput: RegisterInstallmentDebtUiInput = {
+        description: values.description,
+        amount: parseMoneyInput(values.amount),
+        dueDate: values.dueDate,
+        installmentCount: Number(installmentCount),
+        ...getOptionalNotes(values.notes),
+      };
+
+      const installmentResponse = await registerInstallmentDebt(
+        installmentInput,
+      );
+
+      if (installmentResponse.error) {
+        setError(installmentResponse.error);
+        return;
+      }
+
+      reset({
+        amount: '',
+        description: '',
+        dueDate: getTodayDateValue(),
+        type: 'ONE_TIME',
+        notes: '',
+      });
+      setIsInstallment(false);
+      setInstallmentCount(String(MIN_INSTALLMENT_COUNT));
+      toast.success(
+        `${installmentResponse.data?.length ?? 0} parcelas cadastradas com sucesso.`,
+      );
+      await onDebtCreated?.();
+      return;
+    }
 
     const input = {
       description: values.description,
@@ -159,36 +256,20 @@ export function DebtForm({
         </div>
 
         <div className='grid gap-4 md:grid-cols-2'>
-          <SelectField
-            id='debt-type'
-            label='Tipo'
-            options={[
-              { label: 'Única', value: 'ONE_TIME' },
-              { label: 'Recorrente', value: 'RECURRING' },
-            ]}
-            {...register('type')}
-          />
-
-          <div>
-            <Input
-              id='debt-due-date'
-              label='Vencimento'
-              type='date'
-              aria-invalid={Boolean(errors.dueDate)}
-              aria-describedby={
-                errors.dueDate ? 'debt-due-date-error' : undefined
-              }
-              {...register('dueDate')}
-            />
-            {errors.dueDate?.message ? (
-              <p
-                id='debt-due-date-error'
-                className='mt-1 text-sm font-medium text-destructive'
-              >
-                {errors.dueDate.message}
-              </p>
-            ) : null}
-          </div>
+          {!isEditing && (
+            <div className='flex items-center gap-2 md:col-span-2'>
+              <input
+                id='debt-is-installment'
+                type='checkbox'
+                checked={isInstallment}
+                onChange={(event) => setIsInstallment(event.target.checked)}
+                className='h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-ring'
+              />
+              <Label htmlFor='debt-is-installment' className='text-foreground'>
+                Dividir em parcelas?
+              </Label>
+            </div>
+          )}
 
           <div>
             <Input
@@ -212,8 +293,33 @@ export function DebtForm({
 
           <div>
             <Input
+              id='debt-due-date'
+              label={
+                isInstallment && !isEditing
+                  ? 'Vencimento da 1ª parcela'
+                  : 'Vencimento'
+              }
+              type='date'
+              aria-invalid={Boolean(errors.dueDate)}
+              aria-describedby={
+                errors.dueDate ? 'debt-due-date-error' : undefined
+              }
+              {...register('dueDate')}
+            />
+            {errors.dueDate?.message ? (
+              <p
+                id='debt-due-date-error'
+                className='mt-1 text-sm font-medium text-destructive'
+              >
+                {errors.dueDate.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div>
+            <Input
               id='debt-amount'
-              label='Valor'
+              label={isInstallment && !isEditing ? 'Valor total' : 'Valor'}
               type='text'
               inputMode='decimal'
               aria-invalid={Boolean(errors.amount)}
@@ -228,7 +334,32 @@ export function DebtForm({
                 {errors.amount.message}
               </p>
             ) : null}
+            {installmentPreview ? (
+              <p className='mt-1 text-sm text-muted-foreground'>
+                {installmentPreview}
+              </p>
+            ) : null}
           </div>
+
+          {isInstallment && !isEditing ? (
+            <SelectField
+              id='debt-installment-count'
+              label='Número de parcelas'
+              value={installmentCount}
+              onChange={(event) => setInstallmentCount(event.target.value)}
+              options={installmentCountOptions}
+            />
+          ) : (
+            <SelectField
+              id='debt-type'
+              label='Tipo'
+              options={[
+                { label: 'Única', value: 'ONE_TIME' },
+                { label: 'Recorrente', value: 'RECURRING' },
+              ]}
+              {...register('type')}
+            />
+          )}
 
           <div className='md:col-span-2'>
             <Input
