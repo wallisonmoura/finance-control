@@ -179,6 +179,31 @@ Cookie: fc_access_token={{authToken}}
 GET http://localhost:3000/api/finance/monthly-summary?year=2026&month=4
 Cookie: fc_access_token={{authToken}}
 
+###
+
+### Resumo mensal — últimos 6 meses (padrão)
+GET {{baseUrl}}/api/finance/monthly-summary/range
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### Resumo mensal — últimos 3 meses
+GET {{baseUrl}}/api/finance/monthly-summary/range?months=3
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### Erro: months fora do intervalo (1-24) -> 400
+GET {{baseUrl}}/api/finance/monthly-summary/range?months=25
+Cookie: {{authCookieName}}={{authToken}}
+
+###
+
+### Erro: sem autenticação -> 401
+GET {{baseUrl}}/api/finance/monthly-summary/range?months=6
+
+###
+
 ### Daily Transactions - Missing date
 GET http://localhost:3000/api/finance/daily-transactions
 Cookie: fc_access_token={{authToken}}

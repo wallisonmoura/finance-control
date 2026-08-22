@@ -111,4 +111,44 @@ describe('CalculateMonthlySummaryUseCase', () => {
     expect(output.totalExpense).toBe(100);
     expect(output.result).toBe(600);
   });
+
+  it('should return a clean 2-decimal sum, not a floating-point artifact', async () => {
+    // 1750.79 + 1931.39 === 3682.1800000000003 in plain JS floating point.
+    const repository = new InMemoryFinancialEntryRepository([
+      FinancialEntry.create({
+        id: 'entry-1',
+        userId: 'user-1',
+        type: FinancialEntryType.INCOME,
+        amount: 1750.79,
+        description: 'Receita 1',
+        date: new Date('2026-03-05T10:00:00.000Z'),
+        categoryId: null,
+        notes: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+      FinancialEntry.create({
+        id: 'entry-2',
+        userId: 'user-1',
+        type: FinancialEntryType.INCOME,
+        amount: 1931.39,
+        description: 'Receita 2',
+        date: new Date('2026-03-20T10:00:00.000Z'),
+        categoryId: null,
+        notes: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    ]);
+
+    const useCase = new CalculateMonthlySummaryUseCase(repository);
+
+    const output = await useCase.execute({
+      userId: 'user-1',
+      month: 3,
+      year: 2026,
+    });
+
+    expect(output.totalIncome).toBe(3682.18);
+  });
 });
