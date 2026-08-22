@@ -132,4 +132,30 @@ describe('CalculateMonthlySummaryRangeUseCase', () => {
       { year: 2026, month: 8, totalIncome: 0, totalExpense: 0, result: 0 },
     ]);
   });
+
+  it('should return a clean 2-decimal sum, not a floating-point artifact', async () => {
+    mockedGetCurrentBusinessDateValue.mockReturnValue('2026-08-15');
+
+    // 1750.79 + 1931.39 === 3682.1800000000003 in plain JS floating point.
+    await financialEntryRepository.create(
+      createEntry(
+        'user-1',
+        FinancialEntryType.INCOME,
+        1750.79,
+        new Date(Date.UTC(2026, 7, 5)),
+      ),
+    );
+    await financialEntryRepository.create(
+      createEntry(
+        'user-1',
+        FinancialEntryType.INCOME,
+        1931.39,
+        new Date(Date.UTC(2026, 7, 20)),
+      ),
+    );
+
+    const output = await sut.execute({ userId: 'user-1', months: 1 });
+
+    expect(output[0].totalIncome).toBe(3682.18);
+  });
 });

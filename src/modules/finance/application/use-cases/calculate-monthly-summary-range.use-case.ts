@@ -1,4 +1,5 @@
 import { getCurrentBusinessDateValue } from '@/shared/domain/date/business-date';
+import { roundToCents } from '@/shared/domain/money/round-to-cents';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { MonthlySummaryRangeInput } from '../dtos/monthly-summary-range.input';
@@ -46,20 +47,24 @@ export class CalculateMonthlySummaryRangeUseCase {
           entry.date.getUTCMonth() + 1 === month,
       );
 
-      const totalIncome = monthEntries
-        .filter((entry) => entry.type === FinancialEntryType.INCOME)
-        .reduce((sum, entry) => sum + entry.amount, 0);
+      const totalIncome = roundToCents(
+        monthEntries
+          .filter((entry) => entry.type === FinancialEntryType.INCOME)
+          .reduce((sum, entry) => sum + entry.amount, 0),
+      );
 
-      const totalExpense = monthEntries
-        .filter((entry) => entry.type === FinancialEntryType.EXPENSE)
-        .reduce((sum, entry) => sum + entry.amount, 0);
+      const totalExpense = roundToCents(
+        monthEntries
+          .filter((entry) => entry.type === FinancialEntryType.EXPENSE)
+          .reduce((sum, entry) => sum + entry.amount, 0),
+      );
 
       months.push({
         year,
         month,
         totalIncome,
         totalExpense,
-        result: totalIncome - totalExpense,
+        result: roundToCents(totalIncome - totalExpense),
       });
     }
 
