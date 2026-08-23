@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
+  BarChart3,
   ChartNoAxesCombined,
   CircleDollarSign,
   LayoutDashboard,
@@ -32,5 +33,10 @@ export const PRIVATE_NAVIGATION_ITEMS: NavigationItem[] = [
     label: 'Dívidas',
     href: '/debts',
     icon: CircleDollarSign,
+  },
+  {
+    label: 'Relatórios',
+    href: '/relatorios',
+    icon: BarChart3,
   },
 ];
