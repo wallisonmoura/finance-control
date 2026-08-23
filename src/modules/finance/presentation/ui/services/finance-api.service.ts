@@ -323,3 +323,30 @@ export async function getMonthlySummary(input: {
 
   return { data };
 }
+
+export async function getMonthlySummaryRange(
+  months: number,
+): Promise<FinanceApiResponse<MonthlySummaryUi[]>> {
+  const searchParams = new URLSearchParams({ months: String(months) });
+
+  const response = await fetch(
+    `/api/finance/monthly-summary/range?${searchParams.toString()}`,
+    {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as MonthlySummaryUi[];
+
+  return { data };
+}
