@@ -6,6 +6,7 @@ import {
   getFinanceHistory,
   getFullFinanceHistory,
   getMonthlySummary,
+  getMonthlySummaryRange,
   registerExpense,
   registerIncome,
   updateExpense,
@@ -521,6 +522,50 @@ describe('finance-api.service', () => {
 
     expect(response).toEqual({
       data: monthlySummary,
+    });
+  });
+
+  it('should get the monthly summary range successfully', async () => {
+    const monthlySummaryRange = [
+      { month: 7, year: 2026, totalIncome: 100, totalExpense: 40, result: 60 },
+      { month: 8, year: 2026, totalIncome: 120, totalExpense: 50, result: 70 },
+    ];
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => monthlySummaryRange,
+    });
+
+    const response = await getMonthlySummaryRange(6);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/monthly-summary/range?months=6',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+        },
+      },
+    );
+
+    expect(response).toEqual({
+      data: monthlySummaryRange,
+    });
+  });
+
+  it('should return an error when get monthly summary range fails', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        message: 'months inválido.',
+      }),
+    });
+
+    const response = await getMonthlySummaryRange(99);
+
+    expect(response).toEqual({
+      error: 'months inválido.',
     });
   });
 
