@@ -1,6 +1,7 @@
 import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
+import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
@@ -190,6 +191,12 @@ describe('toErrorNextResponse', () => {
 
   it('should return 400 for InvalidEmailError', async () => {
     const response = toErrorNextResponse(new InvalidEmailError());
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should return 400 for InvalidUserNameError', async () => {
+    const response = toErrorNextResponse(new InvalidUserNameError());
 
     expect(response.status).toBe(400);
   });

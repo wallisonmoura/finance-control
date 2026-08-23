@@ -30,4 +30,36 @@ export class InMemoryUserRepository implements UserRepository {
 
     return user;
   }
+
+  async updateName(id: string, name: string): Promise<User> {
+    const index = this.users.findIndex((user) => user.id === id);
+    const existing = this.users[index];
+
+    const updated = User.create({
+      id: existing.id,
+      name,
+      email: existing.email,
+      passwordHash: existing.passwordHash,
+      createdAt: existing.createdAt,
+      updatedAt: new Date(),
+    });
+
+    this.users[index] = updated;
+
+    return updated;
+  }
+
+  async updatePassword(id: string, passwordHash: string): Promise<void> {
+    const index = this.users.findIndex((user) => user.id === id);
+    const existing = this.users[index];
+
+    this.users[index] = User.create({
+      id: existing.id,
+      name: existing.name,
+      email: existing.email,
+      passwordHash,
+      createdAt: existing.createdAt,
+      updatedAt: new Date(),
+    });
+  }
 }

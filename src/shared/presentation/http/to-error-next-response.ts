@@ -1,6 +1,7 @@
 import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
+import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { InvalidDebtUserIdError } from '@/modules/debts/domain/errors/invalid-debt-user-id.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
@@ -59,7 +60,10 @@ export function toErrorNextResponse(error: unknown) {
     );
   }
 
-  if (error instanceof InvalidEmailError) {
+  if (
+    error instanceof InvalidEmailError ||
+    error instanceof InvalidUserNameError
+  ) {
     return NextResponse.json(
       {
         message: error.message,
