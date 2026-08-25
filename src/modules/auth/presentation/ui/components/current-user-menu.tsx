@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import Link from 'next/link';
 import { UserRound } from 'lucide-react';
 
 import { useCurrentUser } from '../hooks/use-current-user';
@@ -24,7 +25,10 @@ export function CurrentUserMenu({
 
   return (
     <div className='flex w-full items-center justify-between gap-4 px-0 py-0 md:w-auto md:min-w-80 md:justify-between'>
-      <div className='flex min-w-0 items-center gap-3'>
+      <Link
+        href='/account'
+        className='flex min-w-0 items-center gap-3 rounded-lg transition-opacity hover:opacity-80'
+      >
         <div
           aria-hidden='true'
           className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-accent ring-1 ring-accent/30'
@@ -39,7 +43,7 @@ export function CurrentUserMenu({
             {isLoading ? 'Carregando...' : (user?.name ?? 'Usuário')}
           </p>
         </div>
-      </div>
+      </Link>
 
       <div className='flex items-center gap-3'>
         {children}

@@ -1,8 +1,10 @@
 import {
+  changePassword,
   getCurrentUser,
   signIn,
   signOut,
   signUp,
+  updateProfile,
 } from '@/modules/auth/presentation/ui/services/auth-api.service';
 
 const mockFetch = jest.fn();
@@ -245,6 +247,103 @@ describe('AuthApiService', () => {
 
       expect(result).toEqual({
         error: 'Não autenticado',
+      });
+    });
+  });
+
+  describe('updateProfile', () => {
+    it('should call PUT /api/auth/me and return the updated user', async () => {
+      const updateProfileResponse = {
+        user: {
+          id: 'user-id',
+          name: 'Wallison Moura',
+          email: 'admin@financecontrol.com',
+        },
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValueOnce(updateProfileResponse),
+      });
+
+      const result = await updateProfile({ name: 'Wallison Moura' });
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/me', {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: 'Wallison Moura' }),
+      });
+
+      expect(result).toEqual({
+        data: updateProfileResponse,
+      });
+    });
+
+    it('should return error message when update-profile API fails', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        json: jest.fn().mockResolvedValueOnce({
+          message: 'Nome do usuário é obrigatório.',
+        }),
+      });
+
+      const result = await updateProfile({ name: '' });
+
+      expect(result).toEqual({
+        error: 'Nome do usuário é obrigatório.',
+      });
+    });
+  });
+
+  describe('changePassword', () => {
+    it('should call PUT /api/auth/me/password and return void on success', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn(),
+      });
+
+      const result = await changePassword({
+        currentPassword: 'current-password',
+        newPassword: 'new-password-123',
+      });
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/me/password', {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: 'current-password',
+          newPassword: 'new-password-123',
+        }),
+      });
+
+      expect(result).toEqual({
+        data: null,
+      });
+    });
+
+    it('should return error message when change-password API fails', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        json: jest.fn().mockResolvedValueOnce({
+          message: 'Credenciais inválidas.',
+        }),
+      });
+
+      const result = await changePassword({
+        currentPassword: 'wrong-password',
+        newPassword: 'new-password-123',
+      });
+
+      expect(result).toEqual({
+        error: 'Credenciais inválidas.',
       });
     });
   });

@@ -24,6 +24,21 @@ export function useCurrentUser(
   const [isLoading, setIsLoading] = useState(!hasInitialResult);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialError);
 
+  // Keeps state in sync when the parent Server Component re-fetches (e.g.
+  // after router.refresh() following a profile update) and passes a new
+  // initialUser prop — useState(initialUser) above only applies on mount,
+  // it never reacts to a later prop change on its own.
+  useEffect(() => {
+    if (!hasInitialResult) {
+      return;
+    }
+
+    setUser(initialUser);
+    setErrorMessage(initialError);
+    setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUser, initialError]);
+
   useEffect(() => {
     if (hasInitialResult) {
       return;
