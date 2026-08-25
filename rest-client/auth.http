@@ -6,7 +6,7 @@
 @newUserEmail = novo-usuario@financecontrol.local
 @newUserPassword = 12345678
 
-@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5vdm8tdXN1YXJpb0BmaW5hbmNlY29udHJvbC5sb2NhbCIsInN1YiI6IjU5MjMzNGViLWY2OTMtNDZlZC1iZjk3LTVmMzYyY2I5MjZkYSIsImlhdCI6MTc4NjkzMTkxMiwiZXhwIjoxNzg3NTM2NzEyfQ.IRcTe4Mthhk5OoDC2E2qbzc2QrFa_j_aZ8aiGu-SAOU
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5vdm8tdXN1YXJpb0BmaW5hbmNlY29udHJvbC5sb2NhbCIsInN1YiI6IjU5MjMzNGViLWY2OTMtNDZlZC1iZjk3LTVmMzYyY2I5MjZkYSIsImlhdCI6MTc4NzQ1NzExNCwiZXhwIjoxNzg4MDYxOTE0fQ.dSYdOg8_RlVaEVSKpSAKg6QrIwRJWd1XPSMa3wKPHa0
 
 ### Register - sucesso
 # Cria a conta e já autentica (cookie definido na resposta, igual ao sign-in).
@@ -142,3 +142,90 @@ Cookie: fc_access_token={{authToken}}
 
 ### Sign out
 POST http://localhost:3000/api/auth/sign-out
+
+###
+
+### Update profile (name) - sucesso
+# Execute após o sign-in. Se seu REST Client não persistir cookies (caso do
+# GET /api/auth/me acima), atualize @authToken com o valor emitido pelo
+# sign-in antes de rodar — o Cookie abaixo é enviado manualmente por isso.
+PUT {{baseUrl}}/api/auth/me
+Content-Type: application/json
+Cookie: fc_access_token={{authToken}}
+
+{
+  "name": "Wallison Moura"
+}
+
+###
+
+### Update profile - sem token
+PUT {{baseUrl}}/api/auth/me
+Content-Type: application/json
+
+{
+  "name": "Wallison Moura"
+}
+
+###
+
+### Update profile - nome vazio
+PUT {{baseUrl}}/api/auth/me
+Content-Type: application/json
+Cookie: fc_access_token={{authToken}}
+
+{
+  "name": ""
+}
+
+###
+
+### Change password - sucesso
+# Execute após o sign-in. A senha atual precisa bater com {{password}}.
+# Atenção: isso troca a senha de verdade — depois de rodar, {{password}}
+# (123456) para de bater, e "Sign in - sucesso" só volta a funcionar se você
+# rodar de novo com currentPassword="nova-senha-123" e newPassword="123456"
+# pra desfazer, ou atualizar @password aqui em cima.
+PUT {{baseUrl}}/api/auth/me/password
+Content-Type: application/json
+Cookie: fc_access_token={{authToken}}
+
+{
+  "currentPassword": "{{newUserPassword}}",
+  "newPassword": "nova-senha"
+}
+
+###
+
+### Change password - senha atual incorreta
+PUT {{baseUrl}}/api/auth/me/password
+Content-Type: application/json
+Cookie: fc_access_token={{authToken}}
+
+{
+  "currentPassword": "senha-errada",
+  "newPassword": "nova-senha-123"
+}
+
+###
+
+### Change password - nova senha curta demais
+PUT {{baseUrl}}/api/auth/me/password
+Content-Type: application/json
+Cookie: fc_access_token={{authToken}}
+
+{
+  "currentPassword": "{{newUserPassword}}",
+  "newPassword": "123"
+}
+
+###
+
+### Change password - sem token
+PUT {{baseUrl}}/api/auth/me/password
+Content-Type: application/json
+
+{
+  "currentPassword": "{{password}}",
+  "newPassword": "nova-senha-123"
+}

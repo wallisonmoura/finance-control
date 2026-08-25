@@ -19,6 +19,19 @@ export type GetCurrentUserResponse = {
   user: AuthenticatedUser;
 };
 
+export type UpdateProfileInput = {
+  name: string;
+};
+
+export type UpdateProfileResponse = {
+  user: AuthenticatedUser;
+};
+
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 export type AuthApiResponse<T> = {
   data?: T;
   error?: string;

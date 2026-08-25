@@ -1,8 +1,11 @@
 import type {
   AuthApiResponse,
+  ChangePasswordInput,
   GetCurrentUserResponse,
   SignInInput,
   SignUpInput,
+  UpdateProfileInput,
+  UpdateProfileResponse,
 } from '../types/auth-ui.types';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
@@ -95,5 +98,55 @@ export async function getCurrentUser(): Promise<
 
   return {
     data,
+  };
+}
+
+export async function updateProfile(
+  input: UpdateProfileInput,
+): Promise<AuthApiResponse<UpdateProfileResponse>> {
+  const response = await fetch('/api/auth/me', {
+    method: 'PUT',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as UpdateProfileResponse;
+
+  return {
+    data,
+  };
+}
+
+export async function changePassword(
+  input: ChangePasswordInput,
+): Promise<AuthApiResponse<null>> {
+  const response = await fetch('/api/auth/me/password', {
+    method: 'PUT',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  return {
+    data: null,
   };
 }

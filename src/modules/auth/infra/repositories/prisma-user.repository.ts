@@ -42,4 +42,20 @@ export class PrismaUserRepository implements UserRepository {
 
     return PrismaUserMapper.toDomain(user);
   }
+
+  async updateName(id: string, name: string): Promise<User> {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { name },
+    });
+
+    return PrismaUserMapper.toDomain(user);
+  }
+
+  async updatePassword(id: string, passwordHash: string): Promise<void> {
+    await prisma.user.update({
+      where: { id },
+      data: { passwordHash },
+    });
+  }
 }
