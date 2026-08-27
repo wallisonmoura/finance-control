@@ -21,7 +21,7 @@ export const registerDebtSchema = z
       }),
     amount: debtAmountSchema,
     dueDate: debtDateSchema,
-    type: z.enum(DebtType, {
+    type: z.enum([DebtType.ONE_TIME, DebtType.RECURRING], {
       error: 'Tipo de dívida inválido.',
     }),
     notes: z

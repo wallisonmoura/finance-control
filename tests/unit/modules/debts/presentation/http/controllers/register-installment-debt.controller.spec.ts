@@ -12,7 +12,7 @@ describe('RegisterInstallmentDebtController', () => {
         description: 'Cartão Letícia',
         amount: 333.33,
         dueDate: new Date('2026-08-29'),
-        type: DebtType.RECURRING,
+        type: DebtType.INSTALLMENT,
         status: DebtStatus.PENDING,
         notes: 'Parcela 01/03',
         paidAt: null,

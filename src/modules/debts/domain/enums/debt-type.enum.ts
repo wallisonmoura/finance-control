@@ -1,4 +1,5 @@
 export enum DebtType {
   ONE_TIME = 'ONE_TIME',
+  INSTALLMENT = 'INSTALLMENT',
   RECURRING = 'RECURRING',
 }

@@ -117,7 +117,10 @@ const debtFormSchema = z.object({
       message: 'Informe um valor de até R$ 999.999.999.999,99.',
     }),
   dueDate: z.string().min(1, 'Informe o vencimento.'),
-  type: z.enum(['ONE_TIME', 'RECURRING']),
+  // INSTALLMENT is never user-selectable here (see isEditingInstallment
+  // below) — it's included only so editing an existing installment row can
+  // round-trip its type through the form without corrupting it.
+  type: z.enum(['ONE_TIME', 'INSTALLMENT', 'RECURRING']),
   notes: z
     .string()
     .max(1000, 'Observações devem ter no máximo 1000 caracteres.'),
@@ -132,6 +135,12 @@ export function DebtForm({
   editingDebt = null,
 }: DebtFormProps) {
   const isEditing = Boolean(editingDebt);
+  // An installment row's type is system-assigned when it's created (see
+  // RegisterInstallmentDebtUseCase) and must never be reassigned through
+  // this generic form — the Tipo select only ever offers "Única"/
+  // "Recorrente", so it's hidden here and the original type is preserved
+  // as-is on submit.
+  const isEditingInstallment = isEditing && editingDebt?.type === 'INSTALLMENT';
 
   const [error, setError] = useState<string | null>(null);
   const [isInstallment, setIsInstallment] = useState(false);
@@ -206,7 +215,7 @@ export function DebtForm({
       description: values.description,
       amount: parseMoneyInput(values.amount),
       dueDate: values.dueDate,
-      type: values.type as DebtTypeUi,
+      type: (isEditingInstallment ? 'INSTALLMENT' : values.type) as DebtTypeUi,
       ...getOptionalNotes(values.notes),
     };
 
@@ -349,6 +358,14 @@ export function DebtForm({
               onChange={(event) => setInstallmentCount(event.target.value)}
               options={installmentCountOptions}
             />
+          ) : isEditingInstallment ? (
+            <div>
+              <Label className='text-foreground'>Tipo</Label>
+              <p className='mt-2 text-sm text-muted-foreground'>
+                Parcelada (parte de um parcelamento, não pode ser alterada
+                aqui)
+              </p>
+            </div>
           ) : (
             <SelectField
               id='debt-type'

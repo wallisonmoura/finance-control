@@ -66,7 +66,9 @@ describe('POST /api/debts/installments', () => {
       333.33, 333.33, 333.34,
     ]);
     expect(
-      body.every((debt: { type: string }) => debt.type === DebtType.RECURRING),
+      body.every(
+        (debt: { type: string }) => debt.type === DebtType.INSTALLMENT,
+      ),
     ).toBe(true);
     expect(
       body.every(

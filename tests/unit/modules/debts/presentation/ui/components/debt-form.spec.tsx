@@ -137,6 +137,69 @@ describe('DebtForm', () => {
     expect(onDebtUpdated).toHaveBeenCalledTimes(1);
   });
 
+  it('should hide the type select and preserve INSTALLMENT when editing an installment row', async () => {
+    const user = userEvent.setup();
+    const onDebtUpdated = jest.fn();
+
+    updateDebtMock.mockResolvedValueOnce({
+      data: {
+        id: 'debt-id',
+        userId: 'user-id',
+        description: 'Parcela 02/04',
+        amount: 250,
+        dueDate: '2026-05-21',
+        type: 'INSTALLMENT',
+        status: 'PENDING',
+        notes: null,
+        paidAt: null,
+        paymentSource: null,
+        createdAt: '2026-05-16T00:00:00.000Z',
+        updatedAt: '2026-05-16T00:00:00.000Z',
+      },
+    });
+
+    render(
+      <DebtForm
+        editingDebt={{
+          id: 'debt-id',
+          userId: 'user-id',
+          description: 'Parcela 02/04',
+          amount: 250,
+          dueDate: '2026-05-20T00:00:00.000Z',
+          type: 'INSTALLMENT',
+          status: 'PENDING',
+          notes: null,
+          paidAt: null,
+          paymentSource: null,
+          createdAt: '2026-05-16T00:00:00.000Z',
+          updatedAt: '2026-05-16T00:00:00.000Z',
+        }}
+        onDebtUpdated={onDebtUpdated}
+      />,
+    );
+
+    expect(screen.queryByLabelText('Tipo')).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/Parcelada \(parte de um parcelamento/),
+    ).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText('Vencimento'));
+    await user.type(screen.getByLabelText('Vencimento'), '2026-05-21');
+
+    await user.click(screen.getByRole('button', { name: 'Salvar alterações' }));
+
+    await waitFor(() => {
+      expect(updateDebtMock).toHaveBeenCalledWith('debt-id', {
+        description: 'Parcela 02/04',
+        amount: 250,
+        dueDate: '2026-05-21',
+        type: 'INSTALLMENT',
+      });
+    });
+
+    expect(onDebtUpdated).toHaveBeenCalledTimes(1);
+  });
+
   it('should render editing amount with two decimal places', () => {
     render(
       <DebtForm

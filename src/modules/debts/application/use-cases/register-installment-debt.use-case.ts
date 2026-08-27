@@ -39,7 +39,7 @@ export class RegisterInstallmentDebtUseCase {
         description: input.description,
         amount: installment.amount,
         dueDate: installment.dueDate,
-        type: DebtType.RECURRING,
+        type: DebtType.INSTALLMENT,
         status: DebtStatus.PENDING,
         notes: formatInstallmentNotes(input.notes, index + 1, schedule.length),
         paidAt: null,

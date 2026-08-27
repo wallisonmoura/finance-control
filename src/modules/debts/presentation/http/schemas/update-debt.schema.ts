@@ -21,6 +21,10 @@ export const updateDebtSchema = z
       }),
     amount: debtAmountSchema,
     dueDate: debtDateSchema,
+    // Unlike registerDebtSchema, INSTALLMENT is accepted here: editing an
+    // already-existing installment row must be able to preserve its type
+    // unchanged (see DebtForm's isEditingInstallment) — it's never something
+    // a user picks from scratch, only something that round-trips.
     type: z.enum(DebtType, {
       error: 'Tipo de dívida inválido.',
     }),

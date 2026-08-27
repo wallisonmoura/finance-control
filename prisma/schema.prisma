@@ -13,6 +13,7 @@ enum TransactionType {
 
 enum DebtType {
   ONE_TIME
+  INSTALLMENT
   RECURRING
 }
 

@@ -119,6 +119,110 @@ describe('PayDebtUseCase', () => {
     ).rejects.toBeInstanceOf(UnauthorizedDebtAccessError);
   });
 
+  it('should create the next pending occurrence when paying a RECURRING debt', async () => {
+    const debt = Debt.create({
+      id: 'debt-1',
+      userId: 'user-1',
+      description: 'Aluguel',
+      amount: 1500,
+      dueDate: new Date('2026-01-31'),
+      type: DebtType.RECURRING,
+      status: DebtStatus.PENDING,
+      notes: 'Apto 302',
+      paidAt: null,
+      paymentSource: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await debtRepository.create(debt);
+
+    await sut.execute({
+      userId: 'user-1',
+      id: 'debt-1',
+      paidAt: new Date('2026-01-28'),
+      expenseCategoryId: 'category-1',
+      paymentSource: DebtPaymentSource.BANK,
+    });
+
+    expect(debtRepository.items).toHaveLength(2);
+
+    const nextOccurrence = debtRepository.items.find(
+      (item) => item.id !== 'debt-1',
+    );
+
+    expect(nextOccurrence).toBeDefined();
+    expect(nextOccurrence?.userId).toBe('user-1');
+    expect(nextOccurrence?.description).toBe('Aluguel');
+    expect(nextOccurrence?.amount).toBe(1500);
+    expect(nextOccurrence?.notes).toBe('Apto 302');
+    expect(nextOccurrence?.type).toBe(DebtType.RECURRING);
+    expect(nextOccurrence?.status).toBe(DebtStatus.PENDING);
+    expect(nextOccurrence?.paidAt).toBeNull();
+    expect(nextOccurrence?.paymentSource).toBeNull();
+    expect(nextOccurrence?.dueDate.toISOString().slice(0, 10)).toBe(
+      '2026-02-28',
+    );
+  });
+
+  it('should not create a next occurrence when paying a ONE_TIME debt', async () => {
+    const debt = Debt.create({
+      id: 'debt-1',
+      userId: 'user-1',
+      description: 'Conta única',
+      amount: 200,
+      dueDate: new Date('2026-04-20'),
+      type: DebtType.ONE_TIME,
+      status: DebtStatus.PENDING,
+      notes: null,
+      paidAt: null,
+      paymentSource: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await debtRepository.create(debt);
+
+    await sut.execute({
+      userId: 'user-1',
+      id: 'debt-1',
+      paidAt: new Date('2026-04-18'),
+      expenseCategoryId: 'category-1',
+      paymentSource: DebtPaymentSource.CASH,
+    });
+
+    expect(debtRepository.items).toHaveLength(1);
+  });
+
+  it('should not create a next occurrence when paying an INSTALLMENT debt', async () => {
+    const debt = Debt.create({
+      id: 'debt-1',
+      userId: 'user-1',
+      description: 'Parcela 02/04',
+      amount: 250,
+      dueDate: new Date('2026-04-20'),
+      type: DebtType.INSTALLMENT,
+      status: DebtStatus.PENDING,
+      notes: null,
+      paidAt: null,
+      paymentSource: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await debtRepository.create(debt);
+
+    await sut.execute({
+      userId: 'user-1',
+      id: 'debt-1',
+      paidAt: new Date('2026-04-18'),
+      expenseCategoryId: 'category-1',
+      paymentSource: DebtPaymentSource.CASH,
+    });
+
+    expect(debtRepository.items).toHaveLength(1);
+  });
+
   it('should throw an error when trying to pay an already paid debt', async () => {
     const debt = Debt.create({
       id: 'debt-1',

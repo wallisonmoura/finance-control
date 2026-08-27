@@ -183,6 +183,19 @@ describe('registerDebtSchema', () => {
     }
   });
 
+  it('should reject the internal INSTALLMENT type, which is only system-assigned', () => {
+    const result = registerDebtSchema.safeParse({
+      ...validPayload,
+      type: DebtType.INSTALLMENT,
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Tipo de dívida inválido.');
+    }
+  });
+
   it('should reject notes that are not a string', () => {
     const result = registerDebtSchema.safeParse({
       ...validPayload,

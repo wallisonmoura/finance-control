@@ -1,5 +1,6 @@
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
+import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { makePayDebtUseCase } from '@/modules/debts/infra/factories/make-pay-debt-use-case';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
 import { prisma } from '@/shared/infra/database/prisma/client';
@@ -101,6 +102,62 @@ describe('PayDebtUseCase Integration', () => {
     expect(updatedWallet?.bankBalance.toNumber()).toBe(0);
     expect(updatedWallet?.cashBalance.toNumber()).toBe(100);
     expect(updatedWallet?.receivableBalance.toNumber()).toBe(200);
+  });
+
+  it('should persist the next pending occurrence when paying a RECURRING debt', async () => {
+    const user = await createTestUser();
+
+    const wallet = await createTestWallet({
+      userId: user.id,
+      bankBalance: 500,
+      cashBalance: 100,
+      receivableBalance: 200,
+    });
+
+    const category = await createTestExpenseCategory({
+      userId: user.id,
+      name: 'Moradia',
+      slug: 'moradia',
+    });
+
+    const debt = await createTestDebt({
+      userId: user.id,
+      walletId: wallet.id,
+      description: 'Aluguel',
+      amount: 500,
+      status: DebtStatus.PENDING,
+      type: DebtType.RECURRING,
+      dueDate: new Date('2026-01-31T00:00:00.000Z'),
+    });
+
+    const useCase = makePayDebtUseCase();
+
+    await useCase.execute({
+      id: debt.id,
+      userId: user.id,
+      paidAt: new Date('2026-01-28T00:00:00.000Z'),
+      expenseCategoryId: category.id,
+      paymentSource: DebtPaymentSource.BANK,
+    });
+
+    const debtsOnDatabase = await prisma.debt.findMany({
+      where: { userId: user.id },
+    });
+
+    expect(debtsOnDatabase).toHaveLength(2);
+
+    const nextOccurrence = debtsOnDatabase.find((item) => item.id !== debt.id);
+
+    expect(nextOccurrence).toBeDefined();
+    expect(nextOccurrence?.status).toBe(DebtStatus.PENDING);
+    expect(nextOccurrence?.type).toBe(DebtType.RECURRING);
+    expect(nextOccurrence?.description).toBe('Aluguel');
+    expect(nextOccurrence?.amount.toNumber()).toBe(500);
+    expect(nextOccurrence?.dueDate.toISOString().slice(0, 10)).toBe(
+      '2026-02-28',
+    );
+    expect(nextOccurrence?.paidAt).toBeNull();
+    expect(nextOccurrence?.paymentSource).toBeNull();
   });
 
   it('should roll back when the Wallet has insufficient balance in the chosen source', async () => {

@@ -183,6 +183,19 @@ describe('updateDebtSchema', () => {
     }
   });
 
+  it('should accept the INSTALLMENT type, so editing an existing installment row preserves it', () => {
+    const result = updateDebtSchema.safeParse({
+      ...validPayload,
+      type: DebtType.INSTALLMENT,
+    });
+
+    expect(result.success).toBe(true);
+
+    if (result.success) {
+      expect(result.data.type).toBe(DebtType.INSTALLMENT);
+    }
+  });
+
   it('should reject notes that are not a string', () => {
     const result = updateDebtSchema.safeParse({
       ...validPayload,

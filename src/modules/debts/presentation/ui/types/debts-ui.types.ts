@@ -1,4 +1,4 @@
-export type DebtTypeUi = 'ONE_TIME' | 'RECURRING';
+export type DebtTypeUi = 'ONE_TIME' | 'INSTALLMENT' | 'RECURRING';
 
 export type DebtStatusUi = 'PENDING' | 'PAID';
 
