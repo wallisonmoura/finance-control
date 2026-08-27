@@ -1,6 +1,8 @@
+import { DebtType } from '../../domain/enums/debt-type.enum';
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
 import { UnauthorizedDebtAccessError } from '../../domain/errors/unauthorized-debt-access.error';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
+import { buildNextRecurringDebt } from '../../domain/services/build-next-recurring-debt';
 import { DebtPaymentFinancialEffectPort } from '../../domain/services/debt-payment-financial-effect.port';
 import { DebtPaymentWalletEffectPort } from '../../domain/services/debt-payment-wallet-effect.port';
 import { DebtOutput } from '../dtos/debt.output';
@@ -45,6 +47,12 @@ export class PayDebtUseCase {
       amount: savedDebt.amount,
       paymentSource: input.paymentSource,
     });
+
+    if (savedDebt.type === DebtType.RECURRING) {
+      const nextDebt = buildNextRecurringDebt(savedDebt, new Date());
+
+      await this.debtRepository.create(nextDebt);
+    }
 
     return savedDebt.toJSON();
   }

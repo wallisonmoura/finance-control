@@ -68,7 +68,7 @@ describe('POST /api/auth/register', () => {
     expect(setCookie).toContain('Max-Age=604800');
   });
 
-  it('should provision exactly one wallet and 26 expense categories for the new user', async () => {
+  it('should provision exactly one wallet and 27 expense categories for the new user', async () => {
     const email = `provisioning-${Date.now()}@email.com`;
 
     const response = await POST(
@@ -84,7 +84,7 @@ describe('POST /api/auth/register', () => {
     });
 
     expect(wallets).toHaveLength(1);
-    expect(categories).toHaveLength(26);
+    expect(categories).toHaveLength(27);
   });
 
   it('should return 409 when the email is already registered', async () => {

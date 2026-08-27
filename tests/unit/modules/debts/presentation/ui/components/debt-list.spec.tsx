@@ -37,6 +37,20 @@ describe('DebtList', () => {
     expect(screen.getAllByText('R$ 300,00')).toHaveLength(2);
   });
 
+  it('should show a distinct label for installment and recurring debts', () => {
+    render(
+      <DebtList
+        debts={[
+          { ...pendingDebt, id: 'installment-debt-id', type: 'INSTALLMENT' },
+          { ...pendingDebt, id: 'recurring-debt-id', type: 'RECURRING' },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('Parcelada')).toBeInTheDocument();
+    expect(screen.getByText('Recorrente')).toBeInTheDocument();
+  });
+
   it('should sort pending debts first and newest paid debts first', () => {
     render(
       <DebtList

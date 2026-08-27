@@ -26,6 +26,7 @@ const EXPECTED_CATEGORY_SLUGS = [
   'vestuario',
   'educacao',
   'presentes',
+  'cartao-credito',
   'outros',
 ];
 
@@ -65,7 +66,7 @@ describe('User auto-provisioning trigger', () => {
     expect(Number(wallets[0].receivableBalance)).toBe(0);
   });
 
-  it('should create the 26 default expense categories when a user is inserted directly', async () => {
+  it('should create the 27 default expense categories when a user is inserted directly', async () => {
     const user = await prisma.user.create({
       data: {
         name: 'Trigger Test User',
@@ -78,7 +79,7 @@ describe('User auto-provisioning trigger', () => {
       where: { userId: user.id },
     });
 
-    expect(categories).toHaveLength(26);
+    expect(categories).toHaveLength(27);
     expect(categories.every((category) => category.isActive)).toBe(true);
     expect(categories.map((category) => category.slug).sort()).toEqual(
       [...EXPECTED_CATEGORY_SLUGS].sort(),

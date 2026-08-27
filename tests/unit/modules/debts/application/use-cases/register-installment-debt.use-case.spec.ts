@@ -12,7 +12,7 @@ describe('RegisterInstallmentDebtUseCase', () => {
     sut = new RegisterInstallmentDebtUseCase(debtRepository);
   });
 
-  it('should create one debt per installment with the same description and RECURRING type', async () => {
+  it('should create one debt per installment with the same description and INSTALLMENT type', async () => {
     const output = await sut.execute({
       userId: 'user-1',
       description: 'Cartão Letícia',
@@ -28,7 +28,7 @@ describe('RegisterInstallmentDebtUseCase', () => {
     for (const debt of output) {
       expect(debt.userId).toBe('user-1');
       expect(debt.description).toBe('Cartão Letícia');
-      expect(debt.type).toBe(DebtType.RECURRING);
+      expect(debt.type).toBe(DebtType.INSTALLMENT);
       expect(debt.status).toBe(DebtStatus.PENDING);
       expect(debt.paidAt).toBeNull();
       expect(debt.paymentSource).toBeNull();

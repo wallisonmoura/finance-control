@@ -28,7 +28,15 @@ type DebtListProps = {
 };
 
 function getDebtTypeLabel(type: DebtUi['type']) {
-  return type === 'ONE_TIME' ? 'Única' : 'Recorrente';
+  if (type === 'ONE_TIME') {
+    return 'Única';
+  }
+
+  if (type === 'INSTALLMENT') {
+    return 'Parcelada';
+  }
+
+  return 'Recorrente';
 }
 
 function getDebtStatusLabel(status: DebtUi['status']) {
