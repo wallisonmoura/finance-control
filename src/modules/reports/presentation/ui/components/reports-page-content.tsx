@@ -11,7 +11,7 @@ import {
   ReportsPeriodMonths,
 } from '../utils/reports-period';
 import { CategoryExpensesChart } from './category-expenses-chart';
-import { DebtsPendingPaidChart } from './debts-pending-paid-chart';
+import { DebtsPaidByTypeChart } from './debts-paid-by-type-chart';
 import { IncomeExpenseEvolutionChart } from './income-expense-evolution-chart';
 
 type ReportsPageContentProps = {
@@ -72,7 +72,7 @@ export function ReportsPageContent({ initialMonths }: ReportsPageContentProps) {
         <CategoryExpensesChart months={months} />
 
         <div className='xl:col-span-2'>
-          <DebtsPendingPaidChart months={months} />
+          <DebtsPaidByTypeChart months={months} />
         </div>
       </div>
     </div>

@@ -17,23 +17,26 @@ import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-s
 import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
-import { useDebtsPendingPaidChart } from '../hooks/use-debts-pending-paid-chart';
+import { useDebtsPaidByTypeChart } from '../hooks/use-debts-paid-by-type-chart';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 
-type DebtsPendingPaidChartProps = {
+type DebtsPaidByTypeChartProps = {
   months: ReportsPeriodMonths;
 };
 
-export function DebtsPendingPaidChart({ months }: DebtsPendingPaidChartProps) {
-  const { data, isLoading, error, refresh } = useDebtsPendingPaidChart(months);
+export function DebtsPaidByTypeChart({ months }: DebtsPaidByTypeChartProps) {
+  const { data, isLoading, error, refresh } = useDebtsPaidByTypeChart(months);
   const hasData = data.some(
-    (item) => item.pendingTotal > 0 || item.paidTotal > 0,
+    (item) =>
+      item.oneTimeTotal > 0 ||
+      item.installmentTotal > 0 ||
+      item.recurringTotal > 0,
   );
 
   return (
     <Card>
       <h2 className='text-base font-semibold text-foreground'>
-        Dívidas pendentes × pagas
+        Dívidas pagas por tipo
       </h2>
 
       {isLoading && <Skeleton className='mt-4 h-72 w-full' />}
@@ -46,7 +49,7 @@ export function DebtsPendingPaidChart({ months }: DebtsPendingPaidChartProps) {
 
       {!isLoading && !error && !hasData && (
         <div className='mt-4'>
-          <EmptyState description='Nenhuma dívida encontrada no período selecionado.' />
+          <EmptyState description='Nenhuma dívida paga no período selecionado.' />
         </div>
       )}
 
@@ -66,15 +69,21 @@ export function DebtsPendingPaidChart({ months }: DebtsPendingPaidChartProps) {
               <Tooltip formatter={(value) => formatMoney(Number(value))} />
               <Legend />
               <Bar
-                dataKey='pendingTotal'
-                name='Pendente'
-                fill='var(--warning)'
+                dataKey='oneTimeTotal'
+                name='Única'
+                fill='var(--income)'
                 radius={[4, 4, 0, 0]}
               />
               <Bar
-                dataKey='paidTotal'
-                name='Paga'
-                fill='var(--income)'
+                dataKey='installmentTotal'
+                name='Parcelada'
+                fill='var(--info)'
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                dataKey='recurringTotal'
+                name='Recorrente'
+                fill='var(--warning)'
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

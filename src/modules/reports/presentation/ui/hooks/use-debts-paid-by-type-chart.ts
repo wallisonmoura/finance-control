@@ -10,14 +10,15 @@ import {
   ReportsPeriodMonths,
 } from '../utils/reports-period';
 
-export type DebtsPendingPaidChartDatum = {
+export type DebtsPaidByTypeChartDatum = {
   monthLabel: string;
-  pendingTotal: number;
-  paidTotal: number;
+  oneTimeTotal: number;
+  installmentTotal: number;
+  recurringTotal: number;
 };
 
-type UseDebtsPendingPaidChartResult = {
-  data: DebtsPendingPaidChartDatum[];
+type UseDebtsPaidByTypeChartResult = {
+  data: DebtsPaidByTypeChartDatum[];
   isLoading: boolean;
   error: string | null;
   refresh: () => void;
@@ -27,10 +28,10 @@ function toMonthKey(dateOnly: string): string {
   return dateOnly.slice(0, 7);
 }
 
-export function useDebtsPendingPaidChart(
+export function useDebtsPaidByTypeChart(
   months: ReportsPeriodMonths,
-): UseDebtsPendingPaidChartResult {
-  const [data, setData] = useState<DebtsPendingPaidChartDatum[]>([]);
+): UseDebtsPaidByTypeChartResult {
+  const [data, setData] = useState<DebtsPaidByTypeChartDatum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const requestIdRef = useRef(0);
@@ -57,36 +58,30 @@ export function useDebtsPendingPaidChart(
 
     const monthKeys = getReportsMonthKeys(months);
     const monthKeySet = new Set(monthKeys);
-    const pendingByMonth = new Map<string, number>();
-    const paidByMonth = new Map<string, number>();
+    const totalsByType = {
+      ONE_TIME: new Map<string, number>(),
+      INSTALLMENT: new Map<string, number>(),
+      RECURRING: new Map<string, number>(),
+    };
 
-    // Each debt counts in exactly one series/month by its current status —
-    // PENDING by dueDate, PAID by paidAt — never both, mirroring RG41 (a
-    // paid debt stops composing pendingDebts).
+    // Pending debts already have their own dedicated surfaces (the
+    // due-soon bell, the pending debts page) — this chart only tracks
+    // debts already paid, broken down by type instead of by status, since
+    // in practice almost everything ends up PAID and a pending/paid split
+    // rarely shows any variation month to month.
     for (const debt of response.data ?? []) {
-      if (debt.status === 'PENDING') {
-        const monthKey = toMonthKey(debt.dueDate);
-
-        if (monthKeySet.has(monthKey)) {
-          pendingByMonth.set(
-            monthKey,
-            (pendingByMonth.get(monthKey) ?? 0) + debt.amount,
-          );
-        }
-
+      if (debt.status !== 'PAID' || !debt.paidAt) {
         continue;
       }
 
-      if (debt.paidAt) {
-        const monthKey = toMonthKey(debt.paidAt);
+      const monthKey = toMonthKey(debt.paidAt);
 
-        if (monthKeySet.has(monthKey)) {
-          paidByMonth.set(
-            monthKey,
-            (paidByMonth.get(monthKey) ?? 0) + debt.amount,
-          );
-        }
+      if (!monthKeySet.has(monthKey)) {
+        continue;
       }
+
+      const byMonth = totalsByType[debt.type];
+      byMonth.set(monthKey, (byMonth.get(monthKey) ?? 0) + debt.amount);
     }
 
     const aggregated = monthKeys.map((monthKey) => {
@@ -94,8 +89,9 @@ export function useDebtsPendingPaidChart(
 
       return {
         monthLabel: formatReportsMonthLabel(year, month),
-        pendingTotal: pendingByMonth.get(monthKey) ?? 0,
-        paidTotal: paidByMonth.get(monthKey) ?? 0,
+        oneTimeTotal: totalsByType.ONE_TIME.get(monthKey) ?? 0,
+        installmentTotal: totalsByType.INSTALLMENT.get(monthKey) ?? 0,
+        recurringTotal: totalsByType.RECURRING.get(monthKey) ?? 0,
       };
     });
 
