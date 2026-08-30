@@ -91,12 +91,12 @@ export function BalanceSummaryCards({
     <section aria-label='Resumo financeiro' className='space-y-7'>
       <HeroCard
         backgroundClassName='bg-[url("/images/dashboard-mobile-bg.png")] lg:bg-[url("/images/dashboard-bg.png")]'
-        overlayClassName='bg-primary/25'
+        overlayClassName='bg-hero/25'
         contentClassName='lg:grid-cols-[1fr_auto] lg:items-center'
       >
         <div className='space-y-5'>
-          <div className='flex items-center gap-3 text-sm font-medium text-primary-foreground'>
-            <span className='flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent'>
+          <div className='flex items-center gap-3 text-sm font-medium text-hero-foreground'>
+            <span className='flex size-10 items-center justify-center rounded-full bg-hero-accent/10 text-hero-accent'>
               <Landmark aria-hidden='true' className='size-5' />
             </span>
             <p>Saldo Final</p>
@@ -105,36 +105,36 @@ export function BalanceSummaryCards({
           <div className='space-y-2'>
             <MoneyDisplay
               value={summary.finalBalance}
-              className={`text-4xl text-primary-foreground sm:text-5xl ${
+              className={`text-4xl text-hero-foreground sm:text-5xl ${
                 summary.finalBalance < 0 ? 'text-destructive' : ''
               }`}
             />
-            <p className='max-w-2xl text-sm text-primary-foreground/90'>
+            <p className='max-w-2xl text-sm text-hero-foreground/90'>
               Resultado após considerar dívidas pendentes.
             </p>
           </div>
         </div>
 
         <div className='grid gap-3 sm:grid-cols-2 lg:min-w-107.5'>
-          <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
-            <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
+          <div className='rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 p-4 shadow-sm backdrop-blur'>
+            <div className='flex items-center gap-2 text-sm font-medium text-hero-foreground'>
               <WalletCards
                 aria-hidden='true'
-                className='size-5 text-accent'
+                className='size-5 text-hero-accent'
               />
               <span>Valor Total da Carteira</span>
             </div>
             <MoneyDisplay
               value={summary.wallet.walletTotal}
-              className='mt-4 text-2xl text-primary-foreground'
+              className='mt-4 text-2xl text-hero-foreground'
             />
-            <p className='mt-2 text-sm text-primary-foreground/80'>
+            <p className='mt-2 text-sm text-hero-foreground/80'>
               Disponível para uso
             </p>
           </div>
 
-          <div className='rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 shadow-sm backdrop-blur'>
-            <div className='flex items-center gap-2 text-sm font-medium text-primary-foreground'>
+          <div className='rounded-lg border border-hero-foreground/15 bg-hero-foreground/5 p-4 shadow-sm backdrop-blur'>
+            <div className='flex items-center gap-2 text-sm font-medium text-hero-foreground'>
               <BanknoteX
                 aria-hidden='true'
                 className='size-5 text-destructive'
@@ -145,7 +145,7 @@ export function BalanceSummaryCards({
               value={summary.debts.pendingDebts}
               className='mt-4 text-2xl text-destructive'
             />
-            <p className='mt-2 text-sm text-primary-foreground/80'>
+            <p className='mt-2 text-sm text-hero-foreground/80'>
               Total a pagar
             </p>
           </div>

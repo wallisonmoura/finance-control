@@ -2,6 +2,7 @@ import { getCurrentAuthenticatedUser } from '@/modules/auth/presentation/server/
 import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/current-user-menu';
 import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
 import { getCurrentUserPendingDebts } from '@/modules/debts/presentation/server/get-current-user-debts';
+import { ThemeToggle } from '@/shared/presentation/ui/components/theme-toggle';
 import { PrivateNavigation } from '@/shared/presentation/ui/layout/private-navigation';
 import { ReactNode } from 'react';
 
@@ -34,6 +35,7 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
               initialUser={currentUser}
               initialError={currentUserError}
             >
+              <ThemeToggle />
               <DebtsDueSoonBell
                 initialDebts={pendingDebts}
                 initialError={pendingDebtsError}
