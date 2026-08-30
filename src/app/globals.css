@@ -49,6 +49,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-hero-accent: var(--hero-accent);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero: var(--hero);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -107,6 +110,15 @@
   --sidebar-accent-foreground: var(--fc-background);
   --sidebar-border: #1e293b;
   --sidebar-ring: var(--fc-secondary);
+  /* Fixed dark hero surface (HeroCard and the debts overview gradient) —
+     intentionally the same in light and dark mode, unlike primary/
+     primary-foreground which shadcn's dark palette inverts for buttons. */
+  --hero: var(--fc-primary);
+  --hero-foreground: var(--fc-background);
+  /* Brand-green icon accent for hero surfaces — `--accent` itself turns
+     neutral grey in .dark (shadcn's generic hover-state convention), which
+     would make these icon badges nearly invisible against the dark hero. */
+  --hero-accent: var(--fc-secondary);
 }
 
 .dark {
@@ -150,6 +162,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --hero: var(--fc-primary);
+  --hero-foreground: var(--fc-background);
+  --hero-accent: var(--fc-secondary);
 }
 
 @layer base {

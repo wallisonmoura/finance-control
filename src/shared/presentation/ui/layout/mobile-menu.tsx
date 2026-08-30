@@ -10,6 +10,7 @@ import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.
 import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
 import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
+import { ThemeToggle } from '@/shared/presentation/ui/components/theme-toggle';
 
 import { NavigationLink } from './navigation-link';
 import { PRIVATE_NAVIGATION_ITEMS } from './navigation-items';
@@ -92,6 +93,8 @@ export function MobileMenu({
               <Menu aria-hidden='true' className='size-5' />
             )}
           </Button>
+
+          <ThemeToggle />
 
           <DebtsDueSoonBell
             initialDebts={initialPendingDebts}

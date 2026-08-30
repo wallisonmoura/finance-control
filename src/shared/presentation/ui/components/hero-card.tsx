@@ -17,7 +17,7 @@ export function HeroCard({
   children,
 }: HeroCardProps) {
   return (
-    <Card className='relative overflow-hidden border-primary/10 bg-primary p-0 text-primary-foreground shadow-xl shadow-border/80'>
+    <Card className='relative overflow-hidden border-hero/10 bg-hero p-0 text-hero-foreground shadow-xl shadow-border/80'>
       <div
         aria-hidden='true'
         className={cn('absolute inset-0 bg-cover bg-center', backgroundClassName)}
