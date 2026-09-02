@@ -3,12 +3,10 @@ import { render, screen } from '@testing-library/react';
 import { DesktopSidebar } from '@/shared/presentation/ui/layout/desktop-sidebar';
 
 describe('DesktopSidebar', () => {
-  it('should render the application name', () => {
+  it('should render the application logo for both light and dark theme', () => {
     render(<DesktopSidebar pathname='/' />);
 
-    expect(
-      screen.getByRole('img', { name: 'Finance Control' }),
-    ).toBeInTheDocument();
+    expect(screen.getAllByRole('img', { name: 'Finance Control' })).toHaveLength(2);
   });
 
   it('should render the main navigation links', () => {

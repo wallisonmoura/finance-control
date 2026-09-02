@@ -83,7 +83,7 @@ export function BalanceSummaryCards({
       value: summary.wallet.receivableBalance,
       description: 'Valores previstos para recebimento.',
       icon: HandCoins,
-      valueClassName: 'text-2xl font-semibold tracking-tight text-accent',
+      valueClassName: 'text-2xl font-semibold tracking-tight text-income',
     },
   ];
 

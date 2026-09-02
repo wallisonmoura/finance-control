@@ -104,12 +104,20 @@ export function MobileMenu({
 
         <div className='relative h-11 w-40 overflow-hidden'>
           <Image
-            src='/images/logo-finance-control-horizontal.png'
+            src='/images/logo-finance-control-light.png'
             alt='Finance Control'
             fill
             priority
             sizes='160px'
-            className='scale-110 object-contain object-right'
+            className='object-contain object-right dark:hidden'
+          />
+          <Image
+            src='/images/logo-finance-control-dark.png'
+            alt='Finance Control'
+            fill
+            priority
+            sizes='160px'
+            className='hidden object-contain object-right dark:block'
           />
         </div>
       </div>
