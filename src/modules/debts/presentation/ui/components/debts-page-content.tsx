@@ -13,6 +13,7 @@ import { deleteDebt } from '../services/debt-api.service';
 import { DebtUi } from '../types/debts-ui.types';
 import {
   filterDebtsByMonth,
+  filterDebtsPaidInMonth,
   getDebtsMonthFromUrlSearchParams,
 } from '../utils/debt-filters';
 import { DebtActionsBar } from './debt-actions-bar';
@@ -53,6 +54,11 @@ export function DebtsPageContent({
 
   const filteredDebts = useMemo(
     () => filterDebtsByMonth(debts, month),
+    [debts, month],
+  );
+
+  const paidInMonthDebts = useMemo(
+    () => filterDebtsPaidInMonth(debts, month),
     [debts, month],
   );
 
@@ -174,7 +180,10 @@ export function DebtsPageContent({
             )}
           </div>
 
-          <DebtsMonthSummary debts={filteredDebts} />
+          <DebtsMonthSummary
+            debts={filteredDebts}
+            paidDebts={paidInMonthDebts}
+          />
 
           <DebtList
             debts={filteredDebts}

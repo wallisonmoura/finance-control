@@ -43,10 +43,17 @@ describe('DebtsMonthSummary', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
-  it('should render zero when there are no pending debts in the list', () => {
-    render(<DebtsMonthSummary debts={[]} />);
+  it('should sum paid debts from the given paidDebts list', () => {
+    render(<DebtsMonthSummary debts={[]} paidDebts={debts} />);
 
-    expect(screen.getByText('R$ 0,00')).toBeInTheDocument();
+    expect(screen.getByText('Valor pago no mês')).toBeInTheDocument();
+    expect(screen.getByText('R$ 800,00')).toBeInTheDocument();
+  });
+
+  it('should render zero when there are no debts in either list', () => {
+    render(<DebtsMonthSummary debts={[]} paidDebts={[]} />);
+
+    expect(screen.getAllByText('R$ 0,00')).toHaveLength(2);
     expect(screen.getByText('0')).toBeInTheDocument();
   });
 });

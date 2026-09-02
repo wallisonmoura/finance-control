@@ -1,5 +1,6 @@
 import {
   filterDebtsByMonth,
+  filterDebtsPaidInMonth,
   formatMonthLabel,
   getCurrentMonthValue,
   getDebtsMonthFromUrlSearchParams,
@@ -169,5 +170,59 @@ describe('filterDebtsByMonth', () => {
     expect(filterDebtsByMonth([overdue], getCurrentMonthValue())).toEqual([
       overdue,
     ]);
+  });
+});
+
+describe('filterDebtsPaidInMonth', () => {
+  it('includes a paid debt whose paidAt falls in the selected month', () => {
+    const debt = buildDebt({
+      status: 'PAID',
+      paidAt: '2026-07-20T00:00:00.000Z',
+      paymentSource: 'BANK',
+    });
+
+    expect(filterDebtsPaidInMonth([debt], '2026-07')).toEqual([debt]);
+  });
+
+  it('excludes a paid debt whose paidAt falls in another month', () => {
+    const debt = buildDebt({
+      status: 'PAID',
+      paidAt: '2026-06-20T00:00:00.000Z',
+      paymentSource: 'BANK',
+    });
+
+    expect(filterDebtsPaidInMonth([debt], '2026-07')).toEqual([]);
+  });
+
+  it('excludes a pending debt regardless of dueDate', () => {
+    const debt = buildDebt({
+      status: 'PENDING',
+      dueDate: '2026-07-15T00:00:00.000Z',
+    });
+
+    expect(filterDebtsPaidInMonth([debt], '2026-07')).toEqual([]);
+  });
+
+  it('filters by paidAt, not by dueDate', () => {
+    const paidInMonth = buildDebt({
+      status: 'PAID',
+      dueDate: '2026-06-05T00:00:00.000Z',
+      paidAt: '2026-07-02T00:00:00.000Z',
+      paymentSource: 'CASH',
+    });
+    const paidOutsideMonth = buildDebt({
+      id: 'other-debt',
+      status: 'PAID',
+      dueDate: '2026-07-05T00:00:00.000Z',
+      paidAt: '2026-06-02T00:00:00.000Z',
+      paymentSource: 'CASH',
+    });
+
+    const result = filterDebtsPaidInMonth(
+      [paidInMonth, paidOutsideMonth],
+      '2026-07',
+    );
+
+    expect(result).toEqual([paidInMonth]);
   });
 });

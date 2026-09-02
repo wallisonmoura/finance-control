@@ -78,8 +78,9 @@ describe('DebtsPageContent', () => {
     expect(screen.getByText('Valor pago')).toBeInTheDocument();
     expect(screen.getByText('Valor pendente no mês')).toBeInTheDocument();
     expect(screen.getByText('Dívidas pendentes no mês')).toBeInTheDocument();
+    expect(screen.getByText('Valor pago no mês')).toBeInTheDocument();
     expect(screen.getAllByText('R$ 300,00')).toHaveLength(3);
-    expect(screen.getAllByText('R$ 500,00')).toHaveLength(2);
+    expect(screen.getAllByText('R$ 500,00')).toHaveLength(3);
     expect(screen.getByRole('link', { name: 'Ver pendentes' })).toHaveAttribute(
       'href',
       '/debts/pending',
@@ -163,8 +164,9 @@ describe('DebtsPageContent', () => {
     // mesmo com o mês filtrado (2026-06) sem nenhuma dívida.
     expect(screen.getByText('R$ 300,00')).toBeInTheDocument();
     expect(screen.getByText('R$ 500,00')).toBeInTheDocument();
-    // O mini-resumo do mês reflete o mês filtrado (sem dívidas), não o geral.
-    expect(screen.getByText('R$ 0,00')).toBeInTheDocument();
+    // O mini-resumo do mês reflete o mês filtrado (sem dívidas), não o geral
+    // — nem pendente nem paga (paidAt também cai em maio, fora de junho).
+    expect(screen.getAllByText('R$ 0,00')).toHaveLength(2);
   });
 
   it('should push the next month to the url when navigating forward', async () => {
