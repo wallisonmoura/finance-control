@@ -91,3 +91,21 @@ export function filterDebtsByMonth(
     );
   });
 }
+
+/**
+ * Dívidas pagas dentro do mês selecionado, por paidAt (não dueDate) — mesmo
+ * critério de mês já usado no gráfico "Dívidas pagas por tipo" (PR #73).
+ * Uma dívida com vencimento em outro mês, mas paga no mês selecionado,
+ * conta aqui; o inverso não conta.
+ */
+export function filterDebtsPaidInMonth(
+  debts: DebtUi[],
+  month: string,
+): DebtUi[] {
+  return debts.filter(
+    (debt) =>
+      debt.status === 'PAID' &&
+      debt.paidAt !== null &&
+      debt.paidAt.slice(0, 7) === month,
+  );
+}
