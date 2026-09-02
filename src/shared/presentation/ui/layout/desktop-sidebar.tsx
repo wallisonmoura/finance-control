@@ -14,12 +14,20 @@ export function DesktopSidebar({ pathname }: DesktopSidebarProps) {
       <div className='mb-7 border-b border-border pb-4'>
         <div className='relative h-16 w-full overflow-hidden'>
           <Image
-            src='/images/logo-finance-control-horizontal.png'
+            src='/images/logo-finance-control-light.png'
             alt='Finance Control'
             fill
             priority
             sizes='192px'
-            className='scale-110 object-contain object-left'
+            className='object-contain object-left dark:hidden'
+          />
+          <Image
+            src='/images/logo-finance-control-dark.png'
+            alt='Finance Control'
+            fill
+            priority
+            sizes='192px'
+            className='hidden object-contain object-left dark:block'
           />
         </div>
       </div>

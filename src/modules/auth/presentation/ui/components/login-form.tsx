@@ -72,7 +72,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           <div className='mx-auto flex w-full max-w-md flex-1 flex-col justify-center lg:h-full lg:flex-none lg:py-12 lg:pb-20'>
             <div className='mb-8 flex justify-center lg:hidden'>
               <Image
-                src='/images/logo-finance-control-dark.png'
+                src='/images/logo-finance-control-auth.png'
                 alt='Finance Control'
                 width={180}
                 height={120}
@@ -82,7 +82,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
             </div>
 
             <div className='text-center'>
-              <p className='text-sm font-semibold text-accent'>
+              <p className='text-sm font-semibold text-income'>
                 Bem-vindo de volta!
               </p>
               <h2 className='mt-3 text-3xl font-bold tracking-normal text-foreground'>
@@ -186,7 +186,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               <div className='flex justify-end'>
                 <button
                   type='button'
-                  className='cursor-default text-sm font-medium text-accent'
+                  className='cursor-default text-sm font-medium text-income'
                 >
                   Esqueceu sua senha?
                 </button>
@@ -211,7 +211,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                 type='button'
                 className='flex h-12 w-full cursor-default items-center justify-center gap-3 rounded-lg border border-border bg-card text-sm font-medium text-foreground shadow-sm'
               >
-                <span className='text-lg font-bold text-accent'>
+                <span className='text-lg font-bold text-income'>
                   G
                 </span>
                 Entrar com Google
@@ -222,7 +222,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               Ainda não tem uma conta?{' '}
               <button
                 type='button'
-                className='cursor-default font-semibold text-accent'
+                className='cursor-default font-semibold text-income'
               >
                 Criar conta
               </button>

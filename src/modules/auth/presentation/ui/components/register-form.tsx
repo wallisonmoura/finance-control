@@ -84,7 +84,7 @@ export function RegisterForm() {
           <div className='mx-auto flex w-full max-w-md flex-1 flex-col justify-center lg:h-full lg:flex-none lg:py-12 lg:pb-20'>
             <div className='mb-8 flex justify-center lg:hidden'>
               <Image
-                src='/images/logo-finance-control-dark.png'
+                src='/images/logo-finance-control-auth.png'
                 alt='Finance Control'
                 width={180}
                 height={120}
@@ -94,7 +94,7 @@ export function RegisterForm() {
             </div>
 
             <div className='text-center'>
-              <p className='text-sm font-semibold text-accent'>
+              <p className='text-sm font-semibold text-income'>
                 Bem-vindo(a) ao Finance Control!
               </p>
               <h2 className='mt-3 text-3xl font-bold tracking-normal text-foreground'>
@@ -299,7 +299,7 @@ export function RegisterForm() {
 
             <div className='mt-8 text-center text-sm text-muted-foreground'>
               Já tem uma conta?{' '}
-              <Link href='/login' className='font-semibold text-accent'>
+              <Link href='/login' className='font-semibold text-income'>
                 Fazer login
               </Link>
             </div>
