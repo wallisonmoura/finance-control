@@ -9,7 +9,7 @@ export function HeroCardSkeleton({
   subStatsCount = 0,
 }: HeroCardSkeletonProps) {
   return (
-    <Card className='overflow-hidden border-hero/10 bg-hero/5 p-5 sm:p-7'>
+    <Card className='overflow-hidden border-hero/10 bg-hero p-5 sm:p-7'>
       <div className='space-y-5'>
         <div className='flex items-center gap-3'>
           <Skeleton className='size-10 rounded-full' />
@@ -23,7 +23,7 @@ export function HeroCardSkeleton({
       </div>
 
       {subStatsCount > 0 && (
-        <div className='mt-6 flex flex-wrap gap-4 border-t border-border/50 pt-6'>
+        <div className='mt-6 flex flex-wrap gap-4 border-t border-hero-foreground/15 pt-6'>
           {Array.from({ length: subStatsCount }).map((_, index) => (
             <div key={index} className='min-w-24 flex-1 space-y-3'>
               <Skeleton className='size-5 rounded-full' />

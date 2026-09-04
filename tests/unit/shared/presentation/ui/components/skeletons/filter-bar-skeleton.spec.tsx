@@ -18,4 +18,13 @@ describe('FilterBarSkeleton', () => {
       container.querySelectorAll('[data-slot="skeleton"]'),
     ).toHaveLength(1);
   });
+
+  it('should lay out fields in a horizontal row, matching the real FilterBar', () => {
+    const { container } = render(<FilterBarSkeleton />);
+
+    const card = container.querySelector('[data-slot="card"]');
+
+    expect(card).toHaveClass('flex-row');
+    expect(card).not.toHaveClass('flex-col');
+  });
 });

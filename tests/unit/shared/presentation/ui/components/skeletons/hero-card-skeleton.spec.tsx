@@ -26,4 +26,13 @@ describe('HeroCardSkeleton', () => {
       container.querySelectorAll('[data-slot="skeleton"]'),
     ).toHaveLength(4);
   });
+
+  it('should render a background opaque enough to stay visible regardless of page theme, matching the real hero', () => {
+    const { container } = render(<HeroCardSkeleton />);
+
+    const card = container.querySelector('[data-slot="card"]');
+
+    expect(card).toHaveClass('bg-hero');
+    expect(card).not.toHaveClass('bg-hero/5');
+  });
 });
