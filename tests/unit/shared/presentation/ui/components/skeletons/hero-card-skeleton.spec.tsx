@@ -35,4 +35,23 @@ describe('HeroCardSkeleton', () => {
     expect(card).toHaveClass('bg-hero');
     expect(card).not.toHaveClass('bg-hero/5');
   });
+
+  it('should arrange content and sub-stats side by side at the lg breakpoint, matching the real HeroCard, without a divider it never has', () => {
+    const { container } = render(<HeroCardSkeleton subStatsCount={2} />);
+
+    const contentGrid = container.querySelector('[data-slot="card"] > div');
+
+    expect(contentGrid).toHaveClass('lg:grid-cols-[1fr_auto]');
+    expect(contentGrid).not.toHaveClass('border-t');
+  });
+
+  it('should render each sub-stat as its own boxed card, matching the real hero-foreground boxes', () => {
+    const { container } = render(<HeroCardSkeleton subStatsCount={2} />);
+
+    const subStatBoxes = container.querySelectorAll(
+      '.border-hero-foreground\\/15.bg-hero-foreground\\/5',
+    );
+
+    expect(subStatBoxes).toHaveLength(2);
+  });
 });
