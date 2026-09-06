@@ -30,7 +30,12 @@ export function HeroCardSkeleton({
         </div>
 
         {subStatsCount > 0 && (
-          <div className='grid gap-3 sm:grid-cols-2'>
+          <div
+            className={cn(
+              'grid gap-3 sm:grid-cols-2',
+              subStatsCount >= 3 && 'xl:grid-cols-3',
+            )}
+          >
             {Array.from({ length: subStatsCount }).map((_, index) => (
               <div
                 key={index}
