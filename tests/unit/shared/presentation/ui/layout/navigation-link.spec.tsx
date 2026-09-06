@@ -1,5 +1,21 @@
 import { NavigationLink } from '@/shared/presentation/ui/layout/navigation-link';
 import { render, screen } from '@testing-library/react';
+import type { ComponentProps } from 'react';
+
+jest.mock('next/link', () => {
+  return function MockLink({
+    href,
+    prefetch,
+    children,
+    ...rest
+  }: ComponentProps<'a'> & { href: string; prefetch?: boolean }) {
+    return (
+      <a href={href} data-prefetch={String(prefetch)} {...rest}>
+        {children}
+      </a>
+    );
+  };
+});
 
 describe('NavigationLink', () => {
   it('should render the navigation label', () => {
@@ -31,6 +47,15 @@ describe('NavigationLink', () => {
 
     expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute(
       'aria-current',
+    );
+  });
+
+  it('should prefetch eagerly so the target route is ready before click', () => {
+    render(<NavigationLink href='/wallet' label='Wallet' />);
+
+    expect(screen.getByRole('link', { name: 'Wallet' })).toHaveAttribute(
+      'data-prefetch',
+      'true',
     );
   });
 });

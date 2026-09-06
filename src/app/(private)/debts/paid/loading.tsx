@@ -2,12 +2,14 @@ import { RouteLoadingRegion } from '@/shared/presentation/ui/components/skeleton
 import { BackLinkSkeleton } from '@/shared/presentation/ui/components/skeletons/back-link-skeleton';
 import { PageTitleSkeleton } from '@/shared/presentation/ui/components/skeletons/page-title-skeleton';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
+import { PaidDebtsSummarySkeleton } from '@/modules/debts/presentation/ui/components/paid-debts-summary-skeleton';
 
 export default function PaidDebtsLoading() {
   return (
     <RouteLoadingRegion>
       <BackLinkSkeleton />
       <PageTitleSkeleton />
+      <PaidDebtsSummarySkeleton />
       <ListRowsSkeleton count={4} />
     </RouteLoadingRegion>
   );
