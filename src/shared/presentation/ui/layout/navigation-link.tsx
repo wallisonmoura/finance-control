@@ -21,7 +21,6 @@ export function NavigationLink({
   return (
     <Link
       href={href}
-      prefetch
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
