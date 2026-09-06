@@ -50,12 +50,12 @@ describe('NavigationLink', () => {
     );
   });
 
-  it('should prefetch eagerly so the target route is ready before click', () => {
+  it('should use next/link default prefetch instead of forcing eager prefetch', () => {
     render(<NavigationLink href='/wallet' label='Wallet' />);
 
     expect(screen.getByRole('link', { name: 'Wallet' })).toHaveAttribute(
       'data-prefetch',
-      'true',
+      'undefined',
     );
   });
 });
