@@ -16,4 +16,18 @@ describe('DebtsMonthSummarySkeleton', () => {
       container.querySelectorAll('[data-slot="skeleton"]'),
     ).toHaveLength(9);
   });
+
+  it('should let the label and value placeholders shrink to fit the 3-up tablet column instead of forcing horizontal overflow', () => {
+    const { container } = render(<DebtsMonthSummarySkeleton />);
+
+    const textContainers = container.querySelectorAll('.min-w-0.flex-1');
+    expect(textContainers).toHaveLength(3);
+
+    textContainers.forEach((textContainer) => {
+      const bars = textContainer.querySelectorAll('[data-slot="skeleton"]');
+      bars.forEach((bar) => {
+        expect(bar).toHaveClass('w-full');
+      });
+    });
+  });
 });

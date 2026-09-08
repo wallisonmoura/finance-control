@@ -15,6 +15,15 @@ describe('StatusMessage', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Registro salvo.');
   });
 
+  it('should use a fixed dark text color for success messages so they stay legible on the always-light-green background in dark mode', () => {
+    render(<StatusMessage message='Registro salvo.' tone='success' />);
+
+    expect(screen.getByRole('status')).toHaveClass(
+      'text-success-light-foreground',
+    );
+    expect(screen.getByRole('status')).not.toHaveClass('text-foreground');
+  });
+
   it('should render error messages as an alert', () => {
     render(<StatusMessage message='Falha ao carregar.' tone='error' />);
 

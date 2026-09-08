@@ -195,7 +195,7 @@ export function WalletBalancesForm({
             </div>
           </div>
 
-          <div className='flex flex-col items-center justify-center rounded-lg border border-accent/30 bg-success-light px-5 py-6 text-center text-sm leading-6 text-foreground lg:min-h-36'>
+          <div className='flex flex-col items-center justify-center rounded-lg border border-accent/30 bg-success-light px-5 py-6 text-center text-sm leading-6 text-success-light-foreground lg:min-h-36'>
             <ShieldCheck
               aria-hidden='true'
               className='mb-3 size-8 shrink-0 text-accent'

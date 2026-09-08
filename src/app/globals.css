@@ -29,6 +29,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success-light: var(--fc-success-light);
+  --color-success-light-foreground: var(--success-light-foreground);
   --color-income: var(--income);
   --color-income-muted: var(--income-muted);
   --color-expense: var(--expense);
@@ -119,6 +120,11 @@
      neutral grey in .dark (shadcn's generic hover-state convention), which
      would make these icon badges nearly invisible against the dark hero. */
   --hero-accent: var(--fc-secondary);
+  /* Fixed dark text for the always-light-green success-light surface —
+     same reasoning as --hero-foreground: the background never inverts for
+     dark mode, so the foreground text can't either or it becomes
+     unreadable against it. */
+  --success-light-foreground: var(--fc-text-primary);
 }
 
 .dark {
@@ -165,6 +171,7 @@
   --hero: var(--fc-primary);
   --hero-foreground: var(--fc-background);
   --hero-accent: var(--fc-secondary);
+  --success-light-foreground: var(--fc-text-primary);
 }
 
 @layer base {
