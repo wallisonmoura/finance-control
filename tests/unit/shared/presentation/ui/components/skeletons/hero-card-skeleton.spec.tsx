@@ -54,4 +54,20 @@ describe('HeroCardSkeleton', () => {
 
     expect(subStatBoxes).toHaveLength(2);
   });
+
+  it('should lay 3 sub-stats out in a single row at the xl breakpoint, matching DebtOverviewSummary', () => {
+    const { container } = render(<HeroCardSkeleton subStatsCount={3} />);
+
+    const subStatsGrid = container.querySelector('.gap-3.sm\\:grid-cols-2');
+
+    expect(subStatsGrid).toHaveClass('xl:grid-cols-3');
+  });
+
+  it('should not force a 3-column row for a 2-item sub-stats grid', () => {
+    const { container } = render(<HeroCardSkeleton subStatsCount={2} />);
+
+    const subStatsGrid = container.querySelector('.gap-3.sm\\:grid-cols-2');
+
+    expect(subStatsGrid).not.toHaveClass('xl:grid-cols-3');
+  });
 });
