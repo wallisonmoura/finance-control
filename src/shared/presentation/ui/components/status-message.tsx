@@ -34,13 +34,15 @@ export function StatusMessage({
       aria-live='polite'
       className={
         tone === 'success'
-          ? 'border-accent/30 bg-success-light text-foreground'
+          ? 'border-accent/30 bg-success-light text-success-light-foreground'
           : undefined
       }
     >
       {title ? <AlertTitle>{title}</AlertTitle> : null}
       <AlertDescription
-        className={tone === 'success' ? 'text-muted-foreground' : undefined}
+        className={
+          tone === 'success' ? 'text-success-light-foreground/70' : undefined
+        }
       >
         {message}
       </AlertDescription>

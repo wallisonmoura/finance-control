@@ -232,6 +232,22 @@ describe('WalletBalancesForm', () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
+  it('should use a fixed dark text color on the info box so it stays legible on its always-light-green background in dark mode', () => {
+    const { container } = render(
+      <WalletBalancesForm
+        wallet={wallet}
+        isUpdating={false}
+        onSubmit={jest.fn()}
+        onCancel={jest.fn()}
+      />,
+    );
+
+    const infoBox = container.querySelector('.bg-success-light');
+
+    expect(infoBox).toHaveClass('text-success-light-foreground');
+    expect(infoBox).not.toHaveClass('text-foreground');
+  });
+
   it('should disable the button while updating', () => {
     render(
       <WalletBalancesForm
