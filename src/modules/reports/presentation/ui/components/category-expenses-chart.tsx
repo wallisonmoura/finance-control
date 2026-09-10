@@ -75,6 +75,7 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 dataKey='total'
                 fill='var(--expense)'
                 radius={[0, 4, 4, 0]}
+                barSize={16}
               />
             </BarChart>
           </ResponsiveContainer>

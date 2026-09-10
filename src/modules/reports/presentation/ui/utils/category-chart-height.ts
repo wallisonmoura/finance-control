@@ -1,5 +1,5 @@
 const MIN_CHART_HEIGHT = 288;
-const ROW_HEIGHT = 32;
+const ROW_HEIGHT = 26;
 const BASE_PADDING = 64;
 
 export function getCategoryChartHeight(categoryCount: number): number {
