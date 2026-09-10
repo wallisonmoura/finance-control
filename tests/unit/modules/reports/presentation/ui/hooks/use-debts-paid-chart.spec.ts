@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { useDebtsPaidByTypeChart } from '@/modules/reports/presentation/ui/hooks/use-debts-paid-by-type-chart';
+import { useDebtsPaidChart } from '@/modules/reports/presentation/ui/hooks/use-debts-paid-chart';
 import * as debtApiService from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service');
@@ -10,12 +10,12 @@ jest.mock('@/shared/presentation/ui/lib/date', () => ({
 
 const getDebtsMock = jest.mocked(debtApiService.getDebts);
 
-describe('useDebtsPaidByTypeChart', () => {
+describe('useDebtsPaidChart', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should bucket paid debts by paidAt month and type', async () => {
+  it('should bucket paid debts by paidAt month, summing all types together', async () => {
     getDebtsMock.mockResolvedValue({
       data: [
         {
@@ -91,37 +91,22 @@ describe('useDebtsPaidByTypeChart', () => {
       ],
     });
 
-    const { result } = renderHook(() => useDebtsPaidByTypeChart(3));
+    const { result } = renderHook(() => useDebtsPaidChart(3));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.error).toBeNull();
     expect(result.current.data).toEqual([
-      {
-        monthLabel: 'jun/26',
-        oneTimeTotal: 0,
-        installmentTotal: 0,
-        recurringTotal: 0,
-      },
-      {
-        monthLabel: 'jul/26',
-        oneTimeTotal: 0,
-        installmentTotal: 0,
-        recurringTotal: 300,
-      },
-      {
-        monthLabel: 'ago/26',
-        oneTimeTotal: 200,
-        installmentTotal: 150,
-        recurringTotal: 0,
-      },
+      { monthLabel: 'jun/26', total: 0 },
+      { monthLabel: 'jul/26', total: 300 },
+      { monthLabel: 'ago/26', total: 350 },
     ]);
   });
 
   it('should set error when the request fails', async () => {
     getDebtsMock.mockResolvedValue({ error: 'Falha ao buscar' });
 
-    const { result } = renderHook(() => useDebtsPaidByTypeChart(3));
+    const { result } = renderHook(() => useDebtsPaidChart(3));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

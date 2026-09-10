@@ -17,6 +17,7 @@ import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useCategoryExpensesChart } from '../hooks/use-category-expenses-chart';
+import { getCategoryChartHeight } from '../utils/category-chart-height';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 
 type CategoryExpensesChartProps = {
@@ -47,7 +48,10 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
       )}
 
       {!isLoading && !error && data.length > 0 && (
-        <div className='mt-4 h-72 w-full'>
+        <div
+          className='mt-4 w-full'
+          style={{ height: getCategoryChartHeight(data.length) }}
+        >
           <ResponsiveContainer width='100%' height='100%'>
             <BarChart
               data={data}
@@ -64,12 +68,14 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 dataKey='categoryName'
                 width={140}
                 tick={{ fontSize: 12 }}
+                interval={0}
               />
               <Tooltip formatter={(value) => formatMoney(Number(value))} />
               <Bar
                 dataKey='total'
                 fill='var(--expense)'
                 radius={[0, 4, 4, 0]}
+                barSize={16}
               />
             </BarChart>
           </ResponsiveContainer>

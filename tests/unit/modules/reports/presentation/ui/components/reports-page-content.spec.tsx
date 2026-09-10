@@ -22,9 +22,9 @@ jest.mock(
   }),
 );
 jest.mock(
-  '@/modules/reports/presentation/ui/components/debts-paid-by-type-chart',
+  '@/modules/reports/presentation/ui/components/debts-paid-chart',
   () => ({
-    DebtsPaidByTypeChart: ({ months }: { months: number }) => (
+    DebtsPaidChart: ({ months }: { months: number }) => (
       <div data-testid='debts-chart'>{months}</div>
     ),
   }),
