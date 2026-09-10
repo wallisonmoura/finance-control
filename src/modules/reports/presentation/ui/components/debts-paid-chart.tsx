@@ -4,7 +4,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -17,26 +16,21 @@ import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-s
 import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
-import { useDebtsPaidByTypeChart } from '../hooks/use-debts-paid-by-type-chart';
+import { useDebtsPaidChart } from '../hooks/use-debts-paid-chart';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 
-type DebtsPaidByTypeChartProps = {
+type DebtsPaidChartProps = {
   months: ReportsPeriodMonths;
 };
 
-export function DebtsPaidByTypeChart({ months }: DebtsPaidByTypeChartProps) {
-  const { data, isLoading, error, refresh } = useDebtsPaidByTypeChart(months);
-  const hasData = data.some(
-    (item) =>
-      item.oneTimeTotal > 0 ||
-      item.installmentTotal > 0 ||
-      item.recurringTotal > 0,
-  );
+export function DebtsPaidChart({ months }: DebtsPaidChartProps) {
+  const { data, isLoading, error, refresh } = useDebtsPaidChart(months);
+  const hasData = data.some((item) => item.total > 0);
 
   return (
     <Card>
       <h2 className='text-base font-semibold text-foreground'>
-        Dívidas pagas por tipo
+        Dívidas pagas
       </h2>
 
       {isLoading && <Skeleton className='mt-4 h-72 w-full' />}
@@ -67,23 +61,10 @@ export function DebtsPaidByTypeChart({ months }: DebtsPaidByTypeChartProps) {
                 width={90}
               />
               <Tooltip formatter={(value) => formatMoney(Number(value))} />
-              <Legend />
               <Bar
-                dataKey='oneTimeTotal'
-                name='Única'
-                fill='var(--income)'
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar
-                dataKey='installmentTotal'
-                name='Parcelada'
-                fill='var(--info)'
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar
-                dataKey='recurringTotal'
-                name='Recorrente'
-                fill='var(--warning)'
+                dataKey='total'
+                name='Dívidas pagas'
+                fill='var(--destructive)'
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

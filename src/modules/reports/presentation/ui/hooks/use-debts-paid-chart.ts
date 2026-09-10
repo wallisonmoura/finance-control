@@ -10,15 +10,13 @@ import {
   ReportsPeriodMonths,
 } from '../utils/reports-period';
 
-export type DebtsPaidByTypeChartDatum = {
+export type DebtsPaidChartDatum = {
   monthLabel: string;
-  oneTimeTotal: number;
-  installmentTotal: number;
-  recurringTotal: number;
+  total: number;
 };
 
-type UseDebtsPaidByTypeChartResult = {
-  data: DebtsPaidByTypeChartDatum[];
+type UseDebtsPaidChartResult = {
+  data: DebtsPaidChartDatum[];
   isLoading: boolean;
   error: string | null;
   refresh: () => void;
@@ -28,10 +26,10 @@ function toMonthKey(dateOnly: string): string {
   return dateOnly.slice(0, 7);
 }
 
-export function useDebtsPaidByTypeChart(
+export function useDebtsPaidChart(
   months: ReportsPeriodMonths,
-): UseDebtsPaidByTypeChartResult {
-  const [data, setData] = useState<DebtsPaidByTypeChartDatum[]>([]);
+): UseDebtsPaidChartResult {
+  const [data, setData] = useState<DebtsPaidChartDatum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const requestIdRef = useRef(0);
@@ -58,17 +56,13 @@ export function useDebtsPaidByTypeChart(
 
     const monthKeys = getReportsMonthKeys(months);
     const monthKeySet = new Set(monthKeys);
-    const totalsByType = {
-      ONE_TIME: new Map<string, number>(),
-      INSTALLMENT: new Map<string, number>(),
-      RECURRING: new Map<string, number>(),
-    };
+    const totalsByMonth = new Map<string, number>();
 
     // Pending debts already have their own dedicated surfaces (the
     // due-soon bell, the pending debts page) — this chart only tracks
-    // debts already paid, broken down by type instead of by status, since
-    // in practice almost everything ends up PAID and a pending/paid split
-    // rarely shows any variation month to month.
+    // debts already paid, all types summed together (no ONE_TIME /
+    // INSTALLMENT / RECURRING split — the previous split rarely showed
+    // any useful variation month to month).
     for (const debt of response.data ?? []) {
       if (debt.status !== 'PAID' || !debt.paidAt) {
         continue;
@@ -80,8 +74,10 @@ export function useDebtsPaidByTypeChart(
         continue;
       }
 
-      const byMonth = totalsByType[debt.type];
-      byMonth.set(monthKey, (byMonth.get(monthKey) ?? 0) + debt.amount);
+      totalsByMonth.set(
+        monthKey,
+        (totalsByMonth.get(monthKey) ?? 0) + debt.amount,
+      );
     }
 
     const aggregated = monthKeys.map((monthKey) => {
@@ -89,9 +85,7 @@ export function useDebtsPaidByTypeChart(
 
       return {
         monthLabel: formatReportsMonthLabel(year, month),
-        oneTimeTotal: totalsByType.ONE_TIME.get(monthKey) ?? 0,
-        installmentTotal: totalsByType.INSTALLMENT.get(monthKey) ?? 0,
-        recurringTotal: totalsByType.RECURRING.get(monthKey) ?? 0,
+        total: totalsByMonth.get(monthKey) ?? 0,
       };
     });
 
