@@ -1,10 +1,10 @@
 'use client';
 
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -55,7 +55,7 @@ export function IncomeExpenseEvolutionChart({
       {!isLoading && !error && hasData && (
         <div className='mt-4 h-72 w-full'>
           <ResponsiveContainer width='100%' height='100%'>
-            <LineChart
+            <BarChart
               data={data}
               margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
             >
@@ -67,23 +67,19 @@ export function IncomeExpenseEvolutionChart({
               />
               <Tooltip formatter={(value) => formatMoney(Number(value))} />
               <Legend />
-              <Line
-                type='monotone'
+              <Bar
                 dataKey='totalIncome'
                 name='Receita'
-                stroke='var(--income)'
-                strokeWidth={2}
-                dot={{ r: 3 }}
+                fill='var(--income)'
+                radius={[4, 4, 0, 0]}
               />
-              <Line
-                type='monotone'
+              <Bar
                 dataKey='totalExpense'
                 name='Despesa'
-                stroke='var(--expense)'
-                strokeWidth={2}
-                dot={{ r: 3 }}
+                fill='var(--expense)'
+                radius={[4, 4, 0, 0]}
               />
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       )}
