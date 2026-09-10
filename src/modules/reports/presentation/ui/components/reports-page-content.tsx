@@ -72,8 +72,8 @@ export function ReportsPageContent({ initialMonths }: ReportsPageContentProps) {
           <IncomeExpenseEvolutionChart months={months} />
         </div>
 
-        <DebtsPaidChart months={months} />
         <CategoryExpensesChart months={months} />
+        <DebtsPaidChart months={months} />
       </div>
     </div>
   );
