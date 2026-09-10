@@ -68,12 +68,12 @@ export function ReportsPageContent({ initialMonths }: ReportsPageContentProps) {
       </div>
 
       <div className='grid gap-6 xl:grid-cols-2'>
-        <DebtsPaidChart months={months} />
-        <CategoryExpensesChart months={months} />
-
         <div className='xl:col-span-2'>
           <IncomeExpenseEvolutionChart months={months} />
         </div>
+
+        <DebtsPaidChart months={months} />
+        <CategoryExpensesChart months={months} />
       </div>
     </div>
   );
