@@ -87,6 +87,10 @@ export function proxy(request: NextRequest) {
       );
     }
 
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/about', request.url));
+    }
+
     const redirectTo = pathname;
 
     const loginUrl = new URL('/login', request.url);
