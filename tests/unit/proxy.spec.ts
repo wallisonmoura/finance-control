@@ -121,4 +121,40 @@ describe('proxy — public page paths', () => {
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toContain('/login');
   });
+
+  it('should allow an unauthenticated visitor to reach /about without redirecting to /login', () => {
+    const request = new NextRequest('http://app.financecontrol.com/about', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should redirect an unauthenticated visitor from the root path to /about instead of /login', () => {
+    const request = new NextRequest('http://app.financecontrol.com/', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/about');
+    expect(response.headers.get('location')).not.toContain('/login');
+  });
+
+  it('should still redirect an unauthenticated visitor from any other private page to /login, not /about', () => {
+    const request = new NextRequest('http://app.financecontrol.com/wallet', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.headers.get('location')).toContain('/login');
+    expect(response.headers.get('location')).not.toContain('/about');
+  });
 });

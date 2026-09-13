@@ -13,7 +13,7 @@ export const AUTH_PUBLIC_API_PATHS = [
   '/api/auth/register',
 ];
 
-export const AUTH_PUBLIC_PAGE_PATHS = ['/login', '/register'];
+export const AUTH_PUBLIC_PAGE_PATHS = ['/login', '/register', '/about'];
 
 export const AUTH_RATE_LIMIT_MAX_ATTEMPTS = 5;
 
