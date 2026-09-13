@@ -41,7 +41,7 @@ const FEATURES: Feature[] = [
 
 export function AboutFeatures() {
   return (
-    <section className='bg-card'>
+    <section className='bg-background'>
       <div className='mx-auto max-w-6xl px-6 py-16 lg:py-24'>
         <h2 className='text-3xl font-bold tracking-tight text-foreground'>
           O que você consegue fazer
@@ -51,7 +51,7 @@ export function AboutFeatures() {
           {FEATURES.map((feature) => (
             <div
               key={feature.title}
-              className='rounded-2xl border border-border bg-background p-6'
+              className='rounded-2xl border border-border bg-card p-6'
             >
               <span className='flex size-11 items-center justify-center rounded-full bg-income-muted text-income'>
                 <feature.icon aria-hidden='true' className='size-5' />

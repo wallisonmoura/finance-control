@@ -4,17 +4,21 @@ import { Button } from '@/shared/presentation/ui/components/button';
 
 export function AboutFooter() {
   return (
-    <footer className='bg-primary text-primary-foreground'>
+    <footer className='bg-hero text-hero-foreground'>
       <div className='mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-12 text-center'>
         <p className='text-xl font-semibold'>
-          Pronto pra saber quanto você realmente tem?
+          Carteira, dívidas, receitas e relatórios — comece a organizar agora.
         </p>
 
-        <Button asChild variant='secondary' className='h-11 px-8'>
+        <Button
+          asChild
+          variant='custom'
+          className='h-11 bg-hero-foreground px-8 text-hero hover:opacity-90'
+        >
           <Link href='/login'>Entrar</Link>
         </Button>
 
-        <div className='flex items-center gap-4 text-xs text-primary-foreground/70'>
+        <div className='flex items-center gap-4 text-xs text-hero-foreground/70'>
           <span>Privacidade</span>
           <span aria-hidden='true'>•</span>
           <span>Termos de Uso</span>

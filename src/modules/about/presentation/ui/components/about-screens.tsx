@@ -5,13 +5,19 @@ const SLIDES: CarouselSlide[] = [
   {
     src: '/images/about/painel.png',
     alt: 'Painel com saldo final, carteira e transações recentes',
-    caption: 'Veja sua posição financeira real assim que abre o app.',
+    caption: 'Sua posição financeira real assim que abre o app.',
   },
   {
     src: '/images/about/carteira.png',
     alt: 'Carteira com saldo em banco, dinheiro e valores a receber',
     caption:
       'Banco, dinheiro em espécie e valores a receber — separados, do jeito que é de verdade.',
+  },
+  {
+    src: '/images/about/financeiro.png',
+    alt: 'Histórico financeiro com total de receitas, despesas e movimentações',
+    caption:
+      'Receitas e despesas lado a lado, com total do período sempre à vista.',
   },
   {
     src: '/images/about/dividas.png',
@@ -29,7 +35,7 @@ const SLIDES: CarouselSlide[] = [
 
 export function AboutScreens() {
   return (
-    <section className='bg-background'>
+    <section className='bg-card'>
       <div className='mx-auto max-w-6xl px-6 py-16 lg:py-24'>
         <h2 className='text-center text-3xl font-bold tracking-tight text-foreground'>
           Veja o Finance Control por dentro

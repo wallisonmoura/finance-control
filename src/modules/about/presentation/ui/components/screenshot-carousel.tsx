@@ -52,7 +52,7 @@ export function ScreenshotCarousel({ slides }: ScreenshotCarouselProps) {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className='relative overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-border/60'>
+      <div className='relative overflow-hidden rounded-2xl border border-border bg-background shadow-lg shadow-border/60'>
         <div className='relative aspect-[16/10] w-full'>
           <Image
             key={activeSlide.src}
