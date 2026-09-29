@@ -256,11 +256,22 @@ describe('buildMonthlyInsights', () => {
       ]);
     });
 
-    it('should fall back to a generic name when the category name is unknown', () => {
+    it('should return a null category name when the category is unknown', () => {
       const result = build([expense(100, '2026-09-10', 'cat-deleted')]);
 
       expect(find(result.expenseInsights, 'TOP_EXPENSE_CATEGORY')).toMatchObject({
-        categoryName: 'Sem categoria',
+        categoryName: null,
+      });
+    });
+
+    it('should prefer a known category over an unknown one on ties', () => {
+      const result = build([
+        expense(100, '2026-09-10', 'cat-deleted'),
+        expense(100, '2026-09-10', 'cat-fun'),
+      ]);
+
+      expect(find(result.expenseInsights, 'TOP_EXPENSE_CATEGORY')).toMatchObject({
+        categoryName: 'Lazer',
       });
     });
 

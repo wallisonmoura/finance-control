@@ -6,20 +6,22 @@ import { InsightMonth, InsightPeriods } from './insight-periods';
 
 export const INSIGHT_MIN_CHANGE_PERCENT = 20;
 export const INSIGHT_MIN_CHANGE_AMOUNT = 50;
-export const UNKNOWN_CATEGORY_NAME = 'Sem categoria';
+// null = the category could not be resolved (e.g. it no longer exists).
+// How to display it is a presentation concern.
+type CategoryName = string | null;
 
 export type MonthlyInsight =
   | { kind: 'EXPENSE_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
-  | { kind: 'TOP_EXPENSE_CATEGORY'; categoryName: string; amount: number; sharePercent: number }
+  | { kind: 'TOP_EXPENSE_CATEGORY'; categoryName: CategoryName; amount: number; sharePercent: number }
   | {
       kind: 'EXPENSE_CATEGORY_RISE';
-      categoryName: string;
+      categoryName: CategoryName;
       current: number;
       previous: number;
       // null = category had no expense in the comparison period
       changePercent: number | null;
     }
-  | { kind: 'EXPENSE_CATEGORY_DROP'; categoryName: string; current: number; previous: number; changePercent: number }
+  | { kind: 'EXPENSE_CATEGORY_DROP'; categoryName: CategoryName; current: number; previous: number; changePercent: number }
   | { kind: 'INCOME_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
   | { kind: 'INCOME_VS_AVERAGE'; current: number; average: number; monthsCount: number }
   | { kind: 'MONTH_RESULT'; totalIncome: number; totalExpense: number; result: number };
@@ -40,7 +42,7 @@ export interface BuildMonthlyInsightsInput {
 }
 
 type CategoryChange = {
-  categoryName: string;
+  categoryName: CategoryName;
   current: number;
   previous: number;
   difference: number;
@@ -91,17 +93,34 @@ function isRelevantChange({ current, previous, difference }: CategoryChange): bo
   return Math.abs(((current - previous) / previous) * 100) >= INSIGHT_MIN_CHANGE_PERCENT;
 }
 
+// Deterministic tie-break; unresolved (null) names sort last.
+function compareNames(a: CategoryName, b: CategoryName): number {
+  if (a === b) {
+    return 0;
+  }
+
+  if (a === null) {
+    return 1;
+  }
+
+  if (b === null) {
+    return -1;
+  }
+
+  return a.localeCompare(b);
+}
+
 function byLargestThenName(
   getMagnitude: (change: CategoryChange) => number,
 ): (a: CategoryChange, b: CategoryChange) => number {
   return (a, b) =>
-    getMagnitude(b) - getMagnitude(a) || a.categoryName.localeCompare(b.categoryName);
+    getMagnitude(b) - getMagnitude(a) || compareNames(a.categoryName, b.categoryName);
 }
 
 function buildExpenseInsights(
   currentExpenses: FinancialEntry[],
   comparisonExpenses: FinancialEntry[],
-  resolveName: (categoryId: string) => string,
+  resolveName: (categoryId: string) => CategoryName,
 ): MonthlyInsight[] {
   const insights: MonthlyInsight[] = [];
   const currentTotal = sumAmounts(currentExpenses);
@@ -121,7 +140,7 @@ function buildExpenseInsights(
   if (currentTotal > 0) {
     const [topCategoryId, topAmount] = Array.from(currentByCategory.entries()).sort(
       ([idA, amountA], [idB, amountB]) =>
-        amountB - amountA || resolveName(idA).localeCompare(resolveName(idB)),
+        amountB - amountA || compareNames(resolveName(idA), resolveName(idB)),
     )[0];
 
     insights.push({
@@ -254,7 +273,7 @@ export function buildMonthlyInsights({
   periods,
 }: BuildMonthlyInsightsInput): MonthlyInsights {
   const resolveName = (categoryId: string) =>
-    categoryNameById.get(categoryId) ?? UNKNOWN_CATEGORY_NAME;
+    categoryNameById.get(categoryId) ?? null;
 
   const currentEntries = entries.filter((entry) =>
     isWithin(entry.date, periods.currentStart, periods.currentEndExclusive),
