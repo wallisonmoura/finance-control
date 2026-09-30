@@ -4,6 +4,7 @@ import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financi
 import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/transaction-history.output';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
+import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
 import {
@@ -17,6 +18,7 @@ import {
   FinanceEntryUi,
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
+  MonthlyInsightsUi,
   MonthlySummaryUi,
 } from '../ui/types/finance-ui.types';
 import {
@@ -199,6 +201,36 @@ export async function getCurrentUserOperationalSummary(
   } catch {
     return {
       error: 'Não foi possível carregar o resumo financeiro.',
+    };
+  }
+}
+
+type CurrentUserMonthlyInsightsResult = {
+  data?: MonthlyInsightsUi;
+  error?: string;
+};
+
+export async function getCurrentUserMonthlyInsights(): Promise<CurrentUserMonthlyInsightsResult> {
+  const auth = await getCurrentUserIdOrError();
+
+  if ('error' in auth) {
+    return {
+      error: auth.error,
+    };
+  }
+
+  try {
+    const useCase = makeGetMonthlyInsightsUseCase();
+    // The output holds only numbers, strings and nulls, so it is already
+    // serializable and structurally identical to MonthlyInsightsUi.
+    const insights = await useCase.execute({ userId: auth.userId });
+
+    return {
+      data: insights,
+    };
+  } catch {
+    return {
+      error: 'Não foi possível carregar os insights.',
     };
   }
 }

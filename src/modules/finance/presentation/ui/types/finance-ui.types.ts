@@ -92,3 +92,36 @@ export type FinanceApiResponse<T> = {
   data?: T;
   error?: string;
 };
+
+// null = category could not be resolved; the UI decides how to display it.
+type InsightCategoryNameUi = string | null;
+
+export type MonthlyInsightUi =
+  | { kind: 'EXPENSE_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
+  | { kind: 'TOP_EXPENSE_CATEGORY'; categoryName: InsightCategoryNameUi; amount: number; sharePercent: number }
+  | {
+      kind: 'EXPENSE_CATEGORY_RISE';
+      categoryName: InsightCategoryNameUi;
+      current: number;
+      previous: number;
+      changePercent: number | null;
+    }
+  | {
+      kind: 'EXPENSE_CATEGORY_DROP';
+      categoryName: InsightCategoryNameUi;
+      current: number;
+      previous: number;
+      changePercent: number;
+    }
+  | { kind: 'INCOME_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
+  | { kind: 'INCOME_VS_AVERAGE'; current: number; average: number; monthsCount: number }
+  | { kind: 'MONTH_RESULT'; totalIncome: number; totalExpense: number; result: number };
+
+export type MonthlyInsightKindUi = MonthlyInsightUi['kind'];
+
+export type MonthlyInsightsUi = {
+  comparisonMonth: { year: number; month: number };
+  hasEntries: boolean;
+  expenseInsights: MonthlyInsightUi[];
+  incomeInsights: MonthlyInsightUi[];
+};
