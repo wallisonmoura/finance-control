@@ -14,25 +14,45 @@ export class GetMonthlyInsightsUseCase {
   ) {}
 
   async execute(input: GetMonthlyInsightsInput): Promise<MonthlyInsightsOutput> {
-    const periods = getInsightPeriods(getCurrentBusinessDateValue());
+    const today = getCurrentBusinessDateValue();
+    const currentPeriods = getInsightPeriods(today, 'current');
+    const closedPeriods = getInsightPeriods(today, 'closed');
 
-    // One entries query covers the current month, the comparison period and
-    // the closed months used by the income average.
+    // One entries query covers both modes: the closed-month window starts
+    // earlier, the current-month window ends later (today).
     const [entries, categories] = await Promise.all([
       this.financialEntryRepository.findByUserIdAndPeriod(
         input.userId,
-        periods.queryStart,
-        periods.queryEndExclusive,
+        closedPeriods.queryStart,
+        currentPeriods.queryEndExclusive,
       ),
       // findByUserId (not findActiveByUserId): older entries may reference
       // a category that has since been deactivated.
       this.expenseCategoryRepository.findByUserId(input.userId),
     ]);
 
-    return buildMonthlyInsights({
+    const categoryNameById = new Map(
+      categories.map((category) => [category.id, category.name]),
+    );
+
+    const currentInsights = buildMonthlyInsights({
       entries,
-      categoryNameById: new Map(categories.map((category) => [category.id, category.name])),
-      periods,
+      categoryNameById,
+      periods: currentPeriods,
     });
+
+    if (currentInsights.hasEntries) {
+      return currentInsights;
+    }
+
+    // Early in the month there is nothing to say about the current month yet,
+    // so explain the month that just closed instead.
+    const closedInsights = buildMonthlyInsights({
+      entries,
+      categoryNameById,
+      periods: closedPeriods,
+    });
+
+    return closedInsights.hasEntries ? closedInsights : currentInsights;
   }
 }

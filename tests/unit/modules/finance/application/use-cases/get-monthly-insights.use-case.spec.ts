@@ -55,7 +55,7 @@ describe('GetMonthlyInsightsUseCase', () => {
     sut = new GetMonthlyInsightsUseCase(financialEntryRepository, expenseCategoryRepository);
   });
 
-  it('should query entries once, from three closed months ago up to today', async () => {
+  it('should query entries once, covering both the current and the closed-month windows', async () => {
     const spy = jest.spyOn(financialEntryRepository, 'findByUserIdAndPeriod');
 
     await sut.execute({ userId: 'user-1' });
@@ -63,7 +63,7 @@ describe('GetMonthlyInsightsUseCase', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith(
       'user-1',
-      new Date('2026-06-01T00:00:00.000Z'),
+      new Date('2026-05-01T00:00:00.000Z'),
       new Date('2026-09-16T00:00:00.000Z'),
     );
   });
@@ -84,5 +84,57 @@ describe('GetMonthlyInsightsUseCase', () => {
     const output = await sut.execute({ userId: 'user-1' });
 
     expect(output.hasEntries).toBe(false);
+  });
+
+  describe('closed month fallback', () => {
+    beforeEach(() => {
+      mockedGetCurrentBusinessDateValue.mockReturnValue('2026-10-02');
+    });
+
+    it('should query once, covering the closed-month window up to today', async () => {
+      const spy = jest.spyOn(financialEntryRepository, 'findByUserIdAndPeriod');
+
+      await sut.execute({ userId: 'user-1' });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        'user-1',
+        new Date('2026-06-01T00:00:00.000Z'),
+        new Date('2026-10-03T00:00:00.000Z'),
+      );
+    });
+
+    it('should keep the current month when it already has entries', async () => {
+      await financialEntryRepository.create(expense('user-1', 50, '2026-10-01', 'cat-old'));
+      await financialEntryRepository.create(expense('user-1', 900, '2026-09-10', 'cat-old'));
+
+      const output = await sut.execute({ userId: 'user-1' });
+
+      expect(output).toMatchObject({
+        isClosedMonth: false,
+        referenceMonth: { year: 2026, month: 10 },
+      });
+    });
+
+    it('should fall back to the last closed month when the current month is empty', async () => {
+      await financialEntryRepository.create(expense('user-1', 900, '2026-09-10', 'cat-old'));
+
+      const output = await sut.execute({ userId: 'user-1' });
+
+      expect(output).toMatchObject({
+        isClosedMonth: true,
+        referenceMonth: { year: 2026, month: 9 },
+        hasEntries: true,
+      });
+      expect(output.expenseInsights).toContainEqual(
+        expect.objectContaining({ kind: 'TOP_EXPENSE_CATEGORY', amount: 900 }),
+      );
+    });
+
+    it('should report no entries when both the current and the closed month are empty', async () => {
+      const output = await sut.execute({ userId: 'user-1' });
+
+      expect(output.hasEntries).toBe(false);
+    });
   });
 });
