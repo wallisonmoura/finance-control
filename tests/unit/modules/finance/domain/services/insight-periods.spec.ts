@@ -14,6 +14,7 @@ describe('getInsightPeriods', () => {
       comparisonMonth: { year: 2026, month: 8 },
       referenceMonth: { year: 2026, month: 9 },
       isClosedMonth: false,
+      monthProgress: 0.5,
       closedMonths: [
         { year: 2026, month: 8, start: utc('2026-08-01'), endExclusive: utc('2026-09-01') },
         { year: 2026, month: 7, start: utc('2026-07-01'), endExclusive: utc('2026-08-01') },
@@ -63,6 +64,11 @@ describe('getInsightPeriods', () => {
     );
   });
 
+  it('should report how much of the current month has elapsed', () => {
+    expect(getInsightPeriods('2026-02-14').monthProgress).toBe(0.5);
+    expect(getInsightPeriods('2026-09-30').monthProgress).toBe(1);
+  });
+
   describe('closed month mode', () => {
     it('should use the previous full month as reference and the month before it as comparison', () => {
       expect(getInsightPeriods('2026-10-02', 'closed')).toEqual({
@@ -73,6 +79,7 @@ describe('getInsightPeriods', () => {
         comparisonMonth: { year: 2026, month: 8 },
         referenceMonth: { year: 2026, month: 9 },
         isClosedMonth: true,
+        monthProgress: 1,
         closedMonths: [
           { year: 2026, month: 8, start: utc('2026-08-01'), endExclusive: utc('2026-09-01') },
           { year: 2026, month: 7, start: utc('2026-07-01'), endExclusive: utc('2026-08-01') },

@@ -290,6 +290,13 @@ describe('buildMonthlyInsights', () => {
       });
     });
 
+    it('should not report expense comparisons before any expense in the period', () => {
+      const result = build([income(100, '2026-09-10'), expense(400, '2026-08-10', 'cat-car')]);
+
+      expect(result.hasEntries).toBe(true);
+      expect(result.expenseInsights).toEqual([]);
+    });
+
     it('should round summed amounts to cents', () => {
       const result = build([expense(0.1, '2026-09-10'), expense(0.2, '2026-09-11')]);
 
@@ -318,11 +325,28 @@ describe('buildMonthlyInsights', () => {
         income(6000, '2026-08-20'),
       ]);
 
+      // Today = 15/09, half of September elapsed: the fair bar is half the average.
       expect(find(result.incomeInsights, 'INCOME_VS_AVERAGE')).toEqual({
         kind: 'INCOME_VS_AVERAGE',
         current: 3000,
         average: 5500,
         monthsCount: 2,
+        expectedSoFar: 2750,
+        paceChangePercent: 9,
+      });
+    });
+
+    it('should compare a closed month against the whole average', () => {
+      const result = buildMonthlyInsights({
+        entries: [income(4317.79, '2026-09-20'), income(4963.49, '2026-08-20')],
+        categoryNameById,
+        periods: getInsightPeriods('2026-10-02', 'closed'),
+      });
+
+      expect(find(result.incomeInsights, 'INCOME_VS_AVERAGE')).toMatchObject({
+        average: 4963.49,
+        expectedSoFar: 4963.49,
+        paceChangePercent: -13,
       });
     });
 

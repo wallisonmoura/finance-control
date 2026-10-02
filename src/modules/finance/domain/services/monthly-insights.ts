@@ -26,7 +26,17 @@ export type MonthlyInsight =
     }
   | { kind: 'EXPENSE_CATEGORY_DROP'; categoryName: CategoryName; current: number; previous: number; changePercent: number }
   | { kind: 'INCOME_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
-  | { kind: 'INCOME_VS_AVERAGE'; current: number; average: number; monthsCount: number }
+  | {
+      kind: 'INCOME_VS_AVERAGE';
+      current: number;
+      average: number;
+      monthsCount: number;
+      // The average scaled to how much of the month has elapsed, so a
+      // month-to-date income is compared with a fair bar (whole average for
+      // a closed month).
+      expectedSoFar: number;
+      paceChangePercent: number;
+    }
   | { kind: 'MONTH_RESULT'; totalIncome: number; totalExpense: number; result: number };
 
 export type MonthlyInsightKind = MonthlyInsight['kind'];
@@ -130,6 +140,12 @@ function buildExpenseInsights(
   const insights: MonthlyInsight[] = [];
   const currentTotal = sumAmounts(currentExpenses);
   const previousTotal = sumAmounts(comparisonExpenses);
+
+  // No expense yet in the period: comparing would only produce misleading
+  // "dropped 100%" insights (nothing was saved, nothing was spent yet).
+  if (currentTotal === 0) {
+    return insights;
+  }
 
   if (currentTotal > 0 && previousTotal > 0) {
     insights.push({
@@ -243,14 +259,19 @@ function buildIncomeInsights(
     .filter((total) => total > 0);
 
   if (closedMonthIncomes.length > 0) {
+    const average = roundToCents(
+      closedMonthIncomes.reduce((sum, total) => sum + total, 0) /
+        closedMonthIncomes.length,
+    );
+    const expectedSoFar = roundToCents(average * periods.monthProgress);
+
     insights.push({
       kind: 'INCOME_VS_AVERAGE',
       current: currentIncome,
-      average: roundToCents(
-        closedMonthIncomes.reduce((sum, total) => sum + total, 0) /
-          closedMonthIncomes.length,
-      ),
+      average,
       monthsCount: closedMonthIncomes.length,
+      expectedSoFar,
+      paceChangePercent: changePercent(currentIncome, expectedSoFar),
     });
   }
 

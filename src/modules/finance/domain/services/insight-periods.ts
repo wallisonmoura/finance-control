@@ -20,6 +20,10 @@ export interface InsightPeriods {
   comparisonMonth: InsightMonth;
   referenceMonth: InsightMonth;
   isClosedMonth: boolean;
+  // Share of the reference month already elapsed: day / days in month for
+  // the current month (15/30 = 0.5), 1 for a closed month. Used to compare
+  // month-to-date income against a whole-month average fairly.
+  monthProgress: number;
   closedMonths: ClosedMonthPeriod[];
   queryStart: Date;
   queryEndExclusive: Date;
@@ -71,6 +75,7 @@ function getClosedMonthPeriods(year: number, monthIndex: number): InsightPeriods
     comparisonMonth: toInsightMonth(comparisonStart),
     referenceMonth: toInsightMonth(currentStart),
     isClosedMonth: true,
+    monthProgress: 1,
     closedMonths,
     queryStart: closedMonths[closedMonths.length - 1].start,
     queryEndExclusive: currentEndExclusive,
@@ -108,6 +113,7 @@ export function getInsightPeriods(
   const comparisonEndExclusive = utcDate(year, monthIndex - 1, comparisonDay + 1);
 
   const closedMonths = buildClosedMonths(year, monthIndex);
+  const daysInMonth = utcDate(year, monthIndex + 1, 0).getUTCDate();
 
   return {
     currentStart,
@@ -117,6 +123,7 @@ export function getInsightPeriods(
     comparisonMonth: toInsightMonth(comparisonStart),
     referenceMonth: toInsightMonth(currentStart),
     isClosedMonth: false,
+    monthProgress: day / daysInMonth,
     closedMonths,
     queryStart: closedMonths[closedMonths.length - 1].start,
     queryEndExclusive: currentEndExclusive,
