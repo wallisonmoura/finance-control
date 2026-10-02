@@ -19,10 +19,15 @@ import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-
 import { cn } from '@/shared/presentation/ui/lib/utils';
 import { formatDate } from '@/shared/presentation/ui/lib/format-date';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 type BalanceSummaryCardsProps = {
   summary: BalanceSummaryUi;
   recentEntries?: FinanceEntryUi[];
+  // Rendered between balance composition and recent transactions. Lets the
+  // page compose content from other modules (e.g. finance insights) without
+  // balance depending on them.
+  insightsSlot?: ReactNode;
 };
 
 type SummaryItem = {
@@ -62,6 +67,7 @@ function TransactionIcon({ type }: { type: FinanceEntryUi['type'] }) {
 export function BalanceSummaryCards({
   summary,
   recentEntries = [],
+  insightsSlot,
 }: BalanceSummaryCardsProps) {
   const availableItems: SummaryItem[] = [
     {
@@ -160,6 +166,8 @@ export function BalanceSummaryCards({
 
         <StatCardGrid items={availableItems} />
       </div>
+
+      {insightsSlot}
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>

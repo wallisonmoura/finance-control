@@ -2,6 +2,21 @@ import { BalanceSummaryDashboard } from '@/modules/balance/presentation/ui/compo
 import { render, screen } from '@testing-library/react';
 
 describe('BalanceSummaryDashboard', () => {
+  it('should forward the insights slot to the summary cards', () => {
+    render(
+      <BalanceSummaryDashboard
+        summary={{
+          wallet: { bankBalance: 1, cashBalance: 1, receivableBalance: 1, walletTotal: 3 },
+          debts: { pendingDebts: 0 },
+          finalBalance: 3,
+        }}
+        insightsSlot={<div data-testid='insights-slot' />}
+      />,
+    );
+
+    expect(screen.getByTestId('insights-slot')).toBeInTheDocument();
+  });
+
   it('should render error state when server loading returns error', () => {
     render(<BalanceSummaryDashboard error='Não autenticado' />);
 
