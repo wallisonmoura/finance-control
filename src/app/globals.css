@@ -63,6 +63,12 @@
 }
 
 :root {
+  /* Private-area page background: soft brand-green glow over the base
+     background, so white cards stand out. Light and dark variants below. */
+  --app-background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgb(16 185 129 / 0.30), transparent 70%),
+    radial-gradient(ellipse 65% 55% at 100% 100%, rgb(16 185 129 / 0.20), transparent 70%),
+    linear-gradient(180deg, #ecfdf5 0%, var(--fc-background) 45%);
   --fc-primary: #020617;
   --fc-secondary: #10b981;
   --fc-background: #f8fafc;
@@ -128,6 +134,10 @@
 }
 
 .dark {
+  --app-background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgb(16 185 129 / 0.24), transparent 70%),
+    radial-gradient(ellipse 65% 55% at 100% 100%, rgb(16 185 129 / 0.14), transparent 70%),
+    oklch(0.145 0 0);
   --income: #34d399;
   --income-muted: oklch(0.3 0.08 160);
   --expense: #f87171;
@@ -172,6 +182,11 @@
   --hero-foreground: var(--fc-background);
   --hero-accent: var(--fc-secondary);
   --success-light-foreground: var(--fc-text-primary);
+}
+
+@utility bg-app {
+  background: var(--app-background);
+  background-attachment: fixed;
 }
 
 @layer base {

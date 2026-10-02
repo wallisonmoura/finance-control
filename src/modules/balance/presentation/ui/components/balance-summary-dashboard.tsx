@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { StatusMessage } from '@/shared/presentation/ui/components/status-message';
 
@@ -9,12 +11,14 @@ type BalanceSummaryDashboardProps = {
   summary?: BalanceSummaryUi | null;
   error?: string | null;
   recentEntries?: FinanceEntryUi[];
+  insightsSlot?: ReactNode;
 };
 
 export function BalanceSummaryDashboard({
   summary,
   error,
   recentEntries = [],
+  insightsSlot,
 }: BalanceSummaryDashboardProps) {
   if (error) {
     return (
@@ -30,5 +34,11 @@ export function BalanceSummaryDashboard({
     return <EmptyState description='Nenhum resumo financeiro encontrado.' />;
   }
 
-  return <BalanceSummaryCards summary={summary} recentEntries={recentEntries} />;
+  return (
+    <BalanceSummaryCards
+      summary={summary}
+      recentEntries={recentEntries}
+      insightsSlot={insightsSlot}
+    />
+  );
 }

@@ -1,11 +1,13 @@
 import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
+import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
 import {
   FULL_PERIOD_PAGE_SIZE,
   getCurrentUserExpenseCategories,
   getCurrentUserFinanceHistory,
+  getCurrentUserMonthlyInsights,
   getCurrentUserOperationalSummary,
 } from '@/modules/finance/presentation/server/get-current-user-finance-data';
 
@@ -40,6 +42,17 @@ const makeGetTransactionHistoryUseCaseMock = jest.mocked(
 );
 const makeListExpenseCategoriesUseCaseMock = jest.mocked(
   makeListExpenseCategoriesUseCase,
+);
+
+jest.mock(
+  '@/modules/finance/infra/factories/make-get-monthly-insights-use-case',
+  () => ({
+    makeGetMonthlyInsightsUseCase: jest.fn(),
+  }),
+);
+
+const makeGetMonthlyInsightsUseCaseMock = jest.mocked(
+  makeGetMonthlyInsightsUseCase,
 );
 
 describe('getCurrentUserFinanceHistory', () => {
@@ -408,6 +421,51 @@ describe('getCurrentUserExpenseCategories', () => {
 
     await expect(getCurrentUserExpenseCategories()).resolves.toEqual({
       error: 'Não foi possível carregar categorias.',
+    });
+  });
+});
+
+describe('getCurrentUserMonthlyInsights', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return unauthenticated error when there is no current user', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue(null);
+
+    await expect(getCurrentUserMonthlyInsights()).resolves.toEqual({
+      error: 'Não autenticado',
+    });
+    expect(makeGetMonthlyInsightsUseCaseMock).not.toHaveBeenCalled();
+  });
+
+  it('should return the insights of the authenticated user', async () => {
+    const insights = {
+      comparisonMonth: { year: 2026, month: 8 },
+      hasEntries: true,
+      expenseInsights: [
+        { kind: 'TOP_EXPENSE_CATEGORY', categoryName: null, amount: 90, sharePercent: 100 },
+      ],
+      incomeInsights: [
+        { kind: 'MONTH_RESULT', totalIncome: 100, totalExpense: 90, result: 10 },
+      ],
+    };
+    const execute = jest.fn().mockResolvedValue(insights);
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetMonthlyInsightsUseCaseMock.mockReturnValue({ execute } as never);
+
+    await expect(getCurrentUserMonthlyInsights()).resolves.toEqual({ data: insights });
+    expect(execute).toHaveBeenCalledWith({ userId: 'user-1' });
+  });
+
+  it('should return an error message when the use case fails', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetMonthlyInsightsUseCaseMock.mockReturnValue({
+      execute: jest.fn().mockRejectedValue(new Error('db down')),
+    } as never);
+
+    await expect(getCurrentUserMonthlyInsights()).resolves.toEqual({
+      error: 'Não foi possível carregar os insights.',
     });
   });
 });

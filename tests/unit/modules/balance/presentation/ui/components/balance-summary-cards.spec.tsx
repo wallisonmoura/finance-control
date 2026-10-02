@@ -14,6 +14,26 @@ describe('BalanceSummaryCards', () => {
     },
     finalBalance: 1850,
   };
+  it('should render the insights slot between balance composition and recent transactions', () => {
+    render(
+      <BalanceSummaryCards
+        summary={summary}
+        insightsSlot={<div data-testid='insights-slot' />}
+      />,
+    );
+
+    const composition = screen.getByRole('heading', { name: 'Composição dos saldos' });
+    const slot = screen.getByTestId('insights-slot');
+    const recent = screen.getByRole('heading', { name: 'Transações recentes' });
+
+    expect(
+      composition.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      slot.compareDocumentPosition(recent) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it('should render all summary card labels', () => {
     render(<BalanceSummaryCards summary={summary} />);
 

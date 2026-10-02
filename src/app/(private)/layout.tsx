@@ -28,8 +28,8 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
         initialPendingDebtsError={pendingDebtsError}
       />
 
-      <div className='flex min-h-dvh min-w-0 flex-1 flex-col'>
-        <header className='sticky top-0 z-20 hidden h-24 bg-card/95 px-6 backdrop-blur md:block'>
+      <div className='bg-app flex min-h-dvh min-w-0 flex-1 flex-col'>
+        <header className='sticky top-0 z-20 hidden h-24 bg-background/80 px-6 backdrop-blur-md md:block'>
           <div className='mx-auto flex h-full max-w-7xl items-center justify-end'>
             <CurrentUserMenu
               initialUser={currentUser}

@@ -5,6 +5,7 @@ import { PageTitleSkeleton } from '@/shared/presentation/ui/components/skeletons
 import { HeroCardSkeleton } from '@/shared/presentation/ui/components/skeletons/hero-card-skeleton';
 import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
+import { MonthlyInsightsCardSkeleton } from '@/modules/finance/presentation/ui/components/monthly-insights-card-skeleton';
 
 export default function DashboardLoading() {
   return (
@@ -20,6 +21,8 @@ export default function DashboardLoading() {
 
         <StatCardGridSkeleton count={3} />
       </div>
+
+      <MonthlyInsightsCardSkeleton />
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
