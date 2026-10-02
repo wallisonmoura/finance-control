@@ -87,6 +87,12 @@ describe('MonthlyInsightsCard', () => {
     expect(screen.getByText('Outubro ainda não tem lançamentos.')).toBeInTheDocument();
   });
 
+  it('should name the closed month in an empty column', () => {
+    render(<MonthlyInsightsCard insights={{ ...insights, isClosedMonth: true, expenseInsights: [] }} />);
+
+    expect(screen.getByText('Nenhuma despesa em setembro.')).toBeInTheDocument();
+  });
+
   it('should link to the full reports', () => {
     render(<MonthlyInsightsCard insights={insights} />);
 

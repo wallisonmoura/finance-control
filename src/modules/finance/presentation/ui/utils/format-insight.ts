@@ -206,6 +206,32 @@ export function formatInsight(
     case 'INCOME_VS_AVERAGE': {
       const window = describeAverageWindow(insight.monthsCount);
 
+      // During the month, month-to-date income is compared with the pace of
+      // the average (its share for the days elapsed), not the whole average.
+      if (!context.isClosedMonth) {
+        const pace = insight.paceChangePercent;
+        const reference = [
+          plain(` da sua média de ganho ${window} (`),
+          highlight(formatMoney(insight.expectedSoFar), 'strong'),
+          plain(' até hoje).'),
+        ];
+
+        if (pace === 0) {
+          return [plain('Você está no ritmo'), ...reference];
+        }
+
+        const direction = pace > 0 ? 'acima' : 'abaixo';
+
+        return [
+          plain('Você está '),
+          highlight(
+            `${Math.abs(pace)}% ${direction} do ritmo`,
+            sentimentEmphasis(getInsightSentiment(insight)),
+          ),
+          ...reference,
+        ];
+      }
+
       if (insight.current < insight.average) {
         return [
           plain(`Sua média de ganho ${window} é `),
@@ -273,7 +299,7 @@ export function getInsightSentiment(insight: MonthlyInsightUi): InsightSentiment
     case 'EXPENSE_CATEGORY_DROP':
       return 'positive';
     case 'INCOME_VS_AVERAGE':
-      return insight.current >= insight.average ? 'positive' : 'negative';
+      return insight.current >= insight.expectedSoFar ? 'positive' : 'negative';
     case 'MONTH_RESULT':
       return insight.result < 0 ? 'negative' : 'positive';
   }

@@ -119,6 +119,10 @@ function MonthlyInsightsContent({ insights, error }: MonthlyInsightsCardProps) {
     comparisonMonth: insights.comparisonMonth,
     isClosedMonth: insights.isClosedMonth,
   };
+  // "neste mês" would read as the current month under "Insights de setembro".
+  const period = insights.isClosedMonth
+    ? `em ${getMonthName(insights.referenceMonth)}`
+    : 'neste mês ainda';
 
   return (
     <Card className='p-0'>
@@ -127,14 +131,14 @@ function MonthlyInsightsContent({ insights, error }: MonthlyInsightsCardProps) {
           title='Gastos'
           icon={ReceiptText}
           items={insights.expenseInsights}
-          emptyText='Nenhuma despesa neste mês ainda.'
+          emptyText={`Nenhuma despesa ${period}.`}
           context={context}
         />
         <InsightColumn
           title='Ganhos'
           icon={HandCoins}
           items={insights.incomeInsights}
-          emptyText='Nenhuma receita neste mês ainda.'
+          emptyText={`Nenhuma receita ${period}.`}
           context={context}
           className='border-t border-border lg:border-t-0 lg:border-l'
         />

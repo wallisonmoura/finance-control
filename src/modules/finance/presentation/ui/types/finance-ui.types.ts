@@ -115,7 +115,14 @@ export type MonthlyInsightUi =
       changePercent: number;
     }
   | { kind: 'INCOME_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
-  | { kind: 'INCOME_VS_AVERAGE'; current: number; average: number; monthsCount: number }
+  | {
+      kind: 'INCOME_VS_AVERAGE';
+      current: number;
+      average: number;
+      monthsCount: number;
+      expectedSoFar: number;
+      paceChangePercent: number;
+    }
   | { kind: 'MONTH_RESULT'; totalIncome: number; totalExpense: number; result: number };
 
 export type MonthlyInsightKindUi = MonthlyInsightUi['kind'];

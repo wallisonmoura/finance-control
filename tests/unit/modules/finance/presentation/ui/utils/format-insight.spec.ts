@@ -118,8 +118,8 @@ describe('formatInsight', () => {
   it('should describe income below the average with the remaining amount', () => {
     expect(
       insightToText(formatInsight(
-        { kind: 'INCOME_VS_AVERAGE', current: 4200, average: 5400, monthsCount: 3 },
-        currentContext,
+        { kind: 'INCOME_VS_AVERAGE', current: 4200, average: 5400, monthsCount: 3, expectedSoFar: 5400, paceChangePercent: -22 },
+        closedContext,
       )),
     ).toBe(
       `Sua média de ganho nos últimos 3 meses é ${formatMoney(5400)}. Faltam ${formatMoney(1200)} para alcançá-la.`,
@@ -129,8 +129,8 @@ describe('formatInsight', () => {
   it('should describe income above the average using the singular for one month', () => {
     expect(
       insightToText(formatInsight(
-        { kind: 'INCOME_VS_AVERAGE', current: 5700, average: 5400, monthsCount: 1 },
-        currentContext,
+        { kind: 'INCOME_VS_AVERAGE', current: 5700, average: 5400, monthsCount: 1, expectedSoFar: 5400, paceChangePercent: 6 },
+        closedContext,
       )),
     ).toBe(
       `Você já passou sua média de ganho no último mês (${formatMoney(5400)}) em ${formatMoney(300)}.`,
@@ -140,8 +140,8 @@ describe('formatInsight', () => {
   it('should describe income exactly at the average', () => {
     expect(
       insightToText(formatInsight(
-        { kind: 'INCOME_VS_AVERAGE', current: 5400, average: 5400, monthsCount: 2 },
-        currentContext,
+        { kind: 'INCOME_VS_AVERAGE', current: 5400, average: 5400, monthsCount: 2, expectedSoFar: 5400, paceChangePercent: 0 },
+        closedContext,
       )),
     ).toBe(`Você alcançou sua média de ganho nos últimos 2 meses (${formatMoney(5400)}).`);
   });
@@ -186,9 +186,11 @@ describe('getInsightSentiment', () => {
     ['income total up', { kind: 'INCOME_TOTAL_COMPARISON', current: 5500, previous: 5000, changePercent: 10 }, 'positive'],
     ['income total down', { kind: 'INCOME_TOTAL_COMPARISON', current: 4317.79, previous: 5411.2, changePercent: -20 }, 'negative'],
     ['income total unchanged', { kind: 'INCOME_TOTAL_COMPARISON', current: 100, previous: 100, changePercent: 0 }, 'neutral'],
-    ['income below average', { kind: 'INCOME_VS_AVERAGE', current: 4317.79, average: 4963.49, monthsCount: 3 }, 'negative'],
-    ['income at average', { kind: 'INCOME_VS_AVERAGE', current: 5000, average: 5000, monthsCount: 3 }, 'positive'],
-    ['income above average', { kind: 'INCOME_VS_AVERAGE', current: 6000, average: 5000, monthsCount: 3 }, 'positive'],
+    ['income below average', { kind: 'INCOME_VS_AVERAGE', current: 4317.79, average: 4963.49, monthsCount: 3, expectedSoFar: 4963.49, paceChangePercent: -13 }, 'negative'],
+    ['mid-month income on pace', { kind: 'INCOME_VS_AVERAGE', current: 2600, average: 5000, monthsCount: 3, expectedSoFar: 2500, paceChangePercent: 4 }, 'positive'],
+    ['mid-month income behind pace', { kind: 'INCOME_VS_AVERAGE', current: 1500, average: 5000, monthsCount: 3, expectedSoFar: 2500, paceChangePercent: -40 }, 'negative'],
+    ['income at average', { kind: 'INCOME_VS_AVERAGE', current: 5000, average: 5000, monthsCount: 3, expectedSoFar: 5000, paceChangePercent: 0 }, 'positive'],
+    ['income above average', { kind: 'INCOME_VS_AVERAGE', current: 6000, average: 5000, monthsCount: 3, expectedSoFar: 5000, paceChangePercent: 20 }, 'positive'],
     ['negative month result', { kind: 'MONTH_RESULT', totalIncome: 100, totalExpense: 109.36, result: -9.36 }, 'negative'],
     ['zero month result', { kind: 'MONTH_RESULT', totalIncome: 100, totalExpense: 100, result: 0 }, 'positive'],
   ] as const)('should classify %s', (_, insight, expected) => {
@@ -264,8 +266,8 @@ describe('formatInsight emphasis', () => {
 
   it('should color the amount above the income average as good', () => {
     const segments = formatInsight(
-      { kind: 'INCOME_VS_AVERAGE', current: 5700, average: 5400, monthsCount: 1 },
-      currentContext,
+      { kind: 'INCOME_VS_AVERAGE', current: 5700, average: 5400, monthsCount: 1, expectedSoFar: 5400, paceChangePercent: 6 },
+      closedContext,
     );
 
     expect(emphasisOf(segments, formatMoney(5400))).toBe('strong');
@@ -351,7 +353,7 @@ describe('formatInsight follows the sentiment', () => {
 
   it('should color the remaining amount to the income average as bad', () => {
     const segments = formatInsight(
-      { kind: 'INCOME_VS_AVERAGE', current: 4317.79, average: 4963.49, monthsCount: 3 },
+      { kind: 'INCOME_VS_AVERAGE', current: 4317.79, average: 4963.49, monthsCount: 3, expectedSoFar: 4963.49, paceChangePercent: -13 },
       closedContext,
     );
 
@@ -365,5 +367,36 @@ describe('formatInsight follows the sentiment', () => {
         closedContext,
       )),
     ).toBe(`Sua maior despesa é Combustível: ${formatMoney(1431.6)}, 33% de tudo o que você gastou em setembro.`);
+  });
+});
+
+describe('formatInsight income pace during the month', () => {
+  const behind = { kind: 'INCOME_VS_AVERAGE', current: 1500, average: 5000, monthsCount: 3, expectedSoFar: 2500, paceChangePercent: -40 } as const;
+
+  it('should compare month-to-date income with the pace of the average', () => {
+    const segments = formatInsight(behind, currentContext);
+
+    expect(insightToText(segments)).toBe(
+      `Você está 40% abaixo do ritmo da sua média de ganho nos últimos 3 meses (${formatMoney(2500)} até hoje).`,
+    );
+    expect(emphasisOf(segments, '40% abaixo do ritmo')).toBe('expense');
+  });
+
+  it('should celebrate income ahead of the pace', () => {
+    const segments = formatInsight(
+      { ...behind, current: 3000, paceChangePercent: 20 },
+      currentContext,
+    );
+
+    expect(insightToText(segments)).toBe(
+      `Você está 20% acima do ritmo da sua média de ganho nos últimos 3 meses (${formatMoney(2500)} até hoje).`,
+    );
+    expect(emphasisOf(segments, '20% acima do ritmo')).toBe('income');
+  });
+
+  it('should say when income is exactly on pace', () => {
+    expect(
+      insightToText(formatInsight({ ...behind, current: 2500, paceChangePercent: 0 }, currentContext)),
+    ).toBe(`Você está no ritmo da sua média de ganho nos últimos 3 meses (${formatMoney(2500)} até hoje).`);
   });
 });
