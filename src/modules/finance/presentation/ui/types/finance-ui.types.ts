@@ -105,6 +105,7 @@ export type MonthlyInsightUi =
       current: number;
       previous: number;
       changePercent: number | null;
+      potentialSaving: number | null;
     }
   | {
       kind: 'EXPENSE_CATEGORY_DROP';
@@ -119,8 +120,12 @@ export type MonthlyInsightUi =
 
 export type MonthlyInsightKindUi = MonthlyInsightUi['kind'];
 
+export type InsightMonthUi = { year: number; month: number };
+
 export type MonthlyInsightsUi = {
-  comparisonMonth: { year: number; month: number };
+  comparisonMonth: InsightMonthUi;
+  referenceMonth: InsightMonthUi;
+  isClosedMonth: boolean;
   hasEntries: boolean;
   expenseInsights: MonthlyInsightUi[];
   incomeInsights: MonthlyInsightUi[];
