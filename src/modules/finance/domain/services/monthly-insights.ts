@@ -20,6 +20,9 @@ export type MonthlyInsight =
       previous: number;
       // null = category had no expense in the comparison period
       changePercent: number | null;
+      // How much going back to the comparison-period level would save.
+      // null for a new category (no previous level to go back to).
+      potentialSaving: number | null;
     }
   | { kind: 'EXPENSE_CATEGORY_DROP'; categoryName: CategoryName; current: number; previous: number; changePercent: number }
   | { kind: 'INCOME_TOTAL_COMPARISON'; current: number; previous: number; changePercent: number }
@@ -30,6 +33,8 @@ export type MonthlyInsightKind = MonthlyInsight['kind'];
 
 export interface MonthlyInsights {
   comparisonMonth: InsightMonth;
+  referenceMonth: InsightMonth;
+  isClosedMonth: boolean;
   hasEntries: boolean;
   expenseInsights: MonthlyInsight[];
   incomeInsights: MonthlyInsight[];
@@ -186,6 +191,7 @@ function buildExpenseInsights(
         largestRise.previous === 0
           ? null
           : changePercent(largestRise.current, largestRise.previous),
+      potentialSaving: largestRise.previous === 0 ? null : largestRise.difference,
     });
   }
 
@@ -284,6 +290,8 @@ export function buildMonthlyInsights({
 
   return {
     comparisonMonth: periods.comparisonMonth,
+    referenceMonth: periods.referenceMonth,
+    isClosedMonth: periods.isClosedMonth,
     hasEntries: currentEntries.length > 0,
     expenseInsights: buildExpenseInsights(
       ofType(currentEntries, FinancialEntryType.EXPENSE),

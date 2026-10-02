@@ -58,6 +58,8 @@ describe('buildMonthlyInsights', () => {
   it('should return no insights when there are no entries', () => {
     expect(build([])).toEqual({
       comparisonMonth: { year: 2026, month: 8 },
+      referenceMonth: { year: 2026, month: 9 },
+      isClosedMonth: false,
       hasEntries: false,
       expenseInsights: [],
       incomeInsights: [],
@@ -152,6 +154,7 @@ describe('buildMonthlyInsights', () => {
         current: 280,
         previous: 200,
         changePercent: 40,
+        potentialSaving: 80,
       });
     });
 
@@ -199,6 +202,7 @@ describe('buildMonthlyInsights', () => {
         current: 150,
         previous: 0,
         changePercent: null,
+        potentialSaving: null,
       });
     });
 
@@ -210,6 +214,17 @@ describe('buildMonthlyInsights', () => {
       ]);
 
       expect(find(result.expenseInsights, 'EXPENSE_CATEGORY_RISE')).toBeUndefined();
+    });
+
+    it('should round the potential saving of a rise to cents', () => {
+      const result = build([
+        expense(280.3, '2026-09-10', 'cat-fun'),
+        expense(200.1, '2026-08-10', 'cat-fun'),
+      ]);
+
+      expect(find(result.expenseInsights, 'EXPENSE_CATEGORY_RISE')).toMatchObject({
+        potentialSaving: 80.2,
+      });
     });
 
     it('should report the category with the largest relevant drop', () => {
@@ -359,6 +374,21 @@ describe('buildMonthlyInsights', () => {
         'INCOME_VS_AVERAGE',
         'MONTH_RESULT',
       ]);
+    });
+  });
+
+  it('should carry the closed-month reference from the periods', () => {
+    const closed = buildMonthlyInsights({
+      entries: [expense(100, '2026-09-10')],
+      categoryNameById,
+      periods: getInsightPeriods('2026-10-02', 'closed'),
+    });
+
+    expect(closed).toMatchObject({
+      referenceMonth: { year: 2026, month: 9 },
+      comparisonMonth: { year: 2026, month: 8 },
+      isClosedMonth: true,
+      hasEntries: true,
     });
   });
 });
