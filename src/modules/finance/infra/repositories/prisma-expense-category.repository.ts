@@ -36,4 +36,18 @@ export class PrismaExpenseCategoryRepository implements ExpenseCategoryRepositor
 
     return categories.map(PrismaExpenseCategoryMapper.toDomain);
   }
+
+  async update(category: ExpenseCategory): Promise<ExpenseCategory> {
+    const updated = await prisma.expenseCategory.update({
+      where: { id: category.id },
+      data: {
+        name: category.name,
+        slug: category.slug,
+        isActive: category.isActive,
+        monthlyLimit: category.monthlyLimit,
+      },
+    });
+
+    return PrismaExpenseCategoryMapper.toDomain(updated);
+  }
 }

@@ -9,6 +9,8 @@ export class PrismaExpenseCategoryMapper {
       name: category.name,
       slug: category.slug,
       isActive: category.isActive,
+      monthlyLimit:
+        category.monthlyLimit === null ? null : Number(category.monthlyLimit),
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
     });

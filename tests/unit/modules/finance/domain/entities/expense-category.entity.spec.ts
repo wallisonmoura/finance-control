@@ -1,5 +1,6 @@
 import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
 import { InvalidExpenseCategoryNameError } from '@/modules/finance/domain/errors/invalid-expense-category-name.error';
+import { InvalidExpenseCategoryMonthlyLimitError } from '@/modules/finance/domain/errors/invalid-expense-category-monthly-limit.error';
 
 describe('ExpenseCategory', () => {
   const baseProps = {
@@ -157,5 +158,46 @@ describe('ExpenseCategory', () => {
     const category = ExpenseCategory.create(baseProps);
 
     expect(category.toJSON()).toEqual(baseProps);
+  });
+});
+
+describe('ExpenseCategory monthly limit', () => {
+  function category(monthlyLimit?: number | null) {
+    return ExpenseCategory.create({
+      id: 'cat-1',
+      userId: 'user-1',
+      name: 'Lazer',
+      slug: 'lazer',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      monthlyLimit,
+    });
+  }
+
+  it('should default to no monthly limit', () => {
+    expect(category().monthlyLimit).toBeNull();
+  });
+
+  it('should accept a positive monthly limit', () => {
+    expect(category(300).monthlyLimit).toBe(300);
+  });
+
+  it.each([0, -10, Number.NaN])(
+    'should reject a monthly limit of %s',
+    (value) => {
+      expect(() => category(value)).toThrow(
+        InvalidExpenseCategoryMonthlyLimitError,
+      );
+    },
+  );
+
+  it('should set and remove the monthly limit without mutating the original', () => {
+    const original = category();
+    const withLimit = original.withMonthlyLimit(250.5);
+
+    expect(withLimit.monthlyLimit).toBe(250.5);
+    expect(withLimit.withMonthlyLimit(null).monthlyLimit).toBeNull();
+    expect(original.monthlyLimit).toBeNull();
   });
 });
