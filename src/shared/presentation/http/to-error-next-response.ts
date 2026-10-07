@@ -16,6 +16,8 @@ import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unaut
 import { InvalidExpenseCategorySlugError } from '@/modules/finance/domain/errors/invalid-expense-category-slug.error';
 import { InvalidExpenseCategoryUserIdError } from '@/modules/finance/domain/errors/invalid-expense-category-user-id.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
+import { InactiveExpenseCategoryError } from '@/modules/finance/domain/errors/inactive-expense-category.error';
+import { InvalidExpenseCategoryMonthlyLimitError } from '@/modules/finance/domain/errors/invalid-expense-category-monthly-limit.error';
 import { ExpenseCategoryRequiredError } from '@/modules/finance/domain/errors/expense-category-required.error';
 import { FinancialEntryLinkedToDebtError } from '@/modules/finance/domain/errors/financial-entry-linked-to-debt.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
@@ -226,7 +228,9 @@ export function toErrorNextResponse(error: unknown) {
     error instanceof ExpenseCategoryRequiredError ||
     error instanceof InvalidExpenseCategoryUserIdError ||
     error instanceof InvalidExpenseCategorySlugError ||
-    error instanceof InvalidExpenseCategoryNameError
+    error instanceof InvalidExpenseCategoryNameError ||
+    error instanceof InvalidExpenseCategoryMonthlyLimitError ||
+    error instanceof InactiveExpenseCategoryError
   ) {
     return NextResponse.json(
       {
