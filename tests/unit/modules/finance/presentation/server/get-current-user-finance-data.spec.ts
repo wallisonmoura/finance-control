@@ -2,6 +2,7 @@ import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-a
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
+import { makeGetSpendingGoalsUseCase } from '@/modules/finance/infra/factories/make-get-spending-goals-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
 import {
   FULL_PERIOD_PAGE_SIZE,
@@ -9,6 +10,7 @@ import {
   getCurrentUserFinanceHistory,
   getCurrentUserMonthlyInsights,
   getCurrentUserOperationalSummary,
+  getCurrentUserSpendingGoals,
 } from '@/modules/finance/presentation/server/get-current-user-finance-data';
 
 jest.mock('@/modules/auth/presentation/server/get-authenticated-user-id', () => ({
@@ -466,6 +468,68 @@ describe('getCurrentUserMonthlyInsights', () => {
 
     await expect(getCurrentUserMonthlyInsights()).resolves.toEqual({
       error: 'Não foi possível carregar os insights.',
+    });
+  });
+});
+
+jest.mock(
+  '@/modules/finance/infra/factories/make-get-spending-goals-use-case',
+  () => ({
+    makeGetSpendingGoalsUseCase: jest.fn(),
+  }),
+);
+
+const makeGetSpendingGoalsUseCaseMock = jest.mocked(makeGetSpendingGoalsUseCase);
+
+describe('getCurrentUserSpendingGoals', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return unauthenticated error when there is no current user', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue(null);
+
+    await expect(getCurrentUserSpendingGoals()).resolves.toEqual({
+      error: 'Não autenticado',
+    });
+    expect(makeGetSpendingGoalsUseCaseMock).not.toHaveBeenCalled();
+  });
+
+  it('should return the spending goals of the authenticated user', async () => {
+    const overview = {
+      goals: [
+        {
+          categoryId: 'bebida',
+          categoryName: 'Bebida',
+          limit: 300,
+          spent: 100,
+          usedPercent: 33,
+          expectedSoFar: 150,
+          projected: 200,
+          remaining: 200,
+          overBy: 0,
+          status: 'ON_TRACK',
+        },
+      ],
+      availableCategories: [{ id: 'lazer', name: 'Lazer', averageSpent: null }],
+      averageByCategoryId: { bebida: 250, lazer: null },
+    };
+    const execute = jest.fn().mockResolvedValue(overview);
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetSpendingGoalsUseCaseMock.mockReturnValue({ execute } as never);
+
+    await expect(getCurrentUserSpendingGoals()).resolves.toEqual({ data: overview });
+    expect(execute).toHaveBeenCalledWith({ userId: 'user-1' });
+  });
+
+  it('should return an error message when the use case fails', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetSpendingGoalsUseCaseMock.mockReturnValue({
+      execute: jest.fn().mockRejectedValue(new Error('db down')),
+    } as never);
+
+    await expect(getCurrentUserSpendingGoals()).resolves.toEqual({
+      error: 'Não foi possível carregar as metas.',
     });
   });
 });

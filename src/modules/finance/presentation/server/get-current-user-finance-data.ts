@@ -5,6 +5,7 @@ import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/tra
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
+import { makeGetSpendingGoalsUseCase } from '@/modules/finance/infra/factories/make-get-spending-goals-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
 import {
@@ -20,6 +21,7 @@ import {
   FinanceHistoryUi,
   MonthlyInsightsUi,
   MonthlySummaryUi,
+  SpendingGoalsOverviewUi,
 } from '../ui/types/finance-ui.types';
 import {
   buildOperationalSummaryDailyRows,
@@ -231,6 +233,36 @@ export async function getCurrentUserMonthlyInsights(): Promise<CurrentUserMonthl
   } catch {
     return {
       error: 'Não foi possível carregar os insights.',
+    };
+  }
+}
+
+type CurrentUserSpendingGoalsResult = {
+  data?: SpendingGoalsOverviewUi;
+  error?: string;
+};
+
+export async function getCurrentUserSpendingGoals(): Promise<CurrentUserSpendingGoalsResult> {
+  const auth = await getCurrentUserIdOrError();
+
+  if ('error' in auth) {
+    return {
+      error: auth.error,
+    };
+  }
+
+  try {
+    const useCase = makeGetSpendingGoalsUseCase();
+    // The output holds only numbers, strings and nulls, so it is already
+    // serializable and structurally identical to SpendingGoalsOverviewUi.
+    const overview = await useCase.execute({ userId: auth.userId });
+
+    return {
+      data: overview,
+    };
+  } catch {
+    return {
+      error: 'Não foi possível carregar as metas.',
     };
   }
 }

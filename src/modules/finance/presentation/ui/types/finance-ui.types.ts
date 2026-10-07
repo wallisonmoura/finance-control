@@ -56,6 +56,7 @@ export type ExpenseCategoryUi = {
   id: string;
   name: string;
   slug: string;
+  monthlyLimit?: number | null;
 };
 
 export type DailyProfitUi = {
@@ -136,4 +137,31 @@ export type MonthlyInsightsUi = {
   hasEntries: boolean;
   expenseInsights: MonthlyInsightUi[];
   incomeInsights: MonthlyInsightUi[];
+};
+
+export type SpendingGoalStatusUi = 'EXCEEDED' | 'ABOVE_PACE' | 'ON_TRACK';
+
+export type SpendingGoalUi = {
+  categoryId: string;
+  categoryName: string;
+  limit: number;
+  spent: number;
+  usedPercent: number;
+  expectedSoFar: number;
+  projected: number | null;
+  remaining: number;
+  overBy: number;
+  status: SpendingGoalStatusUi;
+};
+
+export type SpendingGoalCategoryOptionUi = {
+  id: string;
+  name: string;
+  averageSpent: number | null;
+};
+
+export type SpendingGoalsOverviewUi = {
+  goals: SpendingGoalUi[];
+  availableCategories: SpendingGoalCategoryOptionUi[];
+  averageByCategoryId: Record<string, number | null>;
 };

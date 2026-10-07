@@ -9,6 +9,7 @@ import {
   getMonthlySummaryRange,
   registerExpense,
   registerIncome,
+  setCategoryMonthlyLimit,
   updateExpense,
   updateIncome,
 } from '@/modules/finance/presentation/ui/services/finance-api.service';
@@ -820,6 +821,60 @@ describe('finance-api.service', () => {
 
     expect(response).toEqual({
       error: 'Não foi possível concluir a operação.',
+    });
+  });
+
+  it('should set the monthly limit of a category', async () => {
+    const category = {
+      id: 'cat-1',
+      name: 'Lazer',
+      slug: 'lazer',
+      monthlyLimit: 300,
+    };
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => category,
+    });
+
+    const response = await setCategoryMonthlyLimit('cat-1', 300);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/expense-categories/cat-1/monthly-limit',
+      {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ monthlyLimit: 300 }),
+      },
+    );
+    expect(response).toEqual({ data: category });
+  });
+
+  it('should send null to remove the monthly limit', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 'cat-1', name: 'Lazer', slug: 'lazer', monthlyLimit: null }),
+    });
+
+    await setCategoryMonthlyLimit('cat-1', null);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/finance/expense-categories/cat-1/monthly-limit',
+      expect.objectContaining({ body: JSON.stringify({ monthlyLimit: null }) }),
+    );
+  });
+
+  it('should return the API error when setting the monthly limit fails', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: 'Limite mensal deve ser maior que zero.' }),
+    });
+
+    await expect(setCategoryMonthlyLimit('cat-1', 300)).resolves.toEqual({
+      error: 'Limite mensal deve ser maior que zero.',
     });
   });
 });
