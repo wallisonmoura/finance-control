@@ -53,7 +53,25 @@ describe('ListExpenseCategoriesUseCase', () => {
         id: 'category-1',
         name: 'Combustivel',
         slug: 'combustivel',
+        monthlyLimit: null,
       },
     ]);
+  });
+
+  it('should expose the monthly limit of a category', async () => {
+    const repository = new InMemoryExpenseCategoryRepository([
+      makeCategory({
+        id: 'category-1',
+        userId: 'user-1',
+        name: 'Lazer',
+        slug: 'lazer',
+      }).withMonthlyLimit(300),
+    ]);
+
+    const categories = await new ListExpenseCategoriesUseCase(repository).execute({
+      userId: 'user-1',
+    });
+
+    expect(categories[0].monthlyLimit).toBe(300);
   });
 });
