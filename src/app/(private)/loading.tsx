@@ -6,6 +6,7 @@ import { HeroCardSkeleton } from '@/shared/presentation/ui/components/skeletons/
 import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
 import { MonthlyInsightsCardSkeleton } from '@/modules/finance/presentation/ui/components/monthly-insights-card-skeleton';
+import { SpendingGoalsCardSkeleton } from '@/modules/finance/presentation/ui/components/spending-goals-card-skeleton';
 
 export default function DashboardLoading() {
   return (
@@ -23,6 +24,7 @@ export default function DashboardLoading() {
       </div>
 
       <MonthlyInsightsCardSkeleton />
+      <SpendingGoalsCardSkeleton />
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
