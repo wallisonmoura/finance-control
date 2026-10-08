@@ -108,6 +108,12 @@
   --chart-3: #22c55e;
   --chart-4: var(--fc-danger);
   --chart-5: var(--fc-text-secondary);
+  /* Category history chart (relatórios): regular month bars vs. months above
+     the goal. Steps checked with the dataviz validator (CVD, contrast and the
+     per-mode lightness band) — the dark values are one step darker than
+     --info/--expense, which are too light for bars on the dark surface. */
+  --chart-bar: #2563eb;
+  --chart-bar-over-limit: #dc2626;
   --radius: 0.5rem;
   --sidebar: var(--fc-primary);
   --sidebar-foreground: var(--fc-background);
@@ -170,6 +176,8 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+  --chart-bar: #3b82f6;
+  --chart-bar-over-limit: #ef4444;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
