@@ -25,7 +25,7 @@ const SEGMENT_CLASS_NAME: Record<NonNullable<GoalSegment['tone']>, string> = {
 
 type SpendingGoalRowProps = {
   goal: SpendingGoalUi;
-  // Optional controls shown on the right (Editar/Remover on /metas).
+  // Optional controls shown on the right (Editar/Remover on /relatorios/metas).
   actions?: ReactNode;
 };
 
@@ -33,7 +33,7 @@ export function SpendingGoalRow({ goal, actions }: SpendingGoalRowProps) {
   const { usage, detail } = describeSpendingGoal(goal);
 
   return (
-    <li className='flex gap-3'>
+    <li className='flex flex-wrap gap-x-3 gap-y-1'>
       <span
         aria-hidden='true'
         data-slot='goal-dot'
@@ -57,7 +57,12 @@ export function SpendingGoalRow({ goal, actions }: SpendingGoalRowProps) {
           )}
         </p>
       </div>
-      {actions ? <div className='flex shrink-0 items-start gap-2'>{actions}</div> : null}
+      {actions ? (
+        // On narrow screens the actions wrap below the goal text, aligned with it.
+        <div className='flex shrink-0 items-start gap-2 max-sm:basis-full max-sm:pl-3'>
+          {actions}
+        </div>
+      ) : null}
     </li>
   );
 }
