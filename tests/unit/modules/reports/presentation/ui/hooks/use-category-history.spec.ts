@@ -87,6 +87,30 @@ describe('useCategoryHistory', () => {
     expect(result.current.history).toBeNull();
   });
 
+  it('should report an invalid id as not found even when the history request is refused', async () => {
+    // The history API rejects a non-UUID categoryId with a validation error.
+    getFullFinanceHistoryMock.mockResolvedValue({ error: 'Erro de validação.' });
+
+    const { result } = renderHook(() => useCategoryHistory('abc', 6));
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.notFound).toBe(true);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should expose a categories failure as an error', async () => {
+    getFullFinanceHistoryMock.mockResolvedValue(history([]));
+    getExpenseCategoriesMock.mockResolvedValue({ error: 'Falha nas categorias' });
+
+    const { result } = renderHook(() => useCategoryHistory('cat-1', 6));
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.error).toBe('Falha nas categorias');
+    expect(result.current.notFound).toBe(false);
+  });
+
   it('should expose the error of a failed request', async () => {
     getFullFinanceHistoryMock.mockResolvedValue({ error: 'Falha ao buscar' });
 

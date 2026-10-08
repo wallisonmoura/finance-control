@@ -67,17 +67,17 @@ export function useCategoryHistory(
       return;
     }
 
-    const failure = historyResponse.error ?? categoriesResponse.error;
-
-    if (failure) {
-      setError(failure);
+    if (categoriesResponse.error) {
+      setError(categoriesResponse.error);
       setEntries(null);
       setIsLoading(false);
       return;
     }
 
-    // The list only holds the user's active categories: an unknown id, one
-    // from another user or an inactive one all read as "not found".
+    // Resolve the category before looking at the history: the list only
+    // holds the user's active categories, so an unknown id, one from another
+    // user or an inactive one all read as "not found" — even a malformed id,
+    // which the history API refuses with a validation error.
     const found = (categoriesResponse.data ?? []).find(
       (item) => item.id === categoryId,
     );
@@ -85,6 +85,13 @@ export function useCategoryHistory(
     if (!found) {
       setNotFound(true);
       setCategory(null);
+      setEntries(null);
+      setIsLoading(false);
+      return;
+    }
+
+    if (historyResponse.error) {
+      setError(historyResponse.error);
       setEntries(null);
       setIsLoading(false);
       return;
