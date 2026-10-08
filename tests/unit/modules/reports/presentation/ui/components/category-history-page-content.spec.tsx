@@ -68,6 +68,17 @@ describe('CategoryHistoryPageContent', () => {
     );
   });
 
+  it('should describe the chart and offer its data as a table', () => {
+    mockHook();
+
+    render(<CategoryHistoryPageContent categoryId='cat-1' initialMonths={6} />);
+
+    expect(
+      screen.getByText(/Gráfico de barras do gasto mensal de Combustível/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ver dados em tabela' })).toBeInTheDocument();
+  });
+
   it('should link back to reports and to the filtered launches', () => {
     mockHook();
 

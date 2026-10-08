@@ -15,8 +15,11 @@ import {
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { CategoryHistoryMonth } from '../utils/category-history';
+import { describeCategoryHistoryChart } from '../utils/category-history-description';
+import { CategoryHistoryTable } from './category-history-table';
 
 type CategoryHistoryChartProps = {
+  categoryName: string;
   months: CategoryHistoryMonth[];
   monthlyLimit: number | null;
 };
@@ -28,7 +31,11 @@ function barFill(month: CategoryHistoryMonth): string {
   return month.overLimit ? 'var(--chart-bar-over-limit)' : 'var(--chart-bar)';
 }
 
-export function CategoryHistoryChart({ months, monthlyLimit }: CategoryHistoryChartProps) {
+export function CategoryHistoryChart({
+  categoryName,
+  months,
+  monthlyLimit,
+}: CategoryHistoryChartProps) {
   const data = months.map((month) => ({
     ...month,
     // The partial current month is marked on the axis and explained below.
@@ -36,7 +43,10 @@ export function CategoryHistoryChart({ months, monthlyLimit }: CategoryHistoryCh
   }));
 
   return (
-    <div>
+    <figure>
+      <figcaption className='sr-only'>
+        {describeCategoryHistoryChart(categoryName, months, monthlyLimit)}
+      </figcaption>
       <div className='h-72 w-full'>
         <ResponsiveContainer width='100%' height='100%'>
           <BarChart data={data} margin={{ top: 16, right: 8, bottom: 0, left: 8 }}>
@@ -94,6 +104,12 @@ export function CategoryHistoryChart({ months, monthlyLimit }: CategoryHistoryCh
       </div>
 
       <p className='mt-2 text-xs text-muted-foreground'>* Mês em andamento, até hoje.</p>
-    </div>
+
+      <CategoryHistoryTable
+        categoryName={categoryName}
+        months={months}
+        hasLimit={monthlyLimit !== null}
+      />
+    </figure>
   );
 }

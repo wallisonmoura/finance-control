@@ -137,7 +137,11 @@ export function CategoryHistoryPageContent({
           <Card>
             <h2 className='text-base font-semibold text-foreground'>Gasto por mês</h2>
             <div className='mt-4'>
-              <CategoryHistoryChart months={history.months} monthlyLimit={limit} />
+              <CategoryHistoryChart
+                categoryName={category.name}
+                months={history.months}
+                monthlyLimit={limit}
+              />
             </div>
           </Card>
 
