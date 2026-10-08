@@ -38,8 +38,9 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
     router.push(getCategoryHistoryHref(categoryId, months));
   }
 
-  function openCategoryHistoryByName(categoryName: string) {
-    const category = data.find((item) => item.categoryName === categoryName);
+  // By position, not by name: names may repeat (e.g. "Sem categoria").
+  function openCategoryHistoryAt(index: number) {
+    const category = data[index];
 
     if (category) {
       openCategoryHistory(category.categoryId);
@@ -91,7 +92,7 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 type='category'
                 dataKey='categoryName'
                 width={140}
-                tick={<CategoryAxisTick onSelect={openCategoryHistoryByName} />}
+                tick={<CategoryAxisTick onSelect={openCategoryHistoryAt} />}
                 interval={0}
               />
               <Tooltip formatter={(value) => formatMoney(Number(value))} />
@@ -102,7 +103,7 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 barSize={16}
                 cursor='pointer'
                 onClick={(entry) =>
-                  openCategoryHistory((entry as unknown as CategoryExpenseChartDatum).categoryId)
+                  openCategoryHistory((entry.payload as CategoryExpenseChartDatum).categoryId)
                 }
               />
             </BarChart>
