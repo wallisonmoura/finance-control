@@ -10,11 +10,11 @@ describe('BalanceSummaryDashboard', () => {
           debts: { pendingDebts: 0 },
           finalBalance: 3,
         }}
-        monthSlot={<div data-testid='month-slot' />}
+        insightsSlot={<div data-testid='insights-slot' />}
       />,
     );
 
-    expect(screen.getByTestId('month-slot')).toBeInTheDocument();
+    expect(screen.getByTestId('insights-slot')).toBeInTheDocument();
   });
 
   it('should render error state when server loading returns error', () => {

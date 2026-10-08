@@ -25,9 +25,9 @@ type BalanceSummaryCardsProps = {
   summary: BalanceSummaryUi;
   recentEntries?: FinanceEntryUi[];
   // Rendered between balance composition and recent transactions. Lets the
-  // page compose month content from other modules (finance insights and
-  // spending goals) without balance depending on them.
-  monthSlot?: ReactNode;
+  // page compose content from other modules (e.g. finance insights) without
+  // balance depending on them.
+  insightsSlot?: ReactNode;
 };
 
 type SummaryItem = {
@@ -67,7 +67,7 @@ function TransactionIcon({ type }: { type: FinanceEntryUi['type'] }) {
 export function BalanceSummaryCards({
   summary,
   recentEntries = [],
-  monthSlot,
+  insightsSlot,
 }: BalanceSummaryCardsProps) {
   const availableItems: SummaryItem[] = [
     {
@@ -167,7 +167,7 @@ export function BalanceSummaryCards({
         <StatCardGrid items={availableItems} />
       </div>
 
-      {monthSlot}
+      {insightsSlot}
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>

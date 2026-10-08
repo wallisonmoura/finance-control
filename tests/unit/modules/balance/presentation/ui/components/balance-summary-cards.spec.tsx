@@ -18,12 +18,12 @@ describe('BalanceSummaryCards', () => {
     render(
       <BalanceSummaryCards
         summary={summary}
-        monthSlot={<div data-testid='month-slot' />}
+        insightsSlot={<div data-testid='insights-slot' />}
       />,
     );
 
     const composition = screen.getByRole('heading', { name: 'Composição dos saldos' });
-    const slot = screen.getByTestId('month-slot');
+    const slot = screen.getByTestId('insights-slot');
     const recent = screen.getByRole('heading', { name: 'Transações recentes' });
 
     expect(
