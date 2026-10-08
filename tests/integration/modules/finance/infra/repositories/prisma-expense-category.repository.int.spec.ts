@@ -136,4 +136,41 @@ describe('PrismaExpenseCategoryRepository', () => {
       expect(categories[0].name).toBe('Combustivel');
     });
   });
+  describe('update', () => {
+    it('should persist and clear the monthly limit', async () => {
+      const user = await createTestUser();
+      const created = await createTestExpenseCategory({
+        userId: user.id,
+        name: 'Lazer',
+        slug: 'lazer',
+      });
+      const domain = (await repository.findById(created.id))!;
+
+      expect(domain.monthlyLimit).toBeNull();
+
+      const saved = await repository.update(domain.withMonthlyLimit(300.5));
+      expect(saved.monthlyLimit).toBe(300.5);
+      expect((await repository.findById(created.id))!.monthlyLimit).toBe(300.5);
+
+      const cleared = await repository.update(saved.withMonthlyLimit(null));
+      expect(cleared.monthlyLimit).toBeNull();
+      expect((await repository.findById(created.id))!.monthlyLimit).toBeNull();
+    });
+
+    it('should reject a non-positive limit at the database level', async () => {
+      const user = await createTestUser();
+      const created = await createTestExpenseCategory({
+        userId: user.id,
+        name: 'Lazer',
+        slug: 'lazer',
+      });
+
+      await expect(
+        prisma.expenseCategory.update({
+          where: { id: created.id },
+          data: { monthlyLimit: 0 },
+        }),
+      ).rejects.toThrow();
+    });
+  });
 });

@@ -18,6 +18,7 @@ export class ListExpenseCategoriesUseCase {
       id: category.id,
       name: category.name,
       slug: category.slug,
+      monthlyLimit: category.monthlyLimit,
     }));
   }
 }

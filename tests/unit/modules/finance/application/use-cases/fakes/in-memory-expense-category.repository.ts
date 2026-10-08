@@ -17,4 +17,11 @@ export class InMemoryExpenseCategoryRepository implements ExpenseCategoryReposit
       (category) => category.userId === userId && category.isActive,
     );
   }
+
+  async update(category: ExpenseCategory): Promise<ExpenseCategory> {
+    const index = this.categories.findIndex((item) => item.id === category.id);
+    this.categories[index] = category;
+
+    return category;
+  }
 }

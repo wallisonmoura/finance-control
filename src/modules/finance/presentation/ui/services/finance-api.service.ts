@@ -350,3 +350,31 @@ export async function getMonthlySummaryRange(
 
   return { data };
 }
+
+export async function setCategoryMonthlyLimit(
+  categoryId: string,
+  monthlyLimit: number | null,
+): Promise<FinanceApiResponse<ExpenseCategoryUi>> {
+  const response = await fetch(
+    `/api/finance/expense-categories/${categoryId}/monthly-limit`,
+    {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ monthlyLimit }),
+    },
+  );
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as ExpenseCategoryUi;
+
+  return { data };
+}

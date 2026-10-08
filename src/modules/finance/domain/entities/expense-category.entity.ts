@@ -1,3 +1,4 @@
+import { InvalidExpenseCategoryMonthlyLimitError } from '../errors/invalid-expense-category-monthly-limit.error';
 import { InvalidExpenseCategoryNameError } from '../errors/invalid-expense-category-name.error';
 import { InvalidExpenseCategorySlugError } from '../errors/invalid-expense-category-slug.error';
 import { InvalidExpenseCategoryUserIdError } from '../errors/invalid-expense-category-user-id.error';
@@ -8,6 +9,8 @@ export interface ExpenseCategoryProps {
   name: string;
   slug: string;
   isActive: boolean;
+  // Spending goal: fixed monthly cap for the category. null = not controlled.
+  monthlyLimit?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +36,16 @@ export class ExpenseCategory {
     if (!this.props.slug.trim()) {
       throw new InvalidExpenseCategorySlugError();
     }
+
+    const { monthlyLimit } = this.props;
+
+    if (
+      monthlyLimit !== null &&
+      monthlyLimit !== undefined &&
+      !(Number.isFinite(monthlyLimit) && monthlyLimit > 0)
+    ) {
+      throw new InvalidExpenseCategoryMonthlyLimitError();
+    }
   }
 
   get id(): string {
@@ -53,6 +66,10 @@ export class ExpenseCategory {
 
   get isActive(): boolean {
     return this.props.isActive;
+  }
+
+  get monthlyLimit(): number | null {
+    return this.props.monthlyLimit ?? null;
   }
 
   get createdAt(): Date {
@@ -84,6 +101,14 @@ export class ExpenseCategory {
       ...this.props,
       name: data.name ?? this.props.name,
       slug: data.slug ?? this.props.slug,
+      updatedAt: new Date(),
+    });
+  }
+
+  withMonthlyLimit(monthlyLimit: number | null): ExpenseCategory {
+    return ExpenseCategory.create({
+      ...this.props,
+      monthlyLimit,
       updatedAt: new Date(),
     });
   }

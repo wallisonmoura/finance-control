@@ -79,6 +79,7 @@ model ExpenseCategory {
   slug          String
   color         String?
   isActive      Boolean       @default(true) @map("is_active")
+  monthlyLimit  Decimal?      @map("monthly_limit") @db.Decimal(14, 2)
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 

@@ -77,6 +77,7 @@ describe('GET /api/finance/expense-categories', () => {
         id: expect.any(String),
         name: 'Combustivel',
         slug: 'combustivel',
+        monthlyLimit: null,
       },
     ]);
   });
