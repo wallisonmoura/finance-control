@@ -10,7 +10,7 @@ import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { setCategoryMonthlyLimit } from '../services/finance-api.service';
 import { SpendingGoalCategoryOptionUi } from '../types/finance-ui.types';
-import { parseGoalLimitInput } from '../utils/parse-goal-limit';
+import { parseGoalLimitInput, validateGoalLimitInput } from '../utils/parse-goal-limit';
 import { GoalAverageHint } from './goal-average-hint';
 
 type NewSpendingGoalFormProps = {
@@ -39,12 +39,14 @@ export function NewSpendingGoalForm({
       return;
     }
 
-    const limit = parseGoalLimitInput(limitInput);
+    const limitError = validateGoalLimitInput(limitInput);
 
-    if (!(limit > 0)) {
-      setError('Informe um limite maior que zero.');
+    if (limitError) {
+      setError(limitError);
       return;
     }
+
+    const limit = parseGoalLimitInput(limitInput);
 
     setError(null);
     setIsSaving(true);

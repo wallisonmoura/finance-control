@@ -102,6 +102,39 @@ describe('SpendingGoalsPageContent', () => {
     expect(setCategoryMonthlyLimitMock).not.toHaveBeenCalled();
   });
 
+  it('should reject a new limit above the app ceiling before calling the API', async () => {
+    const user = userEvent.setup();
+    render(<SpendingGoalsPageContent overview={overview} />);
+
+    await user.click(screen.getByRole('button', { name: 'Nova meta' }));
+    await user.selectOptions(screen.getByLabelText('Categoria'), 'pet');
+    await user.type(screen.getByLabelText('Limite mensal'), '1000000000000');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    expect(
+      screen.getByText('Informe um valor de até R$ 999.999.999.999,99.'),
+    ).toBeInTheDocument();
+    expect(setCategoryMonthlyLimitMock).not.toHaveBeenCalled();
+  });
+
+  it('should validate the edited limit before calling the API', async () => {
+    const user = userEvent.setup();
+    render(<SpendingGoalsPageContent overview={overview} />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Editar meta de Bebida alcoólica' }),
+    );
+    const input = screen.getByLabelText('Novo limite de Bebida alcoólica');
+    await user.clear(input);
+    await user.type(input, '1000000000000');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    expect(
+      screen.getByText('Informe um valor de até R$ 999.999.999.999,99.'),
+    ).toBeInTheDocument();
+    expect(setCategoryMonthlyLimitMock).not.toHaveBeenCalled();
+  });
+
   it('should show the API error and keep the form open', async () => {
     const user = userEvent.setup();
     setCategoryMonthlyLimitMock.mockResolvedValue({

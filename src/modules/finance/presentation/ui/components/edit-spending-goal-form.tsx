@@ -8,7 +8,11 @@ import { Input } from '@/shared/presentation/ui/components/input';
 
 import { setCategoryMonthlyLimit } from '../services/finance-api.service';
 import { SpendingGoalUi } from '../types/finance-ui.types';
-import { formatGoalLimitInput, parseGoalLimitInput } from '../utils/parse-goal-limit';
+import {
+  formatGoalLimitInput,
+  parseGoalLimitInput,
+  validateGoalLimitInput,
+} from '../utils/parse-goal-limit';
 import { GoalAverageHint } from './goal-average-hint';
 
 type EditSpendingGoalFormProps = {
@@ -33,12 +37,14 @@ export function EditSpendingGoalForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const limit = parseGoalLimitInput(limitInput);
+    const limitError = validateGoalLimitInput(limitInput);
 
-    if (!(limit > 0)) {
-      setError('Informe um limite maior que zero.');
+    if (limitError) {
+      setError(limitError);
       return;
     }
+
+    const limit = parseGoalLimitInput(limitInput);
 
     setError(null);
     setIsSaving(true);
