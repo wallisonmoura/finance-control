@@ -27,6 +27,7 @@ describe('ReportsTabs', () => {
   it.each([
     ['/relatorios', 'Visão geral', 'Metas'],
     ['/relatorios/metas', 'Metas', 'Visão geral'],
+    ['/relatorios/categorias/cat-1', 'Visão geral', 'Metas'],
   ])('should mark the tab of %s as current', (pathname, current, other) => {
     mockUsePathname.mockReturnValue(pathname);
 
