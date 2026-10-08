@@ -117,6 +117,18 @@ describe('CategoryHistoryPageContent', () => {
     expect(screen.queryByLabelText('Limite mensal de Combustível')).not.toBeInTheDocument();
   });
 
+  it('should describe the goal hint average as the selected period', async () => {
+    const user = userEvent.setup();
+    mockHook();
+
+    render(<CategoryHistoryPageContent categoryId='cat-1' initialMonths={6} />);
+
+    await user.click(screen.getByRole('button', { name: 'Editar meta' }));
+
+    expect(screen.getByText(/Média por mês no período/)).toHaveTextContent(/R\$\s820,00/);
+    expect(screen.queryByText(/últimos 3 meses/)).not.toBeInTheDocument();
+  });
+
   it('should change the period through the URL', async () => {
     const user = userEvent.setup();
     mockHook();

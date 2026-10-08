@@ -20,6 +20,8 @@ type EditSpendingGoalFormProps = {
   // null when the category has no goal yet ("Definir meta").
   initialLimit: number | null;
   average: number | null;
+  // Overrides the hint label when the average is not the 3-month one.
+  averageLabel?: string;
   onSaved: (limit: number) => void;
   onCancel: () => void;
 };
@@ -32,6 +34,7 @@ export function EditSpendingGoalForm({
   categoryName,
   initialLimit,
   average,
+  averageLabel,
   onSaved,
   onCancel,
 }: EditSpendingGoalFormProps) {
@@ -81,7 +84,7 @@ export function EditSpendingGoalForm({
           value={limitInput}
           onChange={(event) => setLimitInput(event.target.value)}
         />
-        <GoalAverageHint average={average} />
+        <GoalAverageHint average={average} label={averageLabel} />
       </div>
 
       <FormErrorMessage message={error} />

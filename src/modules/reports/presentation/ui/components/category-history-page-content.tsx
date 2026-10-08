@@ -98,6 +98,7 @@ export function CategoryHistoryPageContent({
             categoryName={category.name}
             initialLimit={limit}
             average={history.averagePerMonth}
+            averageLabel='Média por mês no período'
             onSaved={(savedLimit) => {
               setLimit(savedLimit);
               setIsEditingGoal(false);
