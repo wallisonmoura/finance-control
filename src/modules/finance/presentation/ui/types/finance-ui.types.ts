@@ -148,7 +148,7 @@ export type SpendingGoalUi = {
   spent: number;
   usedPercent: number;
   expectedSoFar: number;
-  projected: number | null;
+  monthElapsedPercent: number;
   remaining: number;
   overBy: number;
   status: SpendingGoalStatusUi;

@@ -69,7 +69,7 @@ describe('buildSpendingGoals', () => {
       spent: 376.69,
       usedPercent: 126,
       expectedSoFar: 150,
-      projected: 753.38,
+      monthElapsedPercent: 50,
       remaining: 0,
       overBy: 76.69,
       status: 'EXCEEDED',
@@ -80,7 +80,6 @@ describe('buildSpendingGoals', () => {
     expect(goalOf([expense(180, '2026-09-10', 'bebida')])).toMatchObject({
       status: 'ABOVE_PACE',
       expectedSoFar: 150,
-      projected: 360,
       remaining: 120,
     });
   });
@@ -89,7 +88,6 @@ describe('buildSpendingGoals', () => {
     expect(goalOf([expense(100, '2026-09-10', 'bebida')])).toMatchObject({
       status: 'ON_TRACK',
       remaining: 200,
-      projected: 200,
     });
   });
 
@@ -107,7 +105,7 @@ describe('buildSpendingGoals', () => {
   it('should not judge pace before the protection day', () => {
     expect(
       goalOf([expense(180, '2026-09-02', 'bebida')], '2026-09-06'),
-    ).toMatchObject({ status: 'ON_TRACK', projected: null });
+    ).toMatchObject({ status: 'ON_TRACK' });
     expect(
       goalOf([expense(180, '2026-09-02', 'bebida')], '2026-09-07'),
     ).toMatchObject({ status: 'ABOVE_PACE' });
@@ -116,7 +114,7 @@ describe('buildSpendingGoals', () => {
   it('should still flag an exceeded goal before the protection day', () => {
     expect(
       goalOf([expense(320, '2026-09-02', 'bebida')], '2026-09-03'),
-    ).toMatchObject({ status: 'EXCEEDED', projected: null });
+    ).toMatchObject({ status: 'EXCEEDED' });
   });
 
   it('should ignore income, other categories and entries outside the current month', () => {
@@ -192,6 +190,10 @@ describe('buildSpendingGoals', () => {
       { id: 'lazer', name: 'Lazer', averageSpent: 300 },
     ]);
     expect(overview.averageByCategoryId).toEqual({ bebida: null, lazer: 300 });
+  });
+
+  it('should tell how much of the month has elapsed', () => {
+    expect(goalOf([], '2026-10-07')).toMatchObject({ monthElapsedPercent: 23 });
   });
 
   it('should round summed spending to cents', () => {

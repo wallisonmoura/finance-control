@@ -34,12 +34,16 @@ export function describeSpendingGoal(goal: SpendingGoalUi): {
     };
   }
 
-  if (goal.status === 'ABOVE_PACE' && goal.projected !== null) {
+  if (goal.status === 'ABOVE_PACE') {
     return {
       usage,
       detail: [
-        { text: 'No ritmo atual, vai fechar em ' },
-        { text: formatMoney(goal.projected), tone: 'warning' },
+        { text: 'Já usou ' },
+        { text: `${goal.usedPercent}%`, tone: 'warning' },
+        { text: ' da meta com ' },
+        { text: `${goal.monthElapsedPercent}%`, tone: 'strong' },
+        { text: ' do mês. Faltam ' },
+        { text: formatMoney(goal.remaining), tone: 'strong' },
         { text: '.' },
       ],
     };

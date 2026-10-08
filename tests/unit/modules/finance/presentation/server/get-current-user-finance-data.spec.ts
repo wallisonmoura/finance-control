@@ -505,7 +505,7 @@ describe('getCurrentUserSpendingGoals', () => {
           spent: 100,
           usedPercent: 33,
           expectedSoFar: 150,
-          projected: 200,
+          monthElapsedPercent: 50,
           remaining: 200,
           overBy: 0,
           status: 'ON_TRACK',

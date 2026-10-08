@@ -13,7 +13,7 @@ const base: Omit<SpendingGoalUi, 'status'> = {
   spent: 180,
   usedPercent: 60,
   expectedSoFar: 150,
-  projected: 360,
+  monthElapsedPercent: 23,
   remaining: 120,
   overBy: 0,
 };
@@ -35,13 +35,13 @@ describe('describeSpendingGoal', () => {
     );
   });
 
-  it('should project the month when above pace', () => {
+  it('should compare the used share of the goal with the elapsed share of the month when above pace', () => {
     const { detail } = describeSpendingGoal({ ...base, status: 'ABOVE_PACE' });
 
-    expect(text(detail)).toBe(`No ritmo atual, vai fechar em ${formatMoney(360)}.`);
-    expect(detail.find((segment) => segment.text === formatMoney(360))?.tone).toBe(
-      'warning',
+    expect(text(detail)).toBe(
+      `Já usou 60% da meta com 23% do mês. Faltam ${formatMoney(120)}.`,
     );
+    expect(detail.find((segment) => segment.text === '60%')?.tone).toBe('warning');
   });
 
   it('should tell how much it passed when exceeded', () => {

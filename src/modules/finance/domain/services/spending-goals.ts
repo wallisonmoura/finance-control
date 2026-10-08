@@ -6,7 +6,7 @@ import { FinancialEntryType } from '../enums/financial-entry-type.enum';
 import { getInsightPeriods } from './insight-periods';
 
 // Before this day of the month, spending is never judged against the pace:
-// a projection from a handful of days is noise.
+// a handful of days says too little about the month.
 export const GOAL_PACE_MIN_DAY = 7;
 
 export type SpendingGoalStatus = 'EXCEEDED' | 'ABOVE_PACE' | 'ON_TRACK';
@@ -18,8 +18,9 @@ export interface SpendingGoal {
   spent: number;
   usedPercent: number;
   expectedSoFar: number;
-  // null before GOAL_PACE_MIN_DAY.
-  projected: number | null;
+  // Share of the month already elapsed (day 7 of 31 → 23). Compared with
+  // usedPercent to explain an above-pace goal without guessing the future.
+  monthElapsedPercent: number;
   remaining: number;
   overBy: number;
   status: SpendingGoalStatus;
@@ -129,9 +130,7 @@ export function buildSpendingGoals({
         spent,
         usedPercent: Math.round((spent / limit) * 100),
         expectedSoFar,
-        projected: paceActive
-          ? roundToCents(spent / periods.monthProgress)
-          : null,
+        monthElapsedPercent: Math.round(periods.monthProgress * 100),
         remaining: roundToCents(Math.max(limit - spent, 0)),
         overBy: roundToCents(Math.max(spent - limit, 0)),
         status,
