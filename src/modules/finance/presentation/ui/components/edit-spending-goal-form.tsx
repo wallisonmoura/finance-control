@@ -7,7 +7,6 @@ import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error
 import { Input } from '@/shared/presentation/ui/components/input';
 
 import { setCategoryMonthlyLimit } from '../services/finance-api.service';
-import { SpendingGoalUi } from '../types/finance-ui.types';
 import {
   formatGoalLimitInput,
   parseGoalLimitInput,
@@ -16,21 +15,29 @@ import {
 import { GoalAverageHint } from './goal-average-hint';
 
 type EditSpendingGoalFormProps = {
-  goal: SpendingGoalUi;
+  categoryId: string;
+  categoryName: string;
+  // null when the category has no goal yet ("Definir meta").
+  initialLimit: number | null;
   average: number | null;
-  onSaved: () => void;
+  onSaved: (limit: number) => void;
   onCancel: () => void;
 };
 
-// Changes only the value: the category of a goal is fixed (remove and create
-// another goal to switch categories).
+// Sets the limit of one category: edits a goal on /relatorios/metas and
+// defines or edits it on the category history page. The category itself is
+// fixed (remove the goal and create another one to switch categories).
 export function EditSpendingGoalForm({
-  goal,
+  categoryId,
+  categoryName,
+  initialLimit,
   average,
   onSaved,
   onCancel,
 }: EditSpendingGoalFormProps) {
-  const [limitInput, setLimitInput] = useState(formatGoalLimitInput(goal.limit));
+  const [limitInput, setLimitInput] = useState(
+    initialLimit === null ? '' : formatGoalLimitInput(initialLimit),
+  );
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -48,7 +55,7 @@ export function EditSpendingGoalForm({
 
     setError(null);
     setIsSaving(true);
-    const response = await setCategoryMonthlyLimit(goal.categoryId, limit);
+    const response = await setCategoryMonthlyLimit(categoryId, limit);
     setIsSaving(false);
 
     if (response.error) {
@@ -56,15 +63,19 @@ export function EditSpendingGoalForm({
       return;
     }
 
-    onSaved();
+    onSaved(limit);
   }
 
   return (
     <form className='space-y-3' onSubmit={handleSubmit} noValidate>
       <div className='max-w-xs space-y-1.5'>
         <Input
-          id={`goal-limit-${goal.categoryId}`}
-          label={`Novo limite de ${goal.categoryName}`}
+          id={`goal-limit-${categoryId}`}
+          label={
+            initialLimit === null
+              ? `Limite mensal de ${categoryName}`
+              : `Novo limite de ${categoryName}`
+          }
           type='text'
           inputMode='decimal'
           value={limitInput}

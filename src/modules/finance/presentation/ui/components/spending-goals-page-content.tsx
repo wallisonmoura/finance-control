@@ -17,6 +17,12 @@ import { EditSpendingGoalForm } from './edit-spending-goal-form';
 import { NewSpendingGoalForm } from './new-spending-goal-form';
 import { SpendingGoalRow } from './spending-goal-row';
 
+// The category history page lives in the reports module; finance only builds
+// the path, so it does not depend on reports.
+function getCategoryHistoryPath(categoryId: string): string {
+  return `/relatorios/categorias/${categoryId}`;
+}
+
 type SpendingGoalsPageContentProps = {
   overview?: SpendingGoalsOverviewUi | null;
   error?: string | null;
@@ -117,7 +123,9 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
                     {goal.categoryName}
                   </p>
                   <EditSpendingGoalForm
-                    goal={goal}
+                    categoryId={goal.categoryId}
+                    categoryName={goal.categoryName}
+                    initialLimit={goal.limit}
                     average={overview.averageByCategoryId[goal.categoryId] ?? null}
                     onSaved={handleSaved}
                     onCancel={() => setEditingId(null)}
@@ -127,6 +135,7 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
                 <SpendingGoalRow
                   key={goal.categoryId}
                   goal={goal}
+                  nameHref={getCategoryHistoryPath(goal.categoryId)}
                   actions={
                     <>
                       <Button

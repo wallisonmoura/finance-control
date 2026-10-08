@@ -47,6 +47,15 @@ describe('SpendingGoalsPageContent', () => {
     jest.clearAllMocks();
   });
 
+  it('should link each goal name to its category history', () => {
+    render(<SpendingGoalsPageContent overview={overview} />);
+
+    expect(screen.getByRole('link', { name: 'Bebida alcoólica' })).toHaveAttribute(
+      'href',
+      '/relatorios/categorias/bebida',
+    );
+  });
+
   it('should list the goals with their status', () => {
     render(<SpendingGoalsPageContent overview={overview} />);
 
