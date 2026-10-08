@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import {
   Bar,
   BarChart,
@@ -16,22 +17,46 @@ import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-s
 import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
-import { useCategoryExpensesChart } from '../hooks/use-category-expenses-chart';
+import {
+  CategoryExpenseChartDatum,
+  useCategoryExpensesChart,
+} from '../hooks/use-category-expenses-chart';
+import { getCategoryHistoryHref } from '../utils/category-history-links';
 import { getCategoryChartHeight } from '../utils/category-chart-height';
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { CategoryAxisTick } from './category-axis-tick';
 
 type CategoryExpensesChartProps = {
   months: ReportsPeriodMonths;
 };
 
 export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
+  const router = useRouter();
   const { data, isLoading, error, refresh } = useCategoryExpensesChart(months);
+
+  function openCategoryHistory(categoryId: string) {
+    router.push(getCategoryHistoryHref(categoryId, months));
+  }
+
+  // By position, not by name: names may repeat (e.g. "Sem categoria").
+  function openCategoryHistoryAt(index: number) {
+    const category = data[index];
+
+    if (category) {
+      openCategoryHistory(category.categoryId);
+    }
+  }
 
   return (
     <Card>
       <h2 className='text-base font-semibold text-foreground'>
         Gastos por categoria
       </h2>
+      {!isLoading && !error && data.length > 0 && (
+        <p className='mt-1 text-xs text-muted-foreground'>
+          Clique numa categoria para ver o histórico.
+        </p>
+      )}
 
       {isLoading && <Skeleton className='mt-4 h-72 w-full' />}
 
@@ -67,7 +92,7 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 type='category'
                 dataKey='categoryName'
                 width={140}
-                tick={{ fontSize: 12 }}
+                tick={<CategoryAxisTick onSelect={openCategoryHistoryAt} />}
                 interval={0}
               />
               <Tooltip formatter={(value) => formatMoney(Number(value))} />
@@ -76,6 +101,10 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 fill='var(--expense)'
                 radius={[0, 4, 4, 0]}
                 barSize={16}
+                cursor='pointer'
+                onClick={(entry) =>
+                  openCategoryHistory((entry.payload as CategoryExpenseChartDatum).categoryId)
+                }
               />
             </BarChart>
           </ResponsiveContainer>

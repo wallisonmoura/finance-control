@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/presentation/ui/lib/utils';
@@ -27,9 +28,11 @@ type SpendingGoalRowProps = {
   goal: SpendingGoalUi;
   // Optional controls shown on the right (Editar/Remover on /relatorios/metas).
   actions?: ReactNode;
+  // When present, the category name links to its history.
+  nameHref?: string;
 };
 
-export function SpendingGoalRow({ goal, actions }: SpendingGoalRowProps) {
+export function SpendingGoalRow({ goal, actions, nameHref }: SpendingGoalRowProps) {
   const { usage, detail } = describeSpendingGoal(goal);
 
   return (
@@ -43,7 +46,15 @@ export function SpendingGoalRow({ goal, actions }: SpendingGoalRowProps) {
         )}
       />
       <div className='min-w-0 flex-1 space-y-0.5'>
-        <p className='text-sm font-semibold text-foreground'>{goal.categoryName}</p>
+        <p className='text-sm font-semibold text-foreground'>
+          {nameHref ? (
+            <Link href={nameHref} className='hover:underline'>
+              {goal.categoryName}
+            </Link>
+          ) : (
+            goal.categoryName
+          )}
+        </p>
         <p className='text-sm text-foreground'>{usage}</p>
         <p className='text-sm text-muted-foreground'>
           {detail.map((segment, index) =>

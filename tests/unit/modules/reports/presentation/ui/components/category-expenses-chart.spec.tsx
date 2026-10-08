@@ -4,6 +4,9 @@ import { CategoryExpensesChart } from '@/modules/reports/presentation/ui/compone
 import { useCategoryExpensesChart } from '@/modules/reports/presentation/ui/hooks/use-category-expenses-chart';
 
 jest.mock('@/modules/reports/presentation/ui/hooks/use-category-expenses-chart');
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn() }),
+}));
 
 const useCategoryExpensesChartMock = jest.mocked(useCategoryExpensesChart);
 
@@ -48,5 +51,35 @@ describe('CategoryExpensesChart', () => {
     render(<CategoryExpensesChart months={6} />);
 
     expect(screen.getByText('Gastos por categoria')).toBeInTheDocument();
+  });
+
+  it('should hint that a category opens its history', () => {
+    useCategoryExpensesChartMock.mockReturnValue({
+      data: [{ categoryId: 'cat-1', categoryName: 'Alimentação', total: 100 }],
+      isLoading: false,
+      error: null,
+      refresh: jest.fn(),
+    });
+
+    render(<CategoryExpensesChart months={6} />);
+
+    expect(
+      screen.getByText('Clique numa categoria para ver o histórico.'),
+    ).toBeInTheDocument();
+  });
+
+  it('should not show the hint without data', () => {
+    useCategoryExpensesChartMock.mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+      refresh: jest.fn(),
+    });
+
+    render(<CategoryExpensesChart months={6} />);
+
+    expect(
+      screen.queryByText('Clique numa categoria para ver o histórico.'),
+    ).not.toBeInTheDocument();
   });
 });

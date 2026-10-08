@@ -10,6 +10,16 @@ const REPORTS_TABS = [
   { label: 'Metas', href: '/relatorios/metas' },
 ];
 
+// "/relatorios" must not stay current on "/relatorios/metas", but the
+// category history is a detail of the overview, so it keeps it current.
+function isTabCurrent(href: string, pathname: string): boolean {
+  if (href === '/relatorios') {
+    return pathname === href || pathname.startsWith('/relatorios/categorias/');
+  }
+
+  return pathname === href;
+}
+
 export function ReportsTabs() {
   const pathname = usePathname();
 
@@ -19,8 +29,7 @@ export function ReportsTabs() {
       className='inline-flex rounded-lg border border-border bg-card p-1 shadow-sm'
     >
       {REPORTS_TABS.map((tab) => {
-        // Exact match: "/relatorios" must not stay current on "/relatorios/metas".
-        const isCurrent = pathname === tab.href;
+        const isCurrent = isTabCurrent(tab.href, pathname);
 
         return (
           <Link
