@@ -1,11 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
-import { StatusMessage } from '@/shared/presentation/ui/components/status-message';
+import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 
 import { IncomeGoalsOverviewUi } from '../types/finance-ui.types';
 import { GoalsSectionHeader } from './goals-section-header';
@@ -20,12 +20,34 @@ type IncomeGoalsSectionProps = {
 export function IncomeGoalsSection({ overview, error }: IncomeGoalsSectionProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [shouldRestoreFocus, setShouldRestoreFocus] = useState(false);
+  const actionRef = useRef<HTMLButtonElement>(null);
+
+  // The form unmounts on save/cancel; send keyboard users back to the button
+  // that opened it instead of letting focus fall to the top of the page.
+  useEffect(() => {
+    if (!isEditing && shouldRestoreFocus) {
+      actionRef.current?.focus();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShouldRestoreFocus(false);
+    }
+  }, [isEditing, shouldRestoreFocus]);
+
+  function closeForm() {
+    setIsEditing(false);
+    setShouldRestoreFocus(true);
+  }
 
   const hasGoals = Boolean(overview?.revenue || overview?.profit);
 
   const action =
     overview && !isEditing ? (
-      <Button type='button' variant='secondary' onClick={() => setIsEditing(true)}>
+      <Button
+        ref={actionRef}
+        type='button'
+        variant='secondary'
+        onClick={() => setIsEditing(true)}
+      >
         {hasGoals ? 'Editar metas de ganho' : 'Definir metas de ganho'}
       </Button>
     ) : null;
@@ -38,7 +60,7 @@ export function IncomeGoalsSection({ overview, error }: IncomeGoalsSectionProps)
         action={action}
       />
 
-      {error ? <StatusMessage tone='error' message={error} /> : null}
+      {error ? <LoadErrorState message={error} onRetry={() => router.refresh()} /> : null}
 
       {overview && isEditing ? (
         <Card className='p-5'>
@@ -49,10 +71,10 @@ export function IncomeGoalsSection({ overview, error }: IncomeGoalsSectionProps)
             }}
             averages={overview.averages}
             onSaved={() => {
-              setIsEditing(false);
+              closeForm();
               router.refresh();
             }}
-            onCancel={() => setIsEditing(false)}
+            onCancel={closeForm}
           />
         </Card>
       ) : null}

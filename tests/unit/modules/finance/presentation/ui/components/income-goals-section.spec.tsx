@@ -87,12 +87,15 @@ describe('IncomeGoalsSection', () => {
     expect(screen.getByRole('button', { name: 'Definir metas de ganho' })).toBeInTheDocument();
   });
 
-  it('should show a loading error', () => {
+  it('should show a loading error with a retry', async () => {
+    const user = userEvent.setup();
     render(<IncomeGoalsSection error='Não foi possível carregar as metas de ganho.' />);
 
     expect(
       screen.getByText('Não foi possível carregar as metas de ganho.'),
     ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Tentar novamente' }));
+    expect(mockRefresh).toHaveBeenCalled();
   });
 
   it('should edit the goals, clearing one, and refresh the page', async () => {
@@ -110,5 +113,28 @@ describe('IncomeGoalsSection', () => {
     );
     expect(mockRefresh).toHaveBeenCalled();
     expect(screen.queryByLabelText('Faturamento mensal')).not.toBeInTheDocument();
+  });
+
+  it('should give the focus back to the edit button after cancelling', async () => {
+    const user = userEvent.setup();
+    render(<IncomeGoalsSection overview={both} />);
+
+    await user.click(screen.getByRole('button', { name: 'Editar metas de ganho' }));
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    expect(screen.getByRole('button', { name: 'Editar metas de ganho' })).toHaveFocus();
+  });
+
+  it('should give the focus back to the edit button after saving', async () => {
+    const user = userEvent.setup();
+    setIncomeGoalsMock.mockResolvedValue({ data: { revenueTarget: 6000, profitTarget: 2000 } });
+    render(<IncomeGoalsSection overview={both} />);
+
+    await user.click(screen.getByRole('button', { name: 'Editar metas de ganho' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Editar metas de ganho' })).toHaveFocus(),
+    );
   });
 });
