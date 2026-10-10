@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { cn } from '@/shared/presentation/ui/lib/utils';
 
 import { IncomeGoalProgressUi } from '../types/finance-ui.types';
@@ -27,9 +29,11 @@ type IncomeGoalRowProps = {
   label: string;
   kind: IncomeGoalKind;
   progress: IncomeGoalProgressUi;
+  // The goal's month-by-month history page.
+  href: string;
 };
 
-export function IncomeGoalRow({ label, kind, progress }: IncomeGoalRowProps) {
+export function IncomeGoalRow({ label, kind, progress, href }: IncomeGoalRowProps) {
   const { usage, detail } = describeIncomeGoal(progress, kind);
 
   return (
@@ -43,7 +47,11 @@ export function IncomeGoalRow({ label, kind, progress }: IncomeGoalRowProps) {
         )}
       />
       <div className='min-w-0 flex-1 space-y-0.5'>
-        <p className='text-sm font-semibold text-foreground'>{label}</p>
+        <p className='text-sm font-semibold text-foreground'>
+          <Link href={href} className='hover:underline'>
+            {label}
+          </Link>
+        </p>
         <p className='text-sm text-foreground'>{usage}</p>
         <p className='text-sm text-muted-foreground'>
           {detail.map((segment, index) =>
