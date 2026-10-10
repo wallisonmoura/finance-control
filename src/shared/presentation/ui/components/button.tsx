@@ -1,9 +1,12 @@
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, Ref } from 'react';
 
 import { Button as PrimitiveButton } from '@/shared/presentation/ui/primitives/button';
 import { cn } from '@/shared/presentation/ui/lib/utils';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  // React 19 passes ref as a regular prop; it reaches the primitive through
+  // the props spread (used to return focus after a form closes).
+  ref?: Ref<HTMLButtonElement>;
   asChild?: boolean;
   fullWidth?: boolean;
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'custom';

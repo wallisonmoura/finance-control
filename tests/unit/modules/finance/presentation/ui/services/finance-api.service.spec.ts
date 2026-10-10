@@ -10,6 +10,7 @@ import {
   registerExpense,
   registerIncome,
   setCategoryMonthlyLimit,
+  setIncomeGoals,
   updateExpense,
   updateIncome,
 } from '@/modules/finance/presentation/ui/services/finance-api.service';
@@ -876,5 +877,36 @@ describe('finance-api.service', () => {
     await expect(setCategoryMonthlyLimit('cat-1', 300)).resolves.toEqual({
       error: 'Limite mensal deve ser maior que zero.',
     });
+  });
+
+  it('should save the income goals', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ revenueTarget: 6000, profitTarget: null }),
+    });
+
+    const response = await setIncomeGoals({ revenueTarget: 6000, profitTarget: null });
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/finance/income-goals', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ revenueTarget: 6000, profitTarget: null }),
+    });
+    expect(response).toEqual({ data: { revenueTarget: 6000, profitTarget: null } });
+  });
+
+  it('should return the API error when saving the income goals fails', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: 'Valor excede o limite permitido.' }),
+    });
+
+    await expect(
+      setIncomeGoals({ revenueTarget: 6000, profitTarget: null }),
+    ).resolves.toEqual({ error: 'Valor excede o limite permitido.' });
   });
 });

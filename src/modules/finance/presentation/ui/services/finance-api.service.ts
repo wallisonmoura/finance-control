@@ -1,6 +1,7 @@
 import {
   DailyProfitUi,
   ExpenseCategoryUi,
+  IncomeGoalTargetsUi,
   FinanceApiResponse,
   FinanceEntryUi,
   FinanceHistoryFiltersUi,
@@ -375,6 +376,30 @@ export async function setCategoryMonthlyLimit(
   }
 
   const data = (await response.json()) as ExpenseCategoryUi;
+
+  return { data };
+}
+
+export async function setIncomeGoals(
+  targets: IncomeGoalTargetsUi,
+): Promise<FinanceApiResponse<IncomeGoalTargetsUi>> {
+  const response = await fetch('/api/finance/income-goals', {
+    method: 'PUT',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(targets),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as IncomeGoalTargetsUi;
 
   return { data };
 }

@@ -15,6 +15,7 @@ import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/ex
 import { ExpenseCategoryRequiredError } from '@/modules/finance/domain/errors/expense-category-required.error';
 import { FinancialEntryNotFoundError } from '@/modules/finance/domain/errors/financial-entry-not-found.error';
 import { InvalidExpenseCategoryNameError } from '@/modules/finance/domain/errors/invalid-expense-category-name.error';
+import { InvalidIncomeGoalTargetError } from '@/modules/finance/domain/errors/invalid-income-goal-target.error';
 import { InvalidFinancialEntryTypeError } from '@/modules/finance/domain/errors/invalid-financial-entry-type.error';
 import { UnauthorizedFinancialEntryAccessError } from '@/modules/finance/domain/errors/unauthorized-financial-entry-access.error';
 import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/insufficient-wallet-balance.error';
@@ -95,6 +96,15 @@ describe('toErrorNextResponse', () => {
     const response = toErrorNextResponse(new InvalidDebtAmountError());
 
     expect(response.status).toBe(400);
+  });
+
+  it('should return 400 with the message for InvalidIncomeGoalTargetError', async () => {
+    const response = toErrorNextResponse(new InvalidIncomeGoalTargetError());
+
+    expect(response.status).toBe(400);
+    await expect(readJson(response)).resolves.toEqual({
+      message: 'Meta de ganho deve ser maior que zero.',
+    });
   });
 
   it('should return 400 for InvalidDebtDescriptionError', async () => {

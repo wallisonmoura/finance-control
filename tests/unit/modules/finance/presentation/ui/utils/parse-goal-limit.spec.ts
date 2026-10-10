@@ -26,4 +26,10 @@ describe('validateGoalLimitInput', () => {
       'Informe um valor de até R$ 999.999.999.999,99.',
     );
   });
+
+  it('should accept a custom message for a non-positive value', () => {
+    expect(validateGoalLimitInput('0', 'Informe um valor maior que zero.')).toBe(
+      'Informe um valor maior que zero.',
+    );
+  });
 });

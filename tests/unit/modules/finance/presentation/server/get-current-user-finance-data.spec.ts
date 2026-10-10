@@ -3,11 +3,13 @@ import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/fact
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
 import { makeGetSpendingGoalsUseCase } from '@/modules/finance/infra/factories/make-get-spending-goals-use-case';
+import { makeGetIncomeGoalsUseCase } from '@/modules/finance/infra/factories/make-get-income-goals-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
 import {
   FULL_PERIOD_PAGE_SIZE,
   getCurrentUserExpenseCategories,
   getCurrentUserFinanceHistory,
+  getCurrentUserIncomeGoals,
   getCurrentUserMonthlyInsights,
   getCurrentUserOperationalSummary,
   getCurrentUserSpendingGoals,
@@ -530,6 +532,55 @@ describe('getCurrentUserSpendingGoals', () => {
 
     await expect(getCurrentUserSpendingGoals()).resolves.toEqual({
       error: 'Não foi possível carregar as metas.',
+    });
+  });
+});
+
+jest.mock(
+  '@/modules/finance/infra/factories/make-get-income-goals-use-case',
+  () => ({
+    makeGetIncomeGoalsUseCase: jest.fn(),
+  }),
+);
+
+const makeGetIncomeGoalsUseCaseMock = jest.mocked(makeGetIncomeGoalsUseCase);
+
+describe('getCurrentUserIncomeGoals', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return unauthenticated error when there is no current user', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue(null);
+
+    await expect(getCurrentUserIncomeGoals()).resolves.toEqual({
+      error: 'Não autenticado',
+    });
+    expect(makeGetIncomeGoalsUseCaseMock).not.toHaveBeenCalled();
+  });
+
+  it('should return the income goals of the authenticated user', async () => {
+    const overview = {
+      revenue: null,
+      profit: null,
+      averages: { revenue: 4000, profit: null },
+    };
+    const execute = jest.fn().mockResolvedValue(overview);
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetIncomeGoalsUseCaseMock.mockReturnValue({ execute } as never);
+
+    await expect(getCurrentUserIncomeGoals()).resolves.toEqual({ data: overview });
+    expect(execute).toHaveBeenCalledWith({ userId: 'user-1' });
+  });
+
+  it('should return an error message when the use case fails', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetIncomeGoalsUseCaseMock.mockReturnValue({
+      execute: jest.fn().mockRejectedValue(new Error('db down')),
+    } as never);
+
+    await expect(getCurrentUserIncomeGoals()).resolves.toEqual({
+      error: 'Não foi possível carregar as metas de ganho.',
     });
   });
 });

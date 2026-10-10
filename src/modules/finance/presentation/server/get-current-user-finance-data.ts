@@ -5,6 +5,7 @@ import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/tra
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
+import { makeGetIncomeGoalsUseCase } from '@/modules/finance/infra/factories/make-get-income-goals-use-case';
 import { makeGetSpendingGoalsUseCase } from '@/modules/finance/infra/factories/make-get-spending-goals-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
@@ -19,6 +20,7 @@ import {
   FinanceEntryUi,
   FinanceHistoryFiltersUi,
   FinanceHistoryUi,
+  IncomeGoalsOverviewUi,
   MonthlyInsightsUi,
   MonthlySummaryUi,
   SpendingGoalsOverviewUi,
@@ -263,6 +265,36 @@ export async function getCurrentUserSpendingGoals(): Promise<CurrentUserSpending
   } catch {
     return {
       error: 'Não foi possível carregar as metas.',
+    };
+  }
+}
+
+type CurrentUserIncomeGoalsResult = {
+  data?: IncomeGoalsOverviewUi;
+  error?: string;
+};
+
+export async function getCurrentUserIncomeGoals(): Promise<CurrentUserIncomeGoalsResult> {
+  const auth = await getCurrentUserIdOrError();
+
+  if ('error' in auth) {
+    return {
+      error: auth.error,
+    };
+  }
+
+  try {
+    const useCase = makeGetIncomeGoalsUseCase();
+    // The output holds only numbers, strings and nulls, so it is already
+    // serializable and structurally identical to IncomeGoalsOverviewUi.
+    const overview = await useCase.execute({ userId: auth.userId });
+
+    return {
+      data: overview,
+    };
+  } catch {
+    return {
+      error: 'Não foi possível carregar as metas de ganho.',
     };
   }
 }

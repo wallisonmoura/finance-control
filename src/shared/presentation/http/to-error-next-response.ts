@@ -16,6 +16,7 @@ import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unaut
 import { InvalidExpenseCategorySlugError } from '@/modules/finance/domain/errors/invalid-expense-category-slug.error';
 import { InvalidExpenseCategoryUserIdError } from '@/modules/finance/domain/errors/invalid-expense-category-user-id.error';
 import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
+import { InvalidIncomeGoalTargetError } from '@/modules/finance/domain/errors/invalid-income-goal-target.error';
 import { InactiveExpenseCategoryError } from '@/modules/finance/domain/errors/inactive-expense-category.error';
 import { InvalidExpenseCategoryMonthlyLimitError } from '@/modules/finance/domain/errors/invalid-expense-category-monthly-limit.error';
 import { ExpenseCategoryRequiredError } from '@/modules/finance/domain/errors/expense-category-required.error';
@@ -230,7 +231,8 @@ export function toErrorNextResponse(error: unknown) {
     error instanceof InvalidExpenseCategorySlugError ||
     error instanceof InvalidExpenseCategoryNameError ||
     error instanceof InvalidExpenseCategoryMonthlyLimitError ||
-    error instanceof InactiveExpenseCategoryError
+    error instanceof InactiveExpenseCategoryError ||
+    error instanceof InvalidIncomeGoalTargetError
   ) {
     return NextResponse.json(
       {
