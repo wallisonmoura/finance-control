@@ -1,10 +1,10 @@
 import { RouteLoadingRegion } from '@/shared/presentation/ui/components/skeletons/route-loading-region';
-import { SpendingGoalsPageSkeleton } from '@/modules/finance/presentation/ui/components/spending-goals-page-skeleton';
+import { GoalsPageSkeleton } from '@/modules/finance/presentation/ui/components/goals-page-skeleton';
 
-export default function SpendingGoalsLoading() {
+export default function GoalsLoading() {
   return (
     <RouteLoadingRegion>
-      <SpendingGoalsPageSkeleton />
+      <GoalsPageSkeleton />
     </RouteLoadingRegion>
   );
 }

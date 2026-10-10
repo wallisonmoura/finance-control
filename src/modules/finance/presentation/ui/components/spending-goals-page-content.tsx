@@ -9,11 +9,11 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialog';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
-import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
 import { setCategoryMonthlyLimit } from '../services/finance-api.service';
 import { SpendingGoalsOverviewUi, SpendingGoalUi } from '../types/finance-ui.types';
 import { EditSpendingGoalForm } from './edit-spending-goal-form';
+import { GoalsSectionHeader } from './goals-section-header';
 import { NewSpendingGoalForm } from './new-spending-goal-form';
 import { SpendingGoalRow } from './spending-goal-row';
 
@@ -64,19 +64,18 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
   }
 
   const header = (
-    <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-      <PageTitle
-        title='Metas de gasto'
-        description='Defina um teto mensal para as categorias que você quer segurar.'
-      />
-
-      {overview && overview.availableCategories.length > 0 && !isCreating ? (
-        <Button type='button' onClick={() => setIsCreating(true)}>
-          <Plus aria-hidden='true' className='size-4' />
-          Nova meta
-        </Button>
-      ) : null}
-    </div>
+    <GoalsSectionHeader
+      title='Metas de gasto'
+      description='Defina um teto mensal para as categorias que você quer segurar.'
+      action={
+        overview && overview.availableCategories.length > 0 && !isCreating ? (
+          <Button type='button' onClick={() => setIsCreating(true)}>
+            <Plus aria-hidden='true' className='size-4' />
+            Nova meta
+          </Button>
+        ) : null
+      }
+    />
   );
 
   if (error || !overview) {
