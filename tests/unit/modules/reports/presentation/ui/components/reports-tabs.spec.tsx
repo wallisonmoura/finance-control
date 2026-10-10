@@ -28,6 +28,8 @@ describe('ReportsTabs', () => {
     ['/relatorios', 'Visão geral', 'Metas'],
     ['/relatorios/metas', 'Metas', 'Visão geral'],
     ['/relatorios/categorias/cat-1', 'Visão geral', 'Metas'],
+    ['/relatorios/metas/lucro', 'Metas', 'Visão geral'],
+    ['/relatorios/metas/faturamento', 'Metas', 'Visão geral'],
   ])('should mark the tab of %s as current', (pathname, current, other) => {
     mockUsePathname.mockReturnValue(pathname);
 

@@ -11,13 +11,14 @@ const REPORTS_TABS = [
 ];
 
 // "/relatorios" must not stay current on "/relatorios/metas", but the
-// category history is a detail of the overview, so it keeps it current.
+// category history is a detail of the overview, so it keeps it current; the
+// income goal histories (/relatorios/metas/*) are details of the goals tab.
 function isTabCurrent(href: string, pathname: string): boolean {
   if (href === '/relatorios') {
     return pathname === href || pathname.startsWith('/relatorios/categorias/');
   }
 
-  return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function ReportsTabs() {
