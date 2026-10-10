@@ -165,3 +165,28 @@ export type SpendingGoalsOverviewUi = {
   availableCategories: SpendingGoalCategoryOptionUi[];
   averageByCategoryId: Record<string, number | null>;
 };
+
+export type IncomeGoalStatusUi = 'REACHED' | 'ON_PACE' | 'BEHIND' | 'EARLY';
+
+export type IncomeGoalProgressUi = {
+  target: number;
+  achieved: number;
+  expectedSoFar: number;
+  remaining: number;
+  daysLeft: number;
+  perDay: number;
+  progressPercent: number;
+  exceededBy: number;
+  status: IncomeGoalStatusUi;
+};
+
+export type IncomeGoalsOverviewUi = {
+  revenue: IncomeGoalProgressUi | null;
+  profit: IncomeGoalProgressUi | null;
+  averages: { revenue: number | null; profit: number | null };
+};
+
+export type IncomeGoalTargetsUi = {
+  revenueTarget: number | null;
+  profitTarget: number | null;
+};
