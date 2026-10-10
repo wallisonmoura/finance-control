@@ -13,11 +13,15 @@ export function parseGoalLimitInput(value: string): number {
 // Same client rules as the other money forms (expense, income, debt), kept
 // in sync with the backend schema, so the user gets a precise message
 // instead of the API's generic "Erro de validação.". Returns null when valid.
-export function validateGoalLimitInput(value: string): string | null {
+export function validateGoalLimitInput(
+  value: string,
+  // Spending goals speak of a "limite"; income goals pass their own wording.
+  nonPositiveMessage = 'Informe um limite maior que zero.',
+): string | null {
   const trimmed = value.trim();
 
   if (!trimmed || /^0+(,0{1,2})?$/.test(trimmed)) {
-    return 'Informe um limite maior que zero.';
+    return nonPositiveMessage;
   }
 
   if (!/^\d+(,\d{1,2})?$/.test(trimmed)) {

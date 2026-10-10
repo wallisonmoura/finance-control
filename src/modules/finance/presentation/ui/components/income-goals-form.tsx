@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 
+
 import { Button } from '@/shared/presentation/ui/components/button';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Input } from '@/shared/presentation/ui/components/input';
@@ -22,6 +23,8 @@ type IncomeGoalsFormProps = {
   onCancel: () => void;
 };
 
+type FieldKey = 'revenueTarget' | 'profitTarget';
+
 const FIELDS = [
   { key: 'revenueTarget', averageKey: 'revenue', id: 'income-goal-revenue', label: 'Faturamento mensal' },
   { key: 'profitTarget', averageKey: 'profit', id: 'income-goal-profit', label: 'Lucro mensal' },
@@ -38,6 +41,9 @@ export function IncomeGoalsForm({ initial, averages, onSaved, onCancel }: Income
     revenueTarget: toInput(initial.revenueTarget),
     profitTarget: toInput(initial.profitTarget),
   });
+  // Field errors are tied to their input (aria-invalid + aria-describedby);
+  // `error` is kept for API errors, which belong to the whole form.
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -49,14 +55,26 @@ export function IncomeGoalsForm({ initial, averages, onSaved, onCancel }: Income
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const nextFieldErrors: Partial<Record<FieldKey, string>> = {};
+
     for (const field of FIELDS) {
       const value = inputs[field.key].trim();
-      const fieldError = value ? validateGoalLimitInput(value) : null;
+      const fieldError = value
+        ? validateGoalLimitInput(value, 'Informe um valor maior que zero.')
+        : null;
 
       if (fieldError) {
-        setError(`${field.label}: ${fieldError}`);
-        return;
+        nextFieldErrors[field.key] = fieldError;
       }
+    }
+
+    setFieldErrors(nextFieldErrors);
+
+    const firstInvalid = FIELDS.find((field) => nextFieldErrors[field.key]);
+    if (firstInvalid) {
+      // Send keyboard and screen reader users straight to what needs fixing.
+      document.getElementById(firstInvalid.id)?.focus();
+      return;
     }
 
     const targets: IncomeGoalTargetsUi = {
@@ -83,6 +101,8 @@ export function IncomeGoalsForm({ initial, averages, onSaved, onCancel }: Income
         {FIELDS.map((field) => (
           <div key={field.key} className='space-y-1.5'>
             <Input
+              aria-invalid={fieldErrors[field.key] ? true : undefined}
+              aria-describedby={fieldErrors[field.key] ? `${field.id}-error` : undefined}
               id={field.id}
               label={field.label}
               type='text'
@@ -93,6 +113,11 @@ export function IncomeGoalsForm({ initial, averages, onSaved, onCancel }: Income
                 setInputs((current) => ({ ...current, [field.key]: event.target.value }))
               }
             />
+            {fieldErrors[field.key] ? (
+              <p id={`${field.id}-error`} className='text-xs font-medium text-destructive'>
+                {fieldErrors[field.key]}
+              </p>
+            ) : null}
             <GoalAverageHint average={averages[field.averageKey]} />
           </div>
         ))}

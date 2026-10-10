@@ -58,9 +58,12 @@ describe('IncomeGoalsForm', () => {
     await user.type(screen.getByLabelText('Lucro mensal'), '1000000000000');
     await user.click(screen.getByRole('button', { name: 'Salvar' }));
 
-    expect(
-      screen.getByText('Lucro mensal: Informe um valor de até R$ 999.999.999.999,99.'),
-    ).toBeInTheDocument();
+    const field = screen.getByLabelText('Lucro mensal');
+    const message = screen.getByText('Informe um valor de até R$ 999.999.999.999,99.');
+    expect(field).toHaveAttribute('aria-invalid', 'true');
+    expect(field).toHaveAttribute('aria-describedby', message.id);
+    expect(field).toHaveFocus();
+    expect(screen.getByLabelText('Faturamento mensal')).not.toHaveAttribute('aria-invalid');
     expect(setIncomeGoalsMock).not.toHaveBeenCalled();
   });
 
@@ -74,5 +77,35 @@ describe('IncomeGoalsForm', () => {
 
     expect(await screen.findByText('Erro ao salvar.')).toBeInTheDocument();
     expect(onSaved).not.toHaveBeenCalled();
+  });
+
+  it('should speak of a value, not a limit, when a target is zero', async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(screen.getByLabelText('Faturamento mensal'), '0');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    expect(screen.getByText('Informe um valor maior que zero.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Faturamento mensal')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('should clear a field error once the value is fixed and saved', async () => {
+    const user = userEvent.setup();
+    renderForm();
+    setIncomeGoalsMock.mockResolvedValue({ data: { revenueTarget: 10, profitTarget: null } });
+
+    const field = screen.getByLabelText('Faturamento mensal');
+    await user.type(field, '0');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+    expect(field).toHaveAttribute('aria-invalid', 'true');
+
+    await user.clear(field);
+    await user.type(field, '10');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    await waitFor(() => expect(setIncomeGoalsMock).toHaveBeenCalled());
+    expect(field).not.toHaveAttribute('aria-invalid');
+    expect(screen.queryByText('Informe um valor maior que zero.')).not.toBeInTheDocument();
   });
 });
