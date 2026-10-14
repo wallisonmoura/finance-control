@@ -34,9 +34,34 @@ export function describeIncomeGoalHistoryChart(
   const last = history.months[history.months.length - 1]?.label ?? '';
   const base = `Gráfico de barras do ${INCOME_GOAL_HISTORY_COPY[measure].emptyLabel} mensal, de ${first} a ${last}.`;
 
-  if (target === null || !history.reached) {
-    return `${base} Sem meta definida.`;
+  const goal =
+    target === null || !history.reached
+      ? 'Sem meta definida.'
+      : `Meta de ${formatMoney(target)} por mês. Bateu a meta em ${history.reached.count} de ${history.reached.closedMonths} meses fechados.`;
+  const best = history.bestMonth
+    ? ` Melhor mês: ${history.bestMonth.label}, ${formatMoney(history.bestMonth.value)}.`
+    : '';
+  const red =
+    history.negative.count > 0
+      ? ` Fechou no vermelho em ${history.negative.count} de ${history.negative.closedMonths} meses fechados.`
+      : '';
+
+  return `${base} ${goal}${best}${red}`;
+}
+
+// The average uses closed months only, but the total also counts the current
+// month so far: say so under the total so both numbers read consistently.
+export function describePeriodTotalNote(history: IncomeGoalHistory): string | null {
+  const current = history.months.find((month) => month.isCurrent);
+
+  if (!current) {
+    return null;
   }
 
-  return `${base} Meta de ${formatMoney(target)} por mês. Bateu a meta em ${history.reached.count} de ${history.reached.closedMonths} meses fechados.`;
+  const [year, month] = current.key.split('-').map(Number);
+  const name = new Intl.DateTimeFormat('pt-BR', { month: 'long', timeZone: 'UTC' }).format(
+    new Date(Date.UTC(year, month - 1, 1)),
+  );
+
+  return `Inclui ${name} até hoje.`;
 }

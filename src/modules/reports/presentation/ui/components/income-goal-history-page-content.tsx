@@ -14,12 +14,17 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
-import { StatusMessage } from '@/shared/presentation/ui/components/status-message';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useIncomeGoalHistory } from '../hooks/use-income-goal-history';
-import { INCOME_GOAL_HISTORY_COPY } from '../utils/income-goal-history-copy';
-import { getIncomeGoalHistoryHref, getIncomeGoalLaunchesHref } from '../utils/income-goal-history-links';
+import {
+  describePeriodTotalNote,
+  INCOME_GOAL_HISTORY_COPY,
+} from '../utils/income-goal-history-copy';
+import {
+  getIncomeGoalHistoryHref,
+  getIncomeGoalLaunchesHref,
+} from '../utils/income-goal-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { IncomeGoalHistoryChart } from './income-goal-history-chart';
 import { IncomeGoalHistorySkeleton } from './income-goal-history-skeleton';
@@ -32,11 +37,22 @@ type IncomeGoalHistoryPageContentProps = {
   targetsError: string | null;
 };
 
-function SummaryItem({ label, value }: { label: string; value: string }) {
+function SummaryItem({
+  label,
+  value,
+  note,
+}: {
+  label: string;
+  value: string;
+  note?: string | null;
+}) {
   return (
     <div className='rounded-lg border border-border bg-card px-4 py-3'>
       <p className='text-xs text-muted-foreground'>{label}</p>
       <p className='mt-1 text-base font-semibold text-foreground'>{value}</p>
+      {note ? (
+        <p className='mt-0.5 text-xs text-muted-foreground'>{note}</p>
+      ) : null}
     </div>
   );
 }
@@ -56,7 +72,8 @@ export function IncomeGoalHistoryPageContent({
   const { history, targets, range, isLoading, error, refresh, setTargets } =
     useIncomeGoalHistory(measure, months, initialTargets);
 
-  const target = measure === 'revenue' ? targets.revenueTarget : targets.profitTarget;
+  const target =
+    measure === 'revenue' ? targets.revenueTarget : targets.profitTarget;
 
   // The form unmounts on save/cancel; send keyboard users back to its button.
   useEffect(() => {
@@ -74,10 +91,14 @@ export function IncomeGoalHistoryPageContent({
 
   function handleMonthsChange(nextMonths: ReportsPeriodMonths) {
     setMonths(nextMonths);
-    router.push(getIncomeGoalHistoryHref(measure, nextMonths), { scroll: false });
+    router.push(getIncomeGoalHistoryHref(measure, nextMonths), {
+      scroll: false,
+    });
   }
 
-  const backLink = <BackLink href='/relatorios/metas'>Voltar para metas</BackLink>;
+  const backLink = (
+    <BackLink href='/relatorios/metas'>Voltar para metas</BackLink>
+  );
 
   if (isLoading) {
     return <IncomeGoalHistorySkeleton />;
@@ -87,7 +108,10 @@ export function IncomeGoalHistoryPageContent({
     return (
       <div className='space-y-6'>
         {backLink}
-        <LoadErrorState message={error ?? 'Não foi possível carregar o histórico.'} onRetry={refresh} />
+        <LoadErrorState
+          message={error ?? 'Não foi possível carregar o histórico.'}
+          onRetry={refresh}
+        />
       </div>
     );
   }
@@ -98,12 +122,21 @@ export function IncomeGoalHistoryPageContent({
 
       <div className='flex flex-wrap items-end justify-between gap-4'>
         <PageTitle title={copy.title} description={copy.description} />
-        <ReportsPeriodSelect id='income-goal-history-months' value={months} onChange={handleMonthsChange} />
+        <ReportsPeriodSelect
+          id='income-goal-history-months'
+          value={months}
+          onChange={handleMonthsChange}
+        />
       </div>
 
-      {targetsError ? <StatusMessage tone='error' message='Não foi possível carregar a meta.' /> : null}
-
-      {isEditingGoal ? (
+      {targetsError ? (
+        // Without the saved goals the form would resend the other goal as
+        // empty and erase it, so editing waits for a successful load.
+        <LoadErrorState
+          message='Não foi possível carregar a meta.'
+          onRetry={() => router.refresh()}
+        />
+      ) : isEditingGoal ? (
         <Card className='p-5'>
           <EditIncomeGoalForm
             measure={measure}
@@ -118,41 +151,61 @@ export function IncomeGoalHistoryPageContent({
           />
         </Card>
       ) : (
-        <div className='flex flex-wrap items-center gap-3'>
-          <p className='text-sm text-foreground'>
-            {target === null ? (
-              'Sem meta definida'
-            ) : (
-              <>
-                Meta: <span className='font-semibold'>{formatMoney(target)}</span> por mês
-              </>
-            )}
-          </p>
-          <Button
-            ref={goalButtonRef}
-            type='button'
-            variant='secondary'
-            className='h-9 px-3 text-sm'
-            onClick={() => setIsEditingGoal(true)}
-          >
-            {target === null ? 'Definir meta' : 'Editar meta'}
-          </Button>
+        <div className='space-y-1'>
+          <div className='flex flex-wrap items-center gap-3'>
+            <p className='text-sm text-foreground'>
+              {target === null ? (
+                'Sem meta definida'
+              ) : (
+                <>
+                  Meta:{' '}
+                  <span className='font-semibold'>{formatMoney(target)}</span>{' '}
+                  por mês
+                </>
+              )}
+            </p>
+            <Button
+              ref={goalButtonRef}
+              type='button'
+              variant='secondary'
+              className='h-9 px-3 text-sm'
+              onClick={() => setIsEditingGoal(true)}
+            >
+              {target === null ? 'Definir meta' : 'Editar meta'}
+            </Button>
+          </div>
+          {target === null ? (
+            <p className='text-sm text-muted-foreground'>
+              Defina uma meta para acompanhar mês a mês.
+            </p>
+          ) : null}
         </div>
       )}
 
       {!history.hasData ? (
-        <EmptyState description={`Nenhum lançamento nos últimos ${months} meses.`} />
+        <EmptyState
+          description={`Nenhum lançamento nos últimos ${months} meses.`}
+        />
       ) : (
         <>
           <Card>
-            <h2 className='text-base font-semibold text-foreground'>{copy.chartTitle}</h2>
+            <h2 className='text-base font-semibold text-foreground'>
+              {copy.chartTitle}
+            </h2>
             <div className='mt-4'>
-              <IncomeGoalHistoryChart measure={measure} history={history} target={target} />
+              <IncomeGoalHistoryChart
+                measure={measure}
+                history={history}
+                target={target}
+              />
             </div>
           </Card>
 
           <div className='grid gap-4 sm:grid-cols-3'>
-            <SummaryItem label='Média por mês' value={formatMoney(history.averagePerMonth ?? 0)} />
+            <SummaryItem
+              label='Média por mês'
+              value={formatMoney(history.averagePerMonth ?? 0)}
+            />
             <SummaryItem
               label='Melhor mês'
               value={
@@ -161,7 +214,11 @@ export function IncomeGoalHistoryPageContent({
                   : '—'
               }
             />
-            <SummaryItem label='Total no período' value={formatMoney(history.periodTotal)} />
+            <SummaryItem
+              label='Total no período'
+              value={formatMoney(history.periodTotal)}
+              note={describePeriodTotalNote(history)}
+            />
           </div>
 
           {history.reached && (

@@ -10,7 +10,10 @@ jest.mock('@/shared/presentation/ui/lib/date', () => ({
   getCurrentBusinessDateValue: () => '2026-10-10',
 }));
 const mockPush = jest.fn();
-jest.mock('next/navigation', () => ({ useRouter: () => ({ push: mockPush }) }));
+const mockRefresh = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
+}));
 
 const rangeMock = jest.mocked(financeApiService.getMonthlySummaryRange);
 const setIncomeGoalsMock = jest.mocked(financeApiService.setIncomeGoals);
@@ -79,6 +82,7 @@ describe('IncomeGoalHistoryPageContent', () => {
     renderPage({ initialTargets: { revenueTarget: 6000, profitTarget: null } });
 
     expect(await screen.findByText('Sem meta definida')).toBeInTheDocument();
+    expect(screen.getByText('Defina uma meta para acompanhar mês a mês.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Definir meta' })).toBeInTheDocument();
     expect(screen.queryByText(/Bateu a meta em/, { selector: 'p' })).not.toBeInTheDocument();
   });
@@ -88,6 +92,28 @@ describe('IncomeGoalHistoryPageContent', () => {
 
     expect(await screen.findByText('Não foi possível carregar a meta.')).toBeInTheDocument();
     expect(screen.getByText('Média por mês')).toBeInTheDocument();
+  });
+
+  it('should not offer to save a goal when the goals failed to load, and let it retry', async () => {
+    // Saving now would send the other goal as empty and erase it.
+    const user = userEvent.setup();
+    renderPage({ initialTargets: { revenueTarget: null, profitTarget: null }, targetsError: 'x' });
+    await screen.findByText('Não foi possível carregar a meta.');
+
+    expect(screen.queryByRole('button', { name: 'Definir meta' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Editar meta' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Sem meta definida')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Tentar novamente' }));
+
+    expect(mockRefresh).toHaveBeenCalled();
+    expect(setIncomeGoalsMock).not.toHaveBeenCalled();
+  });
+
+  it('should say the period total includes the current month so far', async () => {
+    renderPage();
+
+    expect(await screen.findByText('Inclui outubro até hoje.')).toBeInTheDocument();
   });
 
   it('should show an empty state when the period has no launches', async () => {
