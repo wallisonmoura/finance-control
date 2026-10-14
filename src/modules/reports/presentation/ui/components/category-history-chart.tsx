@@ -16,6 +16,7 @@ import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { CategoryHistoryMonth } from '../utils/category-history';
 import { describeCategoryHistoryChart } from '../utils/category-history-description';
+import { getHistoryChartScale } from '../utils/history-chart-scale';
 import { CategoryHistoryTable } from './category-history-table';
 
 type CategoryHistoryChartProps = {
@@ -36,6 +37,10 @@ export function CategoryHistoryChart({
   months,
   monthlyLimit,
 }: CategoryHistoryChartProps) {
+  const scale = getHistoryChartScale(
+    months.map((month) => month.total),
+    monthlyLimit,
+  );
   const data = months.map((month) => ({
     ...month,
     // The partial current month is marked on the axis and explained below.
@@ -51,14 +56,22 @@ export function CategoryHistoryChart({
         <ResponsiveContainer width='100%' height='100%'>
           <BarChart data={data} margin={{ top: 16, right: 8, bottom: 0, left: 8 }}>
             <CartesianGrid strokeDasharray='3 3' vertical={false} />
-            <XAxis dataKey='axisLabel' tick={{ fontSize: 12 }} interval={0} />
+            {/* Skip month labels only when they do not fit (12 months on a
+                phone); every month is still listed in the table below. */}
+            <XAxis
+              dataKey='axisLabel'
+              tick={{ fontSize: 12 }}
+              interval='preserveStartEnd'
+              minTickGap={8}
+            />
             <YAxis
               width={88}
               tick={{ fontSize: 12 }}
               tickFormatter={(value: number) => formatMoney(value)}
-              // Keep the goal line inside the chart even when every month
-              // is below it.
-              domain={[0, (dataMax: number) => Math.max(dataMax, monthlyLimit ?? 0) * 1.1]}
+              // Round ticks that keep the goal line inside the chart even
+              // when every month is below it.
+              domain={scale.domain}
+              ticks={scale.ticks}
             />
             <Tooltip
               cursor={{ fill: 'var(--muted)', opacity: 0.4 }}

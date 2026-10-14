@@ -10,10 +10,11 @@ function niceStep(raw: number): number {
 }
 
 /**
- * Y axis for the income goal history chart: round ticks (no "R$ 611,96"),
- * always including zero, below-zero profit months and the goal line.
+ * Y axis for the history charts (category and income goals): round ticks
+ * (no "R$ 611,96"), always including zero, below-zero months and the goal
+ * line.
  */
-export function getIncomeGoalChartScale(
+export function getHistoryChartScale(
   values: number[],
   target: number | null,
 ): { domain: [number, number]; ticks: number[] } {

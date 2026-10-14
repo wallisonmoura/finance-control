@@ -24,7 +24,7 @@ import {
   IncomeGoalHistoryMonth,
   IncomeGoalMonthStatus,
 } from '../utils/income-goal-history';
-import { getIncomeGoalChartScale } from '../utils/income-goal-chart-scale';
+import { getHistoryChartScale } from '../utils/history-chart-scale';
 import { IncomeGoalHistoryTable } from './income-goal-history-table';
 
 // Validated with the dataviz skill (light and dark). The status is also in
@@ -64,7 +64,7 @@ type IncomeGoalHistoryChartProps = {
 export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalHistoryChartProps) {
   const copy = INCOME_GOAL_HISTORY_COPY[measure];
   const hasNegative = history.months.some((month) => month.value < 0);
-  const scale = getIncomeGoalChartScale(
+  const scale = getHistoryChartScale(
     history.months.map((month) => month.value),
     target,
   );
