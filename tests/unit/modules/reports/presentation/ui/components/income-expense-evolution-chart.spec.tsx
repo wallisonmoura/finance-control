@@ -4,6 +4,7 @@ import { IncomeExpenseEvolutionChart } from '@/modules/reports/presentation/ui/c
 import { useIncomeExpenseEvolutionChart } from '@/modules/reports/presentation/ui/hooks/use-income-expense-evolution-chart';
 
 jest.mock('@/modules/reports/presentation/ui/hooks/use-income-expense-evolution-chart');
+jest.mock('next/navigation', () => ({ useRouter: () => ({ push: jest.fn() }) }));
 
 const useIncomeExpenseEvolutionChartMock = jest.mocked(
   useIncomeExpenseEvolutionChart,
@@ -52,5 +53,25 @@ describe('IncomeExpenseEvolutionChart', () => {
     render(<IncomeExpenseEvolutionChart months={6} />);
 
     expect(screen.getByText('Receita × despesa por mês')).toBeInTheDocument();
+  });
+
+  it('should link to the revenue and profit histories with the current period', () => {
+    useIncomeExpenseEvolutionChartMock.mockReturnValue({
+      data: [{ monthLabel: 'ago/26', totalIncome: 100, totalExpense: 40 }],
+      isLoading: false,
+      error: null,
+      refresh: jest.fn(),
+    });
+
+    render(<IncomeExpenseEvolutionChart months={12} />);
+
+    expect(screen.getByRole('link', { name: 'Histórico do faturamento' })).toHaveAttribute(
+      'href',
+      '/relatorios/metas/faturamento?months=12',
+    );
+    expect(screen.getByRole('link', { name: 'Histórico do lucro' })).toHaveAttribute(
+      'href',
+      '/relatorios/metas/lucro?months=12',
+    );
   });
 });

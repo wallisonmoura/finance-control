@@ -12,6 +12,11 @@ import { GoalsSectionHeader } from './goals-section-header';
 import { IncomeGoalRow } from './income-goal-row';
 import { IncomeGoalsForm } from './income-goals-form';
 
+// History pages live in the reports module; finance only knows their paths
+// (same as the category links on the spending goals).
+const REVENUE_HISTORY_HREF = '/relatorios/metas/faturamento';
+const PROFIT_HISTORY_HREF = '/relatorios/metas/lucro';
+
 type IncomeGoalsSectionProps = {
   overview?: IncomeGoalsOverviewUi | null;
   error?: string | null;
@@ -91,10 +96,20 @@ export function IncomeGoalsSection({ overview, error }: IncomeGoalsSectionProps)
         <Card className='p-5'>
           <ul className='space-y-5'>
             {overview.revenue ? (
-              <IncomeGoalRow label='Faturamento' kind='revenue' progress={overview.revenue} />
+              <IncomeGoalRow
+                label='Faturamento'
+                kind='revenue'
+                progress={overview.revenue}
+                href={REVENUE_HISTORY_HREF}
+              />
             ) : null}
             {overview.profit ? (
-              <IncomeGoalRow label='Lucro' kind='profit' progress={overview.profit} />
+              <IncomeGoalRow
+                label='Lucro'
+                kind='profit'
+                progress={overview.profit}
+                href={PROFIT_HISTORY_HREF}
+              />
             ) : null}
           </ul>
         </Card>

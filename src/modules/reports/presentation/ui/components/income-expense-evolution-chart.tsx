@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Bar,
   BarChart,
@@ -18,6 +20,7 @@ import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useIncomeExpenseEvolutionChart } from '../hooks/use-income-expense-evolution-chart';
+import { getIncomeGoalHistoryHref } from '../utils/income-goal-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 
 type IncomeExpenseEvolutionChartProps = {
@@ -27,6 +30,7 @@ type IncomeExpenseEvolutionChartProps = {
 export function IncomeExpenseEvolutionChart({
   months,
 }: IncomeExpenseEvolutionChartProps) {
+  const router = useRouter();
   const { data, isLoading, error, refresh } = useIncomeExpenseEvolutionChart(months);
   const hasData = data.some(
     (item) => item.totalIncome > 0 || item.totalExpense > 0,
@@ -72,6 +76,9 @@ export function IncomeExpenseEvolutionChart({
                 name='Receita'
                 fill='var(--income)'
                 radius={[4, 4, 0, 0]}
+                cursor='pointer'
+                // Mouse shortcut; the links below are the keyboard path.
+                onClick={() => router.push(getIncomeGoalHistoryHref('revenue', months))}
               />
               <Bar
                 dataKey='totalExpense'
@@ -82,6 +89,23 @@ export function IncomeExpenseEvolutionChart({
             </BarChart>
           </ResponsiveContainer>
         </div>
+      )}
+
+      {!isLoading && !error && (
+        <nav aria-label='Históricos de ganho' className='mt-3 flex flex-wrap gap-x-4 gap-y-1'>
+          <Link
+            href={getIncomeGoalHistoryHref('revenue', months)}
+            className='text-sm font-semibold text-income hover:underline'
+          >
+            Histórico do faturamento
+          </Link>
+          <Link
+            href={getIncomeGoalHistoryHref('profit', months)}
+            className='text-sm font-semibold text-income hover:underline'
+          >
+            Histórico do lucro
+          </Link>
+        </nav>
       )}
     </Card>
   );

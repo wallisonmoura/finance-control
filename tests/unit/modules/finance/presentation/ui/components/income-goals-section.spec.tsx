@@ -137,4 +137,17 @@ describe('IncomeGoalsSection', () => {
       expect(screen.getByRole('button', { name: 'Editar metas de ganho' })).toHaveFocus(),
     );
   });
+
+  it('should link each goal name to its history', () => {
+    render(<IncomeGoalsSection overview={both} />);
+
+    expect(screen.getByRole('link', { name: 'Faturamento' })).toHaveAttribute(
+      'href',
+      '/relatorios/metas/faturamento',
+    );
+    expect(screen.getByRole('link', { name: 'Lucro' })).toHaveAttribute(
+      'href',
+      '/relatorios/metas/lucro',
+    );
+  });
 });
