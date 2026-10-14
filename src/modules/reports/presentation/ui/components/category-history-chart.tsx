@@ -17,6 +17,7 @@ import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 import { CategoryHistoryMonth } from '../utils/category-history';
 import { describeCategoryHistoryChart } from '../utils/category-history-description';
 import { getHistoryChartScale } from '../utils/history-chart-scale';
+import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { CategoryHistoryTable } from './category-history-table';
 
 type CategoryHistoryChartProps = {
@@ -74,7 +75,7 @@ export function CategoryHistoryChart({
               ticks={scale.ticks}
             />
             <Tooltip
-              cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+              {...CHART_TOOLTIP_PROPS}
               labelFormatter={(_, payload) => {
                 const month = payload?.[0]?.payload as CategoryHistoryMonth | undefined;
 

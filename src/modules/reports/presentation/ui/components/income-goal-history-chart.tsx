@@ -25,6 +25,7 @@ import {
   IncomeGoalMonthStatus,
 } from '../utils/income-goal-history';
 import { getHistoryChartScale } from '../utils/history-chart-scale';
+import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { IncomeGoalHistoryTable } from './income-goal-history-table';
 
 // Validated with the dataviz skill (light and dark). The status is also in
@@ -100,7 +101,7 @@ export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalH
               ticks={scale.ticks}
             />
             <Tooltip
-              cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+              {...CHART_TOOLTIP_PROPS}
               labelFormatter={(_, payload) => {
                 const month = payload?.[0]?.payload as IncomeGoalHistoryMonth | undefined;
 

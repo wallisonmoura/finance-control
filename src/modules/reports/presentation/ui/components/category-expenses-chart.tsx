@@ -24,6 +24,7 @@ import {
 import { getCategoryHistoryHref } from '../utils/category-history-links';
 import { getCategoryChartHeight } from '../utils/category-chart-height';
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { CategoryAxisTick } from './category-axis-tick';
 
 type CategoryExpensesChartProps = {
@@ -95,7 +96,10 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 tick={<CategoryAxisTick onSelect={openCategoryHistoryAt} />}
                 interval={0}
               />
-              <Tooltip formatter={(value) => formatMoney(Number(value))} />
+              <Tooltip
+                {...CHART_TOOLTIP_PROPS}
+                formatter={(value) => formatMoney(Number(value))}
+              />
               <Bar
                 dataKey='total'
                 fill='var(--expense)'
@@ -103,7 +107,9 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
                 barSize={16}
                 cursor='pointer'
                 onClick={(entry) =>
-                  openCategoryHistory((entry.payload as CategoryExpenseChartDatum).categoryId)
+                  openCategoryHistory(
+                    (entry.payload as CategoryExpenseChartDatum).categoryId,
+                  )
                 }
               />
             </BarChart>
