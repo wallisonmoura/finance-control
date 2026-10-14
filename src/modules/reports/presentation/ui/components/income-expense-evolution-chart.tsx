@@ -22,6 +22,7 @@ import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 import { useIncomeExpenseEvolutionChart } from '../hooks/use-income-expense-evolution-chart';
 import { getIncomeGoalHistoryHref } from '../utils/income-goal-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 
 type IncomeExpenseEvolutionChartProps = {
   months: ReportsPeriodMonths;
@@ -31,7 +32,8 @@ export function IncomeExpenseEvolutionChart({
   months,
 }: IncomeExpenseEvolutionChartProps) {
   const router = useRouter();
-  const { data, isLoading, error, refresh } = useIncomeExpenseEvolutionChart(months);
+  const { data, isLoading, error, refresh } =
+    useIncomeExpenseEvolutionChart(months);
   const hasData = data.some(
     (item) => item.totalIncome > 0 || item.totalExpense > 0,
   );
@@ -69,7 +71,10 @@ export function IncomeExpenseEvolutionChart({
                 tickFormatter={(value: number) => formatMoney(value)}
                 width={90}
               />
-              <Tooltip formatter={(value) => formatMoney(Number(value))} />
+              <Tooltip
+                {...CHART_TOOLTIP_PROPS}
+                formatter={(value) => formatMoney(Number(value))}
+              />
               <Legend />
               <Bar
                 dataKey='totalIncome'
@@ -78,7 +83,9 @@ export function IncomeExpenseEvolutionChart({
                 radius={[4, 4, 0, 0]}
                 cursor='pointer'
                 // Mouse shortcut; the links below are the keyboard path.
-                onClick={() => router.push(getIncomeGoalHistoryHref('revenue', months))}
+                onClick={() =>
+                  router.push(getIncomeGoalHistoryHref('revenue', months))
+                }
               />
               <Bar
                 dataKey='totalExpense'
@@ -92,7 +99,10 @@ export function IncomeExpenseEvolutionChart({
       )}
 
       {!isLoading && !error && (
-        <nav aria-label='Históricos de ganho' className='mt-3 flex flex-wrap gap-x-4 gap-y-1'>
+        <nav
+          aria-label='Históricos de ganho'
+          className='mt-3 flex flex-wrap gap-x-4 gap-y-1'
+        >
           <Link
             href={getIncomeGoalHistoryHref('revenue', months)}
             className='text-sm font-semibold text-income hover:underline'

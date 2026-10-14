@@ -24,7 +24,8 @@ import {
   IncomeGoalHistoryMonth,
   IncomeGoalMonthStatus,
 } from '../utils/income-goal-history';
-import { getIncomeGoalChartScale } from '../utils/income-goal-chart-scale';
+import { getHistoryChartScale } from '../utils/history-chart-scale';
+import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { IncomeGoalHistoryTable } from './income-goal-history-table';
 
 // Validated with the dataviz skill (light and dark). The status is also in
@@ -64,7 +65,7 @@ type IncomeGoalHistoryChartProps = {
 export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalHistoryChartProps) {
   const copy = INCOME_GOAL_HISTORY_COPY[measure];
   const hasNegative = history.months.some((month) => month.value < 0);
-  const scale = getIncomeGoalChartScale(
+  const scale = getHistoryChartScale(
     history.months.map((month) => month.value),
     target,
   );
@@ -100,7 +101,7 @@ export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalH
               ticks={scale.ticks}
             />
             <Tooltip
-              cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+              {...CHART_TOOLTIP_PROPS}
               labelFormatter={(_, payload) => {
                 const month = payload?.[0]?.payload as IncomeGoalHistoryMonth | undefined;
 

@@ -18,6 +18,7 @@ import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useDebtsPaidChart } from '../hooks/use-debts-paid-chart';
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 
 type DebtsPaidChartProps = {
   months: ReportsPeriodMonths;
@@ -29,9 +30,7 @@ export function DebtsPaidChart({ months }: DebtsPaidChartProps) {
 
   return (
     <Card>
-      <h2 className='text-base font-semibold text-foreground'>
-        Dívidas pagas
-      </h2>
+      <h2 className='text-base font-semibold text-foreground'>Dívidas pagas</h2>
 
       {isLoading && <Skeleton className='mt-4 h-72 w-full' />}
 
@@ -60,7 +59,10 @@ export function DebtsPaidChart({ months }: DebtsPaidChartProps) {
                 tickFormatter={(value: number) => formatMoney(value)}
                 width={90}
               />
-              <Tooltip formatter={(value) => formatMoney(Number(value))} />
+              <Tooltip
+                {...CHART_TOOLTIP_PROPS}
+                formatter={(value) => formatMoney(Number(value))}
+              />
               <Bar
                 dataKey='total'
                 name='Dívidas pagas'

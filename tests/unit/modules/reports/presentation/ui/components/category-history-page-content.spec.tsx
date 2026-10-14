@@ -195,4 +195,36 @@ describe('CategoryHistoryPageContent', () => {
 
     expect(container.querySelector('[data-slot="skeleton"]')).toBeInTheDocument();
   });
+
+  it('should keep the header and the period select while a new period loads', () => {
+    mockHook({ isLoading: true });
+
+    render(<CategoryHistoryPageContent categoryId='cat-1' initialMonths={6} />);
+
+    expect(screen.getByRole('heading', { name: 'Combustível' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Período')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Editar meta' })).toBeInTheDocument();
+    expect(screen.getByTestId('history-body')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByText('Média por mês')).not.toBeInTheDocument();
+  });
+
+  it('should keep keyboard focus on the period select while the new period loads', async () => {
+    const user = userEvent.setup();
+    mockHook();
+    const { rerender } = render(
+      <CategoryHistoryPageContent categoryId='cat-1' initialMonths={6} />,
+    );
+    const select = screen.getByLabelText('Período');
+    select.focus();
+
+    await user.selectOptions(select, '12');
+    mockHook({ isLoading: true });
+    rerender(<CategoryHistoryPageContent categoryId='cat-1' initialMonths={6} />);
+    expect(screen.getByLabelText('Período')).toHaveFocus();
+
+    mockHook();
+    rerender(<CategoryHistoryPageContent categoryId='cat-1' initialMonths={6} />);
+    expect(screen.getByLabelText('Período')).toHaveFocus();
+    expect(screen.getByTestId('history-body')).not.toHaveAttribute('aria-busy');
+  });
 });

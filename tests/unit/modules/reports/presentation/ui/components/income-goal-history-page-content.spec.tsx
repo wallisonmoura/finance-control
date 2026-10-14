@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as financeApiService from '@/modules/finance/presentation/ui/services/finance-api.service';
@@ -160,5 +160,30 @@ describe('IncomeGoalHistoryPageContent', () => {
     expect(await screen.findByText(/Bateu a meta em/, { selector: 'p' })).toHaveTextContent('Bateu a meta em 1 de 5 meses fechados.');
     expect(screen.getByRole('button', { name: 'Editar meta' })).toHaveFocus();
     expect(rangeMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should keep the period select and its focus while a new period loads', async () => {
+    const user = userEvent.setup();
+    let resolveNext: (value: { data: MonthlySummaryUi[] }) => void = () => {};
+    rangeMock
+      .mockResolvedValueOnce({ data: SIX })
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveNext = resolve; }));
+    renderPage();
+    await screen.findByText('Média por mês');
+    const select = screen.getByLabelText('Período');
+    select.focus();
+
+    await user.selectOptions(select, '3');
+
+    // Loading: header and select stay; only the chart and summary are skeletons.
+    expect(screen.getByLabelText('Período')).toHaveFocus();
+    expect(screen.getByRole('heading', { level: 1, name: 'Lucro' })).toBeInTheDocument();
+    expect(screen.getByTestId('history-body')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByText('Média por mês')).not.toBeInTheDocument();
+
+    await act(async () => resolveNext({ data: SIX.slice(3) }));
+
+    expect(await screen.findByText('Média por mês')).toBeInTheDocument();
+    expect(screen.getByLabelText('Período')).toHaveFocus();
   });
 });
