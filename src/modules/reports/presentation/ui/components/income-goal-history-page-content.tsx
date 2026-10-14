@@ -28,6 +28,7 @@ import {
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { IncomeGoalHistoryChart } from './income-goal-history-chart';
 import { IncomeGoalHistorySkeleton } from './income-goal-history-skeleton';
+import { ReportsHistoryBodySkeleton } from './reports-history-body-skeleton';
 import { ReportsPeriodSelect } from './reports-period-select';
 
 type IncomeGoalHistoryPageContentProps = {
@@ -100,7 +101,9 @@ export function IncomeGoalHistoryPageContent({
     <BackLink href='/relatorios/metas'>Voltar para metas</BackLink>
   );
 
-  if (isLoading) {
+  // First load: nothing to show yet. A later period change keeps the header
+  // (and the focused period select) and only reloads the body below.
+  if (isLoading && !history) {
     return <IncomeGoalHistorySkeleton />;
   }
 
@@ -182,74 +185,82 @@ export function IncomeGoalHistoryPageContent({
         </div>
       )}
 
-      {!history.hasData ? (
-        <EmptyState
-          description={`Nenhum lançamento nos últimos ${months} meses.`}
-        />
-      ) : (
-        <>
-          <Card>
-            <h2 className='text-base font-semibold text-foreground'>
-              {copy.chartTitle}
-            </h2>
-            <div className='mt-4'>
-              <IncomeGoalHistoryChart
-                measure={measure}
-                history={history}
-                target={target}
+      <div
+        data-testid='history-body'
+        aria-busy={isLoading || undefined}
+        className='space-y-6'
+      >
+        {isLoading ? (
+          <ReportsHistoryBodySkeleton />
+        ) : !history.hasData ? (
+          <EmptyState
+            description={`Nenhum lançamento nos últimos ${months} meses.`}
+          />
+        ) : (
+          <>
+            <Card>
+              <h2 className='text-base font-semibold text-foreground'>
+                {copy.chartTitle}
+              </h2>
+              <div className='mt-4'>
+                <IncomeGoalHistoryChart
+                  measure={measure}
+                  history={history}
+                  target={target}
+                />
+              </div>
+            </Card>
+
+            <div className='grid gap-4 sm:grid-cols-3'>
+              <SummaryItem
+                label='Média por mês'
+                value={formatMoney(history.averagePerMonth ?? 0)}
+              />
+              <SummaryItem
+                label='Melhor mês'
+                value={
+                  history.bestMonth
+                    ? `${history.bestMonth.label} · ${formatMoney(history.bestMonth.value)}`
+                    : '—'
+                }
+              />
+              <SummaryItem
+                label='Total no período'
+                value={formatMoney(history.periodTotal)}
+                note={describePeriodTotalNote(history)}
               />
             </div>
-          </Card>
 
-          <div className='grid gap-4 sm:grid-cols-3'>
-            <SummaryItem
-              label='Média por mês'
-              value={formatMoney(history.averagePerMonth ?? 0)}
-            />
-            <SummaryItem
-              label='Melhor mês'
-              value={
-                history.bestMonth
-                  ? `${history.bestMonth.label} · ${formatMoney(history.bestMonth.value)}`
-                  : '—'
-              }
-            />
-            <SummaryItem
-              label='Total no período'
-              value={formatMoney(history.periodTotal)}
-              note={describePeriodTotalNote(history)}
-            />
-          </div>
+            {history.reached && (
+              <p className='text-sm text-muted-foreground'>
+                Bateu a meta em{' '}
+                <span className='font-semibold text-foreground'>
+                  {history.reached.count} de {history.reached.closedMonths}
+                </span>{' '}
+                meses fechados.
+              </p>
+            )}
 
-          {history.reached && (
-            <p className='text-sm text-muted-foreground'>
-              Bateu a meta em{' '}
-              <span className='font-semibold text-foreground'>
-                {history.reached.count} de {history.reached.closedMonths}
-              </span>{' '}
-              meses fechados.
-            </p>
-          )}
+            {history.negative.count > 0 && (
+              <p className='text-sm text-muted-foreground'>
+                Fechou no vermelho em{' '}
+                <span className='font-semibold text-expense'>
+                  {history.negative.count} de {history.negative.closedMonths}
+                </span>{' '}
+                meses fechados.
+              </p>
+            )}
 
-          {history.negative.count > 0 && (
-            <p className='text-sm text-muted-foreground'>
-              Fechou no vermelho em{' '}
-              <span className='font-semibold text-expense'>
-                {history.negative.count} de {history.negative.closedMonths}
-              </span>{' '}
-              meses fechados.
-            </p>
-          )}
-
-          <Link
-            href={getIncomeGoalLaunchesHref({ measure, ...range })}
-            className='inline-flex items-center gap-1 text-sm font-semibold text-income hover:underline'
-          >
-            Ver lançamentos
-            <ArrowRight aria-hidden='true' className='size-4' />
-          </Link>
-        </>
-      )}
+            <Link
+              href={getIncomeGoalLaunchesHref({ measure, ...range })}
+              className='inline-flex items-center gap-1 text-sm font-semibold text-income hover:underline'
+            >
+              Ver lançamentos
+              <ArrowRight aria-hidden='true' className='size-4' />
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }

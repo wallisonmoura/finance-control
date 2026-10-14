@@ -15,10 +15,14 @@ import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useCategoryHistory } from '../hooks/use-category-history';
-import { getCategoryHistoryHref, getCategoryLaunchesHref } from '../utils/category-history-links';
+import {
+  getCategoryHistoryHref,
+  getCategoryLaunchesHref,
+} from '../utils/category-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CategoryHistoryChart } from './category-history-chart';
 import { CategoryHistorySkeleton } from './category-history-skeleton';
+import { ReportsHistoryBodySkeleton } from './reports-history-body-skeleton';
 import { ReportsPeriodSelect } from './reports-period-select';
 
 type CategoryHistoryPageContentProps = {
@@ -42,19 +46,33 @@ export function CategoryHistoryPageContent({
   const router = useRouter();
   const [months, setMonths] = useState<ReportsPeriodMonths>(initialMonths);
   const [isEditingGoal, setIsEditingGoal] = useState(false);
-  const { category, history, range, isLoading, notFound, error, refresh, setLimit } =
-    useCategoryHistory(categoryId, months);
+  const {
+    category,
+    history,
+    range,
+    isLoading,
+    notFound,
+    error,
+    refresh,
+    setLimit,
+  } = useCategoryHistory(categoryId, months);
 
   const backLink = (
-    <BackLink href={`/relatorios?months=${months}`}>Voltar para relatórios</BackLink>
+    <BackLink href={`/relatorios?months=${months}`}>
+      Voltar para relatórios
+    </BackLink>
   );
 
   function handleMonthsChange(nextMonths: ReportsPeriodMonths) {
     setMonths(nextMonths);
-    router.push(getCategoryHistoryHref(categoryId, nextMonths), { scroll: false });
+    router.push(getCategoryHistoryHref(categoryId, nextMonths), {
+      scroll: false,
+    });
   }
 
-  if (isLoading) {
+  // First load: nothing to show yet. A later period change keeps the header
+  // (and the focused period select) and only reloads the body below.
+  if (isLoading && !category) {
     return <CategoryHistorySkeleton />;
   }
 
@@ -67,11 +85,14 @@ export function CategoryHistoryPageContent({
     );
   }
 
-  if (error || !category || !history) {
+  if (error || !category || (!history && !isLoading)) {
     return (
       <div className='space-y-6'>
         {backLink}
-        <LoadErrorState message={error ?? 'Não foi possível carregar o histórico.'} onRetry={refresh} />
+        <LoadErrorState
+          message={error ?? 'Não foi possível carregar o histórico.'}
+          onRetry={refresh}
+        />
       </div>
     );
   }
@@ -83,7 +104,10 @@ export function CategoryHistoryPageContent({
       {backLink}
 
       <div className='flex flex-wrap items-end justify-between gap-4'>
-        <PageTitle title={category.name} description='Gasto da categoria mês a mês.' />
+        <PageTitle
+          title={category.name}
+          description='Gasto da categoria mês a mês.'
+        />
         <ReportsPeriodSelect
           id='category-history-months'
           value={months}
@@ -97,7 +121,7 @@ export function CategoryHistoryPageContent({
             categoryId={category.id}
             categoryName={category.name}
             initialLimit={limit}
-            average={history.averagePerMonth}
+            average={history?.averagePerMonth ?? null}
             averageLabel='Média por mês no período'
             onSaved={(savedLimit) => {
               setLimit(savedLimit);
@@ -113,7 +137,9 @@ export function CategoryHistoryPageContent({
               'Sem meta'
             ) : (
               <>
-                Meta: <span className='font-semibold'>{formatMoney(limit)}</span> por mês
+                Meta:{' '}
+                <span className='font-semibold'>{formatMoney(limit)}</span> por
+                mês
               </>
             )}
           </p>
@@ -128,58 +154,74 @@ export function CategoryHistoryPageContent({
         </div>
       )}
 
-      {!history.hasSpending ? (
-        <EmptyState
-          description={`Nenhum gasto em ${category.name} nos últimos ${months} meses.`}
-        />
-      ) : (
-        <>
-          <Card>
-            <h2 className='text-base font-semibold text-foreground'>Gasto por mês</h2>
-            <div className='mt-4'>
-              <CategoryHistoryChart
-                categoryName={category.name}
-                months={history.months}
-                monthlyLimit={limit}
+      <div
+        data-testid='history-body'
+        aria-busy={isLoading || undefined}
+        className='space-y-6'
+      >
+        {isLoading || !history ? (
+          <ReportsHistoryBodySkeleton />
+        ) : !history.hasSpending ? (
+          <EmptyState
+            description={`Nenhum gasto em ${category.name} nos últimos ${months} meses.`}
+          />
+        ) : (
+          <>
+            <Card>
+              <h2 className='text-base font-semibold text-foreground'>
+                Gasto por mês
+              </h2>
+              <div className='mt-4'>
+                <CategoryHistoryChart
+                  categoryName={category.name}
+                  months={history.months}
+                  monthlyLimit={limit}
+                />
+              </div>
+            </Card>
+
+            <div className='grid gap-4 sm:grid-cols-3'>
+              <SummaryItem
+                label='Média por mês'
+                value={formatMoney(history.averagePerMonth ?? 0)}
+              />
+              <SummaryItem
+                label='Maior mês'
+                value={
+                  history.highestMonth
+                    ? `${history.highestMonth.label} · ${formatMoney(history.highestMonth.total)}`
+                    : '—'
+                }
+              />
+              <SummaryItem
+                label='Total no período'
+                value={formatMoney(history.periodTotal)}
               />
             </div>
-          </Card>
 
-          <div className='grid gap-4 sm:grid-cols-3'>
-            <SummaryItem
-              label='Média por mês'
-              value={formatMoney(history.averagePerMonth ?? 0)}
-            />
-            <SummaryItem
-              label='Maior mês'
-              value={
-                history.highestMonth
-                  ? `${history.highestMonth.label} · ${formatMoney(history.highestMonth.total)}`
-                  : '—'
-              }
-            />
-            <SummaryItem label='Total no período' value={formatMoney(history.periodTotal)} />
-          </div>
+            {history.exceeded && (
+              <p className='text-sm text-muted-foreground'>
+                Passou do limite atual em{' '}
+                <span className='font-semibold text-foreground'>
+                  {history.exceeded.count} de {history.exceeded.closedMonths}
+                </span>{' '}
+                meses fechados.
+              </p>
+            )}
 
-          {history.exceeded && (
-            <p className='text-sm text-muted-foreground'>
-              Passou do limite atual em{' '}
-              <span className='font-semibold text-foreground'>
-                {history.exceeded.count} de {history.exceeded.closedMonths}
-              </span>{' '}
-              meses fechados.
-            </p>
-          )}
-
-          <Link
-            href={getCategoryLaunchesHref({ categoryId: category.id, ...range })}
-            className='inline-flex items-center gap-1 text-sm font-semibold text-income hover:underline'
-          >
-            Ver lançamentos
-            <ArrowRight aria-hidden='true' className='size-4' />
-          </Link>
-        </>
-      )}
+            <Link
+              href={getCategoryLaunchesHref({
+                categoryId: category.id,
+                ...range,
+              })}
+              className='inline-flex items-center gap-1 text-sm font-semibold text-income hover:underline'
+            >
+              Ver lançamentos
+              <ArrowRight aria-hidden='true' className='size-4' />
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }
