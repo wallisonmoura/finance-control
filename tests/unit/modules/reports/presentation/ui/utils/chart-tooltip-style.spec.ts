@@ -10,6 +10,9 @@ describe('CHART_TOOLTIP_PROPS', () => {
       color: 'var(--popover-foreground)',
     });
     expect(CHART_TOOLTIP_PROPS.labelStyle).toMatchObject({ color: 'var(--popover-foreground)' });
+    // The value line defaults to the series color, or black (#000) when bars
+    // are colored one by one (history charts) — unreadable in dark mode.
+    expect(CHART_TOOLTIP_PROPS.itemStyle).toMatchObject({ color: 'var(--popover-foreground)' });
     expect(CHART_TOOLTIP_PROPS.cursor).toMatchObject({ fill: 'var(--muted)' });
   });
 });
