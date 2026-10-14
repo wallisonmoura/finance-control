@@ -25,6 +25,8 @@ import { getCategoryHistoryHref } from '../utils/category-history-links';
 import { getCategoryChartHeight } from '../utils/category-chart-height';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
+import { formatCompactMoney } from '../utils/format-compact-money';
+import { getHistoryChartScale } from '../utils/history-chart-scale';
 import { CategoryAxisTick } from './category-axis-tick';
 
 type CategoryExpensesChartProps = {
@@ -34,6 +36,10 @@ type CategoryExpensesChartProps = {
 export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
   const router = useRouter();
   const { data, isLoading, error, refresh } = useCategoryExpensesChart(months);
+  const scale = getHistoryChartScale(
+    data.map((item) => item.total),
+    null,
+  );
 
   function openCategoryHistory(categoryId: string) {
     router.push(getCategoryHistoryHref(categoryId, months));
@@ -82,12 +88,19 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
             <BarChart
               data={data}
               layout='vertical'
-              margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
+              // Room on the right for the last tick label ("R$ 10 mil").
+              margin={{ top: 8, right: 36, bottom: 8, left: 8 }}
             >
               <CartesianGrid strokeDasharray='3 3' horizontal={false} />
+              {/* Round, short ticks ("R$ 2,5 mil"); on a phone the ones that
+                  do not fit are skipped. The tooltip keeps the exact value. */}
               <XAxis
                 type='number'
-                tickFormatter={(value: number) => formatMoney(value)}
+                domain={scale.domain}
+                ticks={scale.ticks}
+                interval='preserveStartEnd'
+                minTickGap={8}
+                tickFormatter={(value: number) => formatCompactMoney(value)}
               />
               <YAxis
                 type='category'
