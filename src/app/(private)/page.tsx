@@ -3,9 +3,11 @@ import { BalanceSummaryDashboard } from '@/modules/balance/presentation/ui/compo
 import { getCurrentUserBalanceSummary } from '@/modules/balance/presentation/server/get-current-user-balance-summary';
 import {
   getCurrentUserFinanceHistory,
+  getCurrentUserIncomeGoals,
   getCurrentUserMonthlyInsights,
 } from '@/modules/finance/presentation/server/get-current-user-finance-data';
 import { MonthlyInsightsCard } from '@/modules/finance/presentation/ui/components/monthly-insights-card';
+import { MonthlyIncomeGoalsStrip } from '@/modules/finance/presentation/ui/components/monthly-income-goals-strip';
 import { getCurrentMonthFilters } from '@/modules/finance/presentation/ui/utils/finance-filters';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 
@@ -14,10 +16,11 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [{ data, error }, financeHistory, monthlyInsights] = await Promise.all([
+  const [{ data, error }, financeHistory, monthlyInsights, incomeGoals] = await Promise.all([
     getCurrentUserBalanceSummary(),
     getCurrentUserFinanceHistory(getCurrentMonthFilters()),
     getCurrentUserMonthlyInsights(),
+    getCurrentUserIncomeGoals(),
   ]);
 
   return (
@@ -31,10 +34,14 @@ export default async function HomePage() {
         summary={data}
         error={error}
         recentEntries={financeHistory.data?.entries.slice(0, 5) ?? []}
+        goalsSlot={
+          <MonthlyIncomeGoalsStrip overview={incomeGoals.data} error={incomeGoals.error} />
+        }
         insightsSlot={
           <MonthlyInsightsCard
             insights={monthlyInsights.data}
             error={monthlyInsights.error}
+            hideMonthResult={Boolean(incomeGoals.data?.profit)}
           />
         }
       />

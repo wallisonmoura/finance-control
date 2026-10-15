@@ -123,4 +123,18 @@ describe('MonthlyInsightsCard', () => {
 
     expect(container.querySelector('[data-slot="insight-bar-fill"]')).toBeNull();
   });
+
+  it('should leave the month result to the profit goal strip when it is shown', () => {
+    render(<MonthlyInsightsCard insights={insights} hideMonthResult />);
+
+    expect(screen.queryByText(/Receitas − despesas/)).not.toBeInTheDocument();
+  });
+
+  it('should keep the month result for a closed month, which the strip does not cover', () => {
+    render(
+      <MonthlyInsightsCard insights={{ ...insights, isClosedMonth: true }} hideMonthResult />,
+    );
+
+    expect(getSentence('Receitas − despesas')).toBeInTheDocument();
+  });
 });

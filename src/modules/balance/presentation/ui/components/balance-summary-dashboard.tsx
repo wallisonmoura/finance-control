@@ -12,6 +12,7 @@ type BalanceSummaryDashboardProps = {
   error?: string | null;
   recentEntries?: FinanceEntryUi[];
   insightsSlot?: ReactNode;
+  goalsSlot?: ReactNode;
 };
 
 export function BalanceSummaryDashboard({
@@ -19,6 +20,7 @@ export function BalanceSummaryDashboard({
   error,
   recentEntries = [],
   insightsSlot,
+  goalsSlot,
 }: BalanceSummaryDashboardProps) {
   if (error) {
     return (
@@ -39,6 +41,7 @@ export function BalanceSummaryDashboard({
       summary={summary}
       recentEntries={recentEntries}
       insightsSlot={insightsSlot}
+      goalsSlot={goalsSlot}
     />
   );
 }
