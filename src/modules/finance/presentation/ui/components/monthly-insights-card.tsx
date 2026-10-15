@@ -18,6 +18,10 @@ import {
 type MonthlyInsightsCardProps = {
   insights?: MonthlyInsightsUi | null;
   error?: string | null;
+  // The income goals strip already shows this month's profit against the goal,
+  // so the month result line would repeat it. A closed month still keeps it:
+  // the strip is about the current month.
+  hideMonthResult?: boolean;
 };
 
 const SENTIMENT_DOT_CLASS_NAME: Record<InsightSentiment, string> = {
@@ -95,7 +99,7 @@ function InsightColumn({
   );
 }
 
-function MonthlyInsightsContent({ insights, error }: MonthlyInsightsCardProps) {
+function MonthlyInsightsContent({ insights, error, hideMonthResult }: MonthlyInsightsCardProps) {
   if (error) {
     return <StatusMessage tone='error' message={error} />;
   }
@@ -114,6 +118,10 @@ function MonthlyInsightsContent({ insights, error }: MonthlyInsightsCardProps) {
     );
   }
 
+  const incomeInsights =
+    hideMonthResult && !insights.isClosedMonth
+      ? insights.incomeInsights.filter((insight) => insight.kind !== 'MONTH_RESULT')
+      : insights.incomeInsights;
   const context: InsightContext = {
     referenceMonth: insights.referenceMonth,
     comparisonMonth: insights.comparisonMonth,
@@ -137,7 +145,7 @@ function MonthlyInsightsContent({ insights, error }: MonthlyInsightsCardProps) {
         <InsightColumn
           title='Ganhos'
           icon={HandCoins}
-          items={insights.incomeInsights}
+          items={incomeInsights}
           emptyText={`Nenhuma receita ${period}.`}
           context={context}
           className='border-t border-border lg:border-t-0 lg:border-l'

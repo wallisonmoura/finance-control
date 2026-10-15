@@ -6,12 +6,14 @@ import { HeroCardSkeleton } from '@/shared/presentation/ui/components/skeletons/
 import { StatCardGridSkeleton } from '@/shared/presentation/ui/components/skeletons/stat-card-grid-skeleton';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
 import { MonthlyInsightsCardSkeleton } from '@/modules/finance/presentation/ui/components/monthly-insights-card-skeleton';
+import { MonthlyIncomeGoalsStripSkeleton } from '@/modules/finance/presentation/ui/components/monthly-income-goals-strip-skeleton';
 
 export default function DashboardLoading() {
   return (
     <RouteLoadingRegion>
       <PageTitleSkeleton />
       <HeroCardSkeleton subStatsCount={2} />
+      <MonthlyIncomeGoalsStripSkeleton />
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>

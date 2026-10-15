@@ -34,6 +34,21 @@ describe('BalanceSummaryCards', () => {
     ).toBeTruthy();
   });
 
+  it('should render the goals slot right below the hero, before balance composition', () => {
+    render(
+      <BalanceSummaryCards summary={summary} goalsSlot={<div data-testid='goals-slot' />} />,
+    );
+
+    const hero = screen.getByText('Saldo Final');
+    const slot = screen.getByTestId('goals-slot');
+    const composition = screen.getByRole('heading', { name: 'Composição dos saldos' });
+
+    expect(hero.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      slot.compareDocumentPosition(composition) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it('should render all summary card labels', () => {
     render(<BalanceSummaryCards summary={summary} />);
 

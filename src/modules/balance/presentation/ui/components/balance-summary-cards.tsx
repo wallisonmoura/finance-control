@@ -28,6 +28,9 @@ type BalanceSummaryCardsProps = {
   // page compose content from other modules (e.g. finance insights) without
   // balance depending on them.
   insightsSlot?: ReactNode;
+  // Rendered right below the hero (e.g. the finance income goals strip), same
+  // reason as insightsSlot.
+  goalsSlot?: ReactNode;
 };
 
 type SummaryItem = {
@@ -68,6 +71,7 @@ export function BalanceSummaryCards({
   summary,
   recentEntries = [],
   insightsSlot,
+  goalsSlot,
 }: BalanceSummaryCardsProps) {
   const availableItems: SummaryItem[] = [
     {
@@ -157,6 +161,8 @@ export function BalanceSummaryCards({
           </div>
         </div>
       </HeroCard>
+
+      {goalsSlot}
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
