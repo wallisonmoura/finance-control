@@ -150,4 +150,26 @@ describe('IncomeGoalsSection', () => {
       '/relatorios/metas/lucro',
     );
   });
+
+  it('should put the amount per day on its own line and say profit above the goal is room to spend', () => {
+    render(
+      <IncomeGoalsSection
+        overview={{
+          ...both,
+          profit: progress({
+            target: 2000,
+            achieved: 2600,
+            remaining: 0,
+            progressPercent: 130,
+            exceededBy: 600,
+            status: 'REACHED',
+          }),
+        }}
+      />,
+    );
+
+    expect(screen.getByText(/^Cerca de/)).toBeInTheDocument();
+    expect(screen.getByText('Situação: Acima da meta')).toBeInTheDocument();
+    expect(screen.getByText(/^Você ainda pode gastar/)).toBeInTheDocument();
+  });
 });

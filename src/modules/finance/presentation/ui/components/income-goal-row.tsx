@@ -5,7 +5,7 @@ import { cn } from '@/shared/presentation/ui/lib/utils';
 import { IncomeGoalProgressUi } from '../types/finance-ui.types';
 import {
   describeIncomeGoal,
-  INCOME_GOAL_STATUS_LABEL,
+  getIncomeGoalStatusLabel,
   INCOME_GOAL_STATUS_TONE,
   IncomeGoalKind,
   IncomeGoalTone,
@@ -34,7 +34,7 @@ type IncomeGoalRowProps = {
 };
 
 export function IncomeGoalRow({ label, kind, progress, href }: IncomeGoalRowProps) {
-  const { usage, detail } = describeIncomeGoal(progress, kind);
+  const { usage, detail, perDay } = describeIncomeGoal(progress, kind);
 
   return (
     <li className='flex gap-3'>
@@ -64,8 +64,21 @@ export function IncomeGoalRow({ label, kind, progress, href }: IncomeGoalRowProp
             ),
           )}
         </p>
+        {perDay ? (
+          <p className='text-xs text-muted-foreground'>
+            {perDay.map((segment, index) =>
+              segment.tone ? (
+                <span key={index} className={SEGMENT_CLASS_NAME[segment.tone]}>
+                  {segment.text}
+                </span>
+              ) : (
+                segment.text
+              ),
+            )}
+          </p>
+        ) : null}
         {/* The dot's color is decorative; screen readers get the status in words. */}
-        <span className='sr-only'>Situação: {INCOME_GOAL_STATUS_LABEL[progress.status]}</span>
+        <span className='sr-only'>Situação: {getIncomeGoalStatusLabel(progress.status, kind)}</span>
       </div>
     </li>
   );
