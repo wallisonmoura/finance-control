@@ -20,6 +20,12 @@ describe('PageTitle', () => {
     expect(screen.getByText('Resumo financeiro.')).toBeInTheDocument();
   });
 
+  it('should let a long title wrap instead of overflowing next to the help button', () => {
+    render(<PageTitle title='Supercalifragilisticexpialidocious' help={SCREEN_HELP.history} />);
+
+    expect(screen.getByRole('heading')).toHaveClass('min-w-0', 'break-words');
+  });
+
   it('should not render a help button without help', () => {
     render(<PageTitle title='Conta' />);
 

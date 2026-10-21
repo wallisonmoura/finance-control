@@ -81,6 +81,14 @@ describe('WalletPageContent', () => {
     ).toBeInTheDocument();
   });
 
+  it('should offer the Carteira help next to the title', () => {
+    mockUseWalletState();
+
+    render(<WalletPageContent />);
+
+    expect(screen.getByRole('button', { name: 'Ajuda: Carteira' })).toBeInTheDocument();
+  });
+
   it('should start with the summary shown and the form closed', () => {
     mockUseWalletState();
 

@@ -69,6 +69,12 @@ describe('DebtsPageContent', () => {
     );
   });
 
+  it('should offer the Dívidas help next to the title', () => {
+    render(<DebtsPageContent />);
+
+    expect(screen.getByRole('button', { name: 'Ajuda: Dívidas' })).toBeInTheDocument();
+  });
+
   it('should render debts page', () => {
     render(<DebtsPageContent />);
 

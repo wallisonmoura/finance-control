@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import {
   HelpPopover,
   ScreenHelpBody,
+  TermHelp,
 } from '@/shared/presentation/ui/components/help-popover';
 import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
@@ -22,6 +23,75 @@ describe('HelpPopover', () => {
     await user.click(screen.getByRole('button', { name: 'Ajuda: Despesas' }));
 
     expect(await screen.findByRole('dialog', { name: 'Ajuda: Despesas' })).toBeInTheDocument();
+  });
+
+  it('should describe the balloon with its content for screen readers', async () => {
+    const user = userEvent.setup();
+    render(<HelpPopover label='Ajuda: Despesas'>Conteúdo da ajuda</HelpPopover>);
+
+    await user.click(screen.getByRole('button', { name: 'Ajuda: Despesas' }));
+
+    expect(await screen.findByRole('dialog')).toHaveAccessibleDescription('Conteúdo da ajuda');
+  });
+
+  it('should close and give focus back to the button when tabbing past the last link', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <HelpPopover label='Ajuda: Despesas'>
+          <ScreenHelpBody help={SCREEN_HELP.expenses} />
+        </HelpPopover>
+        <button type='button'>Depois</button>
+      </>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Ajuda: Despesas' });
+    await user.click(trigger);
+    const link = await screen.findByRole('link', { name: 'Ir para Dívidas' });
+    link.focus();
+
+    await user.tab();
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(trigger).toHaveFocus();
+  });
+
+  it('should close and give focus back to the button when tabbing in a balloon without links', async () => {
+    const user = userEvent.setup();
+    render(<HelpPopover label='Ajuda: Histórico'>Só texto</HelpPopover>);
+
+    const trigger = screen.getByRole('button', { name: 'Ajuda: Histórico' });
+    await user.click(trigger);
+    await screen.findByRole('dialog');
+
+    await user.tab();
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(trigger).toHaveFocus();
+  });
+
+  it('should use a solid focus ring, and the brand green on the hero', () => {
+    render(
+      <>
+        <HelpPopover label='Normal'>x</HelpPopover>
+        <HelpPopover label='Hero' tone='hero'>
+          y
+        </HelpPopover>
+      </>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Normal' })).toHaveClass('focus-visible:ring-ring');
+    expect(screen.getByRole('button', { name: 'Hero' })).toHaveClass(
+      'focus-visible:ring-hero-accent',
+    );
+  });
+
+  it('should give the hero figures the brand green focus ring', () => {
+    render(<TermHelp term='finalBalance' />);
+
+    expect(screen.getByRole('button', { name: 'O que é Saldo Final?' })).toHaveClass(
+      'focus-visible:ring-hero-accent',
+    );
   });
 
   it('should open with the keyboard and close on Escape, giving focus back to the button', async () => {
@@ -70,7 +140,23 @@ describe('ScreenHelpBody', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
-  it('should not send incomes to the receivable balance', () => {
-    expect(SCREEN_HELP.incomes.elsewhere).toBeUndefined();
+  it('should show the note when the screen has one', () => {
+    render(<ScreenHelpBody help={SCREEN_HELP.incomes} />);
+
+    expect(screen.getByText('Isso não altera os saldos da Carteira.')).toBeInTheDocument();
+  });
+});
+
+describe('screen help texts', () => {
+  it('should tell that registering income or expense does not change the Carteira', () => {
+    expect(SCREEN_HELP.wallet.elsewhere?.text).toMatch(/não muda os saldos daqui/);
+    expect(SCREEN_HELP.incomes.note).toBe('Isso não altera os saldos da Carteira.');
+    expect(SCREEN_HELP.expenses.note).toBe('Isso não altera os saldos da Carteira.');
+  });
+
+  it('should not promise editing the expenses that came from a paid debt', () => {
+    expect(SCREEN_HELP.expenses.actions).toContain(
+      'Editar ou excluir uma despesa (exceto as que vieram do pagamento de uma dívida)',
+    );
   });
 });

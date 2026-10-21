@@ -79,6 +79,12 @@ describe('FinanceExpensesPageContent', () => {
     });
   });
 
+  it('should offer the Despesas help next to the title', () => {
+    render(<FinanceExpensesPageContent />);
+
+    expect(screen.getByRole('button', { name: 'Ajuda: Despesas' })).toBeInTheDocument();
+  });
+
   it('should render expenses page', () => {
     render(<FinanceExpensesPageContent />);
 

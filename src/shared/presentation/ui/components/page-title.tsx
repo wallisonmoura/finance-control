@@ -15,7 +15,7 @@ export function PageTitle({ title, description, help, className }: PageTitleProp
   return (
     <div className={cn(className)}>
       <div className='flex items-center gap-2'>
-        <h1 className='text-2xl font-bold tracking-tight text-foreground'>
+        <h1 className='min-w-0 break-words text-2xl font-bold tracking-tight text-foreground'>
           {title}
         </h1>
 

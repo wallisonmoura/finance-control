@@ -10,6 +10,8 @@ export type HelpLink = {
 export type ScreenHelpContent = {
   whatIs: string;
   actions: string[];
+  // A short warning shown after the actions.
+  note?: string;
   // Only where people realistically confuse this screen with another one.
   elsewhere?: {
     text: string;
@@ -32,6 +34,10 @@ export type ScreenHelpKey =
   | 'revenueHistory'
   | 'profitHistory';
 
+// Registering income or expense never touches the wallet balances (only paying
+// a debt does), and new users expect it to.
+const CARTEIRA_NOTE = 'Isso não altera os saldos da Carteira.';
+
 export const SCREEN_HELP: Record<ScreenHelpKey, ScreenHelpContent> = {
   dashboard: {
     whatIs: 'Um resumo de como está seu dinheiro hoje e de como vai o mês.',
@@ -49,7 +55,7 @@ export const SCREEN_HELP: Record<ScreenHelpKey, ScreenHelpContent> = {
       'Corrigir os saldos quando mudarem (ex.: conferiu o extrato do banco)',
     ],
     elsewhere: {
-      text: 'Ganhou ou gastou alguma coisa? Lance em Receitas ou Despesas. Mudar um saldo aqui não conta como receita nem como despesa.',
+      text: 'Ganhou ou gastou? Lance em Receitas ou Despesas, mas isso não muda os saldos daqui: atualize-os quando o saldo real mudar. E mudar um saldo aqui não conta como receita nem como despesa.',
       links: [
         { label: 'Ir para Receitas', href: '/finance/incomes' },
         { label: 'Ir para Despesas', href: '/finance/expenses' },
@@ -59,14 +65,16 @@ export const SCREEN_HELP: Record<ScreenHelpKey, ScreenHelpContent> = {
   incomes: {
     whatIs: 'O dinheiro que já entrou pra você (venda, corrida, salário, serviço).',
     actions: ['Lançar uma receita com valor e data', 'Editar ou excluir uma receita'],
+    note: CARTEIRA_NOTE,
   },
   expenses: {
     whatIs: 'O dinheiro que já saiu, separado por categoria.',
     actions: [
       'Lançar uma despesa com valor, data e categoria',
-      'Editar ou excluir uma despesa',
+      'Editar ou excluir uma despesa (exceto as que vieram do pagamento de uma dívida)',
       'Ver as despesas que vieram do pagamento de uma dívida',
     ],
+    note: CARTEIRA_NOTE,
     elsewhere: {
       text: 'Vai pagar depois? Cadastre em Dívidas. Quando você pagar, a despesa aparece aqui sozinha.',
       links: [{ label: 'Ir para Dívidas', href: '/debts' }],
