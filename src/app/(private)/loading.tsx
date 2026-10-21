@@ -13,7 +13,6 @@ export default function DashboardLoading() {
     <RouteLoadingRegion>
       <PageTitleSkeleton />
       <HeroCardSkeleton subStatsCount={2} />
-      <MonthlyIncomeGoalsStripSkeleton />
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
@@ -24,6 +23,7 @@ export default function DashboardLoading() {
         <StatCardGridSkeleton count={3} />
       </div>
 
+      <MonthlyIncomeGoalsStripSkeleton />
       <MonthlyInsightsCardSkeleton />
 
       <div className='space-y-3'>

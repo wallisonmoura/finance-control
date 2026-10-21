@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/shared/presentation/ui/components/confirm-dialo
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { useDebts } from '../hooks/use-debts';
 import { deleteDebt } from '../services/debt-api.service';
@@ -143,6 +144,7 @@ export function DebtsPageContent({
     <div className='space-y-6'>
       <PageTitle
         title='Dívidas'
+        help={SCREEN_HELP.debts}
         description='Registre, acompanhe e gerencie compromissos financeiros pendentes ou pagos.'
       />
 

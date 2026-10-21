@@ -14,6 +14,7 @@ import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display'
 import { BalanceSummaryUi } from '../types/balance-ui.types';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { HeroCard } from '@/shared/presentation/ui/components/hero-card';
+import { TermHelp } from '@/shared/presentation/ui/components/help-popover';
 import { StatCardGrid } from '@/shared/presentation/ui/components/stat-card-grid';
 import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { cn } from '@/shared/presentation/ui/lib/utils';
@@ -28,8 +29,8 @@ type BalanceSummaryCardsProps = {
   // page compose content from other modules (e.g. finance insights) without
   // balance depending on them.
   insightsSlot?: ReactNode;
-  // Rendered right below the hero (e.g. the finance income goals strip), same
-  // reason as insightsSlot.
+  // Rendered after balance composition, before the insights (e.g. the finance
+  // income goals strip): first what you have, then how the month is going.
   goalsSlot?: ReactNode;
 };
 
@@ -110,6 +111,7 @@ export function BalanceSummaryCards({
               <Landmark aria-hidden='true' className='size-5' />
             </span>
             <p>Saldo Final</p>
+            <TermHelp term='finalBalance' />
           </div>
 
           <div className='space-y-2'>
@@ -133,6 +135,7 @@ export function BalanceSummaryCards({
                 className='size-5 text-hero-accent'
               />
               <span>Valor Total da Carteira</span>
+              <TermHelp term='walletTotal' />
             </div>
             <MoneyDisplay
               value={summary.wallet.walletTotal}
@@ -150,6 +153,7 @@ export function BalanceSummaryCards({
                 className='size-5 text-destructive'
               />
               <span>Dívidas Pendentes</span>
+              <TermHelp term='pendingDebts' />
             </div>
             <MoneyDisplay
               value={summary.debts.pendingDebts}
@@ -162,8 +166,6 @@ export function BalanceSummaryCards({
         </div>
       </HeroCard>
 
-      {goalsSlot}
-
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
           <Gauge aria-hidden='true' className='size-4 text-muted-foreground' />
@@ -172,6 +174,8 @@ export function BalanceSummaryCards({
 
         <StatCardGrid items={availableItems} />
       </div>
+
+      {goalsSlot}
 
       {insightsSlot}
 

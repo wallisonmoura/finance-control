@@ -12,6 +12,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useCategoryHistory } from '../hooks/use-category-history';
@@ -106,6 +107,7 @@ export function CategoryHistoryPageContent({
       <div className='flex flex-wrap items-end justify-between gap-4'>
         <PageTitle
           title={category.name}
+          help={SCREEN_HELP.categoryHistory}
           description='Gasto da categoria mês a mês.'
         />
         <ReportsPeriodSelect

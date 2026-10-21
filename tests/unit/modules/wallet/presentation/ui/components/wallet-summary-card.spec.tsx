@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { WalletSummaryCard } from '@/modules/wallet/presentation/ui/components/wallet-summary-card';
 import { WalletUi } from '@/modules/wallet/presentation/ui/types/wallet-ui.types';
+import { TERM_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 const wallet: WalletUi = {
   id: 'wallet-id',
@@ -23,6 +25,15 @@ describe('WalletSummaryCard', () => {
         name: 'Resumo da Carteira',
       }),
     ).toBeInTheDocument();
+  });
+
+  it('should explain the wallet total from a help button', async () => {
+    const user = userEvent.setup();
+    render(<WalletSummaryCard wallet={wallet} />);
+
+    await user.click(screen.getByRole('button', { name: 'O que é Valor Total da Carteira?' }));
+
+    expect(await screen.findByText(TERM_HELP.walletTotal.text)).toBeInTheDocument();
   });
 
   it('should render the Wallet balance labels', () => {

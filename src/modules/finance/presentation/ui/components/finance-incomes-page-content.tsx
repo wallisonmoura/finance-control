@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { useFinanceEntryMutationFlow } from '../hooks/use-finance-entry-mutation-flow';
 import { useFinanceHistory } from '../hooks/use-finance-history';
@@ -57,6 +58,7 @@ export function FinanceIncomesPageContent({
       <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <PageTitle
           title='Receitas'
+          help={SCREEN_HELP.incomes}
           description='Registre, acompanhe e gerencie suas entradas financeiras.'
         />
 

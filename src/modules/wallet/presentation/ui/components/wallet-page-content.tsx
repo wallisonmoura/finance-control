@@ -5,6 +5,7 @@ import { Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
@@ -51,6 +52,7 @@ export function WalletPageContent({
       <div className='space-y-6'>
         <PageTitle
           title='Carteira'
+          help={SCREEN_HELP.wallet}
           description='Visualize e atualize seus saldos-base.'
         />
 
@@ -64,6 +66,7 @@ export function WalletPageContent({
       <div className='space-y-6'>
         <PageTitle
           title='Carteira'
+          help={SCREEN_HELP.wallet}
           description='Visualize e atualize seus saldos-base.'
         />
 
@@ -76,6 +79,7 @@ export function WalletPageContent({
     <div className='space-y-6'>
       <PageTitle
         title='Carteira'
+        help={SCREEN_HELP.wallet}
         description='Visualize sua posição financeira base e atualize seus saldos reais.'
       />
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { ListRowsSkeleton } from '@/shared/presentation/ui/components/skeletons/list-rows-skeleton';
 
 import {
@@ -140,6 +141,7 @@ export function FinanceHistoryPageContent({
 
       <PageTitle
         title='Histórico'
+        help={SCREEN_HELP.history}
         description='Consulte todas as movimentações financeiras registradas.'
       />
 
