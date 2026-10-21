@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { usePendingDebts } from '../hooks/use-pending-debts';
 import { DebtUi } from '../types/debts-ui.types';
@@ -58,6 +59,7 @@ export function PendingDebtsPageContent({
 
       <PageTitle
         title='Dívidas pendentes'
+        help={SCREEN_HELP.pendingDebts}
         description='Pague dívidas pendentes gerando a despesa financeira e atualizando a Carteira.'
       />
 

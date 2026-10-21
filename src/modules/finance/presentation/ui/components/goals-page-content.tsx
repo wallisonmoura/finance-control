@@ -1,4 +1,5 @@
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { IncomeGoalsOverviewUi, SpendingGoalsOverviewUi } from '../types/finance-ui.types';
 import { IncomeGoalsSection } from './income-goals-section';
@@ -21,6 +22,7 @@ export function GoalsPageContent({
     <div className='space-y-10'>
       <PageTitle
         title='Metas'
+        help={SCREEN_HELP.goals}
         description='Acompanhe seus alvos de ganho e os tetos de gasto do mês.'
       />
       <IncomeGoalsSection overview={incomeGoals} error={incomeGoalsError} />

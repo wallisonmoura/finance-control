@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CategoryExpensesChart } from './category-expenses-chart';
@@ -32,6 +33,7 @@ export function ReportsPageContent({ initialMonths }: ReportsPageContentProps) {
       <div className='flex flex-wrap items-end justify-between gap-4'>
         <PageTitle
           title='Relatórios'
+          help={SCREEN_HELP.reports}
           description='Visualize o comportamento financeiro ao longo do tempo.'
         />
 

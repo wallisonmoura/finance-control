@@ -17,6 +17,7 @@ import { Input } from '@/shared/presentation/ui/components/input';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import {
@@ -324,6 +325,7 @@ export function FinanceSummaryPageContent({
 
       <PageTitle
         title='Resumo operacional'
+        help={SCREEN_HELP.summary}
         description='Acompanhe o resultado diário consolidado do mês selecionado.'
       />
 

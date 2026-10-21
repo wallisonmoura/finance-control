@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { useExpenseCategories } from '../hooks/use-expense-categories';
 import { useFinanceEntryMutationFlow } from '../hooks/use-finance-entry-mutation-flow';
@@ -75,6 +76,7 @@ export function FinanceExpensesPageContent({
       <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <PageTitle
           title='Despesas'
+          help={SCREEN_HELP.expenses}
           description='Registre, acompanhe e gerencie suas despesas realizadas.'
         />
 

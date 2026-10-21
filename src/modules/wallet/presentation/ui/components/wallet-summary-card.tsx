@@ -1,6 +1,7 @@
 import { Banknote, Building2, HandCoins, WalletCards } from 'lucide-react';
 
 import { HeroCard } from '@/shared/presentation/ui/components/hero-card';
+import { TermHelp } from '@/shared/presentation/ui/components/help-popover';
 import { MoneyDisplay } from '@/shared/presentation/ui/components/money-display';
 import { StatCardGrid } from '@/shared/presentation/ui/components/stat-card-grid';
 
@@ -45,6 +46,7 @@ export function WalletSummaryCard({ wallet }: WalletSummaryCardProps) {
               <WalletCards aria-hidden='true' className='size-5' />
             </span>
             <p>Valor Total da Carteira</p>
+            <TermHelp term='walletTotal' />
           </div>
 
           <MoneyDisplay

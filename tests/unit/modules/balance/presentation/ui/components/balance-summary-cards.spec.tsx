@@ -1,4 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import { TERM_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { BalanceSummaryCards } from '@/modules/balance/presentation/ui/components/balance-summary-cards';
 
 describe('BalanceSummaryCards', () => {
@@ -34,19 +37,38 @@ describe('BalanceSummaryCards', () => {
     ).toBeTruthy();
   });
 
-  it('should render the goals slot right below the hero, before balance composition', () => {
+  it('should render the goals slot after balance composition and before the insights', () => {
     render(
-      <BalanceSummaryCards summary={summary} goalsSlot={<div data-testid='goals-slot' />} />,
+      <BalanceSummaryCards
+        summary={summary}
+        goalsSlot={<div data-testid='goals-slot' />}
+        insightsSlot={<div data-testid='insights-slot' />}
+      />,
     );
 
-    const hero = screen.getByText('Saldo Final');
-    const slot = screen.getByTestId('goals-slot');
     const composition = screen.getByRole('heading', { name: 'Composição dos saldos' });
+    const slot = screen.getByTestId('goals-slot');
+    const insights = screen.getByTestId('insights-slot');
 
-    expect(hero.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(
-      slot.compareDocumentPosition(composition) & Node.DOCUMENT_POSITION_FOLLOWING,
+      composition.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+    expect(
+      slot.compareDocumentPosition(insights) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it.each([
+    ['Saldo Final', TERM_HELP.finalBalance.text],
+    ['Valor Total da Carteira', TERM_HELP.walletTotal.text],
+    ['Dívidas Pendentes', TERM_HELP.pendingDebts.text],
+  ])('should explain %s from a help button', async (term, text) => {
+    const user = userEvent.setup();
+    render(<BalanceSummaryCards summary={summary} />);
+
+    await user.click(screen.getByRole('button', { name: `O que é ${term}?` }));
+
+    expect(await screen.findByText(text)).toBeInTheDocument();
   });
 
   it('should render all summary card labels', () => {

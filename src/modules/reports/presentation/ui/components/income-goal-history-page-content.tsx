@@ -14,6 +14,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
+import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useIncomeGoalHistory } from '../hooks/use-income-goal-history';
@@ -124,7 +125,11 @@ export function IncomeGoalHistoryPageContent({
       {backLink}
 
       <div className='flex flex-wrap items-end justify-between gap-4'>
-        <PageTitle title={copy.title} description={copy.description} />
+        <PageTitle
+          title={copy.title}
+          description={copy.description}
+          help={SCREEN_HELP[measure === 'profit' ? 'profitHistory' : 'revenueHistory']}
+        />
         <ReportsPeriodSelect
           id='income-goal-history-months'
           value={months}
