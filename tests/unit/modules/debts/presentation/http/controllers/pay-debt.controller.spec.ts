@@ -67,6 +67,7 @@ describe('PayDebtController', () => {
         ...output,
         dueDate: '2026-05-12',
         paidAt: '2026-05-12',
+        paymentRecordedAt: null,
       },
     });
   });

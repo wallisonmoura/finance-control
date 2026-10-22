@@ -8,8 +8,10 @@ import { formatDateOrFallback } from '@/shared/presentation/ui/lib/format-date';
 
 import { DebtUi } from '../types/debts-ui.types';
 import { sumDebtAmounts } from '../utils/debt-amounts';
+import { canUndoDebtPayment } from '../utils/debt-payment-undo';
 import { DebtsBackLink } from './debts-back-link';
 import { DebtList } from './debt-list';
+import { UndoDebtPaymentButton } from './undo-debt-payment-button';
 
 type PaidDebtsPageContentProps = {
   debts: DebtUi[];
@@ -32,6 +34,11 @@ export function PaidDebtsPageContent({
   const paidDebts = debts.filter((debt) => debt.status === 'PAID');
   const totalPaid = sumDebtAmounts(paidDebts);
   const lastPaymentDate = getLastPaymentDate(paidDebts);
+  // Decided at render time; a page left open past 24h gets the API's 409.
+  // Server Component rendered once per request, so reading the clock here is
+  // safe (the purity rule targets client re-renders).
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
 
   return (
     <div className='space-y-6'>
@@ -93,7 +100,15 @@ export function PaidDebtsPageContent({
             </div>
           </Card>
 
-          <DebtList debts={paidDebts} title={null} />
+          <DebtList
+            debts={paidDebts}
+            title={null}
+            renderPaidActions={(debt) =>
+              canUndoDebtPayment(debt, now) ? (
+                <UndoDebtPaymentButton debt={debt} />
+              ) : null
+            }
+          />
         </>
       )}
     </div>

@@ -69,6 +69,7 @@ describe('getCurrentUserDebts', () => {
           ...debt,
           dueDate: '2026-05-20T00:00:00.000Z',
           paidAt: null,
+          paymentRecordedAt: null,
           createdAt: '2026-05-16T00:00:00.000Z',
           updatedAt: '2026-05-16T00:00:00.000Z',
         },
@@ -91,6 +92,31 @@ describe('getCurrentUserDebts', () => {
     await expect(getCurrentUserDebts()).resolves.toEqual({
       error: 'Não foi possível carregar dívidas.',
     });
+  });
+});
+
+describe('getCurrentUserDebts payment undo fields', () => {
+  it('should send the payment time as a full ISO timestamp and keep the recurrence link on the server', async () => {
+    const execute = jest.fn().mockResolvedValueOnce([
+      {
+        ...debt,
+        status: 'PAID' as const,
+        paidAt: new Date('2026-10-20T00:00:00.000Z'),
+        paymentSource: 'BANK' as const,
+        paymentRecordedAt: new Date('2026-10-21T15:04:05.000Z'),
+        generatedFromDebtId: 'debt-0',
+      },
+    ]);
+
+    getAuthenticatedUserIdMock.mockResolvedValueOnce('user-id');
+    makeListDebtsUseCaseMock.mockReturnValueOnce({
+      execute,
+    } as unknown as ReturnType<typeof makeListDebtsUseCase>);
+
+    const result = await getCurrentUserDebts();
+
+    expect(result.data?.[0].paymentRecordedAt).toBe('2026-10-21T15:04:05.000Z');
+    expect(result.data?.[0]).not.toHaveProperty('generatedFromDebtId');
   });
 });
 

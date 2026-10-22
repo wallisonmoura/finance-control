@@ -4,6 +4,10 @@ import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.er
 import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
+import { DebtNotPaidError } from '@/modules/debts/domain/errors/debt-not-paid.error';
+import { DebtPaymentExpenseNotFoundError } from '@/modules/debts/domain/errors/debt-payment-expense-not-found.error';
+import { DebtPaymentUndoExpiredError } from '@/modules/debts/domain/errors/debt-payment-undo-expired.error';
+import { NextOccurrenceAlreadyPaidError } from '@/modules/debts/domain/errors/next-occurrence-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
@@ -70,6 +74,19 @@ describe('toErrorNextResponse', () => {
 
     expect(response.status).toBe(404);
     expect(JSON.stringify(body)).toContain('não tem acesso a esta dívida');
+  });
+
+  it.each([
+    new DebtNotPaidError(),
+    new DebtPaymentUndoExpiredError(),
+    new NextOccurrenceAlreadyPaidError(),
+    new DebtPaymentExpenseNotFoundError(),
+  ])('should return 409 with the message for %s', async (error) => {
+    const response = toErrorNextResponse(error);
+    const body = await readJson(response);
+
+    expect(response.status).toBe(409);
+    expect(body).toEqual({ message: error.message });
   });
 
   it('should return 409 for DebtAlreadyPaidError', async () => {

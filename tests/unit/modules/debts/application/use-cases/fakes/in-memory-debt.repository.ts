@@ -1,4 +1,5 @@
 import { Debt } from '@/modules/debts/domain/entities/debt.entity';
+import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtRepository } from '@/modules/debts/domain/repositories/debt.repository';
 
 export class InMemoryDebtRepository implements DebtRepository {
@@ -35,5 +36,44 @@ export class InMemoryDebtRepository implements DebtRepository {
 
   async delete(id: string): Promise<void> {
     this.items = this.items.filter((debt) => debt.id !== id);
+  }
+
+  async findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null> {
+    return (
+      this.items.find(
+        (debt) => debt.generatedFromDebtId === debtId && debt.userId === userId,
+      ) ?? null
+    );
+  }
+
+  async markPaymentUndone(debt: Debt): Promise<boolean> {
+    const index = this.items.findIndex(
+      (item) =>
+        item.id === debt.id &&
+        item.userId === debt.userId &&
+        item.status === DebtStatus.PAID,
+    );
+
+    if (index === -1) {
+      return false;
+    }
+
+    this.items[index] = debt;
+    return true;
+  }
+
+  async deletePendingGeneratedFrom(debtId: string, userId: string): Promise<number> {
+    const before = this.items.length;
+
+    this.items = this.items.filter(
+      (debt) =>
+        !(
+          debt.generatedFromDebtId === debtId &&
+          debt.userId === userId &&
+          debt.isPending()
+        ),
+    );
+
+    return before - this.items.length;
   }
 }

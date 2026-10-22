@@ -158,6 +158,11 @@ describe('PayDebtUseCase Integration', () => {
     );
     expect(nextOccurrence?.paidAt).toBeNull();
     expect(nextOccurrence?.paymentSource).toBeNull();
+    expect(nextOccurrence?.generatedFromDebtId).toBe(debt.id);
+
+    const paidDebt = debtsOnDatabase.find((item) => item.id === debt.id);
+
+    expect(paidDebt?.paymentRecordedAt).toBeInstanceOf(Date);
   });
 
   it('should roll back when the Wallet has insufficient balance in the chosen source', async () => {

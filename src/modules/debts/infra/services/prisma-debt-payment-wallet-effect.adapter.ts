@@ -8,6 +8,12 @@ import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/i
 
 type PrismaClientOrTransaction = PrismaClient | PrismaTransactionClient;
 
+const BALANCE_FIELD = {
+  [DebtPaymentSource.BANK]: 'bankBalance',
+  [DebtPaymentSource.CASH]: 'cashBalance',
+  [DebtPaymentSource.RECEIVABLE]: 'receivableBalance',
+} as const;
+
 export class PrismaDebtPaymentWalletEffectAdapter implements DebtPaymentWalletEffectPort {
   constructor(private readonly client: PrismaClientOrTransaction = prisma) {}
 
@@ -99,5 +105,37 @@ export class PrismaDebtPaymentWalletEffectAdapter implements DebtPaymentWalletEf
     }
 
     throw new Error('Origem de pagamento inválida.');
+  }
+
+  // Undo of a payment: puts the amount back where it came from.
+  async credit(input: {
+    userId: string;
+    amount: number;
+    paymentSource: DebtPaymentSource;
+  }): Promise<void> {
+    const wallet = await this.client.wallet.findFirst({
+      where: {
+        userId: input.userId,
+        isDefault: true,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!wallet) {
+      throw new DefaultWalletNotFoundError();
+    }
+
+    await this.client.wallet.update({
+      where: {
+        id: wallet.id,
+      },
+      data: {
+        [BALANCE_FIELD[input.paymentSource]]: {
+          increment: new Prisma.Decimal(input.amount),
+        },
+      },
+    });
   }
 }

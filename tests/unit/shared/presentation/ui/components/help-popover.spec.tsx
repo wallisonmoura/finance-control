@@ -154,6 +154,12 @@ describe('screen help texts', () => {
     expect(SCREEN_HELP.expenses.note).toBe('Isso não altera os saldos da Carteira.');
   });
 
+  it('should tell where to undo a payment made by mistake', () => {
+    expect(SCREEN_HELP.pendingDebts.note).toBe(
+      'Pagou a errada? Dá pra desfazer em até 24h, em Dívidas pagas.',
+    );
+  });
+
   it('should not promise editing the expenses that came from a paid debt', () => {
     expect(SCREEN_HELP.expenses.actions).toContain(
       'Editar ou excluir uma despesa (exceto as que vieram do pagamento de uma dívida)',

@@ -51,6 +51,7 @@ describe('ListDebtsController', () => {
       body: output.map((debt) => ({
         ...debt,
         dueDate: '2026-05-10',
+        paymentRecordedAt: null,
       })),
     });
   });

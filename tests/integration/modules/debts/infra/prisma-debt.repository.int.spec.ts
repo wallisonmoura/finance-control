@@ -250,6 +250,7 @@ describe('PrismaDebtRepository', () => {
     const paidDebt = debt!.markAsPaid({
       paidAt: new Date('2026-05-10T00:00:00.000Z'),
       paymentSource: DebtPaymentSource.BANK,
+      paymentRecordedAt: new Date('2026-05-10T12:00:00.000Z'),
     });
 
     const result = await repository.update(paidDebt);
@@ -293,5 +294,109 @@ describe('PrismaDebtRepository', () => {
     await expect(repository.create(debt)).rejects.toBeInstanceOf(
       DefaultWalletNotFoundError,
     );
+  });
+
+  describe('payment undo', () => {
+    async function seedPaidDebt(userId: string, walletId: string) {
+      return createTestDebt({
+        userId,
+        walletId,
+        status: DebtStatus.PAID,
+        type: DebtType.RECURRING,
+        paymentRecordedAt: new Date('2026-10-21T12:00:00.000Z'),
+      });
+    }
+
+    it('should undo a payment only while the debt is still paid', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const debt = await seedPaidDebt(user.id, wallet.id);
+
+      const paid = await repository.findById(debt.id);
+      const pending = paid!.markAsPending(new Date('2026-10-21T13:00:00.000Z'));
+
+      expect(await repository.markPaymentUndone(pending)).toBe(true);
+      expect(await repository.markPaymentUndone(pending)).toBe(false);
+
+      const row = await prisma.debt.findUnique({ where: { id: debt.id } });
+      expect(row?.status).toBe(DebtStatus.PENDING);
+      expect(row?.paidAt).toBeNull();
+      expect(row?.paymentSource).toBeNull();
+      expect(row?.paymentRecordedAt).toBeNull();
+    });
+
+    it("should not undo the payment of another user's debt", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const debt = await seedPaidDebt(user.id, wallet.id);
+
+      const paid = await repository.findById(debt.id);
+      const forged = makeTestDebtEntity({
+        ...paid!.markAsPending(new Date()).toJSON(),
+        userId: otherUser.id,
+      });
+
+      expect(await repository.markPaymentUndone(forged)).toBe(false);
+      expect((await prisma.debt.findUnique({ where: { id: debt.id } }))?.status).toBe(
+        DebtStatus.PAID,
+      );
+    });
+
+    it('should find and delete only the pending occurrence generated from a debt of the same user', async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const origin = await seedPaidDebt(user.id, wallet.id);
+      const occurrence = await createTestDebt({
+        userId: user.id,
+        walletId: wallet.id,
+        type: DebtType.RECURRING,
+        generatedFromDebtId: origin.id,
+      });
+
+      expect((await repository.findGeneratedFrom(origin.id, user.id))?.id).toBe(occurrence.id);
+      expect(await repository.findGeneratedFrom(origin.id, otherUser.id)).toBeNull();
+      expect(await repository.deletePendingGeneratedFrom(origin.id, otherUser.id)).toBe(0);
+      expect(await repository.deletePendingGeneratedFrom(origin.id, user.id)).toBe(1);
+      expect(await prisma.debt.findUnique({ where: { id: occurrence.id } })).toBeNull();
+    });
+
+    it('should not delete a generated occurrence that is already paid', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const origin = await seedPaidDebt(user.id, wallet.id);
+      const occurrence = await createTestDebt({
+        userId: user.id,
+        walletId: wallet.id,
+        type: DebtType.RECURRING,
+        status: DebtStatus.PAID,
+        generatedFromDebtId: origin.id,
+      });
+
+      expect(await repository.deletePendingGeneratedFrom(origin.id, user.id)).toBe(0);
+      expect(await prisma.debt.findUnique({ where: { id: occurrence.id } })).not.toBeNull();
+    });
+
+    it('should refuse a second occurrence generated from the same debt', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const origin = await seedPaidDebt(user.id, wallet.id);
+      await createTestDebt({ userId: user.id, walletId: wallet.id, generatedFromDebtId: origin.id });
+
+      await expect(
+        createTestDebt({ userId: user.id, walletId: wallet.id, generatedFromDebtId: origin.id }),
+      ).rejects.toThrow();
+    });
+
+    it('should reject a pending debt with a payment time at the database level', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const pending = await createTestDebt({ userId: user.id, walletId: wallet.id });
+
+      await expect(
+        prisma.debt.update({ where: { id: pending.id }, data: { paymentRecordedAt: new Date() } }),
+      ).rejects.toThrow();
+    });
   });
 });

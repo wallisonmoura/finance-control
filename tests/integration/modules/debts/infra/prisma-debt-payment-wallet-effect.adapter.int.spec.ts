@@ -179,4 +179,37 @@ describe('PrismaDebtPaymentWalletEffectAdapter', () => {
       }),
     ).rejects.toBeInstanceOf(InsufficientWalletBalanceError);
   });
+
+  describe('credit', () => {
+    it.each([
+      [DebtPaymentSource.BANK, { bankBalance: 650, cashBalance: 100, receivableBalance: 200 }],
+      [DebtPaymentSource.CASH, { bankBalance: 500, cashBalance: 250, receivableBalance: 200 }],
+      [DebtPaymentSource.RECEIVABLE, { bankBalance: 500, cashBalance: 100, receivableBalance: 350 }],
+    ])('should credit the amount back to %s only', async (paymentSource, expected) => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({
+        userId: user.id,
+        bankBalance: 500,
+        cashBalance: 100,
+        receivableBalance: 200,
+      });
+
+      await adapter.credit({ userId: user.id, amount: 150, paymentSource });
+
+      const updated = await prisma.wallet.findUnique({ where: { id: wallet.id } });
+      expect({
+        bankBalance: Number(updated?.bankBalance),
+        cashBalance: Number(updated?.cashBalance),
+        receivableBalance: Number(updated?.receivableBalance),
+      }).toEqual(expected);
+    });
+
+    it('should fail when the user has no default wallet', async () => {
+      const user = await createTestUser();
+
+      await expect(
+        adapter.credit({ userId: user.id, amount: 10, paymentSource: DebtPaymentSource.BANK }),
+      ).rejects.toThrow(DefaultWalletNotFoundError);
+    });
+  });
 });

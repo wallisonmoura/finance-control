@@ -11,4 +11,12 @@ export class InMemoryDebtPaymentFinancialEffectPort implements DebtPaymentFinanc
   ): Promise<void> {
     this.calls.push(input);
   }
+
+  public removeCalls: { debtId: string; userId: string }[] = [];
+  public removeResult = 1;
+
+  async removePayment(input: { debtId: string; userId: string }): Promise<number> {
+    this.removeCalls.push(input);
+    return this.removeResult;
+  }
 }

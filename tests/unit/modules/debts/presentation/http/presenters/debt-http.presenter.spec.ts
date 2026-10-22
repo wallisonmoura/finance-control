@@ -34,6 +34,7 @@ describe('DebtHttpPresenter', () => {
       notes: 'observação',
       paidAt: null,
       paymentSource: null,
+      paymentRecordedAt: null,
       createdAt: baseOutput.createdAt,
       updatedAt: baseOutput.updatedAt,
     });
@@ -81,5 +82,23 @@ describe('DebtHttpPresenter', () => {
 
   it('should return an empty list when there are no debts', () => {
     expect(DebtHttpPresenter.toResponseList([])).toEqual([]);
+  });
+
+  it('should return paymentRecordedAt as a full ISO timestamp and never expose the recurrence link', () => {
+    const response = DebtHttpPresenter.toResponse({
+      ...baseOutput,
+      status: DebtStatus.PAID,
+      paidAt: new Date('2026-10-20T00:00:00.000Z'),
+      paymentSource: DebtPaymentSource.BANK,
+      paymentRecordedAt: new Date('2026-10-21T15:04:05.000Z'),
+      generatedFromDebtId: 'debt-0',
+    });
+
+    expect(response.paymentRecordedAt).toBe('2026-10-21T15:04:05.000Z');
+    expect(response).not.toHaveProperty('generatedFromDebtId');
+  });
+
+  it('should return paymentRecordedAt as null when there is none', () => {
+    expect(DebtHttpPresenter.toResponse(baseOutput).paymentRecordedAt).toBeNull();
   });
 });

@@ -144,4 +144,28 @@ describe('PrismaDebtPaymentFinancialEffectAdapter', () => {
       }),
     ).rejects.toThrow('Categoria de despesa não encontrada.');
   });
+
+  describe('removePayment', () => {
+    it("should delete the expense of the user's paid debt and report one row", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const category = await createTestExpenseCategory({ userId: user.id, name: 'Contas', slug: 'contas' });
+      const debt = await createTestDebt({ userId: user.id, walletId: wallet.id, status: DebtStatus.PAID });
+      await adapter.registerPayment({
+        debtId: debt.id,
+        userId: user.id,
+        amount: 100,
+        description: 'Internet',
+        paidAt: new Date('2026-10-21'),
+        expenseCategoryId: category.id,
+      });
+
+      expect(await adapter.removePayment({ debtId: debt.id, userId: otherUser.id })).toBe(0);
+      expect(await prisma.transaction.count({ where: { debtId: debt.id } })).toBe(1);
+
+      expect(await adapter.removePayment({ debtId: debt.id, userId: user.id })).toBe(1);
+      expect(await prisma.transaction.count({ where: { debtId: debt.id } })).toBe(0);
+    });
+  });
 });

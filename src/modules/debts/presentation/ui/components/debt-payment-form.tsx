@@ -14,7 +14,7 @@ import { Input } from '@/shared/presentation/ui/components/input';
 import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
-import { payDebt } from '../services/debt-api.service';
+import { payDebt, undoDebtPayment } from '../services/debt-api.service';
 import { DebtPaymentSourceUi, DebtUi } from '../types/debts-ui.types';
 
 type DebtPaymentFormProps = {
@@ -23,6 +23,8 @@ type DebtPaymentFormProps = {
   isLoadingCategories?: boolean;
   categoriesError?: string | null;
   onDebtPaid?: () => void | Promise<void>;
+  // Called after the payment is undone from the success toast.
+  onPaymentUndone?: () => void | Promise<void>;
   onCancel?: () => void;
   embedded?: boolean;
 };
@@ -50,6 +52,7 @@ export function DebtPaymentForm({
   isLoadingCategories = false,
   categoriesError = null,
   onDebtPaid,
+  onPaymentUndone,
   onCancel,
   embedded = false,
 }: DebtPaymentFormProps) {
@@ -78,8 +81,27 @@ export function DebtPaymentForm({
       return;
     }
 
-    toast.success('Dívida paga com sucesso.');
+    // 10s instead of sonner's ~4s so keyboard and screen-reader users can reach
+    // it; Dívidas pagas keeps the undo for 24h either way.
+    toast.success('Dívida paga com sucesso.', {
+      duration: 10000,
+      action: { label: 'Desfazer', onClick: () => void undoPayment() },
+    });
     await onDebtPaid?.();
+  }
+
+  // Runs from the toast, after this form has already closed: it only uses the
+  // debt id and the callback captured here.
+  async function undoPayment() {
+    const response = await undoDebtPayment(debt.id);
+
+    if (response.error) {
+      toast.error(response.error);
+      return;
+    }
+
+    toast.success('Pagamento desfeito.');
+    await onPaymentUndone?.();
   }
 
   const cannotSubmit =

@@ -1,21 +1,29 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { DebtsPageContent } from '@/modules/debts/presentation/ui/components/debts-page-content';
 import { useDebts } from '@/modules/debts/presentation/ui/hooks/use-debts';
-import { deleteDebt } from '@/modules/debts/presentation/ui/services/debt-api.service';
+import {
+  deleteDebt,
+  undoDebtPayment,
+} from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/hooks/use-debts');
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   deleteDebt: jest.fn(),
   registerDebt: jest.fn(),
   updateDebt: jest.fn(),
+  undoDebtPayment: jest.fn(),
+}));
+jest.mock('sonner', () => ({
+  toast: { success: jest.fn(), error: jest.fn() },
 }));
 jest.mock('next/navigation');
 
 const useDebtsMock = jest.mocked(useDebts);
 const deleteDebtMock = jest.mocked(deleteDebt);
+const undoDebtPaymentMock = jest.mocked(undoDebtPayment);
 const useRouterMock = jest.mocked(useRouter);
 const useSearchParamsMock = jest.mocked(useSearchParams);
 
@@ -183,5 +191,36 @@ describe('DebtsPageContent', () => {
     await user.click(screen.getByRole('button', { name: 'Próximo mês' }));
 
     expect(push).toHaveBeenCalledWith('/debts?month=2026-06');
+  });
+
+  it('should offer to undo a payment recorded in the last 24 hours and reload the list after it', async () => {
+    const user = userEvent.setup();
+    const routerRefresh = jest.fn();
+    useRouterMock.mockReturnValue({
+      push,
+      refresh: routerRefresh,
+    } as unknown as ReturnType<typeof useRouter>);
+    const recentPaid = {
+      ...paidDebt,
+      paymentRecordedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    };
+    const legacyPaid = { ...paidDebt, id: 'legacy-id', description: 'Luz', paymentRecordedAt: null };
+    useDebtsMock.mockReturnValue({
+      debts: [debt, recentPaid, legacyPaid],
+      isLoading: false,
+      error: null,
+      refresh: refreshMock,
+    });
+    undoDebtPaymentMock.mockResolvedValue({ data: { ...recentPaid, status: 'PENDING' } });
+
+    render(<DebtsPageContent />);
+
+    expect(screen.getAllByRole('button', { name: /^Desfazer pagamento/ })).toHaveLength(1);
+
+    await user.click(screen.getByRole('button', { name: /^Desfazer pagamento/ }));
+    await user.click(await screen.findByRole('button', { name: 'Desfazer' }));
+
+    await waitFor(() => expect(refreshMock).toHaveBeenCalledTimes(1));
+    expect(undoDebtPaymentMock).toHaveBeenCalledWith('paid-debt-id');
   });
 });
