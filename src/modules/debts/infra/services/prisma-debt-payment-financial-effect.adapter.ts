@@ -59,4 +59,16 @@ export class PrismaDebtPaymentFinancialEffectAdapter implements DebtPaymentFinan
       },
     });
   }
+
+  async removePayment(input: { debtId: string; userId: string }): Promise<number> {
+    const result = await this.client.transaction.deleteMany({
+      where: {
+        debtId: input.debtId,
+        userId: input.userId,
+        type: TransactionType.EXPENSE,
+      },
+    });
+
+    return result.count;
+  }
 }

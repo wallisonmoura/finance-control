@@ -62,6 +62,7 @@ describe('RegisterDebtController', () => {
       body: {
         ...output,
         dueDate: '2026-05-10',
+        paymentRecordedAt: null,
       },
     });
   });

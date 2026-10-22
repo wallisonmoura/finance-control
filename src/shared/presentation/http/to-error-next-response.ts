@@ -5,6 +5,10 @@ import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { InvalidDebtUserIdError } from '@/modules/debts/domain/errors/invalid-debt-user-id.error';
 import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
+import { DebtNotPaidError } from '@/modules/debts/domain/errors/debt-not-paid.error';
+import { DebtPaymentExpenseNotFoundError } from '@/modules/debts/domain/errors/debt-payment-expense-not-found.error';
+import { DebtPaymentUndoExpiredError } from '@/modules/debts/domain/errors/debt-payment-undo-expired.error';
+import { NextOccurrenceAlreadyPaidError } from '@/modules/debts/domain/errors/next-occurrence-already-paid.error';
 import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-debt-amount.error';
 import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/invalid-debt-description.error';
@@ -182,6 +186,21 @@ export function toErrorNextResponse(error: unknown) {
   }
 
   if (error instanceof DebtAlreadyPaidError) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      { status: 409 },
+    );
+  }
+
+  // Undo of a payment that is no longer possible.
+  if (
+    error instanceof DebtNotPaidError ||
+    error instanceof DebtPaymentUndoExpiredError ||
+    error instanceof NextOccurrenceAlreadyPaidError ||
+    error instanceof DebtPaymentExpenseNotFoundError
+  ) {
     return NextResponse.json(
       {
         message: error.message,

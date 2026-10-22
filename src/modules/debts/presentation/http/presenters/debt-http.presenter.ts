@@ -14,6 +14,8 @@ export interface DebtResponseBody {
   notes: string | null;
   paidAt: string | null;
   paymentSource: DebtPaymentSource | null;
+  // Full ISO timestamp (not YYYY-MM-DD): the UI uses it for the 24h undo window.
+  paymentRecordedAt: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +33,9 @@ export class DebtHttpPresenter {
       notes: debt.notes ?? null,
       paidAt: debt.paidAt ? debt.paidAt.toISOString().slice(0, 10) : null,
       paymentSource: debt.paymentSource ?? null,
+      paymentRecordedAt: debt.paymentRecordedAt
+        ? debt.paymentRecordedAt.toISOString()
+        : null,
       createdAt: debt.createdAt,
       updatedAt: debt.updatedAt,
     };

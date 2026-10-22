@@ -7,4 +7,9 @@ export interface DebtRepository {
   create(debt: Debt): Promise<Debt>;
   update(debt: Debt): Promise<Debt>;
   delete(id: string): Promise<void>;
+  // Undo of a payment. Writes are conditional and scoped by userId so that two
+  // concurrent undos cannot both succeed.
+  findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null>;
+  markPaymentUndone(debt: Debt): Promise<boolean>;
+  deletePendingGeneratedFrom(debtId: string, userId: string): Promise<number>;
 }

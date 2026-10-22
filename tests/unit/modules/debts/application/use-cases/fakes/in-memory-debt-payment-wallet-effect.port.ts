@@ -13,4 +13,10 @@ export class InMemoryDebtPaymentWalletEffectPort implements DebtPaymentWalletEff
   async debit(input: DebitCall): Promise<void> {
     this.calls.push(input);
   }
+
+  public creditCalls: DebitCall[] = [];
+
+  async credit(input: DebitCall): Promise<void> {
+    this.creditCalls.push(input);
+  }
 }

@@ -6,4 +6,9 @@ export interface DebtPaymentWalletEffectPort {
     amount: number;
     paymentSource: DebtPaymentSource;
   }): Promise<void>;
+  credit(input: {
+    userId: string;
+    amount: number;
+    paymentSource: DebtPaymentSource;
+  }): Promise<void>;
 }

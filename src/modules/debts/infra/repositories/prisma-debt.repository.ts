@@ -106,4 +106,50 @@ export class PrismaDebtRepository implements DebtRepository {
       },
     });
   }
+
+  async findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null> {
+    const debt = await this.client.debt.findFirst({
+      where: {
+        generatedFromDebtId: debtId,
+        userId,
+      },
+    });
+
+    return debt ? PrismaDebtMapper.toDomain(debt) : null;
+  }
+
+  // Conditional on status PAID: two concurrent undos both read PAID, but the
+  // second one blocks on the row lock and then matches no row.
+  async markPaymentUndone(debt: Debt): Promise<boolean> {
+    const data = debt.toJSON();
+
+    const result = await this.client.debt.updateMany({
+      where: {
+        id: data.id,
+        userId: data.userId,
+        status: PrismaDebtStatus.PAID,
+      },
+      data: {
+        status: PrismaDebtStatus.PENDING,
+        paidAt: null,
+        paymentSource: null,
+        paymentRecordedAt: null,
+        updatedAt: data.updatedAt,
+      },
+    });
+
+    return result.count === 1;
+  }
+
+  async deletePendingGeneratedFrom(debtId: string, userId: string): Promise<number> {
+    const result = await this.client.debt.deleteMany({
+      where: {
+        generatedFromDebtId: debtId,
+        userId,
+        status: PrismaDebtStatus.PENDING,
+      },
+    });
+
+    return result.count;
+  }
 }
