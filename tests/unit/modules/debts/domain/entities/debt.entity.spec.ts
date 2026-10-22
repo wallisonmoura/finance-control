@@ -8,6 +8,7 @@ import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/inval
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
+import { DebtNotPaidError } from '@/modules/debts/domain/errors/debt-not-paid.error';
 
 describe('Debt entity', () => {
   const baseProps = {
@@ -224,6 +225,7 @@ describe('Debt entity', () => {
     const paidDebt = debt.markAsPaid({
       paidAt,
       paymentSource: DebtPaymentSource.RECEIVABLE,
+      paymentRecordedAt: new Date('2026-04-18T12:00:00.000Z'),
     });
 
     expect(paidDebt.status).toBe(DebtStatus.PAID);
@@ -245,6 +247,7 @@ describe('Debt entity', () => {
       debt.markAsPaid({
         paidAt: new Date('2026-04-19'),
         paymentSource: DebtPaymentSource.BANK,
+        paymentRecordedAt: new Date('2026-04-19T12:00:00.000Z'),
       }),
     ).toThrow(DebtAlreadyPaidError);
   });
@@ -263,6 +266,8 @@ describe('Debt entity', () => {
       notes: null,
       paidAt: null,
       paymentSource: null,
+      paymentRecordedAt: null,
+      generatedFromDebtId: null,
       createdAt: new Date('2026-04-01T10:00:00.000Z'),
       updatedAt: new Date('2026-04-01T10:00:00.000Z'),
     });
@@ -284,5 +289,76 @@ describe('Debt entity', () => {
         userId: '   ',
       }),
     ).toThrow('ID do usuário é obrigatório.');
+  });
+
+  describe('payment undo', () => {
+    const recordedAt = new Date('2026-10-21T12:00:00.000Z');
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    function makePaidDebt() {
+      return Debt.create({
+        ...baseProps,
+        type: DebtType.RECURRING,
+        generatedFromDebtId: 'debt-0',
+      }).markAsPaid({
+        paidAt: new Date('2026-10-20'),
+        paymentSource: DebtPaymentSource.CASH,
+        paymentRecordedAt: recordedAt,
+      });
+    }
+
+    it('should record when the payment was registered', () => {
+      expect(makePaidDebt().paymentRecordedAt).toEqual(recordedAt);
+    });
+
+    it('should go back to pending clearing the payment fields but keeping the recurrence link', () => {
+      const now = new Date('2026-10-21T13:00:00.000Z');
+
+      const pending = makePaidDebt().markAsPending(now);
+
+      expect(pending.status).toBe(DebtStatus.PENDING);
+      expect(pending.paidAt).toBeNull();
+      expect(pending.paymentSource).toBeNull();
+      expect(pending.paymentRecordedAt).toBeNull();
+      expect(pending.generatedFromDebtId).toBe('debt-0');
+      expect(pending.updatedAt).toEqual(now);
+    });
+
+    it('should refuse to undo the payment of a debt that is not paid', () => {
+      const pending = Debt.create(baseProps);
+
+      expect(() => pending.markAsPending(new Date())).toThrow(DebtNotPaidError);
+    });
+
+    it('should reject a pending debt with a recorded payment', () => {
+      expect(() =>
+        Debt.create({ ...baseProps, paymentRecordedAt: new Date() }),
+      ).toThrow(InvalidDebtPendingStateError);
+    });
+
+    it.each([
+      ['23h59 after the payment was recorded', DAY_MS - 60 * 1000, true],
+      ['exactly 24h after the payment was recorded', DAY_MS, true],
+      ['24h01 after the payment was recorded', DAY_MS + 60 * 1000, false],
+    ])('should decide whether the payment can be undone %s', (_label, offset, expected) => {
+      expect(
+        makePaidDebt().canUndoPayment(new Date(recordedAt.getTime() + offset)),
+      ).toBe(expected);
+    });
+
+    it('should not allow undoing a payment recorded before this feature existed', () => {
+      const legacyPaid = Debt.create({
+        ...baseProps,
+        status: DebtStatus.PAID,
+        paidAt: new Date('2026-10-20'),
+        paymentSource: DebtPaymentSource.BANK,
+      });
+
+      expect(legacyPaid.canUndoPayment(new Date())).toBe(false);
+    });
+
+    it('should not allow undoing a debt that is pending', () => {
+      expect(Debt.create(baseProps).canUndoPayment(new Date())).toBe(false);
+    });
   });
 });

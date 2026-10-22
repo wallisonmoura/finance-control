@@ -62,4 +62,25 @@ describe('buildNextRecurringDebt', () => {
 
     expect(nextDebt.dueDate.toISOString().slice(0, 10)).toBe('2026-04-05');
   });
+
+  it('should link the next occurrence to the debt whose payment created it', () => {
+    const paidDebt = Debt.create({
+      id: 'debt-origin',
+      userId: 'user-1',
+      description: 'Internet',
+      amount: 100,
+      dueDate: new Date('2026-10-10'),
+      type: DebtType.RECURRING,
+      status: DebtStatus.PAID,
+      notes: null,
+      paidAt: new Date('2026-10-09'),
+      paymentSource: DebtPaymentSource.BANK,
+      createdAt: new Date('2026-10-01'),
+      updatedAt: new Date('2026-10-09'),
+    });
+
+    const nextDebt = buildNextRecurringDebt(paidDebt, new Date('2026-10-09T12:00:00.000Z'));
+
+    expect(nextDebt.generatedFromDebtId).toBe('debt-origin');
+  });
 });

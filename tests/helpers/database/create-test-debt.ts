@@ -15,6 +15,8 @@ type CreateTestDebtInput = {
   notes?: string | null;
   paidAt?: Date | null;
   paymentSource?: DebtPaymentSource | null;
+  paymentRecordedAt?: Date | null;
+  generatedFromDebtId?: string | null;
 };
 
 export async function createTestDebt(input: CreateTestDebtInput) {
@@ -38,6 +40,8 @@ export async function createTestDebt(input: CreateTestDebtInput) {
       paymentSource:
         input.paymentSource ??
         (status === DebtStatus.PAID ? DebtPaymentSource.BANK : null),
+      paymentRecordedAt: input.paymentRecordedAt ?? null,
+      generatedFromDebtId: input.generatedFromDebtId ?? null,
     },
   });
 }

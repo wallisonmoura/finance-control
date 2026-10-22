@@ -250,6 +250,7 @@ describe('PrismaDebtRepository', () => {
     const paidDebt = debt!.markAsPaid({
       paidAt: new Date('2026-05-10T00:00:00.000Z'),
       paymentSource: DebtPaymentSource.BANK,
+      paymentRecordedAt: new Date('2026-05-10T12:00:00.000Z'),
     });
 
     const result = await repository.update(paidDebt);

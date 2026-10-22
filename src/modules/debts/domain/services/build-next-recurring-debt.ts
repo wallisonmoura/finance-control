@@ -20,6 +20,7 @@ export function buildNextRecurringDebt(paidDebt: Debt, now: Date): Debt {
     notes: paidDebt.notes,
     paidAt: null,
     paymentSource: null,
+    generatedFromDebtId: paidDebt.id,
     createdAt: now,
     updatedAt: now,
   });

@@ -251,4 +251,45 @@ describe('PayDebtUseCase', () => {
       }),
     ).rejects.toBeInstanceOf(DebtAlreadyPaidError);
   });
+
+  it('should record when the payment was registered and link the next recurring occurrence', async () => {
+    const now = new Date('2026-10-21T15:00:00.000Z');
+    sut = new PayDebtUseCase(
+      debtRepository,
+      debtPaymentFinancialEffectPort,
+      debtPaymentWalletEffectPort,
+      () => now,
+    );
+
+    await debtRepository.create(
+      Debt.create({
+        id: 'debt-r',
+        userId: 'user-1',
+        description: 'Internet',
+        amount: 100,
+        dueDate: new Date('2026-10-20'),
+        type: DebtType.RECURRING,
+        status: DebtStatus.PENDING,
+        notes: null,
+        paidAt: null,
+        paymentSource: null,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    );
+
+    const output = await sut.execute({
+      userId: 'user-1',
+      id: 'debt-r',
+      paidAt: new Date('2026-10-19'),
+      expenseCategoryId: 'category-1',
+      paymentSource: DebtPaymentSource.BANK,
+    });
+
+    expect(output.paymentRecordedAt).toEqual(now);
+
+    const nextDebt = debtRepository.items.find((item) => item.id !== 'debt-r');
+    expect(nextDebt?.generatedFromDebtId).toBe('debt-r');
+    expect(nextDebt?.createdAt).toEqual(now);
+  });
 });

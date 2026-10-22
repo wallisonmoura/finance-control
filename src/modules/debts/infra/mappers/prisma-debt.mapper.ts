@@ -25,6 +25,8 @@ export class PrismaDebtMapper {
       paymentSource: raw.paymentSource
         ? (raw.paymentSource as DebtPaymentSource)
         : null,
+      paymentRecordedAt: raw.paymentRecordedAt ?? null,
+      generatedFromDebtId: raw.generatedFromDebtId ?? null,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });
@@ -50,6 +52,8 @@ export class PrismaDebtMapper {
       paymentSource: data.paymentSource
         ? (data.paymentSource as PrismaDebtPaymentSource)
         : null,
+      paymentRecordedAt: data.paymentRecordedAt,
+      generatedFromDebtId: data.generatedFromDebtId,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };
@@ -69,6 +73,7 @@ export class PrismaDebtMapper {
       paymentSource: data.paymentSource
         ? (data.paymentSource as PrismaDebtPaymentSource)
         : null,
+      paymentRecordedAt: data.paymentRecordedAt,
       updatedAt: data.updatedAt,
     };
   }

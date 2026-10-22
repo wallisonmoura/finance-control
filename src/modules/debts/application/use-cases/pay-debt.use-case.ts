@@ -13,9 +13,11 @@ export class PayDebtUseCase {
     private readonly debtRepository: DebtRepository,
     private readonly debtPaymentFinancialEffectPort: DebtPaymentFinancialEffectPort,
     private readonly debtPaymentWalletEffectPort: DebtPaymentWalletEffectPort,
+    private readonly now: () => Date = () => new Date(),
   ) {}
 
   async execute(input: PayDebtInput): Promise<DebtOutput> {
+    const now = this.now();
     const debt = await this.debtRepository.findById(input.id);
 
     if (!debt) {
@@ -29,6 +31,7 @@ export class PayDebtUseCase {
     const paidDebt = debt.markAsPaid({
       paidAt: input.paidAt,
       paymentSource: input.paymentSource,
+      paymentRecordedAt: now,
     });
 
     const savedDebt = await this.debtRepository.update(paidDebt);
@@ -49,7 +52,7 @@ export class PayDebtUseCase {
     });
 
     if (savedDebt.type === DebtType.RECURRING) {
-      const nextDebt = buildNextRecurringDebt(savedDebt, new Date());
+      const nextDebt = buildNextRecurringDebt(savedDebt, now);
 
       await this.debtRepository.create(nextDebt);
     }
