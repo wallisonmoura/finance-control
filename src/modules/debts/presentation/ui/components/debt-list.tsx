@@ -24,6 +24,9 @@ type DebtListProps = {
   deletingDebtId?: string | null;
   expandedDebtId?: string | null;
   renderExpandedContent?: (debt: DebtUi) => ReactNode;
+  // Extra actions under a paid debt (e.g. undo the payment). A slot keeps this
+  // list a Server Component: the client button is rendered by the page.
+  renderPaidActions?: (debt: DebtUi) => ReactNode;
   title?: string | null;
 };
 
@@ -118,6 +121,7 @@ export function DebtList({
   deletingDebtId = null,
   expandedDebtId = null,
   renderExpandedContent,
+  renderPaidActions,
   title = 'Dívidas cadastradas',
 }: DebtListProps) {
   if (debts.length === 0) {
@@ -211,6 +215,7 @@ export function DebtList({
                           </strong>
                         </p>
                       ) : null}
+                      {renderPaidActions ? renderPaidActions(debt) : null}
                     </div>
                   ) : null}
 

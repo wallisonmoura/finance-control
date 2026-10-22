@@ -3,10 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { toast } from 'sonner';
 
 import { DebtPaymentForm } from '@/modules/debts/presentation/ui/components/debt-payment-form';
-import { payDebt } from '@/modules/debts/presentation/ui/services/debt-api.service';
+import {
+  payDebt,
+  undoDebtPayment,
+} from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   payDebt: jest.fn(),
+  undoDebtPayment: jest.fn(),
 }));
 jest.mock('sonner', () => ({
   toast: {
@@ -16,6 +20,27 @@ jest.mock('sonner', () => ({
 }));
 
 const payDebtMock = jest.mocked(payDebt);
+const undoDebtPaymentMock = jest.mocked(undoDebtPayment);
+
+type ToastOptions = { duration: number; action: { label: string; onClick: () => void } };
+
+async function payThroughTheForm(onPaymentUndone?: () => void) {
+  const user = userEvent.setup();
+
+  payDebtMock.mockResolvedValueOnce({
+    data: { ...debt, status: 'PAID', paidAt: '2026-05-20', paymentSource: 'BANK' },
+  });
+
+  render(
+    <DebtPaymentForm debt={debt} categories={categories} onPaymentUndone={onPaymentUndone} />,
+  );
+
+  await user.selectOptions(screen.getByLabelText('Categoria da despesa'), 'category-id');
+  await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }));
+  await waitFor(() => expect(toast.success).toHaveBeenCalled());
+
+  return jest.mocked(toast.success).mock.calls[0][1] as unknown as ToastOptions;
+}
 
 const debt = {
   id: 'debt-id',
@@ -172,5 +197,40 @@ describe('DebtPaymentForm', () => {
     expect(payDebtMock).not.toHaveBeenCalled();
 
     jest.useRealTimers();
+  });
+
+  it('should offer "Desfazer" for 10 seconds in the success toast', async () => {
+    const options = await payThroughTheForm();
+
+    expect(toast.success).toHaveBeenCalledWith('Dívida paga com sucesso.', expect.anything());
+    expect(options.duration).toBe(10000);
+    expect(options.action.label).toBe('Desfazer');
+  });
+
+  it('should undo through the toast action and notify the page', async () => {
+    const onPaymentUndone = jest.fn();
+    undoDebtPaymentMock.mockResolvedValueOnce({ data: { ...debt } });
+    const options = await payThroughTheForm(onPaymentUndone);
+
+    options.action.onClick();
+
+    await waitFor(() => expect(onPaymentUndone).toHaveBeenCalledTimes(1));
+    expect(undoDebtPaymentMock).toHaveBeenCalledWith('debt-id');
+    expect(toast.success).toHaveBeenCalledWith('Pagamento desfeito.');
+  });
+
+  it('should show the error when undoing through the toast fails', async () => {
+    const onPaymentUndone = jest.fn();
+    undoDebtPaymentMock.mockResolvedValueOnce({
+      error: 'O prazo pra desfazer este pagamento acabou.',
+    });
+    const options = await payThroughTheForm(onPaymentUndone);
+
+    options.action.onClick();
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('O prazo pra desfazer este pagamento acabou.'),
+    );
+    expect(onPaymentUndone).not.toHaveBeenCalled();
   });
 });

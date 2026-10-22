@@ -126,4 +126,16 @@ describe('DebtList', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('should render the paid actions slot only for paid debts', () => {
+    render(
+      <DebtList
+        debts={[pendingDebt, paidDebt]}
+        renderPaidActions={(debt) => <button type='button'>Ação de {debt.description}</button>}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Ação de IPVA' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Ação de Seguro do carro' })).not.toBeInTheDocument();
+  });
 });

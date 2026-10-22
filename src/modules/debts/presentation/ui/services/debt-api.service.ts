@@ -165,3 +165,25 @@ export async function payDebt(
 
   return { data };
 }
+
+export async function undoDebtPayment(
+  id: string,
+): Promise<DebtApiResponse<DebtUi>> {
+  const response = await fetch(`/api/debts/${id}/undo-payment`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  const data = (await response.json()) as DebtUi;
+
+  return { data };
+}

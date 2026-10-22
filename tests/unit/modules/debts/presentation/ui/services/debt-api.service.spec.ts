@@ -4,6 +4,7 @@ import {
   getPendingDebts,
   payDebt,
   registerDebt,
+  undoDebtPayment,
   updateDebt,
 } from '@/modules/debts/presentation/ui/services/debt-api.service';
 
@@ -256,6 +257,32 @@ describe('debt-api.service', () => {
     expect(response).toEqual({
       data: debt,
     });
+  });
+
+  it('should undo a debt payment', async () => {
+    const debt = { id: 'debt-id', status: 'PENDING', paymentRecordedAt: null };
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => debt });
+
+    const response = await undoDebtPayment('debt-id');
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/debts/debt-id/undo-payment', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+    });
+    expect(response).toEqual({ data: debt });
+  });
+
+  it('should return the API message when undoing a payment fails', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      json: async () => ({ message: 'O prazo pra desfazer este pagamento acabou.' }),
+    });
+
+    const response = await undoDebtPayment('debt-id');
+
+    expect(response).toEqual({ error: 'O prazo pra desfazer este pagamento acabou.' });
   });
 
   it('should return an error when request fails with message', async () => {

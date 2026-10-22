@@ -53,6 +53,13 @@ export function PendingDebtsPageContent({
     router.refresh();
   }
 
+  // The list lives in useState(initialDebts): router.refresh() alone does not
+  // bring the debt back, so refresh the hook too.
+  async function handlePaymentUndone() {
+    await refresh();
+    router.refresh();
+  }
+
   return (
     <div className='space-y-6'>
       <DebtsBackLink />
@@ -82,6 +89,7 @@ export function PendingDebtsPageContent({
               isLoadingCategories={isLoadingCategories}
               categoriesError={categoriesError}
               onDebtPaid={handleDebtPaid}
+              onPaymentUndone={handlePaymentUndone}
               onCancel={handleCancelPayment}
               embedded
             />

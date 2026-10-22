@@ -5,12 +5,20 @@ import { useRouter } from 'next/navigation';
 import { PendingDebtsPageContent } from '@/modules/debts/presentation/ui/components/pending-debts-page-content';
 import { usePendingDebts } from '@/modules/debts/presentation/ui/hooks/use-pending-debts';
 import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
-import { payDebt } from '@/modules/debts/presentation/ui/services/debt-api.service';
+import { toast } from 'sonner';
+import {
+  payDebt,
+  undoDebtPayment,
+} from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/hooks/use-pending-debts');
 jest.mock('@/modules/finance/presentation/ui/hooks/use-expense-categories');
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   payDebt: jest.fn(),
+  undoDebtPayment: jest.fn(),
+}));
+jest.mock('sonner', () => ({
+  toast: { success: jest.fn(), error: jest.fn() },
 }));
 jest.mock('next/navigation');
 
@@ -18,6 +26,7 @@ const usePendingDebtsMock = jest.mocked(usePendingDebts);
 const useExpenseCategoriesMock = jest.mocked(useExpenseCategories);
 const useRouterMock = jest.mocked(useRouter);
 const payDebtMock = jest.mocked(payDebt);
+const undoDebtPaymentMock = jest.mocked(undoDebtPayment);
 
 const refreshMock = jest.fn();
 const routerRefreshMock = jest.fn();
@@ -126,5 +135,28 @@ describe('PendingDebtsPageContent', () => {
     });
 
     expect(routerRefreshMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reload the pending list after undoing the payment from the toast', async () => {
+    const user = userEvent.setup();
+    payDebtMock.mockResolvedValueOnce({
+      data: { ...debt, status: 'PAID', paidAt: '2026-05-20', paymentSource: 'BANK' },
+    });
+    undoDebtPaymentMock.mockResolvedValueOnce({ data: { ...debt } });
+
+    render(<PendingDebtsPageContent />);
+
+    await user.click(screen.getByRole('button', { name: 'Pagar' }));
+    await user.selectOptions(screen.getByLabelText('Categoria da despesa'), 'category-id');
+    await user.click(screen.getByRole('button', { name: 'Confirmar pagamento' }));
+    await waitFor(() => expect(refreshMock).toHaveBeenCalledTimes(1));
+
+    const options = jest.mocked(toast.success).mock.calls[0][1] as unknown as {
+      action: { onClick: () => void };
+    };
+    options.action.onClick();
+
+    await waitFor(() => expect(refreshMock).toHaveBeenCalledTimes(2));
+    expect(routerRefreshMock).toHaveBeenCalledTimes(2);
   });
 });

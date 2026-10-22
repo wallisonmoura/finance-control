@@ -121,6 +121,7 @@ export const SCREEN_HELP: Record<ScreenHelpKey, ScreenHelpContent> = {
       'Pagar uma conta escolhendo de onde saiu o dinheiro (banco, dinheiro ou a receber)',
       'Ao pagar, o valor sai desse saldo da Carteira e vira uma despesa, tudo de uma vez',
     ],
+    note: 'Pagou a errada? Dá pra desfazer em até 24h, em Dívidas pagas.',
   },
   reports: {
     whatIs: 'Gráficos de como seu dinheiro andou nos últimos meses.',

@@ -12,6 +12,7 @@ import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 import { useDebts } from '../hooks/use-debts';
 import { deleteDebt } from '../services/debt-api.service';
 import { DebtUi } from '../types/debts-ui.types';
+import { canUndoDebtPayment } from '../utils/debt-payment-undo';
 import {
   filterDebtsByMonth,
   filterDebtsPaidInMonth,
@@ -23,6 +24,7 @@ import { DebtList } from './debt-list';
 import { DebtOverviewSummary } from './debt-overview-summary';
 import { DebtsMonthFilter } from './debts-month-filter';
 import { DebtsMonthSummary } from './debts-month-summary';
+import { UndoDebtPaymentButton } from './undo-debt-payment-button';
 
 type DebtsPageContentProps = {
   initialDebts?: DebtUi[];
@@ -192,6 +194,11 @@ export function DebtsPageContent({
             onEditDebt={handleEditDebt}
             onDeleteDebt={handleDeleteDebt}
             deletingDebtId={deletingDebtId}
+            renderPaidActions={(paidDebt) =>
+              canUndoDebtPayment(paidDebt) ? (
+                <UndoDebtPaymentButton debt={paidDebt} onUndone={refresh} />
+              ) : null
+            }
           />
         </div>
       )}

@@ -2,6 +2,10 @@ import { render, screen } from '@testing-library/react';
 
 import { PaidDebtsPageContent } from '@/modules/debts/presentation/ui/components/paid-debts-page-content';
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: jest.fn() }),
+}));
+
 const pendingDebt = {
   id: 'pending-debt-id',
   userId: 'user-id',
@@ -50,5 +54,19 @@ describe('PaidDebtsPageContent', () => {
     render(<PaidDebtsPageContent debts={[]} error='Não autenticado' />);
 
     expect(screen.getByText('Não autenticado')).toBeInTheDocument();
+  });
+
+  it('should offer to undo only payments recorded in the last 24 hours', () => {
+    const recent = {
+      ...paidDebt,
+      id: 'recent-id',
+      description: 'Internet',
+      paymentRecordedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    };
+    const legacy = { ...paidDebt, id: 'legacy-id', description: 'Luz', paymentRecordedAt: null };
+
+    render(<PaidDebtsPageContent debts={[recent, legacy]} />);
+
+    expect(screen.getAllByRole('button', { name: /^Desfazer pagamento/ })).toHaveLength(1);
   });
 });

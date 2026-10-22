@@ -11,11 +11,21 @@ type CurrentUserDebtsResult = {
   error?: string;
 };
 
+// Field by field (no spread) so backend-only fields such as the recurrence
+// link never reach the client.
 function toDebtUi(debt: DebtOutput): DebtUi {
   return {
-    ...debt,
+    id: debt.id,
+    userId: debt.userId,
+    description: debt.description,
+    amount: debt.amount,
     dueDate: debt.dueDate.toISOString(),
+    type: debt.type,
+    status: debt.status,
+    notes: debt.notes,
     paidAt: debt.paidAt?.toISOString() ?? null,
+    paymentSource: debt.paymentSource,
+    paymentRecordedAt: debt.paymentRecordedAt?.toISOString() ?? null,
     createdAt: debt.createdAt.toISOString(),
     updatedAt: debt.updatedAt.toISOString(),
   };
