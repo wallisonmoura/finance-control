@@ -3,6 +3,7 @@ import {
   WalletApiResponse,
   WalletUi,
 } from '../types/wallet-ui.types';
+import { apiFetch } from '@/shared/presentation/ui/lib/api-fetch';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 const WALLET_API_URL = '/api/wallet';
@@ -11,7 +12,7 @@ const WALLET_ERROR_FALLBACK_MESSAGE =
   'Não foi possível processar a solicitação da Carteira.';
 
 export async function getWallet(): Promise<WalletApiResponse<WalletUi>> {
-  const response = await fetch(WALLET_API_URL, {
+  const response = await apiFetch(WALLET_API_URL, {
     method: 'GET',
     credentials: 'same-origin',
     headers: {
@@ -35,7 +36,7 @@ export async function getWallet(): Promise<WalletApiResponse<WalletUi>> {
 export async function updateWalletBalances(
   payload: UpdateWalletBalancesPayload,
 ): Promise<WalletApiResponse<WalletUi>> {
-  const response = await fetch(WALLET_API_URL, {
+  const response = await apiFetch(WALLET_API_URL, {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {

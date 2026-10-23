@@ -12,12 +12,13 @@ import {
   UpdateExpenseUiInput,
   UpdateIncomeUiInput,
 } from '../types/finance-ui.types';
+import { apiFetch } from '@/shared/presentation/ui/lib/api-fetch';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function registerIncome(
   input: RegisterIncomeUiInput,
 ): Promise<FinanceApiResponse<FinanceEntryUi>> {
-  const response = await fetch('/api/finance/incomes', {
+  const response = await apiFetch('/api/finance/incomes', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -41,7 +42,7 @@ export async function registerIncome(
 export async function registerExpense(
   input: RegisterExpenseUiInput,
 ): Promise<FinanceApiResponse<FinanceEntryUi>> {
-  const response = await fetch('/api/finance/expenses', {
+  const response = await apiFetch('/api/finance/expenses', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -66,7 +67,7 @@ export async function updateIncome(
   id: string,
   input: UpdateIncomeUiInput,
 ): Promise<FinanceApiResponse<FinanceEntryUi>> {
-  const response = await fetch(`/api/finance/incomes/${id}`, {
+  const response = await apiFetch(`/api/finance/incomes/${id}`, {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {
@@ -91,7 +92,7 @@ export async function updateExpense(
   id: string,
   input: UpdateExpenseUiInput,
 ): Promise<FinanceApiResponse<FinanceEntryUi>> {
-  const response = await fetch(`/api/finance/expenses/${id}`, {
+  const response = await apiFetch(`/api/finance/expenses/${id}`, {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {
@@ -115,7 +116,7 @@ export async function updateExpense(
 export async function deleteIncome(
   id: string,
 ): Promise<FinanceApiResponse<void>> {
-  const response = await fetch(`/api/finance/incomes/${id}`, {
+  const response = await apiFetch(`/api/finance/incomes/${id}`, {
     method: 'DELETE',
     credentials: 'same-origin',
     headers: {
@@ -137,7 +138,7 @@ export async function deleteIncome(
 export async function deleteExpense(
   id: string,
 ): Promise<FinanceApiResponse<void>> {
-  const response = await fetch(`/api/finance/expenses/${id}`, {
+  const response = await apiFetch(`/api/finance/expenses/${id}`, {
     method: 'DELETE',
     credentials: 'same-origin',
     headers: {
@@ -180,7 +181,7 @@ export async function getFinanceHistory(
   searchParams.set('page', String(filters.page));
   searchParams.set('pageSize', String(FINANCE_HISTORY_PAGE_SIZE));
 
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/finance/history?${searchParams.toString()}`,
     {
       method: 'GET',
@@ -221,7 +222,7 @@ export async function getFullFinanceHistory(
     searchParams.set('categoryId', filters.categoryId);
   }
 
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/finance/history/full?${searchParams.toString()}`,
     {
       method: 'GET',
@@ -246,7 +247,7 @@ export async function getFullFinanceHistory(
 export async function getExpenseCategories(): Promise<
   FinanceApiResponse<ExpenseCategoryUi[]>
 > {
-  const response = await fetch('/api/finance/expense-categories', {
+  const response = await apiFetch('/api/finance/expense-categories', {
     method: 'GET',
     credentials: 'same-origin',
     headers: {
@@ -272,7 +273,7 @@ export async function getDailyProfit(
     date,
   });
 
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/finance/daily-profit?${searchParams.toString()}`,
     {
       method: 'GET',
@@ -303,7 +304,7 @@ export async function getMonthlySummary(input: {
     month: String(input.month),
   });
 
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/finance/monthly-summary?${searchParams.toString()}`,
     {
       method: 'GET',
@@ -330,7 +331,7 @@ export async function getMonthlySummaryRange(
 ): Promise<FinanceApiResponse<MonthlySummaryUi[]>> {
   const searchParams = new URLSearchParams({ months: String(months) });
 
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/finance/monthly-summary/range?${searchParams.toString()}`,
     {
       method: 'GET',
@@ -356,7 +357,7 @@ export async function setCategoryMonthlyLimit(
   categoryId: string,
   monthlyLimit: number | null,
 ): Promise<FinanceApiResponse<ExpenseCategoryUi>> {
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/finance/expense-categories/${categoryId}/monthly-limit`,
     {
       method: 'PUT',
@@ -383,7 +384,7 @@ export async function setCategoryMonthlyLimit(
 export async function setIncomeGoals(
   targets: IncomeGoalTargetsUi,
 ): Promise<FinanceApiResponse<IncomeGoalTargetsUi>> {
-  const response = await fetch('/api/finance/income-goals', {
+  const response = await apiFetch('/api/finance/income-goals', {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {

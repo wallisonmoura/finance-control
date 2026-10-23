@@ -6,10 +6,11 @@ import {
   RegisterInstallmentDebtUiInput,
   UpdateDebtUiInput,
 } from '../types/debts-ui.types';
+import { apiFetch } from '@/shared/presentation/ui/lib/api-fetch';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function getDebts(): Promise<DebtApiResponse<DebtUi[]>> {
-  const response = await fetch('/api/debts', {
+  const response = await apiFetch('/api/debts', {
     method: 'GET',
     credentials: 'same-origin',
     headers: {
@@ -29,7 +30,7 @@ export async function getDebts(): Promise<DebtApiResponse<DebtUi[]>> {
 }
 
 export async function getPendingDebts(): Promise<DebtApiResponse<DebtUi[]>> {
-  const response = await fetch('/api/debts/pending', {
+  const response = await apiFetch('/api/debts/pending', {
     method: 'GET',
     credentials: 'same-origin',
     headers: {
@@ -51,7 +52,7 @@ export async function getPendingDebts(): Promise<DebtApiResponse<DebtUi[]>> {
 export async function registerDebt(
   input: RegisterDebtUiInput,
 ): Promise<DebtApiResponse<DebtUi>> {
-  const response = await fetch('/api/debts', {
+  const response = await apiFetch('/api/debts', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -75,7 +76,7 @@ export async function registerDebt(
 export async function registerInstallmentDebt(
   input: RegisterInstallmentDebtUiInput,
 ): Promise<DebtApiResponse<DebtUi[]>> {
-  const response = await fetch('/api/debts/installments', {
+  const response = await apiFetch('/api/debts/installments', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -100,7 +101,7 @@ export async function updateDebt(
   id: string,
   input: UpdateDebtUiInput,
 ): Promise<DebtApiResponse<DebtUi>> {
-  const response = await fetch(`/api/debts/${id}`, {
+  const response = await apiFetch(`/api/debts/${id}`, {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {
@@ -122,7 +123,7 @@ export async function updateDebt(
 }
 
 export async function deleteDebt(id: string): Promise<DebtApiResponse<void>> {
-  const response = await fetch(`/api/debts/${id}`, {
+  const response = await apiFetch(`/api/debts/${id}`, {
     method: 'DELETE',
     credentials: 'same-origin',
     headers: {
@@ -145,7 +146,7 @@ export async function payDebt(
   id: string,
   input: PayDebtUiInput,
 ): Promise<DebtApiResponse<DebtUi>> {
-  const response = await fetch(`/api/debts/${id}/pay`, {
+  const response = await apiFetch(`/api/debts/${id}/pay`, {
     method: 'PATCH',
     credentials: 'same-origin',
     headers: {
@@ -169,7 +170,7 @@ export async function payDebt(
 export async function undoDebtPayment(
   id: string,
 ): Promise<DebtApiResponse<DebtUi>> {
-  const response = await fetch(`/api/debts/${id}/undo-payment`, {
+  const response = await apiFetch(`/api/debts/${id}/undo-payment`, {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
