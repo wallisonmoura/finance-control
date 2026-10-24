@@ -9,7 +9,7 @@ type ApiErrorResponse = {
  * JSON, retorna `fallbackMessage`.
  */
 export async function parseApiError(
-  response: Response,
+  response: Pick<Response, 'json'>,
   fallbackMessage: string = 'Não foi possível concluir a operação.',
 ): Promise<string> {
   try {

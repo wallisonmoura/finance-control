@@ -7,12 +7,13 @@ import type {
   UpdateProfileInput,
   UpdateProfileResponse,
 } from '../types/auth-ui.types';
+import { apiFetch } from '@/shared/presentation/ui/lib/api-fetch';
 import { parseApiError } from '@/shared/presentation/ui/lib/parse-api-error';
 
 export async function signIn(
   input: SignInInput,
 ): Promise<AuthApiResponse<null>> {
-  const response = await fetch('/api/auth/sign-in', {
+  const response = await apiFetch('/api/auth/sign-in', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -36,7 +37,7 @@ export async function signIn(
 export async function signUp(
   input: SignUpInput,
 ): Promise<AuthApiResponse<null>> {
-  const response = await fetch('/api/auth/register', {
+  const response = await apiFetch('/api/auth/register', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -58,7 +59,7 @@ export async function signUp(
 }
 
 export async function signOut(): Promise<AuthApiResponse<null>> {
-  const response = await fetch('/api/auth/sign-out', {
+  const response = await apiFetch('/api/auth/sign-out', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -80,7 +81,7 @@ export async function signOut(): Promise<AuthApiResponse<null>> {
 export async function getCurrentUser(): Promise<
   AuthApiResponse<GetCurrentUserResponse>
 > {
-  const response = await fetch('/api/auth/me', {
+  const response = await apiFetch('/api/auth/me', {
     method: 'GET',
     credentials: 'same-origin',
     headers: {
@@ -104,7 +105,7 @@ export async function getCurrentUser(): Promise<
 export async function updateProfile(
   input: UpdateProfileInput,
 ): Promise<AuthApiResponse<UpdateProfileResponse>> {
-  const response = await fetch('/api/auth/me', {
+  const response = await apiFetch('/api/auth/me', {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {
@@ -130,7 +131,7 @@ export async function updateProfile(
 export async function changePassword(
   input: ChangePasswordInput,
 ): Promise<AuthApiResponse<null>> {
-  const response = await fetch('/api/auth/me/password', {
+  const response = await apiFetch('/api/auth/me/password', {
     method: 'PUT',
     credentials: 'same-origin',
     headers: {
