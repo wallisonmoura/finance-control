@@ -1,12 +1,15 @@
+import { getCurrentBusinessDateValue } from '@/shared/presentation/ui/lib/date';
+
 import { DebtUi } from '../types/debts-ui.types';
 
 const MONTH_ONLY_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
 
-/** Mês atual (YYYY-MM) em horário local — nunca via toISOString(). */
+/**
+ * Mês atual (YYYY-MM) no fuso do negócio (Brasil) — nunca via toISOString()
+ * nem via getters locais: a página também é renderizada no servidor, em UTC.
+ */
 export function getCurrentMonthValue(): string {
-  const now = new Date();
-
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  return getCurrentBusinessDateValue().slice(0, 7);
 }
 
 export function isValidMonthValue(value: string | null): value is string {
