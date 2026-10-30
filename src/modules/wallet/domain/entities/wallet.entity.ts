@@ -1,6 +1,7 @@
 import { Money } from '@/shared/domain/value-objects/money.vo';
 import { InvalidWalletBalanceError } from '../errors/invalid-wallet-balance.error';
 import { InvalidWalletUserIdError } from '../errors/invalid-wallet-user-id.error';
+import { calculateWalletTotal } from '../services/calculate-wallet-total';
 
 type WalletBalanceField = 'bankBalance' | 'cashBalance' | 'receivableBalance';
 
@@ -70,11 +71,7 @@ export class Wallet {
   }
 
   getWalletTotal(): number {
-    return (
-      this.props.bankBalance +
-      this.props.cashBalance +
-      this.props.receivableBalance
-    );
+    return calculateWalletTotal(this.props);
   }
 
   update(data: {

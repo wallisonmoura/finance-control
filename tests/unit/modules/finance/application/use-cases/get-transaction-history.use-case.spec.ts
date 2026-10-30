@@ -3,6 +3,23 @@ import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-en
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { GetTransactionHistoryUseCase } from '@/modules/finance/application/use-cases/get-transaction-history.use-case';
 
+
+function makeDriftEntries() {
+  const base = {
+    userId: 'user-1',
+    notes: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  // Plain sums give 0.30000000000000004 income and 0.20000000000000004 result.
+  return [
+    FinancialEntry.create({ ...base, id: 'income-a', type: FinancialEntryType.INCOME, amount: 0.1, description: 'Venda A', date: new Date('2026-03-24T09:00:00.000Z'), categoryId: null }),
+    FinancialEntry.create({ ...base, id: 'income-b', type: FinancialEntryType.INCOME, amount: 0.2, description: 'Venda B', date: new Date('2026-03-24T10:00:00.000Z'), categoryId: null }),
+    FinancialEntry.create({ ...base, id: 'expense-a', type: FinancialEntryType.EXPENSE, amount: 0.1, description: 'Taxa', date: new Date('2026-03-24T11:00:00.000Z'), categoryId: 'category-1' }),
+  ];
+}
+
 describe('GetTransactionHistoryUseCase', () => {
   it('should return entries from the period sorted by date descending', async () => {
     const repository = new InMemoryFinancialEntryRepository([
@@ -343,5 +360,22 @@ describe('GetTransactionHistoryUseCase', () => {
         { skip: 10, take: 10 },
       );
     });
+  });
+  it('should round the period totals and the balance to cents', async () => {
+    const useCase = new GetTransactionHistoryUseCase(
+      new InMemoryFinancialEntryRepository(makeDriftEntries()),
+    );
+
+    const output = await useCase.execute({
+      userId: 'user-1',
+      startDate: new Date('2026-03-24T00:00:00.000Z'),
+      endDate: new Date('2026-03-24T23:59:59.999Z'),
+      page: 1,
+      pageSize: 20,
+    });
+
+    expect(output.totalIncome).toBe(0.3);
+    expect(output.totalExpense).toBe(0.1);
+    expect(output.balance).toBe(0.2);
   });
 });

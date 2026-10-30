@@ -3,6 +3,23 @@ import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-en
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { GetDailyTransactionsUseCase } from '@/modules/finance/application/use-cases/get-daily-transactions.use-case';
 
+
+function makeDriftEntries() {
+  const base = {
+    userId: 'user-1',
+    notes: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  // Plain sums give 0.30000000000000004 income and 0.20000000000000004 result.
+  return [
+    FinancialEntry.create({ ...base, id: 'income-a', type: FinancialEntryType.INCOME, amount: 0.1, description: 'Venda A', date: new Date('2026-03-24T09:00:00.000Z'), categoryId: null }),
+    FinancialEntry.create({ ...base, id: 'income-b', type: FinancialEntryType.INCOME, amount: 0.2, description: 'Venda B', date: new Date('2026-03-24T10:00:00.000Z'), categoryId: null }),
+    FinancialEntry.create({ ...base, id: 'expense-a', type: FinancialEntryType.EXPENSE, amount: 0.1, description: 'Taxa', date: new Date('2026-03-24T11:00:00.000Z'), categoryId: 'category-1' }),
+  ];
+}
+
 describe('GetDailyTransactionsUseCase', () => {
   it('should return the entries of the day with total and daily profit', async () => {
     const repository = new InMemoryFinancialEntryRepository([
@@ -70,5 +87,19 @@ describe('GetDailyTransactionsUseCase', () => {
     expect(output.totalIncome).toBe(0);
     expect(output.totalExpense).toBe(0);
     expect(output.dailyProfit).toBe(0);
+  });
+  it('should round the totals and the daily profit to cents', async () => {
+    const useCase = new GetDailyTransactionsUseCase(
+      new InMemoryFinancialEntryRepository(makeDriftEntries()),
+    );
+
+    const output = await useCase.execute({
+      userId: 'user-1',
+      date: new Date('2026-03-24T00:00:00.000Z'),
+    });
+
+    expect(output.totalIncome).toBe(0.3);
+    expect(output.totalExpense).toBe(0.1);
+    expect(output.dailyProfit).toBe(0.2);
   });
 });
