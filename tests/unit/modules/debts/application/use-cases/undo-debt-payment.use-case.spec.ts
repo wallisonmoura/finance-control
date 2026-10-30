@@ -197,10 +197,35 @@ describe('UndoDebtPaymentUseCase', () => {
     await debtRepository.create(
       makePendingDebt({ id: 'debt-2', type: DebtType.RECURRING, generatedFromDebtId: 'debt-1' }),
     );
-    jest.spyOn(debtRepository, 'deletePendingGeneratedFrom').mockResolvedValue(0);
+    jest
+      .spyOn(debtRepository, 'deletePendingGeneratedFrom')
+      .mockImplementation(async () => {
+        await debtRepository.update(
+          makePaidDebt({ id: 'debt-2', type: DebtType.RECURRING, generatedFromDebtId: 'debt-1' }),
+        );
+        return 0;
+      });
 
     await expect(sut.execute({ id: 'debt-1', userId: 'user-1' })).rejects.toThrow(
       NextOccurrenceAlreadyPaidError,
     );
+  });
+
+  it('should still undo when the occurrence was deleted in another tab before the delete', async () => {
+    await debtRepository.create(makePaidDebt({ type: DebtType.RECURRING }));
+    await debtRepository.create(
+      makePendingDebt({ id: 'debt-2', type: DebtType.RECURRING, generatedFromDebtId: 'debt-1' }),
+    );
+    jest
+      .spyOn(debtRepository, 'deletePendingGeneratedFrom')
+      .mockImplementation(async () => {
+        await debtRepository.delete('debt-2');
+        return 0;
+      });
+
+    const output = await sut.execute({ id: 'debt-1', userId: 'user-1' });
+
+    expect(output.status).toBe(DebtStatus.PENDING);
+    expect(wallet.creditCalls).toHaveLength(1);
   });
 });

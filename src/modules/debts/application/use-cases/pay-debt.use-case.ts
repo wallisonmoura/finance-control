@@ -1,4 +1,5 @@
 import { DebtType } from '../../domain/enums/debt-type.enum';
+import { DebtAlreadyPaidError } from '../../domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
 import { UnauthorizedDebtAccessError } from '../../domain/errors/unauthorized-debt-access.error';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
@@ -34,29 +35,37 @@ export class PayDebtUseCase {
       paymentRecordedAt: now,
     });
 
-    const savedDebt = await this.debtRepository.update(paidDebt);
+    // No row updated: paid in another tab after the read above, or deleted
+    // there (e.g. an undo removing this generated occurrence).
+    if (!(await this.debtRepository.markAsPaid(paidDebt))) {
+      if (!(await this.debtRepository.findById(debt.id))) {
+        throw new DebtNotFoundError();
+      }
+
+      throw new DebtAlreadyPaidError();
+    }
 
     await this.debtPaymentFinancialEffectPort.registerPayment({
-      debtId: savedDebt.id,
-      userId: savedDebt.userId,
-      amount: savedDebt.amount,
-      description: savedDebt.description,
+      debtId: paidDebt.id,
+      userId: paidDebt.userId,
+      amount: paidDebt.amount,
+      description: paidDebt.description,
       paidAt: input.paidAt,
       expenseCategoryId: input.expenseCategoryId,
     });
 
     await this.debtPaymentWalletEffectPort.debit({
-      userId: savedDebt.userId,
-      amount: savedDebt.amount,
+      userId: paidDebt.userId,
+      amount: paidDebt.amount,
       paymentSource: input.paymentSource,
     });
 
-    if (savedDebt.type === DebtType.RECURRING) {
-      const nextDebt = buildNextRecurringDebt(savedDebt, now);
+    if (paidDebt.type === DebtType.RECURRING) {
+      const nextDebt = buildNextRecurringDebt(paidDebt, now);
 
       await this.debtRepository.create(nextDebt);
     }
 
-    return savedDebt.toJSON();
+    return paidDebt.toJSON();
   }
 }

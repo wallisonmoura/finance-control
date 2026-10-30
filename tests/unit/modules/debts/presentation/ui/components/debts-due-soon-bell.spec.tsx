@@ -39,6 +39,7 @@ function buildDebt(overrides: Partial<DebtUi> = {}): DebtUi {
     notes: null,
     paidAt: null,
     paymentSource: null,
+    paymentRecordedAt: null,
     createdAt: buildIsoDateOffsetFromToday(-30),
     updatedAt: buildIsoDateOffsetFromToday(-30),
     ...overrides,

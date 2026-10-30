@@ -46,6 +46,22 @@ export class InMemoryDebtRepository implements DebtRepository {
     );
   }
 
+  async markAsPaid(debt: Debt): Promise<boolean> {
+    const index = this.items.findIndex(
+      (item) =>
+        item.id === debt.id &&
+        item.userId === debt.userId &&
+        item.status === DebtStatus.PENDING,
+    );
+
+    if (index === -1) {
+      return false;
+    }
+
+    this.items[index] = debt;
+    return true;
+  }
+
   async markPaymentUndone(debt: Debt): Promise<boolean> {
     const index = this.items.findIndex(
       (item) =>

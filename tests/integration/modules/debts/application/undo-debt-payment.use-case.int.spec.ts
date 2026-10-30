@@ -3,6 +3,7 @@ import { Debt } from '@/modules/debts/domain/entities/debt.entity';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
+import { DebtNotPaidError } from '@/modules/debts/domain/errors/debt-not-paid.error';
 import { NextOccurrenceAlreadyPaidError } from '@/modules/debts/domain/errors/next-occurrence-already-paid.error';
 import { makePayDebtUseCase } from '@/modules/debts/infra/factories/make-pay-debt-use-case';
 import { PrismaDebtRepository } from '@/modules/debts/infra/repositories/prisma-debt.repository';
@@ -64,7 +65,7 @@ class OccurrencePaidMeanwhileRepository extends PrismaDebtRepository {
   async findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null> {
     const occurrence = await super.findGeneratedFrom(debtId, userId);
 
-    if (occurrence) {
+    if (occurrence && !occurrence.isPaid()) {
       await this.payOccurrence(occurrence.id);
     }
 
@@ -125,8 +126,13 @@ describe('UndoDebtPaymentUseCase Integration', () => {
     const results = await Promise.allSettled([runUndo(), runUndo()]);
 
     expect(results.map((result) => result.status).sort()).toEqual(['fulfilled', 'rejected']);
+    const rejected = results.find((result) => result.status === 'rejected');
+    expect((rejected as PromiseRejectedResult).reason).toBeInstanceOf(DebtNotPaidError);
     const updatedWallet = await prisma.wallet.findUnique({ where: { id: wallet.id } });
     expect(Number(updatedWallet?.bankBalance)).toBe(1000);
+    const updatedDebt = await prisma.debt.findUnique({ where: { id: debt.id } });
+    expect(updatedDebt?.status).toBe(DebtStatus.PENDING);
+    expect(await prisma.transaction.count({ where: { debtId: debt.id } })).toBe(0);
   });
 
   it('should roll everything back when the next occurrence gets paid in the middle of the undo', async () => {

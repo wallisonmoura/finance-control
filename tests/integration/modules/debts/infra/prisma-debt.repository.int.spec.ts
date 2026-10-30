@@ -6,6 +6,7 @@ import { PrismaDebtRepository } from '@/modules/debts/infra/repositories/prisma-
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { DebtPaymentSource } from '@/modules/debts/domain/enums/debt-payment-source.enum';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
+import { DebtNotFoundError } from '@/modules/debts/domain/errors/debt-not-found.error';
 import { createTestUser } from '../../../../helpers/database/create-test-user';
 import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
 import { makeTestDebtEntity } from '../../../../helpers/database/make-test-debt-entity';
@@ -282,6 +283,42 @@ describe('PrismaDebtRepository', () => {
     expect(foundDebt).toBeNull();
   });
 
+  // A debt read by one request and deleted by another (e.g. an undo removing
+  // the generated occurrence) before this request writes it.
+  describe('when the debt was deleted after being read', () => {
+    async function readThenDeleteDebt() {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const persistedDebt = await createTestDebt({
+        userId: user.id,
+        walletId: wallet.id,
+        description: 'Ocorrência apagada',
+        amount: 150,
+      });
+      const debt = await repository.findById(persistedDebt.id);
+      await prisma.debt.delete({ where: { id: persistedDebt.id } });
+
+      return debt!;
+    }
+
+    it('should throw DebtNotFoundError on update', async () => {
+      const debt = await readThenDeleteDebt();
+      const paidDebt = debt.markAsPaid({
+        paidAt: new Date('2026-05-10T00:00:00.000Z'),
+        paymentSource: DebtPaymentSource.BANK,
+        paymentRecordedAt: new Date(),
+      });
+
+      await expect(repository.update(paidDebt)).rejects.toBeInstanceOf(DebtNotFoundError);
+    });
+
+    it('should throw DebtNotFoundError on delete', async () => {
+      const debt = await readThenDeleteDebt();
+
+      await expect(repository.delete(debt.id)).rejects.toBeInstanceOf(DebtNotFoundError);
+    });
+  });
+
   it('should throw DefaultWalletNotFoundError when creating a debt without a default wallet for the user', async () => {
     const user = await createTestUser();
 
@@ -294,6 +331,48 @@ describe('PrismaDebtRepository', () => {
     await expect(repository.create(debt)).rejects.toBeInstanceOf(
       DefaultWalletNotFoundError,
     );
+  });
+
+  describe('payment', () => {
+    const payment = {
+      paidAt: new Date('2026-10-20T00:00:00.000Z'),
+      paymentSource: DebtPaymentSource.BANK,
+      paymentRecordedAt: new Date('2026-10-21T12:00:00.000Z'),
+    };
+
+    it('should mark a debt as paid only while it is still pending', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const debt = await createTestDebt({ userId: user.id, walletId: wallet.id });
+
+      const pending = await repository.findById(debt.id);
+      const paid = pending!.markAsPaid(payment);
+
+      expect(await repository.markAsPaid(paid)).toBe(true);
+      expect(await repository.markAsPaid(paid)).toBe(false);
+
+      const row = await prisma.debt.findUnique({ where: { id: debt.id } });
+      expect(row?.status).toBe(DebtStatus.PAID);
+      expect(row?.paymentSource).toBe(DebtPaymentSource.BANK);
+      expect(row?.paymentRecordedAt?.toISOString()).toBe('2026-10-21T12:00:00.000Z');
+    });
+
+    it("should not mark another user's debt as paid", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const debt = await createTestDebt({ userId: user.id, walletId: wallet.id });
+
+      const pending = await repository.findById(debt.id);
+      const forged = makeTestDebtEntity({
+        ...pending!.markAsPaid(payment).toJSON(),
+        userId: otherUser.id,
+      });
+
+      expect(await repository.markAsPaid(forged)).toBe(false);
+      const row = await prisma.debt.findUnique({ where: { id: debt.id } });
+      expect(row?.status).toBe(DebtStatus.PENDING);
+    });
   });
 
   describe('payment undo', () => {

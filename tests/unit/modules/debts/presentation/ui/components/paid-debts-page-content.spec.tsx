@@ -6,6 +6,11 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: jest.fn() }),
 }));
 
+// Fixed request time, long past: only honoring the `now` prop (not the real
+// clock) keeps a payment recorded an hour before it undoable.
+const NOW = Date.parse('2026-05-18T15:00:00.000Z');
+const HOUR_MS = 60 * 60 * 1000;
+
 const pendingDebt = {
   id: 'pending-debt-id',
   userId: 'user-id',
@@ -17,6 +22,7 @@ const pendingDebt = {
   notes: null,
   paidAt: null,
   paymentSource: null,
+  paymentRecordedAt: null,
   createdAt: '2026-05-16T00:00:00.000Z',
   updatedAt: '2026-05-16T00:00:00.000Z',
 };
@@ -37,7 +43,7 @@ describe('PaidDebtsPageContent', () => {
   });
 
   it('should render only paid debts', () => {
-    render(<PaidDebtsPageContent debts={[pendingDebt, paidDebt]} />);
+    render(<PaidDebtsPageContent debts={[pendingDebt, paidDebt]} now={NOW} />);
 
     expect(screen.getByText('Dívidas pagas')).toBeInTheDocument();
     expect(screen.getByText('IPVA')).toBeInTheDocument();
@@ -51,7 +57,7 @@ describe('PaidDebtsPageContent', () => {
   });
 
   it('should render error state', () => {
-    render(<PaidDebtsPageContent debts={[]} error='Não autenticado' />);
+    render(<PaidDebtsPageContent debts={[]} error='Não autenticado' now={NOW} />);
 
     expect(screen.getByText('Não autenticado')).toBeInTheDocument();
   });
@@ -61,12 +67,19 @@ describe('PaidDebtsPageContent', () => {
       ...paidDebt,
       id: 'recent-id',
       description: 'Internet',
-      paymentRecordedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+      paymentRecordedAt: new Date(NOW - HOUR_MS).toISOString(),
+    };
+    const expired = {
+      ...paidDebt,
+      id: 'expired-id',
+      description: 'Água',
+      paymentRecordedAt: new Date(NOW - 25 * HOUR_MS).toISOString(),
     };
     const legacy = { ...paidDebt, id: 'legacy-id', description: 'Luz', paymentRecordedAt: null };
 
-    render(<PaidDebtsPageContent debts={[recent, legacy]} />);
+    render(<PaidDebtsPageContent debts={[recent, expired, legacy]} now={NOW} />);
 
     expect(screen.getAllByRole('button', { name: /^Desfazer pagamento/ })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Desfazer pagamento de Internet' })).toBeInTheDocument();
   });
 });

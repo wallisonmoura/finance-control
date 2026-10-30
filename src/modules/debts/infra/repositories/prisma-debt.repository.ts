@@ -1,12 +1,27 @@
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { PrismaClient, DebtStatus as PrismaDebtStatus } from '@prisma/client';
+import { Prisma, PrismaClient, DebtStatus as PrismaDebtStatus } from '@prisma/client';
 import { Debt } from '../../domain/entities/debt.entity';
+import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
 import { PrismaDebtMapper } from '../mappers/prisma-debt.mapper';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { PrismaTransactionClient } from '@/shared/infra/database/prisma/prisma-transaction-client';
 
 type PrismaClientOrTransaction = PrismaClient | PrismaTransactionClient;
+
+// P2025: the row was deleted between the use case reading it and this write
+// (in another tab, or by an undo removing the occurrence a payment generated).
+async function orDebtNotFound<T>(write: Promise<T>): Promise<T> {
+  try {
+    return await write;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      throw new DebtNotFoundError();
+    }
+
+    throw error;
+  }
+}
 
 export class PrismaDebtRepository implements DebtRepository {
   constructor(private readonly client: PrismaClientOrTransaction = prisma) {}
@@ -89,22 +104,26 @@ export class PrismaDebtRepository implements DebtRepository {
   async update(debt: Debt): Promise<Debt> {
     const data = debt.toJSON();
 
-    const updatedDebt = await this.client.debt.update({
-      where: {
-        id: data.id,
-      },
-      data: PrismaDebtMapper.toPrismaUpdate(debt),
-    });
+    const updatedDebt = await orDebtNotFound(
+      this.client.debt.update({
+        where: {
+          id: data.id,
+        },
+        data: PrismaDebtMapper.toPrismaUpdate(debt),
+      }),
+    );
 
     return PrismaDebtMapper.toDomain(updatedDebt);
   }
 
   async delete(id: string): Promise<void> {
-    await this.client.debt.delete({
-      where: {
-        id,
-      },
-    });
+    await orDebtNotFound(
+      this.client.debt.delete({
+        where: {
+          id,
+        },
+      }),
+    );
   }
 
   async findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null> {
@@ -116,6 +135,23 @@ export class PrismaDebtRepository implements DebtRepository {
     });
 
     return debt ? PrismaDebtMapper.toDomain(debt) : null;
+  }
+
+  // Conditional on status PENDING: two concurrent payments both read PENDING,
+  // but the second one blocks on the row lock and then matches no row.
+  async markAsPaid(debt: Debt): Promise<boolean> {
+    const data = debt.toJSON();
+
+    const result = await this.client.debt.updateMany({
+      where: {
+        id: data.id,
+        userId: data.userId,
+        status: PrismaDebtStatus.PENDING,
+      },
+      data: PrismaDebtMapper.toPrismaUpdate(debt),
+    });
+
+    return result.count === 1;
   }
 
   // Conditional on status PAID: two concurrent undos both read PAID, but the

@@ -54,6 +54,7 @@ describe('PrivateNavigation', () => {
       notes: null,
       paidAt: null,
       paymentSource: null,
+      paymentRecordedAt: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

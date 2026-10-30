@@ -78,8 +78,12 @@ export class UndoDebtPaymentUseCase {
         debt.userId,
       );
 
-      // Paid in another tab between the read above and this delete.
-      if (deleted === 0) {
+      // Nothing deleted: either paid in another tab between the read above and
+      // this delete (block), or deleted there (already gone, nothing to undo).
+      if (
+        deleted === 0 &&
+        (await this.debtRepository.findGeneratedFrom(debt.id, debt.userId))
+      ) {
         throw new NextOccurrenceAlreadyPaidError();
       }
     }

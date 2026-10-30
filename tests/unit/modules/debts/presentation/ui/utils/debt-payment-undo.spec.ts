@@ -31,7 +31,6 @@ describe('canUndoDebtPayment', () => {
 
   it('should not allow undo without a recorded payment time', () => {
     expect(canUndoDebtPayment({ ...paidDebt, paymentRecordedAt: null }, recordedAt)).toBe(false);
-    expect(canUndoDebtPayment({ ...paidDebt, paymentRecordedAt: undefined }, recordedAt)).toBe(false);
   });
 
   it('should not allow undo for a pending debt', () => {

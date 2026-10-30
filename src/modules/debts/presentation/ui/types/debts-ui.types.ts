@@ -16,7 +16,7 @@ export type DebtUi = {
   paidAt: string | null;
   paymentSource: DebtPaymentSourceUi | null;
   // Full ISO timestamp of when the payment was registered (24h undo window).
-  paymentRecordedAt?: string | null;
+  paymentRecordedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };

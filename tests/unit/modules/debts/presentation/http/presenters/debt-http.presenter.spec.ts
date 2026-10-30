@@ -16,6 +16,8 @@ describe('DebtHttpPresenter', () => {
     notes: 'observação',
     paidAt: null,
     paymentSource: null,
+    paymentRecordedAt: null,
+    generatedFromDebtId: null,
     createdAt: new Date('2026-05-01T10:00:00.000Z'),
     updatedAt: new Date('2026-05-01T10:00:00.000Z'),
   };

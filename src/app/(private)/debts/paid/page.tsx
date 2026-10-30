@@ -8,6 +8,11 @@ export const metadata: Metadata = {
 
 export default async function PaidDebtsPage() {
   const { data, error } = await getCurrentUserDebts();
+  // Decided per request; a page left open past 24h gets the API's 409.
+  // Server Component rendered once per request, so reading the clock here is
+  // safe (the purity rule targets client re-renders).
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
 
-  return <PaidDebtsPageContent debts={data ?? []} error={error} />;
+  return <PaidDebtsPageContent debts={data ?? []} error={error} now={now} />;
 }
