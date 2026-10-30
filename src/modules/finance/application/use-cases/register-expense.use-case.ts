@@ -1,3 +1,7 @@
+import {
+  INACTIVE_CATEGORY_MESSAGE,
+  InactiveExpenseCategoryError,
+} from '../../domain/errors/inactive-expense-category.error';
 import { isAfterBusinessToday } from '@/shared/domain/date/business-date';
 import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { randomUUID } from 'node:crypto';
@@ -26,6 +30,10 @@ export class RegisterExpenseUseCase {
 
     if (!category || category.userId !== input.userId) {
       throw new ExpenseCategoryNotFoundError();
+    }
+
+    if (!category.isActive) {
+      throw new InactiveExpenseCategoryError(INACTIVE_CATEGORY_MESSAGE);
     }
 
     const now = new Date();

@@ -1,3 +1,7 @@
+import {
+  INACTIVE_CATEGORY_MESSAGE,
+  InactiveExpenseCategoryError,
+} from '../../domain/errors/inactive-expense-category.error';
 import { isAfterBusinessToday } from '@/shared/domain/date/business-date';
 import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
@@ -45,6 +49,12 @@ export class UpdateExpenseUseCase {
 
     if (!category || category.userId !== input.userId) {
       throw new ExpenseCategoryNotFoundError();
+    }
+
+    // Only moving to an inactive category is refused: an expense already in a
+    // category deactivated later stays editable.
+    if (!category.isActive && category.id !== entry.categoryId) {
+      throw new InactiveExpenseCategoryError(INACTIVE_CATEGORY_MESSAGE);
     }
 
     const updatedEntry = entry.update({
