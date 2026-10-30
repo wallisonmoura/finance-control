@@ -35,6 +35,8 @@ describe('PayDebtController', () => {
       notes: null,
       paidAt: new Date('2026-05-12T00:00:00.000Z'),
       paymentSource: DebtPaymentSource.BANK,
+      paymentRecordedAt: new Date('2026-05-12T12:00:00.000Z'),
+      generatedFromDebtId: null,
       createdAt: new Date('2026-05-01T00:00:00.000Z'),
       updatedAt: new Date('2026-05-01T00:00:00.000Z'),
     };
@@ -61,15 +63,20 @@ describe('PayDebtController', () => {
       paymentSource: DebtPaymentSource.BANK,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { generatedFromDebtId, ...visibleOutput } = output;
+
     expect(response).toEqual({
       statusCode: 200,
       body: {
-        ...output,
+        ...visibleOutput,
         dueDate: '2026-05-12',
         paidAt: '2026-05-12',
-        paymentRecordedAt: null,
+        paymentRecordedAt: '2026-05-12T12:00:00.000Z',
       },
     });
+    // The occurrence link never leaves the backend.
+    expect(response.body).not.toHaveProperty('generatedFromDebtId');
   });
 
   it('should propagate a validation error when the debt id is invalid', async () => {

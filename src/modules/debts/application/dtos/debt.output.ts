@@ -13,8 +13,8 @@ export interface DebtOutput {
   notes: string | null;
   paidAt: Date | null;
   paymentSource: DebtPaymentSource | null;
-  paymentRecordedAt?: Date | null;
-  generatedFromDebtId?: string | null;
+  paymentRecordedAt: Date | null;
+  generatedFromDebtId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

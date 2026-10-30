@@ -27,6 +27,7 @@ describe('UndoDebtPaymentController', () => {
       notes: null,
       paidAt: null,
       paymentSource: null,
+      generatedFromDebtId: null,
       paymentRecordedAt: null,
       createdAt: new Date('2026-10-01T00:00:00.000Z'),
       updatedAt: new Date('2026-10-21T00:00:00.000Z'),
