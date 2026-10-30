@@ -37,6 +37,21 @@ describe('GetBalanceSummaryUseCase', () => {
     });
   });
 
+  it('should round walletTotal and finalBalance to cents', async () => {
+    // Plain arithmetic gives 0.30000000000000004 and 0.20000000000000004.
+    balanceSummaryRepository.setBalanceSummary('user-1', {
+      bankBalance: 0.1,
+      cashBalance: 0.2,
+      receivableBalance: 0,
+      pendingDebts: 0.1,
+    });
+
+    const output = await sut.execute({ userId: 'user-1' });
+
+    expect(output.wallet.walletTotal).toBe(0.3);
+    expect(output.finalBalance).toBe(0.2);
+  });
+
   it('should allow a negative finalBalance when pendingDebts is greater than walletTotal', async () => {
     balanceSummaryRepository.setBalanceSummary('user-1', {
       bankBalance: 100,

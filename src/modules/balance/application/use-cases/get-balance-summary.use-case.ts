@@ -1,3 +1,5 @@
+import { calculateWalletTotal } from '@/modules/wallet/domain/services/calculate-wallet-total';
+import { roundToCents } from '@/shared/domain/money/round-to-cents';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 import { BalanceSummaryRepository } from '../../domain/repositories/balance-summary.repository';
 import { BalanceSummaryOutput } from '../dtos/balance-summary.output';
@@ -17,10 +19,10 @@ export class GetBalanceSummaryUseCase {
       throw new WalletNotFoundError(input.userId);
     }
 
-    const walletTotal =
-      data.bankBalance + data.cashBalance + data.receivableBalance;
+    const walletTotal = calculateWalletTotal(data);
 
-    const finalBalance = walletTotal - data.pendingDebts;
+    // RG52: finalBalance = walletTotal - pendingDebts.
+    const finalBalance = roundToCents(walletTotal - data.pendingDebts);
 
     return {
       wallet: {

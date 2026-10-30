@@ -1,3 +1,4 @@
+import { roundToCents } from '@/shared/domain/money/round-to-cents';
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
 import { GetTransactionHistoryInput } from '../dtos/get-transaction-history.input';
 import { TransactionHistoryOutput } from '../dtos/transaction-history.output';
@@ -32,9 +33,9 @@ export class GetTransactionHistoryUseCase {
 
     return {
       entries: entries.map((entry) => entry.toJSON()),
-      totalIncome: totals.totalIncome,
-      totalExpense: totals.totalExpense,
-      balance: totals.totalIncome - totals.totalExpense,
+      totalIncome: roundToCents(totals.totalIncome),
+      totalExpense: roundToCents(totals.totalExpense),
+      balance: roundToCents(totals.totalIncome - totals.totalExpense),
       pagination: {
         page: input.page,
         pageSize: input.pageSize,

@@ -29,6 +29,29 @@ function buildDebt(overrides: Partial<DebtUi> = {}): DebtUi {
   };
 }
 
+describe('getCurrentMonthValue', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
+  // The page is rendered on the server, whose clock runs in UTC: at 21h30 on
+  // the last day of the month in Brazil it is already the next month there.
+  // Jest cannot switch the process time zone mid-run, so the server's local
+  // getters are made to answer in UTC instead.
+  it('should use the Brazilian month even when the server clock runs in UTC', () => {
+    jest.useFakeTimers({ now: new Date('2026-11-01T00:30:00.000Z') });
+    jest.spyOn(Date.prototype, 'getFullYear').mockImplementation(function (this: Date) {
+      return this.getUTCFullYear();
+    });
+    jest.spyOn(Date.prototype, 'getMonth').mockImplementation(function (this: Date) {
+      return this.getUTCMonth();
+    });
+
+    expect(getCurrentMonthValue()).toBe('2026-10');
+  });
+});
+
 describe('isValidMonthValue', () => {
   it('accepts a value in YYYY-MM format', () => {
     expect(isValidMonthValue('2026-07')).toBe(true);

@@ -12,8 +12,10 @@ export class CalculateMonthlySummaryUseCase {
   async execute(
     input: CalculateMonthlySummaryInput,
   ): Promise<MonthlySummaryOutput> {
-    const startDate = new Date(input.year, input.month - 1, 1);
-    const endDate = new Date(input.year, input.month, 1);
+    // UTC like the date-only column, whatever the process time zone; exclusive
+    // upper bound, matching findByUserIdAndPeriod's `lt: endDate`.
+    const startDate = new Date(Date.UTC(input.year, input.month - 1, 1));
+    const endDate = new Date(Date.UTC(input.year, input.month, 1));
 
     const entries = await this.financialEntryRepository.findByUserIdAndPeriod(
       input.userId,

@@ -93,6 +93,23 @@ describe('PUT /api/finance/income-goals', () => {
     await expect(storedGoal(user.id)).resolves.toBeNull();
   });
 
+  it('should answer 400 for a malformed JSON body', async () => {
+    const user = await createTestUser({ email: 'malformed-goal@test.com' });
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const response = await PUT(
+      new NextRequest('http://localhost:3000/api/finance/income-goals', {
+        method: 'PUT',
+        body: '{"revenueTarget": 6000,',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ message: 'Corpo da requisição inválido.' });
+    await expect(storedGoal(user.id)).resolves.toBeNull();
+  });
+
   it('should require authentication', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 

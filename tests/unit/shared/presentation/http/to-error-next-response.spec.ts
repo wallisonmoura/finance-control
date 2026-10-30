@@ -60,6 +60,22 @@ describe('toErrorNextResponse', () => {
     expect(body).toBeDefined();
   });
 
+  it('should return 400 for a malformed JSON body (SyntaxError from request.json)', async () => {
+    let error: unknown;
+
+    try {
+      JSON.parse('{"amount": 10,');
+    } catch (err) {
+      error = err;
+    }
+
+    const response = toErrorNextResponse(error);
+    const body = await readJson(response);
+
+    expect(response.status).toBe(400);
+    expect(body).toEqual({ message: 'Corpo da requisição inválido.' });
+  });
+
   it('should return 404 for DebtNotFoundError', async () => {
     const response = toErrorNextResponse(new DebtNotFoundError());
     const body = await readJson(response);

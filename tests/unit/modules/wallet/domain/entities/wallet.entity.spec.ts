@@ -31,6 +31,20 @@ describe('Wallet entity', () => {
     expect(wallet.getWalletTotal()).toBe(1500);
   });
 
+  it('should round the walletTotal to cents', () => {
+    const wallet = Wallet.create({
+      id: 'wallet-1',
+      userId: 'user-1',
+      bankBalance: 1500.3,
+      cashBalance: 200.6,
+      receivableBalance: 0.1,
+      createdAt: new Date('2026-04-20T00:00:00.000Z'),
+      updatedAt: new Date('2026-04-20T00:00:00.000Z'),
+    });
+
+    expect(wallet.getWalletTotal()).toBe(1701);
+  });
+
   it('should throw an error when bankBalance is less than zero', () => {
     expect(() =>
       Wallet.create({
