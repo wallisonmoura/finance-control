@@ -51,6 +51,17 @@ export function toErrorNextResponse(error: unknown) {
     );
   }
 
+  // Thrown by request.json() when the body is not valid JSON; nothing else on
+  // the server parses JSON, so this is always the client's fault. Matched by
+  // name: the error comes from the fetch runtime's realm, where `instanceof
+  // SyntaxError` (even `instanceof Error`) can be false.
+  if (isSyntaxError(error)) {
+    return NextResponse.json(
+      { message: 'Corpo da requisição inválido.' },
+      { status: 400 },
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Auth
   // ---------------------------------------------------------------------------
@@ -287,5 +298,13 @@ export function toErrorNextResponse(error: unknown) {
       message: 'Erro interno do servidor.',
     },
     { status: 500 },
+  );
+}
+
+function isSyntaxError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as { name?: unknown }).name === 'SyntaxError'
   );
 }
