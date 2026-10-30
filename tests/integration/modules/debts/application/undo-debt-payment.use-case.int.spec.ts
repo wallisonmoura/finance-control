@@ -64,7 +64,7 @@ class OccurrencePaidMeanwhileRepository extends PrismaDebtRepository {
   async findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null> {
     const occurrence = await super.findGeneratedFrom(debtId, userId);
 
-    if (occurrence) {
+    if (occurrence && !occurrence.isPaid()) {
       await this.payOccurrence(occurrence.id);
     }
 
