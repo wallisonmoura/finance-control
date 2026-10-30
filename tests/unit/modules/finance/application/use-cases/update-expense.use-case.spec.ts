@@ -1,3 +1,5 @@
+import { InactiveExpenseCategoryError } from '@/modules/finance/domain/errors/inactive-expense-category.error';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
 import {
   FinancialEntry,
@@ -418,5 +420,55 @@ describe('UpdateExpenseUseCase', () => {
         categoryId: 'category-2',
       }),
     ).rejects.toThrow('Data válida é obrigatória.');
+  });
+  describe('date and category rules', () => {
+    const makeSut = (categories: ExpenseCategory[]) => {
+      const financialEntryRepository = new InMemoryFinancialEntryRepository([makeExpense()]);
+      const useCase = new UpdateExpenseUseCase(
+        financialEntryRepository,
+        new InMemoryExpenseCategoryRepository(categories),
+      );
+
+      return { financialEntryRepository, useCase };
+    };
+
+    const input = {
+      id: 'expense-1',
+      userId: 'user-1',
+      amount: 120,
+      description: 'Combustível',
+      date: new Date('2026-03-24'),
+    };
+
+    it('should refuse a future date and keep the expense unchanged', async () => {
+      const { financialEntryRepository, useCase } = makeSut([
+        makeCategory({ id: 'category-1' }),
+      ]);
+
+      await expect(
+        useCase.execute({ ...input, date: new Date('2999-01-01'), categoryId: 'category-1' }),
+      ).rejects.toBeInstanceOf(FutureDateNotAllowedError);
+      expect((await financialEntryRepository.findById('expense-1'))?.amount).toBe(80);
+    });
+
+    it('should refuse moving the expense to an inactive category', async () => {
+      const { useCase } = makeSut([
+        makeCategory({ id: 'category-1' }),
+        makeCategory({ id: 'category-2', isActive: false }),
+      ]);
+
+      await expect(
+        useCase.execute({ ...input, categoryId: 'category-2' }),
+      ).rejects.toBeInstanceOf(InactiveExpenseCategoryError);
+    });
+
+    // Deactivating a category later must not lock the expenses already in it.
+    it('should still edit an expense whose own category was deactivated later', async () => {
+      const { useCase } = makeSut([makeCategory({ id: 'category-1', isActive: false })]);
+
+      const output = await useCase.execute({ ...input, categoryId: 'category-1' });
+
+      expect(output.amount).toBe(120);
+    });
   });
 });

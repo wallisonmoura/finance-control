@@ -1,3 +1,5 @@
+import { isAfterBusinessToday } from '@/shared/domain/date/business-date';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { DebtType } from '../../domain/enums/debt-type.enum';
 import { DebtAlreadyPaidError } from '../../domain/errors/debt-already-paid.error';
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
@@ -27,6 +29,10 @@ export class PayDebtUseCase {
 
     if (debt.userId !== input.userId) {
       throw new UnauthorizedDebtAccessError();
+    }
+
+    if (isAfterBusinessToday(input.paidAt, now)) {
+      throw new FutureDateNotAllowedError();
     }
 
     const paidDebt = debt.markAsPaid({

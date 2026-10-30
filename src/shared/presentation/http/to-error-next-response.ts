@@ -14,6 +14,8 @@ import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-de
 import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/invalid-debt-description.error';
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
 import { InvalidInstallmentCountError } from '@/modules/debts/domain/errors/invalid-installment-count.error';
+import { DebtTypeChangeNotAllowedError } from '@/modules/debts/domain/errors/debt-type-change-not-allowed.error';
+import { InstallmentDebtCreationNotAllowedError } from '@/modules/debts/domain/errors/installment-debt-creation-not-allowed.error';
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
@@ -36,6 +38,7 @@ import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/i
 import { InvalidWalletBalanceError } from '@/modules/wallet/domain/errors/invalid-wallet-balance.error';
 import { InvalidWalletUserIdError } from '@/modules/wallet/domain/errors/invalid-wallet-user-id.error';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
@@ -55,6 +58,10 @@ export function toErrorNextResponse(error: unknown) {
   // the server parses JSON, so this is always the client's fault. Matched by
   // name: the error comes from the fetch runtime's realm, where `instanceof
   // SyntaxError` (even `instanceof Error`) can be false.
+  if (error instanceof FutureDateNotAllowedError) {
+    return NextResponse.json({ message: error.message }, { status: 400 });
+  }
+
   if (isSyntaxError(error)) {
     return NextResponse.json(
       { message: 'Corpo da requisição inválido.' },
@@ -237,7 +244,9 @@ export function toErrorNextResponse(error: unknown) {
     error instanceof InvalidDebtDescriptionError ||
     error instanceof InvalidDebtDueDateError ||
     error instanceof InvalidDebtUserIdError ||
-    error instanceof InvalidInstallmentCountError
+    error instanceof InvalidInstallmentCountError ||
+    error instanceof DebtTypeChangeNotAllowedError ||
+    error instanceof InstallmentDebtCreationNotAllowedError
   ) {
     return NextResponse.json(
       {

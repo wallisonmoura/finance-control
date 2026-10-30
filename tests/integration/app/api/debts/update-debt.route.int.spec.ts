@@ -107,6 +107,48 @@ describe('PUT /api/debts/[id]', () => {
     expect(debtOnDatabase?.notes).toBe('Valor corrigido');
   });
 
+  // The edit form hides the type of an installment; the API must refuse the
+  // change on its own, or an installment could become an endless recurring debt.
+  it('should return 400 and keep the type when an installment is sent as recurring', async () => {
+    const user = await createTestUser();
+    const wallet = await createTestWallet({ userId: user.id });
+    const installment = await createTestDebt({
+      userId: user.id,
+      walletId: wallet.id,
+      amount: 65.15,
+      description: 'Troca de óleo',
+      dueDate: new Date('2026-11-18T00:00:00.000Z'),
+      type: DebtType.INSTALLMENT,
+      status: DebtStatus.PENDING,
+      notes: 'Parcela 03/04',
+      paidAt: null,
+      paymentSource: null,
+    });
+
+    mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
+
+    const response = await PUT(
+      new NextRequest(`http://localhost:3000/api/debts/${installment.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          amount: 65.15,
+          description: 'Troca de óleo',
+          dueDate: '2026-11-18',
+          type: DebtType.RECURRING,
+          notes: 'Parcela 03/04',
+        }),
+      }),
+      { params: Promise.resolve({ id: installment.id }) },
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      message: 'Uma dívida parcelada não muda de tipo, e outra dívida não pode virar parcelada.',
+    });
+    const debtOnDatabase = await prisma.debt.findUnique({ where: { id: installment.id } });
+    expect(debtOnDatabase?.type).toBe(DebtType.INSTALLMENT);
+  });
+
   it('should return 401 when the user is not authenticated', async () => {
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(null);
 

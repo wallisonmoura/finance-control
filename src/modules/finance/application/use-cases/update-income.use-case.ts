@@ -1,3 +1,5 @@
+import { isAfterBusinessToday } from '@/shared/domain/date/business-date';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
 import { UnauthorizedFinancialEntryAccessError } from '../../domain/errors/unauthorized-financial-entry-access.error';
@@ -11,6 +13,10 @@ export class UpdateIncomeUseCase {
   ) {}
 
   async execute(input: UpdateIncomeInput): Promise<FinancialEntryOutput> {
+    if (isAfterBusinessToday(input.date)) {
+      throw new FutureDateNotAllowedError();
+    }
+
     const entry = await this.financialEntryRepository.findById(input.id);
 
     if (!entry) {

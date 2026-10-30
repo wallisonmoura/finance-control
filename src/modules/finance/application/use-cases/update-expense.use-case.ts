@@ -1,3 +1,9 @@
+import {
+  INACTIVE_CATEGORY_MESSAGE,
+  InactiveExpenseCategoryError,
+} from '../../domain/errors/inactive-expense-category.error';
+import { isAfterBusinessToday } from '@/shared/domain/date/business-date';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { ExpenseCategoryNotFoundError } from '../../domain/errors/expense-category-not-found.error';
 import { FinancialEntryLinkedToDebtError } from '../../domain/errors/financial-entry-linked-to-debt.error';
@@ -15,6 +21,10 @@ export class UpdateExpenseUseCase {
   ) {}
 
   async execute(input: UpdateExpenseInput): Promise<FinancialEntryOutput> {
+    if (isAfterBusinessToday(input.date)) {
+      throw new FutureDateNotAllowedError();
+    }
+
     const entry = await this.financialEntryRepository.findById(input.id);
 
     if (!entry) {
@@ -39,6 +49,12 @@ export class UpdateExpenseUseCase {
 
     if (!category || category.userId !== input.userId) {
       throw new ExpenseCategoryNotFoundError();
+    }
+
+    // Only moving to an inactive category is refused: an expense already in a
+    // category deactivated later stays editable.
+    if (!category.isActive && category.id !== entry.categoryId) {
+      throw new InactiveExpenseCategoryError(INACTIVE_CATEGORY_MESSAGE);
     }
 
     const updatedEntry = entry.update({

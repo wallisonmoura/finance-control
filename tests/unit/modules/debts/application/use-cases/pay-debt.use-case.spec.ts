@@ -1,3 +1,4 @@
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { PayDebtUseCase } from '@/modules/debts/application/use-cases/pay-debt.use-case';
 import { InMemoryDebtPaymentFinancialEffectPort } from './fakes/in-memory-debt-payment-financial-effect.port';
 import { InMemoryDebtRepository } from './fakes/in-memory-debt.repository';
@@ -291,6 +292,45 @@ describe('PayDebtUseCase', () => {
     const nextDebt = debtRepository.items.find((item) => item.id !== 'debt-r');
     expect(nextDebt?.generatedFromDebtId).toBe('debt-r');
     expect(nextDebt?.createdAt).toEqual(now);
+  });
+
+  it('should refuse a payment dated in the future and record nothing', async () => {
+    await debtRepository.create(
+      Debt.create({
+        id: 'debt-1',
+        userId: 'user-1',
+        description: 'Internet',
+        amount: 120,
+        dueDate: new Date('2026-04-20'),
+        type: DebtType.ONE_TIME,
+        status: DebtStatus.PENDING,
+        notes: null,
+        paidAt: null,
+        paymentSource: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+    // 23h30 on 30/10 in Brazil: 31/10 is still tomorrow there.
+    const payLateEvening = new PayDebtUseCase(
+      debtRepository,
+      debtPaymentFinancialEffectPort,
+      debtPaymentWalletEffectPort,
+      () => new Date('2026-10-31T02:30:00.000Z'),
+    );
+
+    await expect(
+      payLateEvening.execute({
+        userId: 'user-1',
+        id: 'debt-1',
+        paidAt: new Date('2026-10-31'),
+        expenseCategoryId: 'category-1',
+        paymentSource: DebtPaymentSource.BANK,
+      }),
+    ).rejects.toBeInstanceOf(FutureDateNotAllowedError);
+    expect((await debtRepository.findById('debt-1'))?.status).toBe(DebtStatus.PENDING);
+    expect(debtPaymentFinancialEffectPort.calls).toHaveLength(0);
+    expect(debtPaymentWalletEffectPort.calls).toHaveLength(0);
   });
 
   describe('when the debt changes in another tab after being read', () => {

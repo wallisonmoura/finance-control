@@ -1,3 +1,4 @@
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { RegisterIncomeUseCase } from '@/modules/finance/application/use-cases/register-income.use-case';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
@@ -33,5 +34,19 @@ describe('RegisterIncomeUseCase', () => {
         date: new Date('2026-03-23'),
       }),
     ).rejects.toThrow(InvalidFinancialEntryAmountError);
+  });
+  it('should refuse a future date and record nothing', async () => {
+    const financialEntryRepository = new InMemoryFinancialEntryRepository();
+    const useCase = new RegisterIncomeUseCase(financialEntryRepository);
+
+    await expect(
+      useCase.execute({
+        userId: 'user-1',
+        amount: 150,
+        description: 'Venda futura',
+        date: new Date('2999-01-01'),
+      }),
+    ).rejects.toBeInstanceOf(FutureDateNotAllowedError);
+    expect(await financialEntryRepository.findByUserId('user-1')).toHaveLength(0);
   });
 });

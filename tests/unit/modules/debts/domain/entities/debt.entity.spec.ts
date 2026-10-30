@@ -9,6 +9,7 @@ import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-d
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 import { DebtNotPaidError } from '@/modules/debts/domain/errors/debt-not-paid.error';
+import { DebtTypeChangeNotAllowedError } from '@/modules/debts/domain/errors/debt-type-change-not-allowed.error';
 
 describe('Debt entity', () => {
   const baseProps = {
@@ -157,6 +158,45 @@ describe('Debt entity', () => {
 
     expect(debt.isPaid()).toBe(true);
     expect(debt.isPending()).toBe(false);
+  });
+
+  describe('installment type', () => {
+    // An installment only exists as part of a plan created up front; turned
+    // RECURRING it would generate a new occurrence on every payment, forever.
+    it.each([DebtType.ONE_TIME, DebtType.RECURRING])(
+      'should refuse to turn an installment into %s',
+      (type) => {
+        const installment = Debt.create({ ...baseProps, type: DebtType.INSTALLMENT });
+
+        expect(() => installment.update({ type })).toThrow(DebtTypeChangeNotAllowedError);
+      },
+    );
+
+    it.each([DebtType.ONE_TIME, DebtType.RECURRING])(
+      'should refuse to turn a %s debt into an installment',
+      (type) => {
+        const debt = Debt.create({ ...baseProps, type });
+
+        expect(() => debt.update({ type: DebtType.INSTALLMENT })).toThrow(
+          DebtTypeChangeNotAllowedError,
+        );
+      },
+    );
+
+    it('should keep editing an installment when its type is sent unchanged', () => {
+      const installment = Debt.create({ ...baseProps, type: DebtType.INSTALLMENT });
+
+      const updated = installment.update({ amount: 900, type: DebtType.INSTALLMENT });
+
+      expect(updated.type).toBe(DebtType.INSTALLMENT);
+      expect(updated.amount).toBe(900);
+    });
+
+    it('should still switch between one-time and recurring', () => {
+      const debt = Debt.create({ ...baseProps, type: DebtType.RECURRING });
+
+      expect(debt.update({ type: DebtType.ONE_TIME }).type).toBe(DebtType.ONE_TIME);
+    });
   });
 
   it('should update a pending debt successfully', () => {

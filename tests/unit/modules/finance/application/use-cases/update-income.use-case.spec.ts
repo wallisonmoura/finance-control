@@ -1,3 +1,4 @@
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import {
   FinancialEntry,
   FinancialEntryProps,
@@ -256,5 +257,22 @@ describe('UpdateIncomeUseCase', () => {
         date: new Date('invalid-date'),
       }),
     ).rejects.toThrow('Data válida é obrigatória.');
+  });
+  it('should refuse a future date and keep the income unchanged', async () => {
+    const financialEntryRepository = new InMemoryFinancialEntryRepository([makeIncome()]);
+    const useCase = new UpdateIncomeUseCase(financialEntryRepository);
+
+    await expect(
+      useCase.execute({
+        id: 'income-1',
+        userId: 'user-1',
+        amount: 180,
+        description: 'Venda',
+        date: new Date('2999-01-01'),
+      }),
+    ).rejects.toBeInstanceOf(FutureDateNotAllowedError);
+    expect((await financialEntryRepository.findById('income-1'))?.date).toEqual(
+      new Date('2026-03-23'),
+    );
   });
 });

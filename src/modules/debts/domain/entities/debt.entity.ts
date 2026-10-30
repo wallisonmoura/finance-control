@@ -3,6 +3,7 @@ import { DebtPaymentSource } from '../enums/debt-payment-source.enum';
 import { DebtStatus } from '../enums/debt-status.enum';
 import { DebtType } from '../enums/debt-type.enum';
 import { DebtAlreadyPaidError } from '../errors/debt-already-paid.error';
+import { DebtTypeChangeNotAllowedError } from '../errors/debt-type-change-not-allowed.error';
 import { DebtNotPaidError } from '../errors/debt-not-paid.error';
 import { InvalidDebtAmountError } from '../errors/invalid-debt-amount.error';
 import { InvalidDebtDescriptionError } from '../errors/invalid-debt-description.error';
@@ -112,12 +113,24 @@ export class Debt {
       throw new DebtAlreadyPaidError();
     }
 
+    // Installments only exist as part of a plan created up front: one turned
+    // RECURRING would generate a new occurrence on every payment, forever, and
+    // a debt turned INSTALLMENT would claim a plan that does not exist.
+    const type = data.type ?? this.props.type;
+
+    if (
+      type !== this.props.type &&
+      (type === DebtType.INSTALLMENT || this.props.type === DebtType.INSTALLMENT)
+    ) {
+      throw new DebtTypeChangeNotAllowedError();
+    }
+
     return Debt.create({
       ...this.props,
       description: data.description ?? this.props.description,
       amount: data.amount ?? this.props.amount,
       dueDate: data.dueDate ?? this.props.dueDate,
-      type: data.type ?? this.props.type,
+      type,
       notes: data.notes !== undefined ? data.notes : this.props.notes,
       updatedAt: new Date(),
     });

@@ -1,3 +1,5 @@
+import { InactiveExpenseCategoryError } from '@/modules/finance/domain/errors/inactive-expense-category.error';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
 import { InMemoryExpenseCategoryRepository } from './fakes/in-memory-expense-category.repository';
 import { InMemoryFinancialEntryRepository } from './fakes/in-memory-financial-entry.repository';
@@ -87,5 +89,54 @@ describe('RegisterExpenseUseCase', () => {
         categoryId: 'category-1',
       }),
     ).rejects.toThrow(ExpenseCategoryNotFoundError);
+  });
+  const makeRegisterSut = (isActive: boolean) => {
+    const financialEntryRepository = new InMemoryFinancialEntryRepository();
+    const useCase = new RegisterExpenseUseCase(
+      financialEntryRepository,
+      new InMemoryExpenseCategoryRepository([
+        ExpenseCategory.create({
+          id: 'category-1',
+          userId: 'user-1',
+          name: 'Combustível',
+          slug: 'combustivel',
+          isActive,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }),
+      ]),
+    );
+
+    return { financialEntryRepository, useCase };
+  };
+
+  it('should refuse a future date and record nothing', async () => {
+    const { financialEntryRepository, useCase } = makeRegisterSut(true);
+
+    await expect(
+      useCase.execute({
+        userId: 'user-1',
+        amount: 80,
+        description: 'Abastecimento',
+        date: new Date('2999-01-01'),
+        categoryId: 'category-1',
+      }),
+    ).rejects.toBeInstanceOf(FutureDateNotAllowedError);
+    expect(await financialEntryRepository.findByUserId('user-1')).toHaveLength(0);
+  });
+
+  it('should refuse an inactive category and record nothing', async () => {
+    const { financialEntryRepository, useCase } = makeRegisterSut(false);
+
+    await expect(
+      useCase.execute({
+        userId: 'user-1',
+        amount: 80,
+        description: 'Abastecimento',
+        date: new Date('2026-03-23'),
+        categoryId: 'category-1',
+      }),
+    ).rejects.toBeInstanceOf(InactiveExpenseCategoryError);
+    expect(await financialEntryRepository.findByUserId('user-1')).toHaveLength(0);
   });
 });
