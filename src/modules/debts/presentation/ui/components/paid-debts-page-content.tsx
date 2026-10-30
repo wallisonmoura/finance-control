@@ -16,6 +16,8 @@ import { UndoDebtPaymentButton } from './undo-debt-payment-button';
 type PaidDebtsPageContentProps = {
   debts: DebtUi[];
   error?: string | null;
+  // Request time, read by the page; decides which payments can still be undone.
+  now: number;
 };
 
 function getLastPaymentDate(debts: DebtUi[]) {
@@ -30,15 +32,11 @@ function getLastPaymentDate(debts: DebtUi[]) {
 export function PaidDebtsPageContent({
   debts,
   error = null,
+  now,
 }: PaidDebtsPageContentProps) {
   const paidDebts = debts.filter((debt) => debt.status === 'PAID');
   const totalPaid = sumDebtAmounts(paidDebts);
   const lastPaymentDate = getLastPaymentDate(paidDebts);
-  // Decided at render time; a page left open past 24h gets the API's 409.
-  // Server Component rendered once per request, so reading the clock here is
-  // safe (the purity rule targets client re-renders).
-  // eslint-disable-next-line react-hooks/purity
-  const now = Date.now();
 
   return (
     <div className='space-y-6'>
