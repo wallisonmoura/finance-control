@@ -151,4 +151,20 @@ describe('CalculateMonthlySummaryUseCase', () => {
 
     expect(output.totalIncome).toBe(3682.18);
   });
+  describe('month boundaries', () => {
+    // Pins the exact UTC bounds. Local-time bounds only differ from these
+    // when the process runs outside UTC (e.g. the dev machine at -03), which
+    // is where this test catches the bug; Jest cannot switch the time zone.
+    it('should query the month from its first UTC day to the first UTC day of the next', async () => {
+      const repository = new InMemoryFinancialEntryRepository([]);
+      const findByPeriod = jest.spyOn(repository, 'findByUserIdAndPeriod');
+      const useCase = new CalculateMonthlySummaryUseCase(repository);
+
+      await useCase.execute({ userId: 'user-1', year: 2026, month: 10 });
+
+      const [, startDate, endDate] = findByPeriod.mock.calls[0];
+      expect(startDate.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+      expect(endDate.toISOString()).toBe('2026-11-01T00:00:00.000Z');
+    });
+  });
 });
