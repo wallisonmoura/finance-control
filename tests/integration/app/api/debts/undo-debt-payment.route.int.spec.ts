@@ -144,7 +144,9 @@ describe('POST /api/debts/[id]/undo-payment', () => {
     expect(await walletBalances(wallet.id)).toEqual({ bank: 1000, cash: 200, receivable: 500 });
   });
 
-  it('should credit the wallet only once when two undos run at the same time', async () => {
+  // The requests do not truly overlap here; the real race (both reading PAID
+  // before either writes) is proven with a barrier in the use case integration test.
+  it('should credit the wallet only once when the same undo is sent twice', async () => {
     const { user, wallet, category } = await seedUser();
     const debt = await createTestDebt({ userId: user.id, walletId: wallet.id, amount: 300 });
     mockedGetAuthenticatedUserIdFromRequest.mockResolvedValue(user.id);
