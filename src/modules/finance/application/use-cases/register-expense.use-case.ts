@@ -1,3 +1,5 @@
+import { isAfterBusinessToday } from '@/shared/domain/date/business-date';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { randomUUID } from 'node:crypto';
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
@@ -14,6 +16,10 @@ export class RegisterExpenseUseCase {
   ) {}
 
   async execute(input: RegisterExpenseInput): Promise<FinancialEntryOutput> {
+    if (isAfterBusinessToday(input.date)) {
+      throw new FutureDateNotAllowedError();
+    }
+
     const category = await this.expenseCategoryRepository.findById(
       input.categoryId,
     );

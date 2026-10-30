@@ -1,3 +1,4 @@
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
 import {
   FinancialEntry,
@@ -418,5 +419,35 @@ describe('UpdateExpenseUseCase', () => {
         categoryId: 'category-2',
       }),
     ).rejects.toThrow('Data válida é obrigatória.');
+  });
+  describe('date and category rules', () => {
+    const makeSut = (categories: ExpenseCategory[]) => {
+      const financialEntryRepository = new InMemoryFinancialEntryRepository([makeExpense()]);
+      const useCase = new UpdateExpenseUseCase(
+        financialEntryRepository,
+        new InMemoryExpenseCategoryRepository(categories),
+      );
+
+      return { financialEntryRepository, useCase };
+    };
+
+    const input = {
+      id: 'expense-1',
+      userId: 'user-1',
+      amount: 120,
+      description: 'Combustível',
+      date: new Date('2026-03-24'),
+    };
+
+    it('should refuse a future date and keep the expense unchanged', async () => {
+      const { financialEntryRepository, useCase } = makeSut([
+        makeCategory({ id: 'category-1' }),
+      ]);
+
+      await expect(
+        useCase.execute({ ...input, date: new Date('2999-01-01'), categoryId: 'category-1' }),
+      ).rejects.toBeInstanceOf(FutureDateNotAllowedError);
+      expect((await financialEntryRepository.findById('expense-1'))?.amount).toBe(80);
+    });
   });
 });

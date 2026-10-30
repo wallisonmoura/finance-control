@@ -1,5 +1,6 @@
 import { DebtTypeChangeNotAllowedError } from '@/modules/debts/domain/errors/debt-type-change-not-allowed.error';
 import { InstallmentDebtCreationNotAllowedError } from '@/modules/debts/domain/errors/installment-debt-creation-not-allowed.error';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
@@ -79,6 +80,7 @@ describe('toErrorNextResponse', () => {
   });
 
   it.each([
+    ['FutureDateNotAllowedError', new FutureDateNotAllowedError(), 'Data não pode ser uma data futura.'],
     [
       'DebtTypeChangeNotAllowedError',
       new DebtTypeChangeNotAllowedError(),

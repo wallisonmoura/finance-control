@@ -1,4 +1,4 @@
-import { getCurrentBusinessDateValue } from '@/shared/domain/date/business-date';
+import { getCurrentBusinessDateValue, isAfterBusinessToday } from '@/shared/domain/date/business-date';
 
 /**
  * Simulates a process whose local Date getters read as if it were in UTC
@@ -53,5 +53,23 @@ describe('getCurrentBusinessDateValue', () => {
     }).format(now);
 
     expect(getCurrentBusinessDateValue()).toBe(expected);
+  });
+});
+
+describe('isAfterBusinessToday', () => {
+  // 23h30 on 30/10 in Brazil, already 31/10 in UTC.
+  const lateEvening = new Date('2026-10-31T02:30:00.000Z');
+
+  it('should treat a date after the Brazilian today as future, even if UTC already reached it', () => {
+    expect(isAfterBusinessToday(new Date('2026-10-31'), lateEvening)).toBe(true);
+  });
+
+  it('should accept today and past dates', () => {
+    expect(isAfterBusinessToday(new Date('2026-10-30'), lateEvening)).toBe(false);
+    expect(isAfterBusinessToday(new Date('2026-01-15'), lateEvening)).toBe(false);
+  });
+
+  it('should leave an invalid date to the entity validation instead of throwing', () => {
+    expect(isAfterBusinessToday(new Date('invalid'), lateEvening)).toBe(false);
   });
 });

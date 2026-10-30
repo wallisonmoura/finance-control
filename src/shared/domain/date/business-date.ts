@@ -25,3 +25,17 @@ export function getCurrentBusinessDateValue(date: Date = new Date()): string {
 
   return `${get('year')}-${get('month')}-${get('day')}`;
 }
+
+/**
+ * Whether a date-only value (a Date at UTC midnight, as parsed from
+ * YYYY-MM-DD) is after today in the business timezone. Realized events —
+ * incomes, expenses, debt payments — cannot be dated in the future (RG20).
+ */
+export function isAfterBusinessToday(date: Date, now: Date = new Date()): boolean {
+  // An invalid date is not "future": the entity rejects it with its own error.
+  if (Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  return date.toISOString().slice(0, 10) > getCurrentBusinessDateValue(now);
+}

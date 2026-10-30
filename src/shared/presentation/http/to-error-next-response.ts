@@ -38,6 +38,7 @@ import { InsufficientWalletBalanceError } from '@/modules/wallet/domain/errors/i
 import { InvalidWalletBalanceError } from '@/modules/wallet/domain/errors/invalid-wallet-balance.error';
 import { InvalidWalletUserIdError } from '@/modules/wallet/domain/errors/invalid-wallet-user-id.error';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
+import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
@@ -57,6 +58,10 @@ export function toErrorNextResponse(error: unknown) {
   // the server parses JSON, so this is always the client's fault. Matched by
   // name: the error comes from the fetch runtime's realm, where `instanceof
   // SyntaxError` (even `instanceof Error`) can be false.
+  if (error instanceof FutureDateNotAllowedError) {
+    return NextResponse.json({ message: error.message }, { status: 400 });
+  }
+
   if (isSyntaxError(error)) {
     return NextResponse.json(
       { message: 'Corpo da requisição inválido.' },
