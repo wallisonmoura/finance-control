@@ -292,4 +292,52 @@ describe('PayDebtUseCase', () => {
     expect(nextDebt?.generatedFromDebtId).toBe('debt-r');
     expect(nextDebt?.createdAt).toEqual(now);
   });
+
+  describe('when the debt changes in another tab after being read', () => {
+    const payInput = {
+      userId: 'user-1',
+      id: 'debt-1',
+      paidAt: new Date('2026-04-18'),
+      expenseCategoryId: 'category-1',
+      paymentSource: DebtPaymentSource.BANK,
+    };
+
+    beforeEach(async () => {
+      await debtRepository.create(
+        Debt.create({
+          id: 'debt-1',
+          userId: 'user-1',
+          description: 'Internet',
+          amount: 120,
+          dueDate: new Date('2026-04-20'),
+          type: DebtType.ONE_TIME,
+          status: DebtStatus.PENDING,
+          notes: null,
+          paidAt: null,
+          paymentSource: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }),
+      );
+    });
+
+    it('should throw DebtAlreadyPaidError and record nothing when it was paid there', async () => {
+      jest.spyOn(debtRepository, 'markAsPaid').mockResolvedValue(false);
+
+      await expect(sut.execute(payInput)).rejects.toBeInstanceOf(DebtAlreadyPaidError);
+      expect(debtPaymentFinancialEffectPort.calls).toHaveLength(0);
+      expect(debtPaymentWalletEffectPort.calls).toHaveLength(0);
+    });
+
+    it('should throw DebtNotFoundError and record nothing when it was deleted there', async () => {
+      jest.spyOn(debtRepository, 'markAsPaid').mockImplementation(async () => {
+        await debtRepository.delete('debt-1');
+        return false;
+      });
+
+      await expect(sut.execute(payInput)).rejects.toBeInstanceOf(DebtNotFoundError);
+      expect(debtPaymentFinancialEffectPort.calls).toHaveLength(0);
+      expect(debtPaymentWalletEffectPort.calls).toHaveLength(0);
+    });
+  });
 });

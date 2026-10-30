@@ -137,6 +137,23 @@ export class PrismaDebtRepository implements DebtRepository {
     return debt ? PrismaDebtMapper.toDomain(debt) : null;
   }
 
+  // Conditional on status PENDING: two concurrent payments both read PENDING,
+  // but the second one blocks on the row lock and then matches no row.
+  async markAsPaid(debt: Debt): Promise<boolean> {
+    const data = debt.toJSON();
+
+    const result = await this.client.debt.updateMany({
+      where: {
+        id: data.id,
+        userId: data.userId,
+        status: PrismaDebtStatus.PENDING,
+      },
+      data: PrismaDebtMapper.toPrismaUpdate(debt),
+    });
+
+    return result.count === 1;
+  }
+
   // Conditional on status PAID: two concurrent undos both read PAID, but the
   // second one blocks on the row lock and then matches no row.
   async markPaymentUndone(debt: Debt): Promise<boolean> {

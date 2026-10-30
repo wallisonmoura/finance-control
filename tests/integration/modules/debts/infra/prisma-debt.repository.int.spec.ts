@@ -333,6 +333,48 @@ describe('PrismaDebtRepository', () => {
     );
   });
 
+  describe('payment', () => {
+    const payment = {
+      paidAt: new Date('2026-10-20T00:00:00.000Z'),
+      paymentSource: DebtPaymentSource.BANK,
+      paymentRecordedAt: new Date('2026-10-21T12:00:00.000Z'),
+    };
+
+    it('should mark a debt as paid only while it is still pending', async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const debt = await createTestDebt({ userId: user.id, walletId: wallet.id });
+
+      const pending = await repository.findById(debt.id);
+      const paid = pending!.markAsPaid(payment);
+
+      expect(await repository.markAsPaid(paid)).toBe(true);
+      expect(await repository.markAsPaid(paid)).toBe(false);
+
+      const row = await prisma.debt.findUnique({ where: { id: debt.id } });
+      expect(row?.status).toBe(DebtStatus.PAID);
+      expect(row?.paymentSource).toBe(DebtPaymentSource.BANK);
+      expect(row?.paymentRecordedAt?.toISOString()).toBe('2026-10-21T12:00:00.000Z');
+    });
+
+    it("should not mark another user's debt as paid", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const debt = await createTestDebt({ userId: user.id, walletId: wallet.id });
+
+      const pending = await repository.findById(debt.id);
+      const forged = makeTestDebtEntity({
+        ...pending!.markAsPaid(payment).toJSON(),
+        userId: otherUser.id,
+      });
+
+      expect(await repository.markAsPaid(forged)).toBe(false);
+      const row = await prisma.debt.findUnique({ where: { id: debt.id } });
+      expect(row?.status).toBe(DebtStatus.PENDING);
+    });
+  });
+
   describe('payment undo', () => {
     async function seedPaidDebt(userId: string, walletId: string) {
       return createTestDebt({

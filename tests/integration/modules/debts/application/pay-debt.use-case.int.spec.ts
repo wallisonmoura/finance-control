@@ -8,6 +8,49 @@ import { createTestUser } from '../../../../helpers/database/create-test-user';
 import { createTestWallet } from '../../../../helpers/database/create-test-wallet';
 import { createTestExpenseCategory } from '../../../../helpers/database/create-test-expense-category';
 import { createTestDebt } from '../../../../helpers/database/create-test-debt';
+import { PayDebtUseCase } from '@/modules/debts/application/use-cases/pay-debt.use-case';
+import { Debt } from '@/modules/debts/domain/entities/debt.entity';
+import { DebtAlreadyPaidError } from '@/modules/debts/domain/errors/debt-already-paid.error';
+import { PrismaDebtRepository } from '@/modules/debts/infra/repositories/prisma-debt.repository';
+import { PrismaDebtPaymentFinancialEffectAdapter } from '@/modules/debts/infra/services/prisma-debt-payment-financial-effect.adapter';
+import { PrismaDebtPaymentWalletEffectAdapter } from '@/modules/debts/infra/services/prisma-debt-payment-wallet-effect.adapter';
+import { withTransaction } from '@/shared/infra/database/prisma/with-transaction';
+import { PrismaTransactionClient } from '@/shared/infra/database/prisma/prisma-transaction-client';
+
+// Both payments must read the debt as PENDING before either one writes, so the
+// test exercises the real race instead of two payments that happen to run in turn.
+function makeBarrier(parties: number) {
+  let arrived = 0;
+  let release!: () => void;
+  const allArrived = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+
+  return async () => {
+    arrived += 1;
+
+    if (arrived === parties) {
+      release();
+    }
+
+    await allArrived;
+  };
+}
+
+class BarrierDebtRepository extends PrismaDebtRepository {
+  constructor(
+    client: PrismaTransactionClient,
+    private readonly waitForOthers: () => Promise<void>,
+  ) {
+    super(client);
+  }
+
+  async findById(id: string): Promise<Debt | null> {
+    const debt = await super.findById(id);
+    await this.waitForOthers();
+    return debt;
+  }
+}
 
 describe('PayDebtUseCase Integration', () => {
   beforeEach(async () => {
@@ -297,5 +340,48 @@ describe('PayDebtUseCase Integration', () => {
     expect(persistedWallet?.bankBalance.toNumber()).toBe(500);
     expect(persistedWallet?.cashBalance.toNumber()).toBe(100);
     expect(persistedWallet?.receivableBalance.toNumber()).toBe(200);
+  });
+
+  it('should pay only once when two payments read the pending debt at the same time', async () => {
+    const user = await createTestUser();
+    const wallet = await createTestWallet({
+      userId: user.id,
+      bankBalance: 1000,
+      cashBalance: 0,
+      receivableBalance: 0,
+    });
+    const category = await createTestExpenseCategory({
+      userId: user.id,
+      name: 'Contas',
+      slug: 'contas',
+    });
+    const debt = await createTestDebt({ userId: user.id, walletId: wallet.id, amount: 300 });
+
+    const waitForOthers = makeBarrier(2);
+    const runPayment = () =>
+      withTransaction((tx) =>
+        new PayDebtUseCase(
+          new BarrierDebtRepository(tx, waitForOthers),
+          new PrismaDebtPaymentFinancialEffectAdapter(tx),
+          new PrismaDebtPaymentWalletEffectAdapter(tx),
+        ).execute({
+          id: debt.id,
+          userId: user.id,
+          paidAt: new Date('2026-10-20T00:00:00.000Z'),
+          expenseCategoryId: category.id,
+          paymentSource: DebtPaymentSource.BANK,
+        }),
+      );
+
+    const results = await Promise.allSettled([runPayment(), runPayment()]);
+
+    expect(results.map((result) => result.status).sort()).toEqual(['fulfilled', 'rejected']);
+    const rejected = results.find((result) => result.status === 'rejected');
+    expect((rejected as PromiseRejectedResult).reason).toBeInstanceOf(DebtAlreadyPaidError);
+    const updatedWallet = await prisma.wallet.findUnique({ where: { id: wallet.id } });
+    expect(Number(updatedWallet?.bankBalance)).toBe(700);
+    expect(await prisma.transaction.count({ where: { debtId: debt.id } })).toBe(1);
+    const updatedDebt = await prisma.debt.findUnique({ where: { id: debt.id } });
+    expect(updatedDebt?.status).toBe(DebtStatus.PAID);
   });
 });
