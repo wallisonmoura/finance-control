@@ -1,3 +1,5 @@
+import { DebtTypeChangeNotAllowedError } from '@/modules/debts/domain/errors/debt-type-change-not-allowed.error';
+import { InstallmentDebtCreationNotAllowedError } from '@/modules/debts/domain/errors/installment-debt-creation-not-allowed.error';
 import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
@@ -74,6 +76,24 @@ describe('toErrorNextResponse', () => {
 
     expect(response.status).toBe(400);
     expect(body).toEqual({ message: 'Corpo da requisição inválido.' });
+  });
+
+  it.each([
+    [
+      'DebtTypeChangeNotAllowedError',
+      new DebtTypeChangeNotAllowedError(),
+      'Uma dívida parcelada não muda de tipo, e outra dívida não pode virar parcelada.',
+    ],
+    [
+      'InstallmentDebtCreationNotAllowedError',
+      new InstallmentDebtCreationNotAllowedError(),
+      'Dívidas parceladas só podem ser criadas pelo parcelamento.',
+    ],
+  ])('should return 400 for %s with its message', async (_name, error, message) => {
+    const response = toErrorNextResponse(error);
+
+    expect(response.status).toBe(400);
+    expect(await readJson(response)).toEqual({ message });
   });
 
   it('should return 404 for DebtNotFoundError', async () => {

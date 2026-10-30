@@ -2,6 +2,7 @@ import { RegisterDebtUseCase } from '@/modules/debts/application/use-cases/regis
 import { InMemoryDebtRepository } from './fakes/in-memory-debt.repository';
 import { DebtType } from '@/modules/debts/domain/enums/debt-type.enum';
 import { DebtStatus } from '@/modules/debts/domain/enums/debt-status.enum';
+import { InstallmentDebtCreationNotAllowedError } from '@/modules/debts/domain/errors/installment-debt-creation-not-allowed.error';
 
 describe('RegisterDebtUseCase', () => {
   let debtRepository: InMemoryDebtRepository;
@@ -50,5 +51,17 @@ describe('RegisterDebtUseCase', () => {
     expect(output.notes).toBeNull();
     expect(output.paidAt).toBeNull();
     expect(output.paymentSource).toBeNull();
+  });
+  it('should refuse to register a single installment outside the installment plan', async () => {
+    await expect(
+      sut.execute({
+        userId: 'user-1',
+        description: 'Parcela solta',
+        amount: 100,
+        dueDate: new Date('2026-04-20'),
+        type: DebtType.INSTALLMENT,
+      }),
+    ).rejects.toBeInstanceOf(InstallmentDebtCreationNotAllowedError);
+    expect(debtRepository.items).toHaveLength(0);
   });
 });

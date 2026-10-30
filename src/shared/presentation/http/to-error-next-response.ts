@@ -14,6 +14,8 @@ import { InvalidDebtAmountError } from '@/modules/debts/domain/errors/invalid-de
 import { InvalidDebtDescriptionError } from '@/modules/debts/domain/errors/invalid-debt-description.error';
 import { InvalidDebtDueDateError } from '@/modules/debts/domain/errors/invalid-debt-due-date.error';
 import { InvalidInstallmentCountError } from '@/modules/debts/domain/errors/invalid-installment-count.error';
+import { DebtTypeChangeNotAllowedError } from '@/modules/debts/domain/errors/debt-type-change-not-allowed.error';
+import { InstallmentDebtCreationNotAllowedError } from '@/modules/debts/domain/errors/installment-debt-creation-not-allowed.error';
 import { InvalidDebtPaidStateError } from '@/modules/debts/domain/errors/invalid-debt-paid-state.error';
 import { InvalidDebtPendingStateError } from '@/modules/debts/domain/errors/invalid-debt-pending-state.error';
 import { UnauthorizedDebtAccessError } from '@/modules/debts/domain/errors/unauthorized-debt-access.error';
@@ -237,7 +239,9 @@ export function toErrorNextResponse(error: unknown) {
     error instanceof InvalidDebtDescriptionError ||
     error instanceof InvalidDebtDueDateError ||
     error instanceof InvalidDebtUserIdError ||
-    error instanceof InvalidInstallmentCountError
+    error instanceof InvalidInstallmentCountError ||
+    error instanceof DebtTypeChangeNotAllowedError ||
+    error instanceof InstallmentDebtCreationNotAllowedError
   ) {
     return NextResponse.json(
       {
