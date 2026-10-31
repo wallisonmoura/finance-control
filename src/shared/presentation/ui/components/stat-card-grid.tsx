@@ -22,8 +22,8 @@ export function StatCardGrid({ items }: StatCardGridProps) {
       {items.map((item) => (
         <Card key={item.label} className='p-5'>
           <div className='flex gap-4 lg:block lg:space-y-4'>
-            <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-accent ring-1 ring-accent/20'>
-              <item.icon aria-hidden='true' className='size-6 text-accent' />
+            <div className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-hero-accent ring-1 ring-hero-accent/20'>
+              <item.icon aria-hidden='true' className='size-6 text-hero-accent' />
             </div>
 
             <div className='min-w-0 space-y-3'>

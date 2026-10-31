@@ -181,7 +181,7 @@ export function BalanceSummaryCards({
 
       <div className='space-y-3'>
         <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-          <TrendingUp aria-hidden='true' className='size-4 text-accent' />
+          <TrendingUp aria-hidden='true' className='size-4 text-income' />
           <h2>Transações recentes</h2>
         </div>
 
@@ -282,7 +282,7 @@ export function BalanceSummaryCards({
               <div className='border-t border-border px-5 py-4 text-center'>
                 <Link
                   href='/finance/history'
-                  className='text-sm font-semibold text-foreground hover:text-accent'
+                  className='text-sm font-semibold text-foreground hover:text-income'
                 >
                   Ver todas as transações
                 </Link>

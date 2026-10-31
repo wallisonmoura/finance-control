@@ -69,7 +69,7 @@ export function RegisterForm() {
   return (
     <div className='min-h-screen bg-card lg:h-dvh lg:min-h-0 lg:overflow-hidden'>
       <div className='grid min-h-screen w-full bg-card lg:h-full lg:min-h-0 lg:grid-cols-2'>
-        <aside className='relative hidden h-full overflow-hidden bg-primary lg:block'>
+        <aside className='relative hidden h-full overflow-hidden bg-hero lg:block'>
           <Image
             src='/images/auth-bg.png'
             alt=''

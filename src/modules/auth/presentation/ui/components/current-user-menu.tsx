@@ -31,7 +31,7 @@ export function CurrentUserMenu({
       >
         <div
           aria-hidden='true'
-          className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-accent ring-1 ring-accent/30'
+          className='flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light text-hero-accent ring-1 ring-hero-accent/30'
         >
           <UserRound className='size-6' />
         </div>
