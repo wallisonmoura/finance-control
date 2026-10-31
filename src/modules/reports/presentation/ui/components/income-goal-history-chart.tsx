@@ -27,6 +27,7 @@ import {
 import { getHistoryChartScale } from '../utils/history-chart-scale';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { IncomeGoalHistoryTable } from './income-goal-history-table';
+import { formatCompactMoney } from '../utils/format-compact-money';
 
 // Validated with the dataviz skill (light and dark). The status is also in
 // the tooltip and the table, so color is never the only cue.
@@ -60,9 +61,16 @@ type IncomeGoalHistoryChartProps = {
   measure: IncomeGoalKind;
   history: IncomeGoalHistory;
   target: number | null;
+  // The goal failed to load: the description must not claim there is none.
+  targetUnavailable?: boolean;
 };
 
-export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalHistoryChartProps) {
+export function IncomeGoalHistoryChart({
+  measure,
+  history,
+  target,
+  targetUnavailable = false,
+}: IncomeGoalHistoryChartProps) {
   const copy = INCOME_GOAL_HISTORY_COPY[measure];
   const hasNegative = history.months.some((month) => month.value < 0);
   const scale = getHistoryChartScale(
@@ -77,7 +85,7 @@ export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalH
   return (
     <figure>
       <figcaption className='sr-only'>
-        {describeIncomeGoalHistoryChart(measure, history, target)}
+        {describeIncomeGoalHistoryChart(measure, history, target, { targetUnavailable })}
       </figcaption>
       <div className='h-72 w-full'>
         <ResponsiveContainer width='100%' height='100%'>
@@ -94,7 +102,7 @@ export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalH
             <YAxis
               width={88}
               tick={{ fontSize: 12 }}
-              tickFormatter={(value: number) => formatMoney(value)}
+              tickFormatter={(value: number) => formatCompactMoney(value)}
               // Round ticks that keep the goal line and negative profit
               // bars inside the chart.
               domain={scale.domain}
@@ -143,7 +151,7 @@ export function IncomeGoalHistoryChart({ measure, history, target }: IncomeGoalH
 
       <p className='mt-2 text-xs text-muted-foreground'>* Mês em andamento, até hoje.</p>
 
-      <IncomeGoalHistoryTable measure={measure} months={history.months} hasTarget={target !== null} />
+      <IncomeGoalHistoryTable measure={measure} months={history.months} />
     </figure>
   );
 }

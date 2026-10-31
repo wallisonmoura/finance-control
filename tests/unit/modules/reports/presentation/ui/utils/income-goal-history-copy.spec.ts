@@ -24,6 +24,17 @@ describe('describeIncomeGoalHistoryChart', () => {
     );
   });
 
+  // A goal that failed to load may exist: "no goal" would be a false statement.
+  it('should say the goal is unavailable when it failed to load', () => {
+    expect(
+      describeIncomeGoalHistoryChart('profit', { ...history, reached: null }, null, {
+        targetUnavailable: true,
+      }),
+    ).toBe(
+      `Gráfico de barras do lucro mensal, de ago/26 a out/26. Meta indisponível no momento. Melhor mês: ago/26, ${formatMoney(3000)}.`,
+    );
+  });
+
   it('should say when there is no goal', () => {
     expect(describeIncomeGoalHistoryChart('profit', { ...history, reached: null }, null)).toBe(
       `Gráfico de barras do lucro mensal, de ago/26 a out/26. Sem meta definida. Melhor mês: ago/26, ${formatMoney(3000)}.`,

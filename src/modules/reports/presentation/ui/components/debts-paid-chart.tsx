@@ -19,6 +19,7 @@ import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 import { useDebtsPaidChart } from '../hooks/use-debts-paid-chart';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
+import { formatCompactMoney } from '../utils/format-compact-money';
 
 type DebtsPaidChartProps = {
   months: ReportsPeriodMonths;
@@ -56,7 +57,7 @@ export function DebtsPaidChart({ months }: DebtsPaidChartProps) {
               <CartesianGrid strokeDasharray='3 3' />
               <XAxis dataKey='monthLabel' tick={{ fontSize: 12 }} />
               <YAxis
-                tickFormatter={(value: number) => formatMoney(value)}
+                tickFormatter={(value: number) => formatCompactMoney(value)}
                 width={90}
               />
               <Tooltip
@@ -66,7 +67,7 @@ export function DebtsPaidChart({ months }: DebtsPaidChartProps) {
               <Bar
                 dataKey='total'
                 name='Dívidas pagas'
-                fill='var(--destructive)'
+                fill='var(--chart-expense)'
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

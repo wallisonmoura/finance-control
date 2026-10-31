@@ -23,6 +23,7 @@ import { useIncomeExpenseEvolutionChart } from '../hooks/use-income-expense-evol
 import { getIncomeGoalHistoryHref } from '../utils/income-goal-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
+import { formatCompactMoney } from '../utils/format-compact-money';
 
 type IncomeExpenseEvolutionChartProps = {
   months: ReportsPeriodMonths;
@@ -68,7 +69,7 @@ export function IncomeExpenseEvolutionChart({
               <CartesianGrid strokeDasharray='3 3' />
               <XAxis dataKey='monthLabel' tick={{ fontSize: 12 }} />
               <YAxis
-                tickFormatter={(value: number) => formatMoney(value)}
+                tickFormatter={(value: number) => formatCompactMoney(value)}
                 width={90}
               />
               <Tooltip
@@ -79,7 +80,7 @@ export function IncomeExpenseEvolutionChart({
               <Bar
                 dataKey='totalIncome'
                 name='Receita'
-                fill='var(--income)'
+                fill='var(--chart-income)'
                 radius={[4, 4, 0, 0]}
                 cursor='pointer'
                 // Mouse shortcut; the links below are the keyboard path.
@@ -90,7 +91,7 @@ export function IncomeExpenseEvolutionChart({
               <Bar
                 dataKey='totalExpense'
                 name='Despesa'
-                fill='var(--expense)'
+                fill='var(--chart-expense)'
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

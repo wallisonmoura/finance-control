@@ -11,6 +11,14 @@ describe('formatCompactMoney', () => {
     expect(compact(1500000)).toBe('R$ 1,5 mi');
   });
 
+  // The axis scale steps by 1, 2, 2.5 and 5 × 10ⁿ: one decimal turned the
+  // 1.250 step into "R$ 1,3 mil", a wrong label.
+  it('should keep every axis step exact', () => {
+    expect(compact(1250)).toBe('R$ 1,25 mil');
+    expect(compact(1750)).toBe('R$ 1,75 mil');
+    expect(compact(1250000)).toBe('R$ 1,25 mi');
+  });
+
   it('should keep small values as they are', () => {
     expect(compact(750)).toBe('R$ 750');
   });

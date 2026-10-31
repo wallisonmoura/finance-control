@@ -213,6 +213,7 @@ export function IncomeGoalHistoryPageContent({
                   measure={measure}
                   history={history}
                   target={target}
+                  targetUnavailable={Boolean(targetsError)}
                 />
               </div>
             </Card>

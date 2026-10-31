@@ -28,7 +28,6 @@ const STATUS_CLASS_NAME: Record<IncomeGoalMonthStatus, string> = {
 type IncomeGoalHistoryTableProps = {
   measure: IncomeGoalKind;
   months: IncomeGoalHistoryMonth[];
-  hasTarget: boolean;
 };
 
 // The chart's data as a table: readable by screen readers and the place that

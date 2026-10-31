@@ -117,6 +117,12 @@
   --chart-bar: #2563eb;
   --chart-bar-over-limit: #dc2626;
   --chart-bar-reached: #059669;
+  /* Income and expense bars of the reports charts (Receita × despesa, Gastos
+     por categoria, Dívidas pagas). Light keeps the brand values; dark takes
+     the validated bar steps, since --income/--expense/--destructive are too
+     light for bars on the dark surface (dataviz validator, 30/10/2026). */
+  --chart-income: #047857;
+  --chart-expense: #dc2626;
   --radius: 0.5rem;
   --sidebar: var(--fc-primary);
   --sidebar-foreground: var(--fc-background);
@@ -182,6 +188,8 @@
   --chart-bar: #3b82f6;
   --chart-bar-over-limit: #ef4444;
   --chart-bar-reached: #059669;
+  --chart-income: #059669;
+  --chart-expense: #ef4444;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
