@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
@@ -29,7 +29,9 @@ type SpendingGoalsPageContentProps = {
   error?: string | null;
 };
 
-const ACTION_BUTTON_CLASS_NAME = 'h-8 px-2 text-xs';
+// Same variants and icons as the edit/delete buttons of debts and entries,
+// in a compact size that fits the goal row.
+const ACTION_BUTTON_CLASS_NAME = 'h-8 rounded-lg px-3 text-xs shadow-none';
 
 export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageContentProps) {
   const router = useRouter();
@@ -146,20 +148,22 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
                       <>
                         <Button
                           type='button'
-                          variant='ghost'
+                          variant='secondary'
                           className={ACTION_BUTTON_CLASS_NAME}
                           aria-label={`Editar meta de ${goal.categoryName}`}
                           onClick={() => setEditingId(goal.categoryId)}
                         >
+                          <Pencil aria-hidden='true' className='size-3.5' />
                           Editar
                         </Button>
                         <Button
                           type='button'
-                          variant='ghost'
+                          variant='danger'
                           className={ACTION_BUTTON_CLASS_NAME}
                           aria-label={`Remover meta de ${goal.categoryName}`}
                           onClick={() => setRemovingGoal(goal)}
                         >
+                          <Trash2 aria-hidden='true' className='size-3.5' />
                           Remover
                         </Button>
                       </>
