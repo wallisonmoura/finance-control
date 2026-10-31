@@ -27,6 +27,8 @@ import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { formatCompactMoney } from '../utils/format-compact-money';
 import { getHistoryChartScale } from '../utils/history-chart-scale';
+import { ChartDataTable } from './chart-data-table';
+import { describeCategoryExpensesChart } from '../utils/reports-overview-description';
 import { CategoryAxisTick } from './category-axis-tick';
 
 type CategoryExpensesChartProps = {
@@ -80,54 +82,65 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
       )}
 
       {!isLoading && !error && data.length > 0 && (
-        <div
-          className='mt-4 w-full'
-          style={{ height: getCategoryChartHeight(data.length) }}
-        >
-          <ResponsiveContainer width='100%' height='100%'>
-            <BarChart
-              data={data}
-              layout='vertical'
-              // Room on the right for the last tick label ("R$ 10 mil").
-              margin={{ top: 8, right: 36, bottom: 8, left: 8 }}
-            >
-              <CartesianGrid strokeDasharray='3 3' horizontal={false} />
-              {/* Round, short ticks ("R$ 2,5 mil"); on a phone the ones that
-                  do not fit are skipped. The tooltip keeps the exact value. */}
-              <XAxis
-                type='number'
-                domain={scale.domain}
-                ticks={scale.ticks}
-                interval='preserveStartEnd'
-                minTickGap={8}
-                tickFormatter={(value: number) => formatCompactMoney(value)}
-              />
-              <YAxis
-                type='category'
-                dataKey='categoryName'
-                width={140}
-                tick={<CategoryAxisTick onSelect={openCategoryHistoryAt} />}
-                interval={0}
-              />
-              <Tooltip
-                {...CHART_TOOLTIP_PROPS}
-                formatter={(value) => formatMoney(Number(value))}
-              />
-              <Bar
-                dataKey='total'
-                fill='var(--chart-expense)'
-                radius={[0, 4, 4, 0]}
-                barSize={16}
-                cursor='pointer'
-                onClick={(entry) =>
-                  openCategoryHistory(
-                    (entry.payload as CategoryExpenseChartDatum).categoryId,
-                  )
-                }
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <figure>
+          <figcaption className='sr-only'>{describeCategoryExpensesChart(data)}</figcaption>
+          <div
+            className='mt-4 w-full'
+            style={{ height: getCategoryChartHeight(data.length) }}
+          >
+            <ResponsiveContainer width='100%' height='100%'>
+              <BarChart
+                data={data}
+                layout='vertical'
+                // Room on the right for the last tick label ("R$ 10 mil").
+                margin={{ top: 8, right: 36, bottom: 8, left: 8 }}
+              >
+                <CartesianGrid strokeDasharray='3 3' horizontal={false} />
+                {/* Round, short ticks ("R$ 2,5 mil"); on a phone the ones that
+                    do not fit are skipped. The tooltip keeps the exact value. */}
+                <XAxis
+                  type='number'
+                  domain={scale.domain}
+                  ticks={scale.ticks}
+                  interval='preserveStartEnd'
+                  minTickGap={8}
+                  tickFormatter={(value: number) => formatCompactMoney(value)}
+                />
+                <YAxis
+                  type='category'
+                  dataKey='categoryName'
+                  width={140}
+                  tick={<CategoryAxisTick onSelect={openCategoryHistoryAt} />}
+                  interval={0}
+                />
+                <Tooltip
+                  {...CHART_TOOLTIP_PROPS}
+                  formatter={(value) => formatMoney(Number(value))}
+                />
+                <Bar
+                  dataKey='total'
+                  fill='var(--chart-expense)'
+                  radius={[0, 4, 4, 0]}
+                  barSize={16}
+                  cursor='pointer'
+                  onClick={(entry) =>
+                    openCategoryHistory(
+                      (entry.payload as CategoryExpenseChartDatum).categoryId,
+                    )
+                  }
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <ChartDataTable
+            caption='Gastos por categoria no período'
+            columns={[{ header: 'Categoria' }, { header: 'Gasto', align: 'right' }]}
+            rows={data.map((item) => ({
+              key: item.categoryId,
+              cells: [item.categoryName, formatMoney(item.total)],
+            }))}
+          />
+        </figure>
       )}
     </Card>
   );
