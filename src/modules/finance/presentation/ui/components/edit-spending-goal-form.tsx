@@ -61,12 +61,13 @@ export function EditSpendingGoalForm({
     const response = await setCategoryMonthlyLimit(categoryId, limit);
     setIsSaving(false);
 
-    if (response.error) {
-      setError(response.error);
+    if (response.error || !response.data) {
+      setError(response.error ?? 'Não foi possível salvar a meta.');
       return;
     }
 
-    onSaved(limit);
+    // What the server stored is the source of truth, not what was typed.
+    onSaved(response.data.monthlyLimit ?? limit);
   }
 
   return (

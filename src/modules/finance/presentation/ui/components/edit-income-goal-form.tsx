@@ -78,12 +78,14 @@ export function EditIncomeGoalForm({
     const response = await setIncomeGoals(nextTargets);
     setIsSaving(false);
 
-    if (response.error) {
-      setError(response.error);
+    if (response.error || !response.data) {
+      setError(response.error ?? 'Não foi possível salvar a meta.');
       return;
     }
 
-    onSaved(nextTargets);
+    // What the server stored is the source of truth (the other goal may have
+    // changed in another tab), not the values this form sent.
+    onSaved(response.data);
   }
 
   return (

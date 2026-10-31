@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -50,6 +51,7 @@ const both: IncomeGoalsOverviewUi = {
 
 describe('IncomeGoalsSection', () => {
   beforeEach(() => jest.clearAllMocks());
+  afterEach(() => jest.restoreAllMocks());
 
   it('should show both goals with their status in words', () => {
     render(<IncomeGoalsSection overview={both} />);
@@ -171,5 +173,30 @@ describe('IncomeGoalsSection', () => {
     expect(screen.getByText(/^Cerca de/)).toBeInTheDocument();
     expect(screen.getByText('Situação: Acima da meta')).toBeInTheDocument();
     expect(screen.getByText(/^Você ainda pode gastar/)).toBeInTheDocument();
+  });
+  // router.refresh() runs inside a transition: while it is pending the rows
+  // would still show the values from before the save.
+  it('should show the rows as loading instead of the old values while the page refreshes', () => {
+    jest.spyOn(React, 'useTransition').mockReturnValue([true, jest.fn()]);
+
+    render(<IncomeGoalsSection overview={both} />);
+
+    expect(screen.getByTestId('income-goals-body')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByText('Faturamento')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Abaixo do ritmo/)).not.toBeInTheDocument();
+  });
+
+  it('should refresh the page inside a transition after saving', async () => {
+    const startTransition = jest.fn((callback: () => void) => callback());
+    jest.spyOn(React, 'useTransition').mockReturnValue([false, startTransition]);
+    const user = userEvent.setup();
+    setIncomeGoalsMock.mockResolvedValue({ data: { revenueTarget: 6000, profitTarget: 2000 } });
+    render(<IncomeGoalsSection overview={both} />);
+
+    await user.click(screen.getByRole('button', { name: 'Editar metas de ganho' }));
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    await waitFor(() => expect(startTransition).toHaveBeenCalled());
+    expect(mockRefresh).toHaveBeenCalled();
   });
 });

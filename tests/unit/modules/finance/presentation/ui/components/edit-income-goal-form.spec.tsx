@@ -48,6 +48,22 @@ describe('EditIncomeGoalForm', () => {
     await waitFor(() => expect(onSaved).toHaveBeenCalledWith({ revenueTarget: 6000, profitTarget: 2500 }));
   });
 
+  // The other goal may have changed in another tab: the page shows what the
+  // server stored, not the values this form sent.
+  it('should hand back the goals the server saved', async () => {
+    const user = userEvent.setup();
+    setIncomeGoalsMock.mockResolvedValue({ data: { revenueTarget: 7000, profitTarget: 2500 } });
+    const onSaved = renderForm('profit');
+
+    await user.clear(screen.getByLabelText('Lucro mensal'));
+    await user.type(screen.getByLabelText('Lucro mensal'), '2500');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    await waitFor(() =>
+      expect(onSaved).toHaveBeenCalledWith({ revenueTarget: 7000, profitTarget: 2500 }),
+    );
+  });
+
   it('should remove only this goal when the field is left empty', async () => {
     const user = userEvent.setup();
     setIncomeGoalsMock.mockResolvedValue({ data: { revenueTarget: null, profitTarget: 2000 } });

@@ -42,6 +42,31 @@ describe('EditSpendingGoalForm', () => {
     expect(setCategoryMonthlyLimitMock).toHaveBeenCalledWith('cat-2', 250);
   });
 
+  // The page shows what the server stored, not what was typed.
+  it('should hand back the limit the server saved', async () => {
+    const user = userEvent.setup();
+    const onSaved = jest.fn();
+    setCategoryMonthlyLimitMock.mockResolvedValue({
+      data: { id: 'cat-2', name: 'Lazer', slug: 'lazer', monthlyLimit: 260 },
+    });
+
+    render(
+      <EditSpendingGoalForm
+        categoryId='cat-2'
+        categoryName='Lazer'
+        initialLimit={null}
+        average={null}
+        onSaved={onSaved}
+        onCancel={jest.fn()}
+      />,
+    );
+
+    await user.type(screen.getByLabelText('Limite mensal de Lazer'), '250');
+    await user.click(screen.getByRole('button', { name: 'Salvar' }));
+
+    await waitFor(() => expect(onSaved).toHaveBeenCalledWith(260));
+  });
+
   it('should prefill the current limit when editing', () => {
     render(
       <EditSpendingGoalForm
