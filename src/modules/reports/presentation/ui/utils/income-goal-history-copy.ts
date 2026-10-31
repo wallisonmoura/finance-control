@@ -29,13 +29,16 @@ export function describeIncomeGoalHistoryChart(
   measure: IncomeGoalKind,
   history: IncomeGoalHistory,
   target: number | null,
+  { targetUnavailable = false }: { targetUnavailable?: boolean } = {},
 ): string {
   const first = history.months[0]?.label ?? '';
   const last = history.months[history.months.length - 1]?.label ?? '';
   const base = `Gráfico de barras do ${INCOME_GOAL_HISTORY_COPY[measure].emptyLabel} mensal, de ${first} a ${last}.`;
 
-  const goal =
-    target === null || !history.reached
+  // A goal that failed to load may exist, so "no goal" would be false.
+  const goal = targetUnavailable
+    ? 'Meta indisponível no momento.'
+    : target === null || !history.reached
       ? 'Sem meta definida.'
       : `Meta de ${formatMoney(target)} por mês. Bateu a meta em ${history.reached.count} de ${history.reached.closedMonths} meses fechados.`;
   const best = history.bestMonth

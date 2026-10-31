@@ -1,10 +1,7 @@
-import { Card } from '@/shared/presentation/ui/components/card';
 import { ButtonSkeleton } from '@/shared/presentation/ui/components/skeletons/button-skeleton';
-import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
 
+import { GoalRowsSkeleton } from './goal-rows-skeleton';
 import { GoalsSectionHeaderSkeleton } from './goals-section-header-skeleton';
-
-const ROWS = [0, 1];
 
 export function IncomeGoalsSectionSkeleton() {
   return (
@@ -14,20 +11,7 @@ export function IncomeGoalsSectionSkeleton() {
         <ButtonSkeleton className='w-52' />
       </div>
 
-      <Card className='p-5'>
-        <div className='space-y-5'>
-          {ROWS.map((row) => (
-            <div key={row} className='flex gap-3'>
-              <Skeleton className='mt-1.5 size-2 shrink-0 rounded-full' />
-              <div className='min-w-0 flex-1 space-y-1.5'>
-                <Skeleton className='h-4 w-full max-w-28' />
-                <Skeleton className='h-4 w-full max-w-56' />
-                <Skeleton className='h-4 w-full max-w-80' />
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+      <GoalRowsSkeleton />
     </div>
   );
 }

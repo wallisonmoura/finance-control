@@ -1,12 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { useReportsPeriod } from '../hooks/use-reports-period';
 import { CategoryExpensesChart } from './category-expenses-chart';
 import { DebtsPaidChart } from './debts-paid-chart';
 import { IncomeExpenseEvolutionChart } from './income-expense-evolution-chart';
@@ -18,14 +19,14 @@ type ReportsPageContentProps = {
 
 export function ReportsPageContent({ initialMonths }: ReportsPageContentProps) {
   const router = useRouter();
-  const [months, setMonths] = useState<ReportsPeriodMonths>(initialMonths);
+  const [months, setMonths] = useReportsPeriod(initialMonths);
 
   const handleMonthsChange = useCallback(
     (nextMonths: ReportsPeriodMonths) => {
       setMonths(nextMonths);
       router.push(`/relatorios?months=${nextMonths}`, { scroll: false });
     },
-    [router],
+    [router, setMonths],
   );
 
   return (

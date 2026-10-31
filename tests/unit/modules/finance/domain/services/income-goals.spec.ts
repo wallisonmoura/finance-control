@@ -85,6 +85,15 @@ describe('buildIncomeGoals', () => {
     });
   });
 
+  // On day 7 (when the pace starts being judged), 0.01 × 7/30 ≈ 0.0023 rounds
+  // to 0: comparing against the rounded value made "nothing earned" on pace.
+  it('should not be on pace with nothing earned when the expected amount rounds to zero', () => {
+    const revenue = revenueOf([], '2026-09-07', 0.01);
+
+    expect(revenue?.expectedSoFar).toBe(0);
+    expect(revenue?.status).toBe('BEHIND');
+  });
+
   it('should not judge the pace before the protection day', () => {
     expect(revenueOf([], '2026-09-06')).toMatchObject({ status: 'EARLY' });
     expect(revenueOf([], '2026-09-07')).toMatchObject({ status: 'BEHIND' });

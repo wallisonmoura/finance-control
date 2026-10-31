@@ -79,14 +79,17 @@ function progressOf({
   dayOfMonth: number;
   daysInMonth: number;
 }): IncomeGoalProgress {
-  const expectedSoFar = roundToCents(target * monthProgress);
+  // Judged against the exact share of the month: rounded first, a tiny target
+  // would expect 0 and read "nothing earned" as on pace.
+  const exactExpectedSoFar = target * monthProgress;
+  const expectedSoFar = roundToCents(exactExpectedSoFar);
   const remaining = roundToCents(Math.max(target - achieved, 0));
   const daysLeft = daysInMonth - dayOfMonth + 1;
 
   let status: IncomeGoalStatus = 'EARLY';
   if (achieved >= target) {
     status = 'REACHED';
-  } else if (achieved >= expectedSoFar) {
+  } else if (achieved >= exactExpectedSoFar) {
     status = 'ON_PACE';
   } else if (dayOfMonth >= GOAL_PACE_MIN_DAY) {
     status = 'BEHIND';

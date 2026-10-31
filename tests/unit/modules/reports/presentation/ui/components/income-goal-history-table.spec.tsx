@@ -14,7 +14,7 @@ const months: IncomeGoalHistoryMonth[] = [
 describe('IncomeGoalHistoryTable', () => {
   it('should open by keyboard and write each month status in words', async () => {
     const user = userEvent.setup();
-    render(<IncomeGoalHistoryTable measure='profit' months={months} hasTarget />);
+    render(<IncomeGoalHistoryTable measure='profit' months={months} />);
 
     const toggle = screen.getByRole('button', { name: 'Ver dados em tabela' });
     toggle.focus();
@@ -39,7 +39,6 @@ describe('IncomeGoalHistoryTable', () => {
       <IncomeGoalHistoryTable
         measure='revenue'
         months={[{ ...months[0], status: 'NONE' }]}
-        hasTarget={false}
       />,
     );
 

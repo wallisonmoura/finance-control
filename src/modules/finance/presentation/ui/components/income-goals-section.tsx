@@ -1,13 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 
 import { IncomeGoalsOverviewUi } from '../types/finance-ui.types';
+import { GoalRowsSkeleton } from './goal-rows-skeleton';
 import { GoalsSectionHeader } from './goals-section-header';
 import { IncomeGoalRow } from './income-goal-row';
 import { IncomeGoalsForm } from './income-goals-form';
@@ -26,6 +27,9 @@ export function IncomeGoalsSection({ overview, error }: IncomeGoalsSectionProps)
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [shouldRestoreFocus, setShouldRestoreFocus] = useState(false);
+  // Pending until the refreshed goals arrive; meanwhile the rows would still
+  // show the values from before the save.
+  const [isRefreshing, startRefresh] = useTransition();
   const actionRef = useRef<HTMLButtonElement>(null);
 
   // The form unmounts on save/cancel; send keyboard users back to the button
@@ -77,43 +81,47 @@ export function IncomeGoalsSection({ overview, error }: IncomeGoalsSectionProps)
             averages={overview.averages}
             onSaved={() => {
               closeForm();
-              router.refresh();
+              startRefresh(() => router.refresh());
             }}
             onCancel={closeForm}
           />
         </Card>
       ) : null}
 
-      {overview && !isEditing && !hasGoals ? (
-        <Card className='p-5'>
-          <p className='text-sm text-muted-foreground'>
-            Defina quanto quer faturar e lucrar por mês.
-          </p>
-        </Card>
-      ) : null}
+      <div data-testid='income-goals-body' aria-busy={isRefreshing || undefined}>
+        {overview && !isEditing && isRefreshing ? <GoalRowsSkeleton /> : null}
 
-      {overview && hasGoals ? (
-        <Card className='p-5'>
-          <ul className='space-y-5'>
-            {overview.revenue ? (
-              <IncomeGoalRow
-                label='Faturamento'
-                kind='revenue'
-                progress={overview.revenue}
-                href={REVENUE_HISTORY_HREF}
-              />
-            ) : null}
-            {overview.profit ? (
-              <IncomeGoalRow
-                label='Lucro'
-                kind='profit'
-                progress={overview.profit}
-                href={PROFIT_HISTORY_HREF}
-              />
-            ) : null}
-          </ul>
-        </Card>
-      ) : null}
+        {overview && !isEditing && !isRefreshing && !hasGoals ? (
+          <Card className='p-5'>
+            <p className='text-sm text-muted-foreground'>
+              Defina quanto quer faturar e lucrar por mês.
+            </p>
+          </Card>
+        ) : null}
+
+        {overview && !isRefreshing && hasGoals ? (
+          <Card className='p-5'>
+            <ul className='space-y-5'>
+              {overview.revenue ? (
+                <IncomeGoalRow
+                  label='Faturamento'
+                  kind='revenue'
+                  progress={overview.revenue}
+                  href={REVENUE_HISTORY_HREF}
+                />
+              ) : null}
+              {overview.profit ? (
+                <IncomeGoalRow
+                  label='Lucro'
+                  kind='profit'
+                  progress={overview.profit}
+                  href={PROFIT_HISTORY_HREF}
+                />
+              ) : null}
+            </ul>
+          </Card>
+        ) : null}
+      </div>
     </section>
   );
 }

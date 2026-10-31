@@ -19,6 +19,7 @@ import { describeCategoryHistoryChart } from '../utils/category-history-descript
 import { getHistoryChartScale } from '../utils/history-chart-scale';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { CategoryHistoryTable } from './category-history-table';
+import { formatCompactMoney } from '../utils/format-compact-money';
 
 type CategoryHistoryChartProps = {
   categoryName: string;
@@ -68,7 +69,7 @@ export function CategoryHistoryChart({
             <YAxis
               width={88}
               tick={{ fontSize: 12 }}
-              tickFormatter={(value: number) => formatMoney(value)}
+              tickFormatter={(value: number) => formatCompactMoney(value)}
               // Round ticks that keep the goal line inside the chart even
               // when every month is below it.
               domain={scale.domain}

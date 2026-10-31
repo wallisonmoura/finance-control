@@ -115,7 +115,7 @@ export function CategoryExpensesChart({ months }: CategoryExpensesChartProps) {
               />
               <Bar
                 dataKey='total'
-                fill='var(--expense)'
+                fill='var(--chart-expense)'
                 radius={[0, 4, 4, 0]}
                 barSize={16}
                 cursor='pointer'

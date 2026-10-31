@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -46,6 +47,8 @@ describe('SpendingGoalsPageContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
+  afterEach(() => jest.restoreAllMocks());
 
   it('should link each goal name to its category history', () => {
     render(<SpendingGoalsPageContent overview={overview} />);
@@ -235,5 +238,15 @@ describe('SpendingGoalsPageContent', () => {
     expect(screen.getByText('Não foi possível carregar as metas.')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Tentar novamente' }));
     expect(mockRefresh).toHaveBeenCalled();
+  });
+  // router.refresh() runs inside a transition: while it is pending the list
+  // would still show the goals from before the save.
+  it('should show the goals as loading instead of the old values while the page refreshes', () => {
+    jest.spyOn(React, 'useTransition').mockReturnValue([true, jest.fn()]);
+
+    render(<SpendingGoalsPageContent overview={overview} />);
+
+    expect(screen.getByTestId('spending-goals-list')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByRole('link', { name: overview.goals[0].categoryName })).not.toBeInTheDocument();
   });
 });

@@ -1,8 +1,8 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
@@ -12,6 +12,7 @@ import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-s
 
 import { setCategoryMonthlyLimit } from '../services/finance-api.service';
 import { SpendingGoalsOverviewUi, SpendingGoalUi } from '../types/finance-ui.types';
+import { GoalRowsSkeleton } from './goal-rows-skeleton';
 import { EditSpendingGoalForm } from './edit-spending-goal-form';
 import { GoalsSectionHeader } from './goals-section-header';
 import { NewSpendingGoalForm } from './new-spending-goal-form';
@@ -28,7 +29,9 @@ type SpendingGoalsPageContentProps = {
   error?: string | null;
 };
 
-const ACTION_BUTTON_CLASS_NAME = 'h-8 px-2 text-xs';
+// Same variants and icons as the edit/delete buttons of debts and entries,
+// in a compact size that fits the goal row.
+const ACTION_BUTTON_CLASS_NAME = 'h-8 rounded-lg px-3 text-xs shadow-none';
 
 export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageContentProps) {
   const router = useRouter();
@@ -37,11 +40,14 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
   const [removingGoal, setRemovingGoal] = useState<SpendingGoalUi | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
+  // Pending until the refreshed goals arrive; meanwhile the list would still
+  // show the goals from before the save.
+  const [isRefreshing, startRefresh] = useTransition();
 
   function handleSaved() {
     setIsCreating(false);
     setEditingId(null);
-    router.refresh();
+    startRefresh(() => router.refresh());
   }
 
   async function confirmRemove() {
@@ -60,7 +66,7 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
     }
 
     setRemoveError(null);
-    router.refresh();
+    startRefresh(() => router.refresh());
   }
 
   const header = (
@@ -104,65 +110,71 @@ export function SpendingGoalsPageContent({ overview, error }: SpendingGoalsPageC
 
       <FormErrorMessage message={removeError} />
 
-      {overview.goals.length === 0 ? (
-        <Card className='p-5'>
-          <p className='text-sm text-muted-foreground'>
-            Escolha as categorias que você quer segurar e defina um teto mensal pra
-            cada uma. Durante o mês, cada meta mostra se você está no ritmo, acima
-            dele ou se já passou do limite.
-          </p>
-        </Card>
-      ) : (
-        <Card className='p-5'>
-          <ul className='space-y-5'>
-            {overview.goals.map((goal) =>
-              editingId === goal.categoryId ? (
-                <li key={goal.categoryId} className='space-y-3'>
-                  <p className='text-sm font-semibold text-foreground'>
-                    {goal.categoryName}
-                  </p>
-                  <EditSpendingGoalForm
-                    categoryId={goal.categoryId}
-                    categoryName={goal.categoryName}
-                    initialLimit={goal.limit}
-                    average={overview.averageByCategoryId[goal.categoryId] ?? null}
-                    onSaved={handleSaved}
-                    onCancel={() => setEditingId(null)}
+      <div data-testid='spending-goals-list' aria-busy={isRefreshing || undefined}>
+        {isRefreshing ? (
+          <GoalRowsSkeleton rows={Math.max(overview.goals.length, 1)} />
+        ) : overview.goals.length === 0 ? (
+          <Card className='p-5'>
+            <p className='text-sm text-muted-foreground'>
+              Escolha as categorias que você quer segurar e defina um teto mensal pra
+              cada uma. Durante o mês, cada meta mostra se você está no ritmo, acima
+              dele ou se já passou do limite.
+            </p>
+          </Card>
+        ) : (
+          <Card className='p-5'>
+            <ul className='space-y-5'>
+              {overview.goals.map((goal) =>
+                editingId === goal.categoryId ? (
+                  <li key={goal.categoryId} className='space-y-3'>
+                    <p className='text-sm font-semibold text-foreground'>
+                      {goal.categoryName}
+                    </p>
+                    <EditSpendingGoalForm
+                      categoryId={goal.categoryId}
+                      categoryName={goal.categoryName}
+                      initialLimit={goal.limit}
+                      average={overview.averageByCategoryId[goal.categoryId] ?? null}
+                      onSaved={handleSaved}
+                      onCancel={() => setEditingId(null)}
+                    />
+                  </li>
+                ) : (
+                  <SpendingGoalRow
+                    key={goal.categoryId}
+                    goal={goal}
+                    nameHref={getCategoryHistoryPath(goal.categoryId)}
+                    actions={
+                      <>
+                        <Button
+                          type='button'
+                          variant='secondary'
+                          className={ACTION_BUTTON_CLASS_NAME}
+                          aria-label={`Editar meta de ${goal.categoryName}`}
+                          onClick={() => setEditingId(goal.categoryId)}
+                        >
+                          <Pencil aria-hidden='true' className='size-3.5' />
+                          Editar
+                        </Button>
+                        <Button
+                          type='button'
+                          variant='danger'
+                          className={ACTION_BUTTON_CLASS_NAME}
+                          aria-label={`Remover meta de ${goal.categoryName}`}
+                          onClick={() => setRemovingGoal(goal)}
+                        >
+                          <Trash2 aria-hidden='true' className='size-3.5' />
+                          Remover
+                        </Button>
+                      </>
+                    }
                   />
-                </li>
-              ) : (
-                <SpendingGoalRow
-                  key={goal.categoryId}
-                  goal={goal}
-                  nameHref={getCategoryHistoryPath(goal.categoryId)}
-                  actions={
-                    <>
-                      <Button
-                        type='button'
-                        variant='ghost'
-                        className={ACTION_BUTTON_CLASS_NAME}
-                        aria-label={`Editar meta de ${goal.categoryName}`}
-                        onClick={() => setEditingId(goal.categoryId)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        type='button'
-                        variant='ghost'
-                        className={ACTION_BUTTON_CLASS_NAME}
-                        aria-label={`Remover meta de ${goal.categoryName}`}
-                        onClick={() => setRemovingGoal(goal)}
-                      >
-                        Remover
-                      </Button>
-                    </>
-                  }
-                />
-              ),
-            )}
-          </ul>
-        </Card>
-      )}
+                ),
+              )}
+            </ul>
+          </Card>
+        )}
+      </div>
 
       <ConfirmDialog
         open={removingGoal !== null}

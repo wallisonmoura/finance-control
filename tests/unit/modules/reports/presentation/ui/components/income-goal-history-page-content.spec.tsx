@@ -92,6 +92,9 @@ describe('IncomeGoalHistoryPageContent', () => {
 
     expect(await screen.findByText('Não foi possível carregar a meta.')).toBeInTheDocument();
     expect(screen.getByText('Média por mês')).toBeInTheDocument();
+    // The screen reader description must not claim there is no goal.
+    expect(screen.getByText(/Meta indisponível no momento\./)).toBeInTheDocument();
+    expect(screen.queryByText(/Sem meta definida/)).not.toBeInTheDocument();
   });
 
   it('should not offer to save a goal when the goals failed to load, and let it retry', async () => {

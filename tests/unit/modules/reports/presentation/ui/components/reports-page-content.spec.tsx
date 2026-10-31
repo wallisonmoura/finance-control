@@ -60,6 +60,21 @@ describe('ReportsPageContent', () => {
     expect(screen.getAllByRole('option')).toHaveLength(3);
   });
 
+  // Browser back/forward re-render the page with the URL's period.
+  it('should follow the period from the URL after browser back or forward', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<ReportsPageContent initialMonths={6} />);
+    await user.selectOptions(
+      screen.getByLabelText('Período'),
+      screen.getByRole('option', { name: '12 meses' }),
+    );
+
+    rerender(<ReportsPageContent initialMonths={3} />);
+
+    expect(screen.getByLabelText('Período')).toHaveValue('3');
+    expect(screen.getByTestId('category-chart')).toHaveTextContent('3');
+  });
+
   it('should push the new URL and update all 3 charts when the period changes', async () => {
     const user = userEvent.setup();
     render(<ReportsPageContent initialMonths={6} />);

@@ -27,6 +27,7 @@ import {
   getIncomeGoalLaunchesHref,
 } from '../utils/income-goal-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { useReportsPeriod } from '../hooks/use-reports-period';
 import { IncomeGoalHistoryChart } from './income-goal-history-chart';
 import { IncomeGoalHistorySkeleton } from './income-goal-history-skeleton';
 import { ReportsHistoryBodySkeleton } from './reports-history-body-skeleton';
@@ -67,7 +68,7 @@ export function IncomeGoalHistoryPageContent({
 }: IncomeGoalHistoryPageContentProps) {
   const router = useRouter();
   const copy = INCOME_GOAL_HISTORY_COPY[measure];
-  const [months, setMonths] = useState<ReportsPeriodMonths>(initialMonths);
+  const [months, setMonths] = useReportsPeriod(initialMonths);
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [shouldRestoreFocus, setShouldRestoreFocus] = useState(false);
   const goalButtonRef = useRef<HTMLButtonElement>(null);
@@ -212,6 +213,7 @@ export function IncomeGoalHistoryPageContent({
                   measure={measure}
                   history={history}
                   target={target}
+                  targetUnavailable={Boolean(targetsError)}
                 />
               </div>
             </Card>
