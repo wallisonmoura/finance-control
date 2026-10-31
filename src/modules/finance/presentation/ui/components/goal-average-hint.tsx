@@ -14,6 +14,16 @@ export function GoalAverageHint({
     return null;
   }
 
+  // Only a profit average can be negative: shown as "Média: -R$ X" it read
+  // like a goal suggestion, but a goal must be above zero.
+  if (average < 0) {
+    return (
+      <p className='text-xs text-muted-foreground'>
+        {label} ficou negativa ({formatMoney(average)}).
+      </p>
+    );
+  }
+
   return (
     <p className='text-xs text-muted-foreground'>
       {label}: {formatMoney(average)}
