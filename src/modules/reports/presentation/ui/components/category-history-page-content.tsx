@@ -21,6 +21,7 @@ import {
   getCategoryLaunchesHref,
 } from '../utils/category-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
+import { useReportsPeriod } from '../hooks/use-reports-period';
 import { CategoryHistoryChart } from './category-history-chart';
 import { CategoryHistorySkeleton } from './category-history-skeleton';
 import { ReportsHistoryBodySkeleton } from './reports-history-body-skeleton';
@@ -45,7 +46,7 @@ export function CategoryHistoryPageContent({
   initialMonths,
 }: CategoryHistoryPageContentProps) {
   const router = useRouter();
-  const [months, setMonths] = useState<ReportsPeriodMonths>(initialMonths);
+  const [months, setMonths] = useReportsPeriod(initialMonths);
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const {
     category,
