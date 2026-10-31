@@ -74,7 +74,8 @@ export function HelpPopover({
         className={cn(
           'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full text-current opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-hidden focus-visible:ring-3',
           tone === 'hero' ? 'focus-visible:ring-hero-accent' : 'focus-visible:ring-ring',
-          size === 'md' ? 'size-7' : 'size-5',
+          // sm is the minimum 24×24px target (WCAG 2.5.8).
+          size === 'md' ? 'size-7' : 'size-6',
           className,
         )}
       >
@@ -102,16 +103,19 @@ type ScreenHelpBodyProps = {
   help: ScreenHelpContent;
 };
 
+// Section titles are bold text, not headings: the balloon renders at the end
+// of the page (portal), so headings would show up out of context in the
+// page's heading navigation. The dialog itself is named by the trigger label.
 export function ScreenHelpBody({ help }: ScreenHelpBodyProps) {
   return (
     <div className='space-y-3'>
       <section>
-        <h2 className='font-semibold text-foreground'>O que é</h2>
+        <p className='font-semibold text-foreground'>O que é</p>
         <p className='text-muted-foreground'>{help.whatIs}</p>
       </section>
 
       <section>
-        <h2 className='font-semibold text-foreground'>O que dá pra fazer aqui</h2>
+        <p className='font-semibold text-foreground'>O que dá pra fazer aqui</p>
         <ul className='list-disc space-y-1 pl-5 text-muted-foreground'>
           {help.actions.map((action) => (
             <li key={action}>{action}</li>
@@ -122,7 +126,7 @@ export function ScreenHelpBody({ help }: ScreenHelpBodyProps) {
 
       {help.elsewhere ? (
         <section className='border-t border-border pt-3'>
-          <h2 className='font-semibold text-foreground'>Não é aqui?</h2>
+          <p className='font-semibold text-foreground'>Não é aqui?</p>
           <p className='text-muted-foreground'>{help.elsewhere.text}</p>
           <div className='mt-2 flex flex-wrap gap-x-4 gap-y-1'>
             {help.elsewhere.links.map((link) => (

@@ -17,6 +17,14 @@ export const GOAL_STATUS_TONE: Record<SpendingGoalStatusUi, GoalTone> = {
   ON_TRACK: 'income',
 };
 
+// The status in words, so the dot's color is never the only cue (same as
+// getIncomeGoalStatusLabel for the income goals).
+export const GOAL_STATUS_LABEL: Record<SpendingGoalStatusUi, string> = {
+  EXCEEDED: 'Passou do limite',
+  ABOVE_PACE: 'Acima do ritmo',
+  ON_TRACK: 'No ritmo',
+};
+
 export function describeSpendingGoal(goal: SpendingGoalUi): {
   usage: string;
   detail: GoalSegment[];

@@ -17,6 +17,7 @@ import { Card } from '@/shared/presentation/ui/components/card';
 import { EmptyState } from '@/shared/presentation/ui/components/empty-state';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
+import { roundToCents } from '@/shared/domain/money/round-to-cents';
 import { formatMoney } from '@/shared/presentation/ui/utils/format-money';
 
 import { useIncomeExpenseEvolutionChart } from '../hooks/use-income-expense-evolution-chart';
@@ -24,6 +25,8 @@ import { getIncomeGoalHistoryHref } from '../utils/income-goal-history-links';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { formatCompactMoney } from '../utils/format-compact-money';
+import { ChartDataTable } from './chart-data-table';
+import { describeIncomeExpenseChart } from '../utils/reports-overview-description';
 
 type IncomeExpenseEvolutionChartProps = {
   months: ReportsPeriodMonths;
@@ -60,43 +63,64 @@ export function IncomeExpenseEvolutionChart({
       )}
 
       {!isLoading && !error && hasData && (
-        <div className='mt-4 h-72 w-full'>
-          <ResponsiveContainer width='100%' height='100%'>
-            <BarChart
-              data={data}
-              margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
-            >
-              <CartesianGrid strokeDasharray='3 3' />
-              <XAxis dataKey='monthLabel' tick={{ fontSize: 12 }} />
-              <YAxis
-                tickFormatter={(value: number) => formatCompactMoney(value)}
-                width={90}
-              />
-              <Tooltip
-                {...CHART_TOOLTIP_PROPS}
-                formatter={(value) => formatMoney(Number(value))}
-              />
-              <Legend />
-              <Bar
-                dataKey='totalIncome'
-                name='Receita'
-                fill='var(--chart-income)'
-                radius={[4, 4, 0, 0]}
-                cursor='pointer'
-                // Mouse shortcut; the links below are the keyboard path.
-                onClick={() =>
-                  router.push(getIncomeGoalHistoryHref('revenue', months))
-                }
-              />
-              <Bar
-                dataKey='totalExpense'
-                name='Despesa'
-                fill='var(--chart-expense)'
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <figure>
+          <figcaption className='sr-only'>{describeIncomeExpenseChart(data)}</figcaption>
+          <div className='mt-4 h-72 w-full'>
+            <ResponsiveContainer width='100%' height='100%'>
+              <BarChart
+                data={data}
+                margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
+              >
+                <CartesianGrid strokeDasharray='3 3' />
+                <XAxis dataKey='monthLabel' tick={{ fontSize: 12 }} />
+                <YAxis
+                  tickFormatter={(value: number) => formatCompactMoney(value)}
+                  width={90}
+                />
+                <Tooltip
+                  {...CHART_TOOLTIP_PROPS}
+                  formatter={(value) => formatMoney(Number(value))}
+                />
+                <Legend />
+                <Bar
+                  dataKey='totalIncome'
+                  name='Receita'
+                  fill='var(--chart-income)'
+                  radius={[4, 4, 0, 0]}
+                  cursor='pointer'
+                  // Mouse shortcut; the links below are the keyboard path.
+                  onClick={() =>
+                    router.push(getIncomeGoalHistoryHref('revenue', months))
+                  }
+                />
+                <Bar
+                  dataKey='totalExpense'
+                  name='Despesa'
+                  fill='var(--chart-expense)'
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <ChartDataTable
+            caption='Receita e despesa por mês'
+            columns={[
+              { header: 'Mês' },
+              { header: 'Receita', align: 'right' },
+              { header: 'Despesa', align: 'right' },
+              { header: 'Resultado', align: 'right' },
+            ]}
+            rows={data.map((item) => ({
+              key: item.monthLabel,
+              cells: [
+                item.monthLabel,
+                formatMoney(item.totalIncome),
+                formatMoney(item.totalExpense),
+                formatMoney(roundToCents(item.totalIncome - item.totalExpense)),
+              ],
+            }))}
+          />
+        </figure>
       )}
 
       {!isLoading && !error && (

@@ -20,6 +20,8 @@ import { useDebtsPaidChart } from '../hooks/use-debts-paid-chart';
 import { ReportsPeriodMonths } from '../utils/reports-period';
 import { CHART_TOOLTIP_PROPS } from '../utils/chart-tooltip-style';
 import { formatCompactMoney } from '../utils/format-compact-money';
+import { ChartDataTable } from './chart-data-table';
+import { describeDebtsPaidChart } from '../utils/reports-overview-description';
 
 type DebtsPaidChartProps = {
   months: ReportsPeriodMonths;
@@ -48,31 +50,42 @@ export function DebtsPaidChart({ months }: DebtsPaidChartProps) {
       )}
 
       {!isLoading && !error && hasData && (
-        <div className='mt-4 h-72 w-full'>
-          <ResponsiveContainer width='100%' height='100%'>
-            <BarChart
-              data={data}
-              margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
-            >
-              <CartesianGrid strokeDasharray='3 3' />
-              <XAxis dataKey='monthLabel' tick={{ fontSize: 12 }} />
-              <YAxis
-                tickFormatter={(value: number) => formatCompactMoney(value)}
-                width={90}
-              />
-              <Tooltip
-                {...CHART_TOOLTIP_PROPS}
-                formatter={(value) => formatMoney(Number(value))}
-              />
-              <Bar
-                dataKey='total'
-                name='Dívidas pagas'
-                fill='var(--chart-expense)'
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <figure>
+          <figcaption className='sr-only'>{describeDebtsPaidChart(data)}</figcaption>
+          <div className='mt-4 h-72 w-full'>
+            <ResponsiveContainer width='100%' height='100%'>
+              <BarChart
+                data={data}
+                margin={{ top: 8, right: 24, bottom: 8, left: 8 }}
+              >
+                <CartesianGrid strokeDasharray='3 3' />
+                <XAxis dataKey='monthLabel' tick={{ fontSize: 12 }} />
+                <YAxis
+                  tickFormatter={(value: number) => formatCompactMoney(value)}
+                  width={90}
+                />
+                <Tooltip
+                  {...CHART_TOOLTIP_PROPS}
+                  formatter={(value) => formatMoney(Number(value))}
+                />
+                <Bar
+                  dataKey='total'
+                  name='Dívidas pagas'
+                  fill='var(--chart-expense)'
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <ChartDataTable
+            caption='Valor pago em dívidas por mês'
+            columns={[{ header: 'Mês' }, { header: 'Valor pago', align: 'right' }]}
+            rows={data.map((item) => ({
+              key: item.monthLabel,
+              cells: [item.monthLabel, formatMoney(item.total)],
+            }))}
+          />
+        </figure>
       )}
     </Card>
   );

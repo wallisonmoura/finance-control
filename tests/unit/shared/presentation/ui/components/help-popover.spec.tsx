@@ -112,6 +112,19 @@ describe('HelpPopover', () => {
   });
 });
 
+describe('HelpPopover target size', () => {
+  // WCAG 2.5.8: at least 24×24px, also for the small "?" next to figures.
+  it('should give the small trigger a 24px touch target', () => {
+    render(
+      <HelpPopover label='Pequeno' size='sm'>
+        Conteúdo
+      </HelpPopover>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Pequeno' })).toHaveClass('size-6');
+  });
+});
+
 describe('ScreenHelpBody', () => {
   it('should show what the screen is and what can be done there', () => {
     render(<ScreenHelpBody help={SCREEN_HELP.expenses} />);
@@ -120,6 +133,14 @@ describe('ScreenHelpBody', () => {
     expect(screen.getByText(SCREEN_HELP.expenses.whatIs)).toBeInTheDocument();
     expect(screen.getByText('O que dá pra fazer aqui')).toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(SCREEN_HELP.expenses.actions.length);
+  });
+
+  // The balloon renders at the end of the page (portal): as headings, its
+  // section titles showed up out of context in heading navigation.
+  it('should not add headings to the page outline', () => {
+    render(<ScreenHelpBody help={SCREEN_HELP.expenses} />);
+
+    expect(screen.queryAllByRole('heading')).toHaveLength(0);
   });
 
   it('should point expenses to debts for what will be paid later', () => {

@@ -34,7 +34,7 @@ export function StatusMessage({
       aria-live='polite'
       className={
         tone === 'success'
-          ? 'border-accent/30 bg-success-light text-success-light-foreground'
+          ? 'border-hero-accent/30 bg-success-light text-success-light-foreground'
           : undefined
       }
     >

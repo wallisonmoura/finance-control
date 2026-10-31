@@ -64,7 +64,8 @@ describe('SpendingGoalsPageContent', () => {
 
     expect(screen.getByRole('heading', { name: 'Metas de gasto' })).toBeInTheDocument();
     expect(screen.getByText('Bebida alcoólica')).toBeInTheDocument();
-    expect(screen.getByText(/Passou/)).toHaveTextContent(/Passou R\$\s76,69 da meta\./);
+    expect(screen.getByText(/^Passou/)).toHaveTextContent(/Passou R\$\s76,69 da meta\./);
+    expect(screen.getByText('Situação: Passou do limite')).toBeInTheDocument();
   });
 
   it('should create a goal showing the average hint of the chosen category', async () => {

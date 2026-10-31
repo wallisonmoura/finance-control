@@ -1,7 +1,7 @@
 import { RouteLoadingRegion } from '@/shared/presentation/ui/components/skeletons/route-loading-region';
 import { PageTitleSkeleton } from '@/shared/presentation/ui/components/skeletons/page-title-skeleton';
 import { Skeleton } from '@/shared/presentation/ui/primitives/skeleton';
-import { ReportsChartSkeleton } from '@/modules/reports/presentation/ui/components/reports-chart-skeleton';
+import { ReportsOverviewSkeleton } from '@/modules/reports/presentation/ui/components/reports-overview-skeleton';
 
 export default function ReportsLoading() {
   return (
@@ -15,14 +15,7 @@ export default function ReportsLoading() {
         </div>
       </div>
 
-      <div className='grid gap-6 xl:grid-cols-2'>
-        <ReportsChartSkeleton />
-        <ReportsChartSkeleton />
-
-        <div className='xl:col-span-2'>
-          <ReportsChartSkeleton />
-        </div>
-      </div>
+      <ReportsOverviewSkeleton />
     </RouteLoadingRegion>
   );
 }
