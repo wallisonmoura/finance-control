@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import type { FocusEvent } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 
 import { cn } from '@/shared/presentation/ui/lib/utils';
 
@@ -17,13 +18,38 @@ type ScreenshotCarouselProps = {
 };
 
 const AUTO_ADVANCE_INTERVAL_MS = 5000;
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+function subscribeToReducedMotion(onChange: () => void) {
+  const media = window.matchMedia(REDUCED_MOTION_QUERY);
+  media.addEventListener('change', onChange);
+
+  return () => media.removeEventListener('change', onChange);
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
 
 export function ScreenshotCarousel({ slides }: ScreenshotCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  // null = not chosen yet: plays unless the system asks for reduced motion.
+  const [isPlayingChoice, setIsPlayingChoice] = useState<boolean | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasFocusWithin, setHasFocusWithin] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    prefersReducedMotion,
+    () => false,
+  );
+
+  const isPlaying = isPlayingChoice ?? !reducedMotion;
+  // WCAG 2.2.2: it never moves while the user is on it (mouse or keyboard)
+  // and can be stopped with the pause button.
+  const isAdvancing = isPlaying && !isHovered && !hasFocusWithin;
 
   useEffect(() => {
-    if (isPaused) {
+    if (!isAdvancing) {
       return;
     }
 
@@ -32,7 +58,7 @@ export function ScreenshotCarousel({ slides }: ScreenshotCarouselProps) {
     }, AUTO_ADVANCE_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [isPaused, slides.length]);
+  }, [isAdvancing, slides.length]);
 
   function goToPrevious() {
     setActiveIndex(
@@ -44,13 +70,21 @@ export function ScreenshotCarousel({ slides }: ScreenshotCarouselProps) {
     setActiveIndex((current) => (current + 1) % slides.length);
   }
 
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setHasFocusWithin(false);
+    }
+  }
+
   const activeSlide = slides[activeIndex];
 
   return (
     <div
       className='mx-auto w-full max-w-3xl'
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setHasFocusWithin(true)}
+      onBlur={handleBlur}
     >
       <div className='relative overflow-hidden rounded-2xl border border-border bg-background shadow-lg shadow-border/60'>
         <div className='relative aspect-[16/10] w-full'>
@@ -87,21 +121,40 @@ export function ScreenshotCarousel({ slides }: ScreenshotCarouselProps) {
         {activeSlide.caption}
       </p>
 
-      <div className='mt-4 flex justify-center gap-2'>
+      <div className='mt-4 flex items-center justify-center gap-1'>
+        <button
+          type='button'
+          onClick={() => setIsPlayingChoice(!isPlaying)}
+          aria-label={isPlaying ? 'Pausar apresentação' : 'Continuar apresentação'}
+          className='mr-1 inline-flex size-8 cursor-pointer items-center justify-center rounded-full text-muted-foreground ring-1 ring-border transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+        >
+          {isPlaying ? (
+            <Pause aria-hidden='true' className='size-4' />
+          ) : (
+            <Play aria-hidden='true' className='size-4' />
+          )}
+        </button>
+
         {slides.map((slide, index) => (
+          // 24px target (WCAG 2.5.8) around a 10px dot.
           <button
             key={slide.src}
             type='button'
             onClick={() => setActiveIndex(index)}
             aria-label={`Ir para ${slide.alt}`}
             aria-current={index === activeIndex}
-            className={cn(
-              'size-2.5 cursor-pointer rounded-full transition',
-              index === activeIndex
-                ? 'bg-accent'
-                : 'bg-border hover:bg-muted-foreground/40',
-            )}
-          />
+            className='group inline-flex size-6 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+          >
+            <span
+              aria-hidden='true'
+              className={cn(
+                'size-2.5 rounded-full transition',
+                index === activeIndex
+                  ? 'bg-hero-accent'
+                  : 'bg-border group-hover:bg-muted-foreground/40',
+              )}
+            />
+          </button>
         ))}
       </div>
     </div>
