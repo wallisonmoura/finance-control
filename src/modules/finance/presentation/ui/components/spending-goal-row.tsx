@@ -6,6 +6,7 @@ import { cn } from '@/shared/presentation/ui/lib/utils';
 import { SpendingGoalUi } from '../types/finance-ui.types';
 import {
   describeSpendingGoal,
+  GOAL_STATUS_LABEL,
   GOAL_STATUS_TONE,
   GoalSegment,
   GoalTone,
@@ -67,6 +68,7 @@ export function SpendingGoalRow({ goal, actions, nameHref }: SpendingGoalRowProp
             ),
           )}
         </p>
+        <span className='sr-only'>Situação: {GOAL_STATUS_LABEL[goal.status]}</span>
       </div>
       {actions ? (
         // On narrow screens the actions wrap below the goal text, aligned with it.
