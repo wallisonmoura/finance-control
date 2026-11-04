@@ -49,3 +49,10 @@ export type DebtApiResponse<T> = {
   data?: T;
   error?: string;
 };
+
+// The expense category chosen when paying a debt. Only what the payment form
+// needs, so debts does not depend on finance's category type.
+export type DebtPaymentCategoryUi = {
+  id: string;
+  name: string;
+};

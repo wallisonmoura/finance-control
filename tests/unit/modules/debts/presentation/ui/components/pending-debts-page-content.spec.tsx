@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 
 import { PendingDebtsPageContent } from '@/modules/debts/presentation/ui/components/pending-debts-page-content';
 import { usePendingDebts } from '@/modules/debts/presentation/ui/hooks/use-pending-debts';
-import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { toast } from 'sonner';
 import {
   payDebt,
@@ -12,7 +11,6 @@ import {
 } from '@/modules/debts/presentation/ui/services/debt-api.service';
 
 jest.mock('@/modules/debts/presentation/ui/hooks/use-pending-debts');
-jest.mock('@/modules/finance/presentation/ui/hooks/use-expense-categories');
 jest.mock('@/modules/debts/presentation/ui/services/debt-api.service', () => ({
   payDebt: jest.fn(),
   undoDebtPayment: jest.fn(),
@@ -23,13 +21,14 @@ jest.mock('sonner', () => ({
 jest.mock('next/navigation');
 
 const usePendingDebtsMock = jest.mocked(usePendingDebts);
-const useExpenseCategoriesMock = jest.mocked(useExpenseCategories);
 const useRouterMock = jest.mocked(useRouter);
 const payDebtMock = jest.mocked(payDebt);
 const undoDebtPaymentMock = jest.mocked(undoDebtPayment);
 
 const refreshMock = jest.fn();
 const routerRefreshMock = jest.fn();
+
+const categories = [{ id: 'category-id', name: 'Manutencao' }];
 
 const debt = {
   id: 'debt-id',
@@ -58,26 +57,13 @@ describe('PendingDebtsPageContent', () => {
       refresh: refreshMock,
     });
 
-    useExpenseCategoriesMock.mockReturnValue({
-      categories: [
-        {
-          id: 'category-id',
-          name: 'Manutencao',
-          slug: 'manutencao',
-        },
-      ],
-      isLoading: false,
-      error: null,
-      refresh: jest.fn(),
-    });
-
     useRouterMock.mockReturnValue({
       refresh: routerRefreshMock,
     } as unknown as ReturnType<typeof useRouter>);
   });
 
   it('should render pending debts page', () => {
-    render(<PendingDebtsPageContent />);
+    render(<PendingDebtsPageContent categories={categories} />);
 
     expect(screen.getByText('Dívidas pendentes')).toBeInTheDocument();
     expect(screen.getByText('Seguro do carro')).toBeInTheDocument();
@@ -88,10 +74,27 @@ describe('PendingDebtsPageContent', () => {
     expect(screen.getByRole('button', { name: 'Pagar' })).toBeInTheDocument();
   });
 
+  // Categories are loaded by the page (on the server) and passed in.
+  it('should show the categories error from the page in the payment form', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <PendingDebtsPageContent
+        categories={[]}
+        categoriesError='Não foi possível carregar categorias.'
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Pagar' }));
+
+    expect(screen.getByText('Não foi possível carregar categorias.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Confirmar pagamento/ })).toBeDisabled();
+  });
+
   it('should open payment form', async () => {
     const user = userEvent.setup();
 
-    render(<PendingDebtsPageContent />);
+    render(<PendingDebtsPageContent categories={categories} />);
 
     await user.click(screen.getByRole('button', { name: 'Pagar' }));
 
@@ -112,7 +115,7 @@ describe('PendingDebtsPageContent', () => {
       },
     });
 
-    render(<PendingDebtsPageContent />);
+    render(<PendingDebtsPageContent categories={categories} />);
 
     await user.click(screen.getByRole('button', { name: 'Pagar' }));
 
@@ -145,7 +148,7 @@ describe('PendingDebtsPageContent', () => {
     });
     undoDebtPaymentMock.mockResolvedValueOnce({ data: { ...debt } });
 
-    render(<PendingDebtsPageContent />);
+    render(<PendingDebtsPageContent categories={categories} />);
 
     await user.click(screen.getByRole('button', { name: 'Pagar' }));
     await user.selectOptions(screen.getByLabelText('Categoria da despesa'), 'category-id');

@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { ExpenseCategoryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
@@ -15,11 +14,11 @@ import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { payDebt, undoDebtPayment } from '../services/debt-api.service';
-import { DebtPaymentSourceUi, DebtUi } from '../types/debts-ui.types';
+import { DebtPaymentCategoryUi, DebtPaymentSourceUi, DebtUi } from '../types/debts-ui.types';
 
 type DebtPaymentFormProps = {
   debt: DebtUi;
-  categories: ExpenseCategoryUi[];
+  categories: DebtPaymentCategoryUi[];
   isLoadingCategories?: boolean;
   categoriesError?: string | null;
   onDebtPaid?: () => void | Promise<void>;

@@ -1,15 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useExpenseCategories } from '@/modules/finance/presentation/ui/hooks/use-expense-categories';
 import { LoadErrorState } from '@/shared/presentation/ui/components/load-error-state';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
 import { usePendingDebts } from '../hooks/use-pending-debts';
-import { DebtUi } from '../types/debts-ui.types';
+import { DebtPaymentCategoryUi, DebtUi } from '../types/debts-ui.types';
 import { DebtsBackLink } from './debts-back-link';
 import { DebtList } from './debt-list';
 import { DebtPaymentForm } from './debt-payment-form';
@@ -17,11 +16,16 @@ import { DebtPaymentForm } from './debt-payment-form';
 type PendingDebtsPageContentProps = {
   initialDebts?: DebtUi[];
   initialError?: string | null;
+  // Loaded by the page, so debts does not depend on finance's hooks.
+  categories?: DebtPaymentCategoryUi[];
+  categoriesError?: string | null;
 };
 
 export function PendingDebtsPageContent({
   initialDebts = [],
   initialError = null,
+  categories = [],
+  categoriesError = null,
 }: PendingDebtsPageContentProps) {
   const router = useRouter();
 
@@ -31,17 +35,6 @@ export function PendingDebtsPageContent({
     initialDebts,
     initialError,
   });
-  const {
-    categories,
-    isLoading: isLoadingCategories,
-    error: categoriesError,
-    refresh: refreshCategories,
-  } = useExpenseCategories();
-
-  useEffect(() => {
-    void refreshCategories();
-  }, [refreshCategories]);
-
   function handleCancelPayment() {
     setPayingDebt(null);
   }
@@ -86,7 +79,6 @@ export function PendingDebtsPageContent({
               key={debt.id}
               debt={debt}
               categories={categories}
-              isLoadingCategories={isLoadingCategories}
               categoriesError={categoriesError}
               onDebtPaid={handleDebtPaid}
               onPaymentUndone={handlePaymentUndone}
