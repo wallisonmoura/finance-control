@@ -2,7 +2,7 @@ import { roundToCents } from '@/shared/domain/money/round-to-cents';
 
 import { FinancialEntry } from '../entities/financial-entry.entity';
 import { FinancialEntryType } from '../enums/financial-entry-type.enum';
-import { InsightMonth, InsightPeriods } from './insight-periods';
+import { InsightMonth, InsightPeriods, isWithin } from './insight-periods';
 
 export const INSIGHT_MIN_CHANGE_PERCENT = 20;
 export const INSIGHT_MIN_CHANGE_AMOUNT = 50;
@@ -65,12 +65,6 @@ type CategoryChange = {
   previous: number;
   difference: number;
 };
-
-function isWithin(date: Date, start: Date, endExclusive: Date): boolean {
-  const time = date.getTime();
-
-  return time >= start.getTime() && time < endExclusive.getTime();
-}
 
 function sumAmounts(entries: FinancialEntry[]): number {
   return roundToCents(entries.reduce((sum, entry) => sum + entry.amount, 0));
