@@ -7,7 +7,7 @@ import {
 import { RateLimiterPort } from '../../domain/services/rate-limiter.port';
 import { prisma } from '@/shared/infra/database/prisma/client';
 
-export class PrismaLoginRateLimiterAdapter implements RateLimiterPort {
+export class PrismaRateLimiterAdapter implements RateLimiterPort {
   constructor(
     private readonly client: PrismaClient = prisma,
     private readonly maxAttempts: number = AUTH_RATE_LIMIT_MAX_ATTEMPTS,

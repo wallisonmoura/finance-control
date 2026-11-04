@@ -3,7 +3,7 @@ import { roundToCents } from '@/shared/domain/money/round-to-cents';
 import { ExpenseCategory } from '../entities/expense-category.entity';
 import { FinancialEntry } from '../entities/financial-entry.entity';
 import { FinancialEntryType } from '../enums/financial-entry-type.enum';
-import { getInsightPeriods } from './insight-periods';
+import { getInsightPeriods, isWithin } from './insight-periods';
 
 // Before this day of the month, spending is never judged against the pace:
 // a handful of days says too little about the month.
@@ -45,12 +45,6 @@ const STATUS_ORDER: Record<SpendingGoalStatus, number> = {
   ABOVE_PACE: 1,
   ON_TRACK: 2,
 };
-
-function isWithin(date: Date, start: Date, endExclusive: Date): boolean {
-  const time = date.getTime();
-
-  return time >= start.getTime() && time < endExclusive.getTime();
-}
 
 function sumByCategory(entries: FinancialEntry[], categoryId: string): number {
   return roundToCents(

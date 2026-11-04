@@ -3,7 +3,7 @@ export interface TokenPayload {
   email: string;
 }
 
-export interface TokenService {
+export interface TokenPort {
   generateAccessToken(payload: TokenPayload): Promise<string>;
   verifyAccessToken(token: string): Promise<TokenPayload>;
 }

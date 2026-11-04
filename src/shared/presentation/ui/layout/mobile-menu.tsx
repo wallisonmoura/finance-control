@@ -1,14 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 
-import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/current-user-menu';
-import { SignOutButton } from '@/modules/auth/presentation/ui/components/sign-out-button';
-import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.types';
-import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { ThemeToggle } from '@/shared/presentation/ui/components/theme-toggle';
 
@@ -16,20 +11,23 @@ import { NavigationLink } from './navigation-link';
 import { PRIVATE_NAVIGATION_ITEMS } from './navigation-items';
 import { isNavigationItemActive } from './is-navigation-item-active';
 
+// The slots come from other modules (the layout builds them), so shared
+// does not depend on auth or debts.
 type MobileMenuProps = {
   pathname: string;
-  currentUser?: AuthenticatedUser | null;
-  currentUserError?: string | null;
-  initialPendingDebts?: DebtUi[];
-  initialPendingDebtsError?: string | null;
+  // Always visible, next to the theme toggle (e.g. the debts bell).
+  barSlot?: ReactNode;
+  // Top of the open menu (e.g. the current user).
+  userSlot?: ReactNode;
+  // Bottom of the open menu (e.g. sign out).
+  footerSlot?: ReactNode;
 };
 
 export function MobileMenu({
   pathname,
-  currentUser = null,
-  currentUserError = null,
-  initialPendingDebts = [],
-  initialPendingDebtsError = null,
+  barSlot,
+  userSlot,
+  footerSlot,
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,10 +94,7 @@ export function MobileMenu({
 
           <ThemeToggle />
 
-          <DebtsDueSoonBell
-            initialDebts={initialPendingDebts}
-            initialError={initialPendingDebtsError}
-          />
+          {barSlot}
         </div>
 
         <div className='relative h-11 w-40 overflow-hidden'>
@@ -124,13 +119,11 @@ export function MobileMenu({
 
       {isOpen && (
         <div className='border-t border-border bg-card shadow-lg shadow-border/60'>
-          <div className='border-b border-border bg-background px-4 py-3'>
-            <CurrentUserMenu
-              initialUser={currentUser}
-              initialError={currentUserError}
-              showSignOut={false}
-            />
-          </div>
+          {userSlot && (
+            <div className='border-b border-border bg-background px-4 py-3'>
+              {userSlot}
+            </div>
+          )}
 
           <nav
             id='mobile-navigation'
@@ -149,9 +142,11 @@ export function MobileMenu({
             ))}
           </nav>
 
-          <div className='border-t border-border bg-background px-4 py-3'>
-            <SignOutButton className='w-full justify-center' />
-          </div>
+          {footerSlot && (
+            <div className='border-t border-border bg-background px-4 py-3'>
+              {footerSlot}
+            </div>
+          )}
         </div>
       )}
     </div>

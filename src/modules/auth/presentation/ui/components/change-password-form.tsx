@@ -180,8 +180,8 @@ export function ChangePasswordForm() {
         <Button
           type='submit'
           disabled={isSubmitting}
-          variant='custom'
-          className='h-11 w-full bg-primary px-6 text-primary-foreground hover:bg-primary/90 sm:w-auto'
+          variant='solid'
+          className='h-11 w-full px-6 sm:w-auto'
         >
           <KeyRound aria-hidden='true' className='size-4' />
           {isSubmitting ? 'Salvando...' : 'Salvar nova senha'}

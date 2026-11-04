@@ -1,13 +1,13 @@
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
 import { UserNotFoundError } from '../../domain/errors/user-not-found.error';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { PasswordHasher } from '../../domain/services/password-hasher.port';
+import { PasswordHasherPort } from '../../domain/services/password-hasher.port';
 import { ChangePasswordInput } from '../dtos/change-password.input';
 
 export class ChangePasswordUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly passwordHasher: PasswordHasher,
+    private readonly passwordHasher: PasswordHasherPort,
   ) {}
 
   public async execute(input: ChangePasswordInput): Promise<void> {

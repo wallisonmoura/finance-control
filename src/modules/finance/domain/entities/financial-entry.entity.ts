@@ -6,6 +6,7 @@ import { InvalidFinancialEntryDateError } from '../errors/invalid-financial-entr
 import { InvalidFinancialEntryDescriptionError } from '../errors/invalid-financial-entry-description.error';
 import { InvalidFinancialEntryTypeError } from '../errors/invalid-financial-entry-type.error';
 import { InvalidFinancialEntryUserIdError } from '../errors/invalid-financial-entry-user-id.error';
+import { FinancialEntryLinkedToDebtError } from '../errors/financial-entry-linked-to-debt.error';
 
 export interface FinancialEntryProps {
   id: string;
@@ -120,6 +121,14 @@ export class FinancialEntry {
     return Boolean(this.props.debtId);
   }
 
+  // The expense created by paying a debt is read-only from Finance's side:
+  // it changes only by undoing the payment in Debts.
+  ensureCanBeChanged(): void {
+    if (this.isLinkedToDebt()) {
+      throw new FinancialEntryLinkedToDebtError();
+    }
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -143,6 +152,8 @@ export class FinancialEntry {
     categoryId?: string | null;
     notes?: string | null;
   }): FinancialEntry {
+    this.ensureCanBeChanged();
+
     return FinancialEntry.create({
       ...this.props,
       amount: data.amount ?? this.props.amount,

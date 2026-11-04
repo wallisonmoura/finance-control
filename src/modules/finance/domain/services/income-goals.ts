@@ -3,7 +3,7 @@ import { roundToCents } from '@/shared/domain/money/round-to-cents';
 import { FinancialEntry } from '../entities/financial-entry.entity';
 import { IncomeGoal } from '../entities/income-goal.entity';
 import { FinancialEntryType } from '../enums/financial-entry-type.enum';
-import { getInsightPeriods } from './insight-periods';
+import { getInsightPeriods, isWithin } from './insight-periods';
 import { GOAL_PACE_MIN_DAY } from './spending-goals';
 
 export type IncomeGoalStatus = 'REACHED' | 'ON_PACE' | 'BEHIND' | 'EARLY';
@@ -31,12 +31,6 @@ export interface IncomeGoalsOverview {
 }
 
 type MonthTotals = { revenue: number; profit: number; hasEntries: boolean };
-
-function isWithin(date: Date, start: Date, endExclusive: Date): boolean {
-  const time = date.getTime();
-
-  return time >= start.getTime() && time < endExclusive.getTime();
-}
 
 function totalsOf(entries: FinancialEntry[]): MonthTotals {
   let revenue = 0;

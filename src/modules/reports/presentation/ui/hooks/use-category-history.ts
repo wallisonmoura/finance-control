@@ -1,6 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useLatestRequest } from '@/shared/presentation/ui/hooks/use-latest-request';
 
 import {
   getExpenseCategories,
@@ -46,13 +48,12 @@ export function useCategoryHistory(
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const requestIdRef = useRef(0);
+  const latestRequest = useLatestRequest();
 
   const range = useMemo(() => getReportsDateRangeForMonths(months), [months]);
 
   const load = useCallback(async () => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
+    const isLatest = latestRequest.start();
 
     setIsLoading(true);
     setError(null);
@@ -63,7 +64,7 @@ export function useCategoryHistory(
       getExpenseCategories(),
     ]);
 
-    if (requestId !== requestIdRef.current) {
+    if (!isLatest()) {
       return;
     }
 
@@ -109,18 +110,18 @@ export function useCategoryHistory(
       })),
     );
     setIsLoading(false);
-  }, [categoryId, range]);
+  }, [categoryId, range, latestRequest]);
 
   useEffect(() => {
     // Re-fetches whenever the category or the period changes (same reason as
-    // use-category-expenses-chart.ts); requestIdRef discards stale responses.
+    // use-category-expenses-chart.ts); useLatestRequest discards stale responses.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
 
     return () => {
-      requestIdRef.current += 1;
+      latestRequest.cancel();
     };
-  }, [load]);
+  }, [load, latestRequest]);
 
   const history = useMemo(() => {
     if (!entries || !category) {

@@ -1,4 +1,4 @@
-import { getInsightPeriods } from '@/modules/finance/domain/services/insight-periods';
+import { getInsightPeriods, isWithin } from '@/modules/finance/domain/services/insight-periods';
 
 function utc(value: string): Date {
   return new Date(`${value}T00:00:00.000Z`);
@@ -99,5 +99,17 @@ describe('getInsightPeriods', () => {
       expect(periods.comparisonEndExclusive).toEqual(utc('2025-12-01'));
       expect(periods.queryStart).toEqual(utc('2025-09-01'));
     });
+  });
+});
+
+describe('isWithin', () => {
+  const start = new Date('2026-10-01T00:00:00.000Z');
+  const endExclusive = new Date('2026-11-01T00:00:00.000Z');
+
+  it('should include the start and exclude the end', () => {
+    expect(isWithin(start, start, endExclusive)).toBe(true);
+    expect(isWithin(new Date('2026-10-31T00:00:00.000Z'), start, endExclusive)).toBe(true);
+    expect(isWithin(endExclusive, start, endExclusive)).toBe(false);
+    expect(isWithin(new Date('2026-09-30T00:00:00.000Z'), start, endExclusive)).toBe(false);
   });
 });

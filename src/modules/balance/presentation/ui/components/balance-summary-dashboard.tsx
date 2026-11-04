@@ -5,22 +5,21 @@ import { StatusMessage } from '@/shared/presentation/ui/components/status-messag
 
 import { BalanceSummaryUi } from '../types/balance-ui.types';
 import { BalanceSummaryCards } from './balance-summary-cards';
-import { FinanceEntryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 
 type BalanceSummaryDashboardProps = {
   summary?: BalanceSummaryUi | null;
   error?: string | null;
-  recentEntries?: FinanceEntryUi[];
   insightsSlot?: ReactNode;
   goalsSlot?: ReactNode;
+  recentEntriesSlot?: ReactNode;
 };
 
 export function BalanceSummaryDashboard({
   summary,
   error,
-  recentEntries = [],
   insightsSlot,
   goalsSlot,
+  recentEntriesSlot,
 }: BalanceSummaryDashboardProps) {
   if (error) {
     return (
@@ -39,9 +38,9 @@ export function BalanceSummaryDashboard({
   return (
     <BalanceSummaryCards
       summary={summary}
-      recentEntries={recentEntries}
       insightsSlot={insightsSlot}
       goalsSlot={goalsSlot}
+      recentEntriesSlot={recentEntriesSlot}
     />
   );
 }

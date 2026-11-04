@@ -8,6 +8,7 @@ import {
 } from '@/modules/finance/presentation/server/get-current-user-finance-data';
 import { MonthlyInsightsCard } from '@/modules/finance/presentation/ui/components/monthly-insights-card';
 import { MonthlyIncomeGoalsStrip } from '@/modules/finance/presentation/ui/components/monthly-income-goals-strip';
+import { RecentEntriesCard } from '@/modules/finance/presentation/ui/components/recent-entries-card';
 import { PageTitle } from '@/shared/presentation/ui/components/page-title';
 import { SCREEN_HELP } from '@/shared/presentation/ui/help/screen-help';
 
@@ -34,7 +35,6 @@ export default async function HomePage() {
       <BalanceSummaryDashboard
         summary={data}
         error={error}
-        recentEntries={recentEntries.data ?? []}
         goalsSlot={
           <MonthlyIncomeGoalsStrip overview={incomeGoals.data} error={incomeGoals.error} />
         }
@@ -45,6 +45,7 @@ export default async function HomePage() {
             hideMonthResult={Boolean(incomeGoals.data?.profit)}
           />
         }
+        recentEntriesSlot={<RecentEntriesCard entries={recentEntries.data ?? []} />}
       />
     </main>
   );

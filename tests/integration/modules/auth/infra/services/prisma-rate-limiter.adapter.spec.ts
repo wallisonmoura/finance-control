@@ -1,7 +1,7 @@
-import { PrismaLoginRateLimiterAdapter } from '@/modules/auth/infra/services/prisma-login-rate-limiter.adapter';
+import { PrismaRateLimiterAdapter } from '@/modules/auth/infra/services/prisma-rate-limiter.adapter';
 import { prisma } from '@/shared/infra/database/prisma/client';
 
-describe('PrismaLoginRateLimiterAdapter', () => {
+describe('PrismaRateLimiterAdapter', () => {
   const ip = '203.0.113.10';
 
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('PrismaLoginRateLimiterAdapter', () => {
   });
 
   function makeSut(maxAttempts = 5, windowMinutes = 15) {
-    return new PrismaLoginRateLimiterAdapter(prisma, maxAttempts, windowMinutes);
+    return new PrismaRateLimiterAdapter(prisma, maxAttempts, windowMinutes);
   }
 
   it('should not be blocked when there are no attempts recorded', async () => {

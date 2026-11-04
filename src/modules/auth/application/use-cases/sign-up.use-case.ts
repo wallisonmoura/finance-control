@@ -1,7 +1,7 @@
 import { EmailAlreadyInUseError } from '../../domain/errors/email-already-in-use.error';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { PasswordHasher } from '../../domain/services/password-hasher.port';
-import { TokenService } from '../../domain/services/token.port';
+import { PasswordHasherPort } from '../../domain/services/password-hasher.port';
+import { TokenPort } from '../../domain/services/token.port';
 import { Email } from '../../domain/value-objects/email.vo';
 import { SignUpInput } from '../dtos/sign-up.input';
 import { SignUpOutput } from '../dtos/sign-up.output';
@@ -9,8 +9,8 @@ import { SignUpOutput } from '../dtos/sign-up.output';
 export class SignUpUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly passwordHasher: PasswordHasher,
-    private readonly tokenService: TokenService,
+    private readonly passwordHasher: PasswordHasherPort,
+    private readonly tokenService: TokenPort,
   ) {}
 
   public async execute(input: SignUpInput): Promise<SignUpOutput> {

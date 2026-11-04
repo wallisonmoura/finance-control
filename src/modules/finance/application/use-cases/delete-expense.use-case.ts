@@ -1,5 +1,4 @@
 import { FinancialEntryType } from '../../domain/enums/financial-entry-type.enum';
-import { FinancialEntryLinkedToDebtError } from '../../domain/errors/financial-entry-linked-to-debt.error';
 import { FinancialEntryNotFoundError } from '../../domain/errors/financial-entry-not-found.error';
 import { UnauthorizedFinancialEntryAccessError } from '../../domain/errors/unauthorized-financial-entry-access.error';
 import { FinancialEntryRepository } from '../../domain/repositories/financial-entry.repository';
@@ -25,9 +24,7 @@ export class DeleteExpenseUseCase {
       throw new FinancialEntryNotFoundError();
     }
 
-    if (entry.isLinkedToDebt()) {
-      throw new FinancialEntryLinkedToDebtError();
-    }
+    entry.ensureCanBeChanged();
 
     await this.financialEntryRepository.delete(entry.id);
   }

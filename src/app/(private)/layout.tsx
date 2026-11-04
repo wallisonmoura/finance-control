@@ -1,5 +1,6 @@
 import { getCurrentAuthenticatedUser } from '@/modules/auth/presentation/server/get-current-authenticated-user';
 import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/current-user-menu';
+import { SignOutButton } from '@/modules/auth/presentation/ui/components/sign-out-button';
 import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
 import { getCurrentUserPendingDebts } from '@/modules/debts/presentation/server/get-current-user-debts';
 import { ThemeToggle } from '@/shared/presentation/ui/components/theme-toggle';
@@ -22,10 +23,20 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
   return (
     <div className='min-h-dvh bg-background md:flex'>
       <PrivateNavigation
-        currentUser={currentUser}
-        currentUserError={currentUserError}
-        initialPendingDebts={pendingDebts}
-        initialPendingDebtsError={pendingDebtsError}
+        mobileBarSlot={
+          <DebtsDueSoonBell
+            initialDebts={pendingDebts}
+            initialError={pendingDebtsError}
+          />
+        }
+        mobileUserSlot={
+          <CurrentUserMenu
+            initialUser={currentUser}
+            initialError={currentUserError}
+            showSignOut={false}
+          />
+        }
+        mobileFooterSlot={<SignOutButton className='w-full justify-center' />}
       />
 
       <div className='bg-app flex min-h-dvh min-w-0 flex-1 flex-col'>

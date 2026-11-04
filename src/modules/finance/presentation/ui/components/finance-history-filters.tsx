@@ -122,8 +122,8 @@ export function FinanceHistoryFilters({
           <Button
             type='submit'
             disabled={isLoading}
-            variant='custom'
-            className='h-11 w-full bg-primary px-5 text-base text-primary-foreground hover:bg-primary/90 xl:w-auto'
+            variant='solid'
+            className='h-11 w-full px-5 text-base xl:w-auto'
           >
             <Funnel aria-hidden='true' className='size-4' />
             {isLoading ? 'Aplicando...' : 'Aplicar filtros'}

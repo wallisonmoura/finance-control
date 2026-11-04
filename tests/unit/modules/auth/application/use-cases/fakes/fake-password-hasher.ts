@@ -1,6 +1,6 @@
-import { PasswordHasher } from '@/modules/auth/domain/services/password-hasher.port';
+import { PasswordHasherPort } from '@/modules/auth/domain/services/password-hasher.port';
 
-export class FakePasswordHasher implements PasswordHasher {
+export class FakePasswordHasher implements PasswordHasherPort {
   async compare(plainText: string, hash: string): Promise<boolean> {
     return plainText === hash;
   }

@@ -1,10 +1,10 @@
 import { ChangePasswordUseCase } from '../../application/use-cases/change-password.use-case';
 import { PrismaUserRepository } from '../repositories/prisma-user.repository';
-import { BcryptPasswordHasher } from '../services/bcrypt-password-hasher.adapter';
+import { BcryptPasswordHasherAdapter } from '../services/bcrypt-password-hasher.adapter';
 
 export function makeChangePasswordUseCase() {
   const userRepository = new PrismaUserRepository();
-  const passwordHasher = new BcryptPasswordHasher();
+  const passwordHasher = new BcryptPasswordHasherAdapter();
 
   return new ChangePasswordUseCase(userRepository, passwordHasher);
 }

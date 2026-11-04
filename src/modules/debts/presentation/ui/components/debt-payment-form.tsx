@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { ExpenseCategoryUi } from '@/modules/finance/presentation/ui/types/finance-ui.types';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Card } from '@/shared/presentation/ui/components/card';
 import { FormErrorMessage } from '@/shared/presentation/ui/components/form-error-message';
@@ -15,11 +14,11 @@ import { getTodayDateValue } from '@/shared/presentation/ui/lib/date';
 import { SelectField } from '@/shared/presentation/ui/components/select-field';
 
 import { payDebt, undoDebtPayment } from '../services/debt-api.service';
-import { DebtPaymentSourceUi, DebtUi } from '../types/debts-ui.types';
+import { DebtPaymentCategoryUi, DebtPaymentSourceUi, DebtUi } from '../types/debts-ui.types';
 
 type DebtPaymentFormProps = {
   debt: DebtUi;
-  categories: ExpenseCategoryUi[];
+  categories: DebtPaymentCategoryUi[];
   isLoadingCategories?: boolean;
   categoriesError?: string | null;
   onDebtPaid?: () => void | Promise<void>;
@@ -221,8 +220,8 @@ export function DebtPaymentForm({
           <Button
             type='submit'
             disabled={cannotSubmit}
-            variant='custom'
-            className='h-12 bg-primary px-6 text-primary-foreground hover:bg-primary/90'
+            variant='solid'
+            className='h-12 px-6'
           >
             <LockKeyhole aria-hidden='true' className='size-4' />
             {isSubmitting ? 'Pagando...' : 'Confirmar pagamento'}

@@ -9,7 +9,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: Ref<HTMLButtonElement>;
   asChild?: boolean;
   fullWidth?: boolean;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'custom';
+  variant?: 'primary' | 'solid' | 'secondary' | 'danger' | 'ghost' | 'custom';
 };
 
 export function Button({
@@ -22,6 +22,7 @@ export function Button({
 }: ButtonProps) {
   const primitiveVariant = {
     primary: 'default',
+    solid: 'custom',
     secondary: 'secondary',
     danger: 'destructive',
     ghost: 'ghost',
@@ -31,6 +32,9 @@ export function Button({
   const variantClassName = {
     primary:
       'bg-accent text-accent-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:ring-ring',
+    // Dark filled button for the main action of a form or filter bar.
+    solid:
+      'bg-primary text-primary-foreground shadow-none hover:bg-primary/90 focus-visible:ring-ring',
     secondary:
       'bg-card text-foreground ring-1 ring-border shadow-sm hover:bg-muted hover:text-foreground focus-visible:ring-ring',
     danger:

@@ -1,6 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { useLatestRequest } from '@/shared/presentation/ui/hooks/use-latest-request';
 
 import {
   getExpenseCategories,
@@ -28,11 +30,10 @@ export function useCategoryExpensesChart(
   const [data, setData] = useState<CategoryExpenseChartDatum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const requestIdRef = useRef(0);
+  const latestRequest = useLatestRequest();
 
   const load = useCallback(async () => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
+    const isLatest = latestRequest.start();
 
     setIsLoading(true);
     setError(null);
@@ -44,7 +45,7 @@ export function useCategoryExpensesChart(
       getExpenseCategories(),
     ]);
 
-    if (requestId !== requestIdRef.current) {
+    if (!isLatest()) {
       return;
     }
 
@@ -91,23 +92,23 @@ export function useCategoryExpensesChart(
 
     setData(aggregated);
     setIsLoading(false);
-  }, [months]);
+  }, [months, latestRequest]);
 
   useEffect(() => {
     // This effect must re-fetch every time `months` changes (there's no
     // separate user-action handler like other hooks in this codebase have —
     // the period selector just re-renders with a new `months` prop), so it
     // can't use the "only fetch when there's no SSR initialData" guard the
-    // rest of the codebase relies on to satisfy this rule. requestIdRef
+    // rest of the codebase relies on to satisfy this rule. useLatestRequest
     // above still discards stale in-flight responses if `months` changes
     // again before the first request resolves.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
 
     return () => {
-      requestIdRef.current += 1;
+      latestRequest.cancel();
     };
-  }, [load]);
+  }, [load, latestRequest]);
 
   return { data, isLoading, error, refresh: load };
 }

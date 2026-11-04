@@ -129,3 +129,10 @@ export function getInsightPeriods(
     queryEndExclusive: currentEndExclusive,
   };
 }
+
+// Start included, end excluded: the periods above are [start, endExclusive).
+export function isWithin(date: Date, start: Date, endExclusive: Date): boolean {
+  const time = date.getTime();
+
+  return time >= start.getTime() && time < endExclusive.getTime();
+}

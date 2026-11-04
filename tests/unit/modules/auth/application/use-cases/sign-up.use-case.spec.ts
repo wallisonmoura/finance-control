@@ -55,7 +55,7 @@ describe('SignUpUseCase', () => {
     });
   });
 
-  it('should hash the password via the PasswordHasher port instead of storing it raw', async () => {
+  it('should hash the password via the PasswordHasherPort port instead of storing it raw', async () => {
     const { useCase, userRepository } = makeSut([]);
 
     const result = await useCase.execute({

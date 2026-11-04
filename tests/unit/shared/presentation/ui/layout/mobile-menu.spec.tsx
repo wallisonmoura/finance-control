@@ -1,45 +1,21 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { getCurrentUser } from '@/modules/auth/presentation/ui/services/auth-api.service';
 import { MobileMenu } from '@/shared/presentation/ui/layout/mobile-menu';
 
-jest.mock('@/modules/auth/presentation/ui/services/auth-api.service', () => ({
-  getCurrentUser: jest.fn(),
-  signOut: jest.fn(),
-}));
-
-const mockReplace = jest.fn();
-const mockRefresh = jest.fn();
-const mockedGetCurrentUser = jest.mocked(getCurrentUser);
-const currentUser = {
-  id: 'user-id',
-  name: 'Admin Local',
-  email: 'admin@financecontrol.com',
+// The user menu, sign out and the debts bell come from other modules; the
+// layout passes them in, so here they are plain placeholders.
+const slots = {
+  barSlot: <button type='button'>Sino</button>,
+  userSlot: <p>Usuário logado</p>,
+  footerSlot: <button type='button'>Sair</button>,
 };
 
 function renderMobileMenu(pathname = '/') {
-  return render(<MobileMenu pathname={pathname} currentUser={currentUser} />);
+  return render(<MobileMenu pathname={pathname} {...slots} />);
 }
 
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    replace: mockReplace,
-    refresh: mockRefresh,
-  }),
-}));
-
 describe('MobileMenu', () => {
-  beforeEach(() => {
-    mockReplace.mockReset();
-    mockRefresh.mockReset();
-    mockedGetCurrentUser.mockResolvedValue({
-      data: {
-        user: currentUser,
-      },
-    });
-  });
-
   it('should render the application logo for both light and dark theme', () => {
     renderMobileMenu();
 
@@ -127,17 +103,22 @@ describe('MobileMenu', () => {
     );
   });
 
-  it('should render the current user controls inside the open menu', async () => {
+  it('should render the user and sign out slots only inside the open menu', async () => {
     const user = userEvent.setup();
 
     renderMobileMenu();
 
-    expect(screen.queryByText('Admin Local')).not.toBeInTheDocument();
+    expect(screen.queryByText('Usuário logado')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sair' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
 
-    expect(screen.getByText('Admin Local')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument();
+    const navigation = screen.getByRole('navigation', { name: 'Navegação principal mobile' });
+    const userInfo = screen.getByText('Usuário logado');
+    const signOut = screen.getByRole('button', { name: 'Sair' });
+
+    expect(userInfo.compareDocumentPosition(navigation) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(navigation.compareDocumentPosition(signOut) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('should mark the active mobile link', async () => {
@@ -189,7 +170,7 @@ describe('MobileMenu', () => {
 
     render(
       <div>
-        <MobileMenu pathname='/' currentUser={currentUser} />
+        <MobileMenu pathname='/' {...slots} />
         <button type='button'>outside area</button>
       </div>,
     );
@@ -211,12 +192,10 @@ describe('MobileMenu', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should render the due-soon debts bell in the always-visible bar', () => {
+  it('should render the bar slot (the debts bell) while the menu is closed', () => {
     renderMobileMenu();
 
-    expect(
-      screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sino' })).toBeInTheDocument();
   });
 
   it('should close the menu when pressing Escape', async () => {

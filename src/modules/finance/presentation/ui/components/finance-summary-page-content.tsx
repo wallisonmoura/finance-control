@@ -235,8 +235,8 @@ function SummaryFilterForm({
           type='button'
           onClick={handleApplyFilters}
           disabled={isLoading}
-          variant='custom'
-          className='h-12 w-full bg-primary px-6 text-base text-primary-foreground hover:bg-primary/90 lg:w-auto'
+          variant='solid'
+          className='h-12 w-full px-6 text-base lg:w-auto'
         >
           <Funnel aria-hidden='true' className='size-4' />
           {isLoading ? 'Carregando...' : 'Aplicar filtros'}

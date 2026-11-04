@@ -1,10 +1,10 @@
 import { compare } from 'bcryptjs';
 
-import { BcryptPasswordHasher } from '@/modules/auth/infra/services/bcrypt-password-hasher.adapter';
+import { BcryptPasswordHasherAdapter } from '@/modules/auth/infra/services/bcrypt-password-hasher.adapter';
 
-describe('BcryptPasswordHasher', () => {
+describe('BcryptPasswordHasherAdapter', () => {
   it('should hash a plain text password', async () => {
-    const sut = new BcryptPasswordHasher();
+    const sut = new BcryptPasswordHasherAdapter();
 
     const hash = await sut.hash('123456');
 
