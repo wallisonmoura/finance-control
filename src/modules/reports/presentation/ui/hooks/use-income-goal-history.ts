@@ -1,6 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useLatestRequest } from '@/shared/presentation/ui/hooks/use-latest-request';
 
 import { getMonthlySummaryRange } from '@/modules/finance/presentation/ui/services/finance-api.service';
 import {
@@ -37,20 +39,19 @@ export function useIncomeGoalHistory(
   const [targets, setTargets] = useState<IncomeGoalTargetsUi>(initialTargets);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const requestIdRef = useRef(0);
+  const latestRequest = useLatestRequest();
 
   const range = useMemo(() => getReportsDateRangeForMonths(months), [months]);
 
   const load = useCallback(async () => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
+    const isLatest = latestRequest.start();
 
     setIsLoading(true);
     setError(null);
 
     const response = await getMonthlySummaryRange(months);
 
-    if (requestId !== requestIdRef.current) {
+    if (!isLatest()) {
       return;
     }
 
@@ -62,18 +63,18 @@ export function useIncomeGoalHistory(
     }
 
     setIsLoading(false);
-  }, [months]);
+  }, [months, latestRequest]);
 
   useEffect(() => {
     // Re-fetches whenever the period changes (same reason as
-    // use-category-history.ts); requestIdRef discards stale responses.
+    // use-category-history.ts); useLatestRequest discards stale responses.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
 
     return () => {
-      requestIdRef.current += 1;
+      latestRequest.cancel();
     };
-  }, [load]);
+  }, [load, latestRequest]);
 
   const target = measure === 'revenue' ? targets.revenueTarget : targets.profitTarget;
 

@@ -1,6 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { useLatestRequest } from '@/shared/presentation/ui/hooks/use-latest-request';
 
 import {
   getFullFinanceHistory,
@@ -48,12 +50,11 @@ export function useFinanceOperationalSummary(
   const [error, setError] = useState<string | null>(
     initialFilters?.initialError ?? null,
   );
-  const requestIdRef = useRef(0);
+  const latestRequest = useLatestRequest();
 
   const loadSummary = useCallback(
     async (nextFilters: FinanceOperationalSummaryFilters) => {
-      const requestId = requestIdRef.current + 1;
-      requestIdRef.current = requestId;
+      const isLatest = latestRequest.start();
 
       setIsLoading(true);
       setError(null);
@@ -71,7 +72,7 @@ export function useFinanceOperationalSummary(
         }),
       ]);
 
-      if (requestId !== requestIdRef.current) {
+      if (!isLatest()) {
         return;
       }
 
@@ -96,7 +97,7 @@ export function useFinanceOperationalSummary(
       );
       setIsLoading(false);
     },
-    [],
+    [latestRequest],
   );
 
   const applyFilters = useCallback(
@@ -114,14 +115,14 @@ export function useFinanceOperationalSummary(
   useEffect(() => {
     if (hasInitialResult) {
       return () => {
-        requestIdRef.current += 1;
+        latestRequest.cancel();
       };
     }
 
     void loadSummary(filters);
 
     return () => {
-      requestIdRef.current += 1;
+      latestRequest.cancel();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

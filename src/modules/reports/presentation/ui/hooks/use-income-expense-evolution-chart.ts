@@ -1,6 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { useLatestRequest } from '@/shared/presentation/ui/hooks/use-latest-request';
 
 import { getMonthlySummaryRange } from '@/modules/finance/presentation/ui/services/finance-api.service';
 
@@ -25,18 +27,17 @@ export function useIncomeExpenseEvolutionChart(
   const [data, setData] = useState<IncomeExpenseEvolutionChartDatum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const requestIdRef = useRef(0);
+  const latestRequest = useLatestRequest();
 
   const load = useCallback(async () => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
+    const isLatest = latestRequest.start();
 
     setIsLoading(true);
     setError(null);
 
     const response = await getMonthlySummaryRange(months);
 
-    if (requestId !== requestIdRef.current) {
+    if (!isLatest()) {
       return;
     }
 
@@ -55,19 +56,19 @@ export function useIncomeExpenseEvolutionChart(
 
     setData(mapped);
     setIsLoading(false);
-  }, [months]);
+  }, [months, latestRequest]);
 
   useEffect(() => {
     // See use-category-expenses-chart.ts for why this needs the
-    // requestIdRef guard + eslint-disable-next-line instead of the
+    // useLatestRequest guard + eslint-disable-next-line instead of the
     // SSR-initialData guard the rest of the codebase uses.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
 
     return () => {
-      requestIdRef.current += 1;
+      latestRequest.cancel();
     };
-  }, [load]);
+  }, [load, latestRequest]);
 
   return { data, isLoading, error, refresh: load };
 }
