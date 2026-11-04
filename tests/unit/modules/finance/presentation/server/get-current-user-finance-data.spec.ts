@@ -2,6 +2,7 @@ import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-a
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
 import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
+import { makeGetRecentTransactionsUseCase } from '@/modules/finance/infra/factories/make-get-recent-transactions-use-case';
 import { makeGetSpendingGoalsUseCase } from '@/modules/finance/infra/factories/make-get-spending-goals-use-case';
 import { makeGetIncomeGoalsUseCase } from '@/modules/finance/infra/factories/make-get-income-goals-use-case';
 import { makeListExpenseCategoriesUseCase } from '@/modules/finance/infra/factories/make-list-expense-categories-use-case';
@@ -12,6 +13,7 @@ import {
   getCurrentUserIncomeGoals,
   getCurrentUserMonthlyInsights,
   getCurrentUserOperationalSummary,
+  getCurrentUserRecentEntries,
   getCurrentUserSpendingGoals,
 } from '@/modules/finance/presentation/server/get-current-user-finance-data';
 
@@ -581,6 +583,80 @@ describe('getCurrentUserIncomeGoals', () => {
 
     await expect(getCurrentUserIncomeGoals()).resolves.toEqual({
       error: 'Não foi possível carregar as metas de ganho.',
+    });
+  });
+});
+
+jest.mock(
+  '@/modules/finance/infra/factories/make-get-recent-transactions-use-case',
+  () => ({
+    makeGetRecentTransactionsUseCase: jest.fn(),
+  }),
+);
+
+const makeGetRecentTransactionsUseCaseMock = jest.mocked(makeGetRecentTransactionsUseCase);
+
+describe('getCurrentUserRecentEntries', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return unauthenticated error when there is no current user', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue(null);
+
+    await expect(getCurrentUserRecentEntries()).resolves.toEqual({
+      error: 'Não autenticado',
+    });
+    expect(makeGetRecentTransactionsUseCaseMock).not.toHaveBeenCalled();
+  });
+
+  it("should ask for the user's 5 newest entries and serialize them", async () => {
+    const execute = jest.fn().mockResolvedValue([
+      {
+        id: 'entry-1',
+        userId: 'user-1',
+        type: 'INCOME',
+        amount: 100,
+        description: 'Venda',
+        date: new Date('2026-10-31T00:00:00.000Z'),
+        categoryId: undefined,
+        debtId: undefined,
+        notes: undefined,
+        createdAt: new Date('2026-10-31T12:00:00.000Z'),
+        updatedAt: new Date('2026-10-31T12:00:00.000Z'),
+      },
+    ]);
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetRecentTransactionsUseCaseMock.mockReturnValue({ execute } as never);
+
+    await expect(getCurrentUserRecentEntries()).resolves.toEqual({
+      data: [
+        {
+          id: 'entry-1',
+          userId: 'user-1',
+          type: 'INCOME',
+          amount: 100,
+          description: 'Venda',
+          date: '2026-10-31T00:00:00.000Z',
+          categoryId: null,
+          debtId: null,
+          notes: null,
+          createdAt: '2026-10-31T12:00:00.000Z',
+          updatedAt: '2026-10-31T12:00:00.000Z',
+        },
+      ],
+    });
+    expect(execute).toHaveBeenCalledWith({ userId: 'user-1', limit: 5 });
+  });
+
+  it('should return an error message when the use case fails', async () => {
+    getAuthenticatedUserIdMock.mockResolvedValue('user-1');
+    makeGetRecentTransactionsUseCaseMock.mockReturnValue({
+      execute: jest.fn().mockRejectedValue(new Error('db down')),
+    } as never);
+
+    await expect(getCurrentUserRecentEntries()).resolves.toEqual({
+      error: 'Não foi possível carregar os lançamentos recentes.',
     });
   });
 });

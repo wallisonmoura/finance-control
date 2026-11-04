@@ -8,6 +8,8 @@ export interface FinancialEntryRepository {
   update(entry: FinancialEntry): Promise<FinancialEntry>;
   delete(id: string): Promise<void>;
   findByUserIdAndDate(userId: string, date: Date): Promise<FinancialEntry[]>;
+  // The user's newest entries from any period, newest first.
+  findLatestByUserId(userId: string, limit: number): Promise<FinancialEntry[]>;
   findByUserIdAndPeriod(
     userId: string,
     startDate: Date,
