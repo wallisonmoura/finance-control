@@ -1,14 +1,14 @@
 jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
-  JoseJwtTokenService: jest.fn(),
+  JoseJwtTokenAdapter: jest.fn(),
 }));
 
 import { POST } from '@/app/api/auth/register/route';
 import { AUTH_COOKIE_NAME } from '@/modules/auth/constants/auth.constants';
-import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
+import { JoseJwtTokenAdapter } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { NextRequest } from 'next/server';
 
-const JoseJwtTokenServiceMock = JoseJwtTokenService as unknown as jest.Mock;
+const JoseJwtTokenServiceMock = JoseJwtTokenAdapter as unknown as jest.Mock;
 
 function makeRequest(body: unknown) {
   return new NextRequest('http://localhost:3000/api/auth/register', {

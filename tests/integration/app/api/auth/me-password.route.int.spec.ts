@@ -6,7 +6,7 @@ jest.mock(
 );
 
 jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
-  JoseJwtTokenService: jest.fn(),
+  JoseJwtTokenAdapter: jest.fn(),
 }));
 
 jest.mock(
@@ -19,7 +19,7 @@ jest.mock(
 import { PUT } from '@/app/api/auth/me/password/route';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { makeChangePasswordUseCase } from '@/modules/auth/infra/factories/make-change-password-use-case';
-import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
+import { JoseJwtTokenAdapter } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
 import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
 import { NextRequest } from 'next/server';
 
@@ -28,7 +28,7 @@ const makeChangePasswordUseCaseMock =
     typeof makeChangePasswordUseCase
   >;
 
-const JoseJwtTokenServiceMock = JoseJwtTokenService as unknown as jest.Mock;
+const JoseJwtTokenServiceMock = JoseJwtTokenAdapter as unknown as jest.Mock;
 
 const getAuthTokenFromRequestMock =
   getAuthTokenFromRequest as jest.MockedFunction<

@@ -1,10 +1,10 @@
 import { jwtVerify, SignJWT } from 'jose';
 import {
   TokenPayload,
-  TokenService,
+  TokenPort,
 } from '../../domain/services/token.port';
 
-export class JoseJwtTokenService implements TokenService {
+export class JoseJwtTokenAdapter implements TokenPort {
   constructor(
     private readonly secret: string,
     private readonly expiresIn: string,

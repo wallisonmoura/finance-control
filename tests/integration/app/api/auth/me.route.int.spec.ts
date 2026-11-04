@@ -13,7 +13,7 @@ jest.mock(
 );
 
 jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
-  JoseJwtTokenService: jest.fn(),
+  JoseJwtTokenAdapter: jest.fn(),
 }));
 
 jest.mock(
@@ -28,7 +28,7 @@ import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.e
 import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
 import { makeUpdateUserProfileUseCase } from '@/modules/auth/infra/factories/make-update-user-profile-use-case';
-import { JoseJwtTokenService } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
+import { JoseJwtTokenAdapter } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
 import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
 import { NextRequest } from 'next/server';
 
@@ -42,7 +42,7 @@ const makeUpdateUserProfileUseCaseMock =
     typeof makeUpdateUserProfileUseCase
   >;
 
-const JoseJwtTokenServiceMock = JoseJwtTokenService as unknown as jest.Mock;
+const JoseJwtTokenServiceMock = JoseJwtTokenAdapter as unknown as jest.Mock;
 
 const getAuthTokenFromRequestMock =
   getAuthTokenFromRequest as jest.MockedFunction<

@@ -2,14 +2,14 @@ import { SignInUseCase } from '@/modules/auth/application/use-cases/sign-in.use-
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import {
   TokenPayload,
-  TokenService,
+  TokenPort,
 } from '@/modules/auth/domain/services/token.port';
 import { PrismaUserRepository } from '@/modules/auth/infra/repositories/prisma-user.repository';
-import { BcryptPasswordHasher } from '@/modules/auth/infra/services/bcrypt-password-hasher.adapter';
+import { BcryptPasswordHasherAdapter } from '@/modules/auth/infra/services/bcrypt-password-hasher.adapter';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { hash } from 'bcryptjs';
 
-class FakeTokenService implements TokenService {
+class FakeTokenService implements TokenPort {
   async generateAccessToken(payload: TokenPayload): Promise<string> {
     return `token-for-${payload.sub}`;
   }
@@ -27,7 +27,7 @@ describe('SignInUseCase Integration', () => {
 
   beforeAll(async () => {
     const userRepository = new PrismaUserRepository();
-    const passwordHasher = new BcryptPasswordHasher();
+    const passwordHasher = new BcryptPasswordHasherAdapter();
     const tokenService = new FakeTokenService();
 
     signInUseCase = new SignInUseCase(
