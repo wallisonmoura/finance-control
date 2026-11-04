@@ -6,6 +6,8 @@ import { InsightMonth, InsightPeriods } from './insight-periods';
 
 export const INSIGHT_MIN_CHANGE_PERCENT = 20;
 export const INSIGHT_MIN_CHANGE_AMOUNT = 50;
+// How many category rises (and drops) the card shows at most.
+const MAX_CATEGORY_CHANGES_PER_DIRECTION = 2;
 // null = the category could not be resolved (e.g. it no longer exists).
 // How to display it is a presentation concern.
 type CategoryName = string | null;
@@ -21,7 +23,8 @@ export type MonthlyInsight =
       // null = category had no expense in the comparison period
       changePercent: number | null;
       // How much going back to the comparison-period level would save.
-      // null for a new category (no previous level to go back to).
+      // null for a new category (no previous level to go back to) and for
+      // every rise but the largest one, so the suggestion is not repeated.
       potentialSaving: number | null;
     }
   | { kind: 'EXPENSE_CATEGORY_DROP'; categoryName: CategoryName; current: number; previous: number; changePercent: number }
@@ -193,37 +196,37 @@ function buildExpenseInsights(
     })
     .filter(isRelevantChange);
 
-  const [largestRise] = relevantChanges
+  const largestRises = relevantChanges
     .filter((change) => change.difference > 0)
-    .sort(byLargestThenName((change) => change.difference));
+    .sort(byLargestThenName((change) => change.difference))
+    .slice(0, MAX_CATEGORY_CHANGES_PER_DIRECTION);
 
-  if (largestRise) {
+  largestRises.forEach((rise, index) => {
     insights.push({
       kind: 'EXPENSE_CATEGORY_RISE',
-      categoryName: largestRise.categoryName,
-      current: largestRise.current,
-      previous: largestRise.previous,
-      changePercent:
-        largestRise.previous === 0
-          ? null
-          : changePercent(largestRise.current, largestRise.previous),
-      potentialSaving: largestRise.previous === 0 ? null : largestRise.difference,
+      categoryName: rise.categoryName,
+      current: rise.current,
+      previous: rise.previous,
+      changePercent: rise.previous === 0 ? null : changePercent(rise.current, rise.previous),
+      // Only the largest rise suggests a saving, so the sentence is not repeated.
+      potentialSaving: index === 0 && rise.previous !== 0 ? rise.difference : null,
     });
-  }
+  });
 
-  const [largestDrop] = relevantChanges
+  const largestDrops = relevantChanges
     .filter((change) => change.difference < 0)
-    .sort(byLargestThenName((change) => -change.difference));
+    .sort(byLargestThenName((change) => -change.difference))
+    .slice(0, MAX_CATEGORY_CHANGES_PER_DIRECTION);
 
-  if (largestDrop) {
+  largestDrops.forEach((drop) => {
     insights.push({
       kind: 'EXPENSE_CATEGORY_DROP',
-      categoryName: largestDrop.categoryName,
-      current: largestDrop.current,
-      previous: largestDrop.previous,
-      changePercent: changePercent(largestDrop.current, largestDrop.previous),
+      categoryName: drop.categoryName,
+      current: drop.current,
+      previous: drop.previous,
+      changePercent: changePercent(drop.current, drop.previous),
     });
-  }
+  });
 
   return insights;
 }

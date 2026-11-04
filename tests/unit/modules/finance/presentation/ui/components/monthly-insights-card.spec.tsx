@@ -51,6 +51,43 @@ describe('MonthlyInsightsCard', () => {
     expect(screen.getByText(/^− R\$/)).toHaveClass('text-expense');
   });
 
+  it('should list two rises of the same kind, each once', () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <MonthlyInsightsCard
+        insights={{
+          ...insights,
+          expenseInsights: [
+            {
+              kind: 'EXPENSE_CATEGORY_RISE',
+              categoryName: 'Transporte',
+              current: 600,
+              previous: 400,
+              changePercent: 50,
+              potentialSaving: 200,
+            },
+            {
+              kind: 'EXPENSE_CATEGORY_RISE',
+              categoryName: 'Pet',
+              current: 400,
+              previous: 300,
+              changePercent: 33,
+              potentialSaving: null,
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(getSentence('Gasto com Transporte subiu 50%')).toHaveTextContent('você economiza');
+    expect(getSentence('Gasto com Pet subiu 33%')).not.toHaveTextContent('você economiza');
+    // Same kind twice must not share a React key.
+    expect(consoleError).not.toHaveBeenCalled();
+
+    consoleError.mockRestore();
+  });
+
   it('should render a single empty message when the month has no entries', () => {
     render(
       <MonthlyInsightsCard
