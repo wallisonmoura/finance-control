@@ -22,12 +22,13 @@ describe('BalanceSummaryCards', () => {
       <BalanceSummaryCards
         summary={summary}
         insightsSlot={<div data-testid='insights-slot' />}
+        recentEntriesSlot={<div data-testid='recent-entries-slot' />}
       />,
     );
 
     const composition = screen.getByRole('heading', { name: 'Composição dos saldos' });
     const slot = screen.getByTestId('insights-slot');
-    const recent = screen.getByRole('heading', { name: 'Transações recentes' });
+    const recent = screen.getByTestId('recent-entries-slot');
 
     expect(
       composition.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING,
@@ -69,14 +70,6 @@ describe('BalanceSummaryCards', () => {
     await user.click(screen.getByRole('button', { name: `O que é ${term}?` }));
 
     expect(await screen.findByText(text)).toBeInTheDocument();
-  });
-
-  // Recent entries come from any month, so an empty list means no entries at
-  // all, not none this month.
-  it('should say there are no entries yet when the recent list is empty', () => {
-    render(<BalanceSummaryCards summary={summary} recentEntries={[]} />);
-
-    expect(screen.getByText('Nenhuma transação registrada ainda.')).toBeInTheDocument();
   });
 
   it('should render all summary card labels', () => {
