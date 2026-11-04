@@ -71,6 +71,14 @@ describe('BalanceSummaryCards', () => {
     expect(await screen.findByText(text)).toBeInTheDocument();
   });
 
+  // Recent entries come from any month, so an empty list means no entries at
+  // all, not none this month.
+  it('should say there are no entries yet when the recent list is empty', () => {
+    render(<BalanceSummaryCards summary={summary} recentEntries={[]} />);
+
+    expect(screen.getByText('Nenhuma transação registrada ainda.')).toBeInTheDocument();
+  });
+
   it('should render all summary card labels', () => {
     render(<BalanceSummaryCards summary={summary} />);
 

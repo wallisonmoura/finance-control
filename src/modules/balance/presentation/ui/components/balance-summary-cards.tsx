@@ -188,7 +188,7 @@ export function BalanceSummaryCards({
         <Card className='overflow-hidden p-0'>
           {recentEntries.length === 0 ? (
             <p className='p-5 text-sm text-muted-foreground'>
-              Nenhuma transação registrada neste mês.
+              Nenhuma transação registrada ainda.
             </p>
           ) : (
             <>
