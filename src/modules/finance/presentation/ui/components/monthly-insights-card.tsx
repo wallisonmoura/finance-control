@@ -90,8 +90,9 @@ function InsightColumn({
         <p className='text-sm text-muted-foreground'>{emptyText}</p>
       ) : (
         <ul className='space-y-3'>
-          {items.map((insight) => (
-            <InsightItem key={insight.kind} insight={insight} context={context} />
+          {items.map((insight, index) => (
+            // A kind can repeat (up to two rises and two drops), so it is not a key on its own.
+            <InsightItem key={`${insight.kind}-${index}`} insight={insight} context={context} />
           ))}
         </ul>
       )}

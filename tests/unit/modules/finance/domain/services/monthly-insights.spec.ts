@@ -54,6 +54,10 @@ function find(list: MonthlyInsight[], kind: MonthlyInsightKind) {
   return list.find((insight) => insight.kind === kind);
 }
 
+function filter(list: MonthlyInsight[], kind: MonthlyInsightKind) {
+  return list.filter((insight) => insight.kind === kind);
+}
+
 describe('buildMonthlyInsights', () => {
   it('should return no insights when there are no entries', () => {
     expect(build([])).toEqual({
@@ -171,6 +175,53 @@ describe('buildMonthlyInsights', () => {
       });
     });
 
+    it('should report the two largest relevant rises, with the saving only on the largest', () => {
+      const result = build([
+        expense(280, '2026-09-10', 'cat-fun'),
+        expense(200, '2026-08-10', 'cat-fun'),
+        expense(600, '2026-09-10', 'cat-car'),
+        expense(400, '2026-08-10', 'cat-car'),
+        expense(400, '2026-09-10', 'cat-pet'),
+        expense(300, '2026-08-10', 'cat-pet'),
+      ]);
+
+      expect(filter(result.expenseInsights, 'EXPENSE_CATEGORY_RISE')).toEqual([
+        {
+          kind: 'EXPENSE_CATEGORY_RISE',
+          categoryName: 'Transporte',
+          current: 600,
+          previous: 400,
+          changePercent: 50,
+          potentialSaving: 200,
+        },
+        {
+          kind: 'EXPENSE_CATEGORY_RISE',
+          categoryName: 'Pet',
+          current: 400,
+          previous: 300,
+          changePercent: 33,
+          potentialSaving: null,
+        },
+      ]);
+    });
+
+    it('should not report a second rise that does not pass the thresholds', () => {
+      const result = build([
+        expense(600, '2026-09-10', 'cat-car'),
+        expense(400, '2026-08-10', 'cat-car'),
+        expense(249, '2026-09-10', 'cat-fun'),
+        expense(200, '2026-08-10', 'cat-fun'),
+        expense(1190, '2026-09-10', 'cat-food'),
+        expense(1000, '2026-08-10', 'cat-food'),
+      ]);
+
+      expect(
+        filter(result.expenseInsights, 'EXPENSE_CATEGORY_RISE').map((insight) =>
+          insight.kind === 'EXPENSE_CATEGORY_RISE' ? insight.categoryName : null,
+        ),
+      ).toEqual(['Transporte']);
+    });
+
     it('should not report a rise that passes the percent but not the amount threshold', () => {
       const result = build([
         expense(40, '2026-09-10', 'cat-bar'),
@@ -240,6 +291,23 @@ describe('buildMonthlyInsights', () => {
         previous: 400,
         changePercent: -25,
       });
+    });
+
+    it('should report the two largest relevant drops', () => {
+      const result = build([
+        expense(100, '2026-09-10', 'cat-fun'),
+        expense(200, '2026-08-10', 'cat-fun'),
+        expense(200, '2026-09-10', 'cat-car'),
+        expense(500, '2026-08-10', 'cat-car'),
+        expense(50, '2026-09-10', 'cat-pet'),
+        expense(80, '2026-08-10', 'cat-pet'),
+      ]);
+
+      expect(
+        filter(result.expenseInsights, 'EXPENSE_CATEGORY_DROP').map((insight) =>
+          insight.kind === 'EXPENSE_CATEGORY_DROP' ? insight.categoryName : null,
+        ),
+      ).toEqual(['Transporte', 'Lazer']);
     });
 
     it('should report a drop to zero as -100%', () => {

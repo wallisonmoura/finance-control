@@ -90,6 +90,17 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
     return { totalIncome, totalExpense, count: matches.length };
   }
 
+  async findLatestByUserId(userId: string, limit: number): Promise<FinancialEntry[]> {
+    return this.entries
+      .filter((entry) => entry.userId === userId)
+      .sort(
+        (a, b) =>
+          b.date.getTime() - a.date.getTime() ||
+          b.createdAt.getTime() - a.createdAt.getTime(),
+      )
+      .slice(0, limit);
+  }
+
   async findByUserIdAndPeriodPaginated(
     userId: string,
     startDate: Date,

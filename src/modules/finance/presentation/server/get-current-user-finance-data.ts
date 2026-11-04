@@ -5,6 +5,7 @@ import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/tra
 import { FinancialEntryType } from '@/modules/finance/domain/enums/financial-entry-type.enum';
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetMonthlyInsightsUseCase } from '@/modules/finance/infra/factories/make-get-monthly-insights-use-case';
+import { makeGetRecentTransactionsUseCase } from '@/modules/finance/infra/factories/make-get-recent-transactions-use-case';
 import { makeGetIncomeGoalsUseCase } from '@/modules/finance/infra/factories/make-get-income-goals-use-case';
 import { makeGetSpendingGoalsUseCase } from '@/modules/finance/infra/factories/make-get-spending-goals-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
@@ -138,6 +139,40 @@ export async function getCurrentUserFinanceHistory(
   } catch {
     return {
       error: 'Não foi possível carregar histórico financeiro.',
+    };
+  }
+}
+
+// How many entries the dashboard's "Transações recentes" shows.
+const RECENT_ENTRIES_LIMIT = 5;
+
+type CurrentUserRecentEntriesResult = {
+  data?: FinanceEntryUi[];
+  error?: string;
+};
+
+export async function getCurrentUserRecentEntries(): Promise<CurrentUserRecentEntriesResult> {
+  const auth = await getCurrentUserIdOrError();
+
+  if ('error' in auth) {
+    return {
+      error: auth.error,
+    };
+  }
+
+  try {
+    const useCase = makeGetRecentTransactionsUseCase();
+    const entries = await useCase.execute({
+      userId: auth.userId,
+      limit: RECENT_ENTRIES_LIMIT,
+    });
+
+    return {
+      data: entries.map(toFinanceEntryUi),
+    };
+  } catch {
+    return {
+      error: 'Não foi possível carregar os lançamentos recentes.',
     };
   }
 }

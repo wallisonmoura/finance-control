@@ -473,6 +473,42 @@ describe('PrismaFinancialEntryRepository', () => {
     });
   });
 
+  describe('findLatestByUserId', () => {
+    it("should return the user's latest entries across months, newest first", async () => {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id, isDefault: true });
+      const otherUser = await createTestUser();
+      const otherWallet = await createTestWallet({ userId: otherUser.id, isDefault: true });
+
+      // One entry per month, from June to October: crosses month boundaries.
+      for (let month = 5; month <= 9; month += 1) {
+        await createTestFinancialEntry({
+          userId: user.id,
+          walletId: wallet.id,
+          type: 'INCOME',
+          description: `Entry month ${month + 1}`,
+          transactionDate: new Date(Date.UTC(2026, month, 10)),
+        });
+      }
+      // Newer than all of the user's entries, but someone else's.
+      await createTestFinancialEntry({
+        userId: otherUser.id,
+        walletId: otherWallet.id,
+        type: 'INCOME',
+        description: 'Other user entry',
+        transactionDate: new Date(Date.UTC(2026, 10, 1)),
+      });
+
+      const latest = await repository.findLatestByUserId(user.id, 3);
+
+      expect(latest.map((entry) => entry.description)).toEqual([
+        'Entry month 10',
+        'Entry month 9',
+        'Entry month 8',
+      ]);
+    });
+  });
+
   describe('findByUserIdAndPeriodPaginated', () => {
     it('should return only the requested page, ordered by date/createdAt descending', async () => {
       const user = await createTestUser();

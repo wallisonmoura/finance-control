@@ -155,6 +155,16 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
     return { totalIncome, totalExpense, count };
   }
 
+  async findLatestByUserId(userId: string, limit: number): Promise<FinancialEntry[]> {
+    const transactions = await prisma.transaction.findMany({
+      where: { userId },
+      orderBy: [{ transactionDate: 'desc' }, { createdAt: 'desc' }],
+      take: limit,
+    });
+
+    return transactions.map(PrismaFinancialEntryMapper.toDomain);
+  }
+
   async findByUserIdAndPeriodPaginated(
     userId: string,
     startDate: Date,
