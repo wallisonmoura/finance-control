@@ -1,25 +1,22 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-
-import { AuthenticatedUser } from '@/modules/auth/presentation/ui/types/auth-ui.types';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 
 import { DesktopSidebar } from './desktop-sidebar';
 import { MobileMenu } from './mobile-menu';
 
 type PrivateNavigationProps = {
-  currentUser?: AuthenticatedUser | null;
-  currentUserError?: string | null;
-  initialPendingDebts?: DebtUi[];
-  initialPendingDebtsError?: string | null;
+  // Built by the layout from other modules; see MobileMenu.
+  mobileBarSlot?: ReactNode;
+  mobileUserSlot?: ReactNode;
+  mobileFooterSlot?: ReactNode;
 };
 
 export function PrivateNavigation({
-  currentUser = null,
-  currentUserError = null,
-  initialPendingDebts = [],
-  initialPendingDebtsError = null,
+  mobileBarSlot,
+  mobileUserSlot,
+  mobileFooterSlot,
 }: PrivateNavigationProps) {
   const pathname = usePathname();
 
@@ -28,10 +25,9 @@ export function PrivateNavigation({
       <DesktopSidebar pathname={pathname} />
       <MobileMenu
         pathname={pathname}
-        currentUser={currentUser}
-        currentUserError={currentUserError}
-        initialPendingDebts={initialPendingDebts}
-        initialPendingDebtsError={initialPendingDebtsError}
+        barSlot={mobileBarSlot}
+        userSlot={mobileUserSlot}
+        footerSlot={mobileFooterSlot}
       />
     </>
   );

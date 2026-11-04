@@ -1,7 +1,6 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { PrivateNavigation } from '@/shared/presentation/ui/layout/private-navigation';
-import { DebtUi } from '@/modules/debts/presentation/ui/types/debts-ui.types';
 
 const mockUsePathname = jest.fn();
 
@@ -34,38 +33,10 @@ describe('PrivateNavigation', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render the due-soon debts bell', () => {
-    render(<PrivateNavigation />);
+  it('should pass the mobile slots down to the mobile menu', () => {
+    render(<PrivateNavigation mobileBarSlot={<button type='button'>Sino</button>} />);
 
-    expect(
-      screen.getByRole('button', { name: 'Dívidas vencendo em breve' }),
-    ).toBeInTheDocument();
-  });
-
-  it('should thread pending debts down to the due-soon bell', () => {
-    const debtDueToday: DebtUi = {
-      id: 'debt-1',
-      userId: 'user-1',
-      description: 'Aluguel',
-      amount: 1200,
-      dueDate: new Date().toISOString(),
-      type: 'ONE_TIME',
-      status: 'PENDING',
-      notes: null,
-      paidAt: null,
-      paymentSource: null,
-      paymentRecordedAt: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    render(<PrivateNavigation initialPendingDebts={[debtDueToday]} />);
-
-    const bellButton = screen.getByRole('button', {
-      name: 'Dívidas vencendo em breve',
-    });
-
-    expect(within(bellButton).getByText('1')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sino' })).toBeInTheDocument();
   });
 
   it('should mark the current pathname as active', () => {
