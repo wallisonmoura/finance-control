@@ -226,8 +226,8 @@ export function DebtList({
                           type='button'
                           onClick={() => onPayDebt(debt)}
                           disabled={isDeleting}
-                          variant='custom'
-                          className='h-10 w-full min-w-28 rounded-lg bg-primary px-4 text-sm text-primary-foreground hover:bg-primary/90 sm:w-auto'
+                          variant='solid'
+                          className='h-10 w-full min-w-28 rounded-lg px-4 text-sm sm:w-auto'
                         >
                           <CreditCard aria-hidden='true' className='size-4' />
                           Pagar

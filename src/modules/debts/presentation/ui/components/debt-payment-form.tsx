@@ -221,8 +221,8 @@ export function DebtPaymentForm({
           <Button
             type='submit'
             disabled={cannotSubmit}
-            variant='custom'
-            className='h-12 bg-primary px-6 text-primary-foreground hover:bg-primary/90'
+            variant='solid'
+            className='h-12 px-6'
           >
             <LockKeyhole aria-hidden='true' className='size-4' />
             {isSubmitting ? 'Pagando...' : 'Confirmar pagamento'}
