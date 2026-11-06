@@ -1,4 +1,5 @@
 import { prisma } from '@/shared/infra/database/prisma/client';
+import { orNotFound } from '@/shared/infra/database/prisma/or-not-found';
 import { FinancialEntry } from '../../domain/entities/financial-entry.entity';
 import { PrismaFinancialEntryMapper } from '../mappers/prisma-financial-entry.mapper';
 import {
@@ -59,34 +60,31 @@ export class PrismaFinancialEntryRepository implements FinancialEntryRepository 
   }
 
   async update(entry: FinancialEntry): Promise<FinancialEntry> {
-    const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: entry.id },
-      select: { id: true },
-    });
-
-    if (!existingTransaction) {
-      throw new FinancialEntryNotFoundError();
-    }
-
-    const updatedTransaction = await prisma.transaction.update({
-      where: { id: entry.id },
-      data: PrismaFinancialEntryMapper.toUpdatePersistence({
-        type: entry.type,
-        amount: entry.amount,
-        description: entry.description,
-        date: entry.date,
-        categoryId: entry.categoryId ?? null,
-        notes: entry.notes ?? null,
+    const updatedTransaction = await orNotFound(
+      prisma.transaction.update({
+        where: { id: entry.id, userId: entry.userId },
+        data: PrismaFinancialEntryMapper.toUpdatePersistence({
+          type: entry.type,
+          amount: entry.amount,
+          description: entry.description,
+          date: entry.date,
+          categoryId: entry.categoryId ?? null,
+          notes: entry.notes ?? null,
+        }),
       }),
-    });
+      () => new FinancialEntryNotFoundError(),
+    );
 
     return PrismaFinancialEntryMapper.toDomain(updatedTransaction);
   }
 
-  async delete(id: string): Promise<void> {
-    await prisma.transaction.delete({
-      where: { id },
-    });
+  async delete(id: string, userId: string): Promise<void> {
+    await orNotFound(
+      prisma.transaction.delete({
+        where: { id, userId },
+      }),
+      () => new FinancialEntryNotFoundError(),
+    );
   }
 
   async findByUserIdAndDate(

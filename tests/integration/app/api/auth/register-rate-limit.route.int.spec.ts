@@ -5,6 +5,7 @@ jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
 import { POST } from '@/app/api/auth/register/route';
 import { AUTH_TOO_MANY_REGISTER_ATTEMPTS_MESSAGE } from '@/modules/auth/constants/auth.constants';
 import { JoseJwtTokenAdapter } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
+import { PrismaRateLimiterAdapter } from '@/modules/auth/infra/services/prisma-rate-limiter.adapter';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { NextRequest } from 'next/server';
 
@@ -96,5 +97,27 @@ describe('POST /api/auth/register — rate limiting', () => {
     );
 
     expect(response.status).toBe(201);
+  });
+
+  // A database failure in the limiter must answer like any other server error:
+  // the standard JSON body, and logged by toErrorNextResponse.
+  describe('when the rate limiter fails', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it.each(['isBlocked', 'registerAttempt'] as const)(
+      'should return the standard 500 when %s fails',
+      async (method) => {
+        jest
+          .spyOn(PrismaRateLimiterAdapter.prototype, method)
+          .mockRejectedValueOnce(new Error('db down'));
+
+        const response = await POST(makeRequest(ip, 'falha@teste.com'));
+
+        expect(response.status).toBe(500);
+        await expect(response.json()).resolves.toEqual({ message: 'Erro interno do servidor.' });
+      },
+    );
   });
 });

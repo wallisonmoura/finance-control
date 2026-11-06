@@ -1,3 +1,5 @@
+import { ExpenseCategory } from '@/modules/finance/domain/entities/expense-category.entity';
+import { ExpenseCategoryNotFoundError } from '@/modules/finance/domain/errors/expense-category-not-found.error';
 import { PrismaExpenseCategoryRepository } from '@/modules/finance/infra/repositories/prisma-expense-category.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { createTestUser } from '../../../../../helpers/database/create-test-user';
@@ -154,6 +156,28 @@ describe('PrismaExpenseCategoryRepository', () => {
 
       const cleared = await repository.update(saved.withMonthlyLimit(null));
       expect(cleared.monthlyLimit).toBeNull();
+      expect((await repository.findById(created.id))!.monthlyLimit).toBeNull();
+    });
+
+    it('should throw not found when the category was deleted after being read', async () => {
+      const user = await createTestUser();
+      const created = await createTestExpenseCategory({ userId: user.id, name: 'Lazer', slug: 'lazer' });
+      const domain = (await repository.findById(created.id))!;
+      await prisma.expenseCategory.delete({ where: { id: created.id } });
+
+      await expect(repository.update(domain.withMonthlyLimit(300))).rejects.toBeInstanceOf(
+        ExpenseCategoryNotFoundError,
+      );
+    });
+
+    it("should not update another user's category", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const created = await createTestExpenseCategory({ userId: user.id, name: 'Lazer', slug: 'lazer' });
+      const domain = (await repository.findById(created.id))!;
+      const foreign = ExpenseCategory.create({ ...domain.toJSON(), userId: otherUser.id, monthlyLimit: 300 });
+
+      await expect(repository.update(foreign)).rejects.toBeInstanceOf(ExpenseCategoryNotFoundError);
       expect((await repository.findById(created.id))!.monthlyLimit).toBeNull();
     });
 

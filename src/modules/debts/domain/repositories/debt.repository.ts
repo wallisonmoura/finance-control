@@ -6,7 +6,7 @@ export interface DebtRepository {
   findPendingByUserId(userId: string): Promise<Debt[]>;
   create(debt: Debt): Promise<Debt>;
   update(debt: Debt): Promise<Debt>;
-  delete(id: string): Promise<void>;
+  delete(id: string, userId: string): Promise<void>;
   // Payment. Conditional on the debt still being pending (and scoped by userId)
   // so that two concurrent payments cannot both succeed.
   markAsPaid(debt: Debt): Promise<boolean>;

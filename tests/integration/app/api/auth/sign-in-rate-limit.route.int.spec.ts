@@ -2,6 +2,7 @@ import { POST } from '@/app/api/auth/sign-in/route';
 import { AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE } from '@/modules/auth/constants/auth.constants';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { makeSignInUseCase } from '@/modules/auth/infra/factories/make-sign-in-use-case';
+import { PrismaRateLimiterAdapter } from '@/modules/auth/infra/services/prisma-rate-limiter.adapter';
 import { prisma } from '@/shared/infra/database/prisma/client';
 import { NextRequest } from 'next/server';
 
@@ -66,5 +67,35 @@ describe('POST /api/auth/sign-in — rate limiting', () => {
     const response = await POST(makeRequest('198.51.100.77'));
 
     expect(response.status).toBe(401);
+  });
+
+  // A database failure in the limiter must answer like any other server error:
+  // the standard JSON body, and logged by toErrorNextResponse.
+  describe('when the rate limiter fails', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return the standard 500 when checking the block fails', async () => {
+      jest
+        .spyOn(PrismaRateLimiterAdapter.prototype, 'isBlocked')
+        .mockRejectedValueOnce(new Error('db down'));
+
+      const response = await POST(makeRequest(ip));
+
+      expect(response.status).toBe(500);
+      await expect(response.json()).resolves.toEqual({ message: 'Erro interno do servidor.' });
+    });
+
+    it('should return the standard 500 when counting a failed attempt fails', async () => {
+      jest
+        .spyOn(PrismaRateLimiterAdapter.prototype, 'registerAttempt')
+        .mockRejectedValueOnce(new Error('db down'));
+
+      const response = await POST(makeRequest(ip));
+
+      expect(response.status).toBe(500);
+      await expect(response.json()).resolves.toEqual({ message: 'Erro interno do servidor.' });
+    });
   });
 });

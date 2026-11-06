@@ -286,7 +286,7 @@ describe('PrismaFinancialEntryRepository', () => {
         type: 'INCOME',
       });
 
-      await repository.delete(transaction.id);
+      await repository.delete(transaction.id, user.id);
 
       const persisted = await prisma.transaction.findUnique({
         where: { id: transaction.id },
@@ -470,6 +470,56 @@ describe('PrismaFinancialEntryRepository', () => {
 
       expect(totals.totalIncome).toBe(100);
       expect(totals.count).toBe(1);
+    });
+  });
+
+  describe('writes that find nothing', () => {
+    async function createEntry() {
+      const user = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id, isDefault: true });
+      const transaction = await createTestFinancialEntry({
+        userId: user.id,
+        walletId: wallet.id,
+        type: 'INCOME',
+        amount: 100,
+      });
+
+      return { user, transaction };
+    }
+
+    it('should throw not found when deleting an entry already deleted', async () => {
+      const { user, transaction } = await createEntry();
+      await prisma.transaction.delete({ where: { id: transaction.id } });
+
+      await expect(repository.delete(transaction.id, user.id)).rejects.toBeInstanceOf(
+        FinancialEntryNotFoundError,
+      );
+    });
+
+    it("should not delete another user's entry", async () => {
+      const { transaction } = await createEntry();
+      const otherUser = await createTestUser();
+
+      await expect(repository.delete(transaction.id, otherUser.id)).rejects.toBeInstanceOf(
+        FinancialEntryNotFoundError,
+      );
+      expect(await prisma.transaction.findUnique({ where: { id: transaction.id } })).not.toBeNull();
+    });
+
+    it("should not update another user's entry", async () => {
+      const { transaction } = await createEntry();
+      const otherUser = await createTestUser();
+      const entry = makeTestFinancialEntryEntity({
+        id: transaction.id,
+        userId: otherUser.id,
+        type: FinancialEntryType.INCOME,
+        amount: 999,
+      });
+
+      await expect(repository.update(entry)).rejects.toBeInstanceOf(FinancialEntryNotFoundError);
+
+      const persisted = await prisma.transaction.findUnique({ where: { id: transaction.id } });
+      expect(Number(persisted?.amount)).toBe(100);
     });
   });
 

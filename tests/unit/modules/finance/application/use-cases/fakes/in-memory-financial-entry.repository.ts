@@ -30,8 +30,8 @@ export class InMemoryFinancialEntryRepository implements FinancialEntryRepositor
     return entry;
   }
 
-  async delete(id: string): Promise<void> {
-    const index = this.entries.findIndex((entry) => entry.id === id);
+  async delete(id: string, userId: string): Promise<void> {
+    const index = this.entries.findIndex((entry) => entry.id === id && entry.userId === userId);
 
     if (index !== -1) {
       this.entries.splice(index, 1);

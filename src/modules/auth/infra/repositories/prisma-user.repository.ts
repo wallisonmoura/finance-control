@@ -5,6 +5,8 @@ import {
   UserRepository,
 } from '../../domain/repositories/user.repository';
 import { PrismaUserMapper } from '../mappers/prisma-user.mapper';
+import { orNotFound } from '@/shared/infra/database/prisma/or-not-found';
+import { UserNotFoundError } from '../../domain/errors/user-not-found.error';
 
 export class PrismaUserRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {
@@ -44,18 +46,24 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async updateName(id: string, name: string): Promise<User> {
-    const user = await prisma.user.update({
-      where: { id },
-      data: { name },
-    });
+    const user = await orNotFound(
+      prisma.user.update({
+        where: { id },
+        data: { name },
+      }),
+      () => new UserNotFoundError(id),
+    );
 
     return PrismaUserMapper.toDomain(user);
   }
 
   async updatePassword(id: string, passwordHash: string): Promise<void> {
-    await prisma.user.update({
-      where: { id },
-      data: { passwordHash },
-    });
+    await orNotFound(
+      prisma.user.update({
+        where: { id },
+        data: { passwordHash },
+      }),
+      () => new UserNotFoundError(id),
+    );
   }
 }

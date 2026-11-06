@@ -276,7 +276,7 @@ describe('PrismaDebtRepository', () => {
       amount: 150,
     });
 
-    await repository.delete(persistedDebt.id);
+    await repository.delete(persistedDebt.id, user.id);
 
     const foundDebt = await repository.findById(persistedDebt.id);
 
@@ -315,7 +315,45 @@ describe('PrismaDebtRepository', () => {
     it('should throw DebtNotFoundError on delete', async () => {
       const debt = await readThenDeleteDebt();
 
-      await expect(repository.delete(debt.id)).rejects.toBeInstanceOf(DebtNotFoundError);
+      await expect(repository.delete(debt.id, debt.userId)).rejects.toBeInstanceOf(DebtNotFoundError);
+    });
+  });
+
+  describe("another user's debt", () => {
+    async function createDebtAndOtherUser() {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      const wallet = await createTestWallet({ userId: user.id });
+      const persistedDebt = await createTestDebt({
+        userId: user.id,
+        walletId: wallet.id,
+        description: 'Dívida de outra pessoa',
+        amount: 150,
+      });
+
+      return { otherUser, persistedDebt };
+    }
+
+    it('should not be deleted', async () => {
+      const { otherUser, persistedDebt } = await createDebtAndOtherUser();
+
+      await expect(repository.delete(persistedDebt.id, otherUser.id)).rejects.toBeInstanceOf(
+        DebtNotFoundError,
+      );
+      expect(await repository.findById(persistedDebt.id)).not.toBeNull();
+    });
+
+    it('should not be updated', async () => {
+      const { otherUser, persistedDebt } = await createDebtAndOtherUser();
+      const foreign = makeTestDebtEntity({
+        id: persistedDebt.id,
+        userId: otherUser.id,
+        description: 'Alterada',
+        amount: 999,
+      });
+
+      await expect(repository.update(foreign)).rejects.toBeInstanceOf(DebtNotFoundError);
+      expect((await repository.findById(persistedDebt.id))!.amount).toBe(150);
     });
   });
 

@@ -371,7 +371,7 @@ describe('PayDebtUseCase', () => {
 
     it('should throw DebtNotFoundError and record nothing when it was deleted there', async () => {
       jest.spyOn(debtRepository, 'markAsPaid').mockImplementation(async () => {
-        await debtRepository.delete('debt-1');
+        await debtRepository.delete('debt-1', 'user-1');
         return false;
       });
 

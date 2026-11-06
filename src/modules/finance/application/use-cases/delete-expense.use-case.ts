@@ -26,6 +26,6 @@ export class DeleteExpenseUseCase {
 
     entry.ensureCanBeChanged();
 
-    await this.financialEntryRepository.delete(entry.id);
+    await this.financialEntryRepository.delete(entry.id, entry.userId);
   }
 }

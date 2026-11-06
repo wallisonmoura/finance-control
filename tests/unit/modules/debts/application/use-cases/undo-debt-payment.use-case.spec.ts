@@ -219,7 +219,7 @@ describe('UndoDebtPaymentUseCase', () => {
     jest
       .spyOn(debtRepository, 'deletePendingGeneratedFrom')
       .mockImplementation(async () => {
-        await debtRepository.delete('debt-2');
+        await debtRepository.delete('debt-2', 'user-1');
         return 0;
       });
 
