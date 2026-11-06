@@ -14,24 +14,30 @@ import { toNextResponse } from '@/shared/presentation/http/to-next-response';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const ip = getClientIpFromRequest(request);
-  const rateLimiter = makeAuthRateLimiter();
-  const rateLimitKey = `signin:${ip}`;
-
-  if (await rateLimiter.isBlocked(rateLimitKey)) {
-    return NextResponse.json(
-      { message: AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE },
-      { status: 429 },
-    );
-  }
-
   try {
+    const ip = getClientIpFromRequest(request);
+    const rateLimiter = makeAuthRateLimiter();
+    const rateLimitKey = `signin:${ip}`;
+
+    if (await rateLimiter.isBlocked(rateLimitKey)) {
+      return NextResponse.json(
+        { message: AUTH_TOO_MANY_LOGIN_ATTEMPTS_MESSAGE },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
 
     const useCase = makeSignInUseCase();
     const controller = new SignInController(useCase);
 
-    const response = await controller.handle({ body });
+    const response = await controller.handle({ body }).catch(async (error: unknown) => {
+      if (error instanceof InvalidCredentialsError) {
+        await rateLimiter.registerAttempt(rateLimitKey);
+      }
+
+      throw error;
+    });
 
     const nextResponse = toNextResponse(response);
 
@@ -47,10 +53,6 @@ export async function POST(request: NextRequest) {
 
     return nextResponse;
   } catch (error) {
-    if (error instanceof InvalidCredentialsError) {
-      await rateLimiter.registerAttempt(rateLimitKey);
-    }
-
     return toErrorNextResponse(error);
   }
 }
