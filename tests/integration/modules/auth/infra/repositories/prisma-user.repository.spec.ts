@@ -1,5 +1,6 @@
 import { hash } from 'bcryptjs';
 
+import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { PrismaUserRepository } from '@/modules/auth/infra/repositories/prisma-user.repository';
 import { prisma } from '@/shared/infra/database/prisma/client';
 
@@ -126,5 +127,17 @@ describe('PrismaUserRepository', () => {
       where: { id: createdUser.id },
     });
     expect(persisted?.passwordHash).toBe(newPasswordHash);
+  });
+
+  describe('when the user no longer exists', () => {
+    const missingId = '00000000-0000-4000-8000-000000000000';
+
+    it('should throw not found when updating the name', async () => {
+      await expect(repository.updateName(missingId, 'Nome')).rejects.toBeInstanceOf(UserNotFoundError);
+    });
+
+    it('should throw not found when updating the password', async () => {
+      await expect(repository.updatePassword(missingId, 'hash')).rejects.toBeInstanceOf(UserNotFoundError);
+    });
   });
 });

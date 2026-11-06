@@ -34,8 +34,8 @@ export class InMemoryDebtRepository implements DebtRepository {
     return debt;
   }
 
-  async delete(id: string): Promise<void> {
-    this.items = this.items.filter((debt) => debt.id !== id);
+  async delete(id: string, userId: string): Promise<void> {
+    this.items = this.items.filter((debt) => !(debt.id === id && debt.userId === userId));
   }
 
   async findGeneratedFrom(debtId: string, userId: string): Promise<Debt | null> {

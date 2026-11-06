@@ -1,26 +1,17 @@
 import { prisma } from '@/shared/infra/database/prisma/client';
-import { Prisma, PrismaClient, DebtStatus as PrismaDebtStatus } from '@prisma/client';
+import { PrismaClient, DebtStatus as PrismaDebtStatus } from '@prisma/client';
 import { Debt } from '../../domain/entities/debt.entity';
 import { DebtNotFoundError } from '../../domain/errors/debt-not-found.error';
 import { PrismaDebtMapper } from '../mappers/prisma-debt.mapper';
 import { DebtRepository } from '../../domain/repositories/debt.repository';
 import { DefaultWalletNotFoundError } from '@/shared/infra/errors/default-wallet-not-found.error';
+import { orNotFound } from '@/shared/infra/database/prisma/or-not-found';
 import { PrismaTransactionClient } from '@/shared/infra/database/prisma/prisma-transaction-client';
 
 type PrismaClientOrTransaction = PrismaClient | PrismaTransactionClient;
 
-// P2025: the row was deleted between the use case reading it and this write
-// (in another tab, or by an undo removing the occurrence a payment generated).
-async function orDebtNotFound<T>(write: Promise<T>): Promise<T> {
-  try {
-    return await write;
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      throw new DebtNotFoundError();
-    }
-
-    throw error;
-  }
+function orDebtNotFound<T>(write: Promise<T>): Promise<T> {
+  return orNotFound(write, () => new DebtNotFoundError());
 }
 
 export class PrismaDebtRepository implements DebtRepository {
@@ -108,6 +99,7 @@ export class PrismaDebtRepository implements DebtRepository {
       this.client.debt.update({
         where: {
           id: data.id,
+          userId: data.userId,
         },
         data: PrismaDebtMapper.toPrismaUpdate(debt),
       }),
@@ -116,11 +108,12 @@ export class PrismaDebtRepository implements DebtRepository {
     return PrismaDebtMapper.toDomain(updatedDebt);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, userId: string): Promise<void> {
     await orDebtNotFound(
       this.client.debt.delete({
         where: {
           id,
+          userId,
         },
       }),
     );

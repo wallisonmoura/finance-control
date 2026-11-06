@@ -1,4 +1,6 @@
 import { prisma } from '@/shared/infra/database/prisma/client';
+import { orNotFound } from '@/shared/infra/database/prisma/or-not-found';
+import { ExpenseCategoryNotFoundError } from '../../domain/errors/expense-category-not-found.error';
 import { PrismaExpenseCategoryMapper } from '../mappers/prisma-expense-category.mapper';
 import { ExpenseCategoryRepository } from '../../domain/repositories/expense-category.repository';
 import { ExpenseCategory } from '../../domain/entities/expense-category.entity';
@@ -38,15 +40,18 @@ export class PrismaExpenseCategoryRepository implements ExpenseCategoryRepositor
   }
 
   async update(category: ExpenseCategory): Promise<ExpenseCategory> {
-    const updated = await prisma.expenseCategory.update({
-      where: { id: category.id },
-      data: {
-        name: category.name,
-        slug: category.slug,
-        isActive: category.isActive,
-        monthlyLimit: category.monthlyLimit,
-      },
-    });
+    const updated = await orNotFound(
+      prisma.expenseCategory.update({
+        where: { id: category.id, userId: category.userId },
+        data: {
+          name: category.name,
+          slug: category.slug,
+          isActive: category.isActive,
+          monthlyLimit: category.monthlyLimit,
+        },
+      }),
+      () => new ExpenseCategoryNotFoundError(),
+    );
 
     return PrismaExpenseCategoryMapper.toDomain(updated);
   }

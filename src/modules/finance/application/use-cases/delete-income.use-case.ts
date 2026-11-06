@@ -24,6 +24,6 @@ export class DeleteIncomeUseCase {
       throw new FinancialEntryNotFoundError();
     }
 
-    await this.financialEntryRepository.delete(entry.id);
+    await this.financialEntryRepository.delete(entry.id, entry.userId);
   }
 }

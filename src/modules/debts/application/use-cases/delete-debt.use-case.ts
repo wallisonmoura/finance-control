@@ -22,6 +22,6 @@ export class DeleteDebtUseCase {
       throw new DebtAlreadyPaidError();
     }
 
-    await this.debtRepository.delete(debt.id);
+    await this.debtRepository.delete(debt.id, debt.userId);
   }
 }
