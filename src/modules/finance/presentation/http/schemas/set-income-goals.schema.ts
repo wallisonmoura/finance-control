@@ -10,6 +10,6 @@ const targetSchema = z.union([z.null(), moneyAmountSchema]);
 export const setIncomeGoalsSchema = z.object({
   revenueTarget: targetSchema,
   profitTarget: targetSchema,
-});
+}).strict();
 
 export type SetIncomeGoalsSchemaData = z.infer<typeof setIncomeGoalsSchema>;
