@@ -15,6 +15,8 @@ const calls: [string, () => Promise<{ error?: string }>][] = [
   ['getCurrentUser', () => authApi.getCurrentUser()],
   ['updateProfile', () => authApi.updateProfile(anyInput)],
   ['changePassword', () => authApi.changePassword(anyInput)],
+  ['requestPasswordReset', () => authApi.requestPasswordReset(anyInput)],
+  ['resetPassword', () => authApi.resetPassword(anyInput)],
   ['getDebts', () => debtApi.getDebts()],
   ['getPendingDebts', () => debtApi.getPendingDebts()],
   ['registerDebt', () => debtApi.registerDebt(anyInput)],

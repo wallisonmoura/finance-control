@@ -36,3 +36,21 @@ export type AuthApiResponse<T> = {
   data?: T;
   error?: string;
 };
+
+export type RequestPasswordResetInput = {
+  email: string;
+};
+
+export type RequestPasswordResetResponse = {
+  message: string;
+};
+
+export type ResetPasswordInput = {
+  token: string;
+  newPassword: string;
+};
+
+// invalidLink: the link expired, was used, or is unknown (answered with 400).
+export type ResetPasswordResponse = AuthApiResponse<null> & {
+  invalidLink?: boolean;
+};

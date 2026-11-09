@@ -234,4 +234,33 @@ describe('LoginForm', () => {
       expect(mockReplace).toHaveBeenCalledWith('/dashboard');
     });
   });
+
+  it('should link "Esqueceu sua senha?" to the reset request page', () => {
+    render(<LoginForm redirectTo='/' />);
+
+    expect(screen.getByRole('link', { name: 'Esqueceu sua senha?' })).toHaveAttribute(
+      'href',
+      '/forgot-password',
+    );
+  });
+
+  it('should announce that the password was changed after a reset', () => {
+    render(<LoginForm redirectTo='/' notice='password-reset' />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('Senha alterada. Entre com a nova senha.');
+  });
+
+  // A live region already on the page when it loads is usually not read out;
+  // moving the focus to it makes screen readers announce it.
+  it('should move the focus to the password changed notice', () => {
+    render(<LoginForm redirectTo='/' notice='password-reset' />);
+
+    expect(screen.getByRole('status')).toHaveFocus();
+  });
+
+  it('should show no notice on a normal visit', () => {
+    render(<LoginForm redirectTo='/' />);
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
 });

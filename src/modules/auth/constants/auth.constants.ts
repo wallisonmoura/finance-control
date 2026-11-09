@@ -14,7 +14,13 @@ export const AUTH_PUBLIC_API_PATHS = [
   '/api/auth/password-reset',
 ];
 
-export const AUTH_PUBLIC_PAGE_PATHS = ['/login', '/register', '/about'];
+export const AUTH_PUBLIC_PAGE_PATHS = [
+  '/login',
+  '/register',
+  '/about',
+  '/forgot-password',
+  '/reset-password',
+];
 
 export const AUTH_RATE_LIMIT_MAX_ATTEMPTS = 5;
 

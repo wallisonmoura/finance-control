@@ -2,6 +2,10 @@ import type {
   AuthApiResponse,
   ChangePasswordInput,
   GetCurrentUserResponse,
+  RequestPasswordResetInput,
+  RequestPasswordResetResponse,
+  ResetPasswordInput,
+  ResetPasswordResponse,
   SignInInput,
   SignUpInput,
   UpdateProfileInput,
@@ -144,6 +148,53 @@ export async function changePassword(
   if (!response.ok) {
     return {
       error: await parseApiError(response),
+    };
+  }
+
+  return {
+    data: null,
+  };
+}
+
+export async function requestPasswordReset(
+  input: RequestPasswordResetInput,
+): Promise<AuthApiResponse<RequestPasswordResetResponse>> {
+  const response = await apiFetch('/api/auth/password-reset', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+    };
+  }
+
+  return {
+    data: (await response.json()) as RequestPasswordResetResponse,
+  };
+}
+
+export async function resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResponse> {
+  const response = await apiFetch('/api/auth/password-reset/confirm', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    return {
+      error: await parseApiError(response),
+      ...(response.status === 400 ? { invalidLink: true } : {}),
     };
   }
 

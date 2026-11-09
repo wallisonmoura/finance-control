@@ -122,6 +122,18 @@ describe('proxy — public page paths', () => {
     expect(response.status).toBe(200);
   });
 
+  it.each(['/forgot-password', '/reset-password'])(
+    'should let a visitor without a session reach %s',
+    (pathname) => {
+      const request = new NextRequest(`http://app.financecontrol.com${pathname}`, {
+        method: 'GET',
+        headers: { host: 'app.financecontrol.com' },
+      });
+
+      expect(proxy(request).status).toBe(200);
+    },
+  );
+
   it('should redirect an unauthenticated visitor away from a private page', () => {
     const request = new NextRequest('http://app.financecontrol.com/wallet', {
       method: 'GET',
