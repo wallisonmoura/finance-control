@@ -41,6 +41,7 @@ model User {
   transactions       Transaction[]
   debts              Debt[]
   incomeGoal         IncomeGoal?
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -159,4 +160,18 @@ model IncomeGoal {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("income_goals")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("password_reset_tokens")
 }
