@@ -27,3 +27,17 @@ export const AUTH_TOO_MANY_REGISTER_ATTEMPTS_MESSAGE =
 
 export const AUTH_CSRF_ORIGIN_MISMATCH_MESSAGE =
   'Origem da requisição não permitida.';
+
+// Password reset ("esqueci minha senha").
+export const PASSWORD_RESET_TOKEN_TTL_MINUTES = 60;
+
+// Per account, silently: above it nothing is sent, but the answer is the same.
+// Also keeps the Gmail sender under its daily limit.
+export const PASSWORD_RESET_MAX_PER_ACCOUNT_PER_HOUR = 3;
+
+// Always the same answer, whether the account exists or not.
+export const PASSWORD_RESET_REQUEST_MESSAGE =
+  'Se esse e-mail estiver cadastrado, enviamos um link pra criar uma nova senha. Confira também a caixa de spam.';
+
+export const AUTH_TOO_MANY_PASSWORD_RESET_ATTEMPTS_MESSAGE =
+  'Muitas tentativas. Tente novamente em alguns minutos.';
