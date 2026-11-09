@@ -1,4 +1,7 @@
+import { PrismaClient } from '@prisma/client';
+
 import { prisma } from '@/shared/infra/database/prisma/client';
+import { PrismaTransactionClient } from '@/shared/infra/database/prisma/prisma-transaction-client';
 import { User } from '../../domain/entities/user.entity';
 import {
   CreateUserData,
@@ -9,8 +12,10 @@ import { orNotFound } from '@/shared/infra/database/prisma/or-not-found';
 import { UserNotFoundError } from '../../domain/errors/user-not-found.error';
 
 export class PrismaUserRepository implements UserRepository {
+  constructor(private readonly client: PrismaClient | PrismaTransactionClient = prisma) {}
+
   async findByEmail(email: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
+    const user = await this.client.user.findUnique({
       where: { email },
     });
 
@@ -22,7 +27,7 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
+    const user = await this.client.user.findUnique({
       where: { id },
     });
 
@@ -34,7 +39,7 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async create(data: CreateUserData): Promise<User> {
-    const user = await prisma.user.create({
+    const user = await this.client.user.create({
       data: {
         name: data.name,
         email: data.email,
@@ -47,7 +52,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async updateName(id: string, name: string): Promise<User> {
     const user = await orNotFound(
-      prisma.user.update({
+      this.client.user.update({
         where: { id },
         data: { name },
       }),
@@ -59,7 +64,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async updatePassword(id: string, passwordHash: string): Promise<void> {
     await orNotFound(
-      prisma.user.update({
+      this.client.user.update({
         where: { id },
         data: { passwordHash },
       }),

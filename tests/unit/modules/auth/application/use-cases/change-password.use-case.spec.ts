@@ -6,14 +6,16 @@ import { Email } from '@/modules/auth/domain/value-objects/email.vo';
 
 import { InMemoryUserRepository } from './fakes/in-memory-user.repository';
 import { FakePasswordHasher } from './fakes/fake-password-hasher';
+import { InMemoryPasswordResetTokenRepository } from './fakes/in-memory-password-reset-token.repository';
 
 describe('ChangePasswordUseCase', () => {
   function makeSut(users: User[] = []) {
     const userRepository = new InMemoryUserRepository(users);
     const passwordHasher = new FakePasswordHasher();
-    const useCase = new ChangePasswordUseCase(userRepository, passwordHasher);
+    const tokenRepository = new InMemoryPasswordResetTokenRepository();
+    const useCase = new ChangePasswordUseCase(userRepository, passwordHasher, tokenRepository);
 
-    return { useCase, userRepository, passwordHasher };
+    return { useCase, userRepository, passwordHasher, tokenRepository };
   }
 
   function makeExistingUser(): User {
@@ -39,6 +41,24 @@ describe('ChangePasswordUseCase', () => {
     const persisted = await userRepository.findById('user-1');
 
     expect(persisted?.passwordHash).toBe('hashed-new-password-123');
+  });
+
+  // A reset link asked before the change must not undo it later.
+  it('should invalidate pending reset links after changing the password', async () => {
+    const { useCase, tokenRepository } = makeSut([makeExistingUser()]);
+    await tokenRepository.create({
+      userId: 'user-1',
+      tokenHash: 'hashed:link',
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+    });
+
+    await useCase.execute({
+      userId: 'user-1',
+      currentPassword: 'current-password',
+      newPassword: 'new-password-123',
+    });
+
+    expect(await tokenRepository.consume('hashed:link', new Date())).toBeNull();
   });
 
   it('should throw InvalidCredentialsError when the current password does not match', async () => {

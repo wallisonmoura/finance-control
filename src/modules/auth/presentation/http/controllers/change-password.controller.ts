@@ -15,7 +15,7 @@ export class ChangePasswordController implements Controller<
   HttpRequest,
   ChangePasswordResponseBody
 > {
-  constructor(private readonly changePasswordUseCase: ChangePasswordUseCase) {}
+  constructor(private readonly changePasswordUseCase: Pick<ChangePasswordUseCase, 'execute'>) {}
 
   async handle(
     request: HttpRequest,
