@@ -11,6 +11,7 @@ export const AUTH_USER_NOT_FOUND_MESSAGE = 'Usuário autenticado não encontrado
 export const AUTH_PUBLIC_API_PATHS = [
   '/api/auth/sign-in',
   '/api/auth/register',
+  '/api/auth/password-reset',
 ];
 
 export const AUTH_PUBLIC_PAGE_PATHS = ['/login', '/register', '/about'];

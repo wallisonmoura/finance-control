@@ -85,6 +85,18 @@ describe('proxy — CSRF origin check', () => {
     expect(response.status).toBe(200);
   });
 
+  it.each(['/api/auth/password-reset', '/api/auth/password-reset/confirm'])(
+    'should let a visitor without a session reach %s',
+    (pathname) => {
+      const request = new NextRequest(`http://app.financecontrol.com${pathname}`, {
+        method: 'POST',
+        headers: { host: 'app.financecontrol.com' },
+      });
+
+      expect(proxy(request).status).toBe(200);
+    },
+  );
+
   it('should treat /api/auth/register as a public api path', () => {
     const request = makeAuthedRequest({
       pathname: '/api/auth/register',
