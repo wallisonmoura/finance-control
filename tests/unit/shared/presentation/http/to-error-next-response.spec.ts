@@ -3,6 +3,7 @@ import { InstallmentDebtCreationNotAllowedError } from '@/modules/debts/domain/e
 import { FutureDateNotAllowedError } from '@/shared/domain/errors/future-date-not-allowed.error';
 import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
+import { InvalidPasswordResetTokenError } from '@/modules/auth/domain/errors/invalid-password-reset-token.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
 import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
@@ -96,6 +97,15 @@ describe('toErrorNextResponse', () => {
 
     expect(response.status).toBe(400);
     expect(await readJson(response)).toEqual({ message });
+  });
+
+  it('should return 400 with its message for InvalidPasswordResetTokenError', async () => {
+    const response = toErrorNextResponse(new InvalidPasswordResetTokenError());
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      message: 'Este link expirou ou já foi usado.',
+    });
   });
 
   it('should return 404 for DebtNotFoundError', async () => {

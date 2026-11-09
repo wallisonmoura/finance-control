@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 type LoginPageProps = {
   searchParams: Promise<{
     redirectTo?: string;
+    reset?: string;
   }>;
 };
 
@@ -24,9 +25,14 @@ function normalizeRedirectTo(redirectTo?: string) {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { redirectTo } = await searchParams;
+  const { redirectTo, reset } = await searchParams;
 
   const safeRedirectTo = normalizeRedirectTo(redirectTo);
 
-  return <LoginForm redirectTo={safeRedirectTo} />;
+  return (
+    <LoginForm
+      redirectTo={safeRedirectTo}
+      notice={reset === 'success' ? 'password-reset' : undefined}
+    />
+  );
 }

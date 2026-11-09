@@ -2,7 +2,7 @@ export const NETWORK_ERROR_MESSAGE =
   'Sem conexão com a internet. Verifique e tente novamente.';
 
 // Only what the API services read from a response.
-export type ApiFetchResponse = Pick<Response, 'ok' | 'json'>;
+export type ApiFetchResponse = Pick<Response, 'ok' | 'status' | 'json'>;
 
 /**
  * Same as fetch, but a lost connection (offline, weak 4G, Wi-Fi switch)
@@ -19,6 +19,7 @@ export async function apiFetch(
   } catch {
     return {
       ok: false,
+      status: 0,
       json: async () => ({ message: NETWORK_ERROR_MESSAGE }),
     };
   }

@@ -1,6 +1,7 @@
 import { EmailAlreadyInUseError } from '@/modules/auth/domain/errors/email-already-in-use.error';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { InvalidEmailError } from '@/modules/auth/domain/errors/invalid-email.error';
+import { InvalidPasswordResetTokenError } from '@/modules/auth/domain/errors/invalid-password-reset-token.error';
 import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.error';
 import { InvalidDebtUserIdError } from '@/modules/debts/domain/errors/invalid-debt-user-id.error';
@@ -86,6 +87,7 @@ export function toErrorNextResponse(error: unknown) {
   }
 
   if (
+    error instanceof InvalidPasswordResetTokenError ||
     error instanceof InvalidEmailError ||
     error instanceof InvalidUserNameError
   ) {

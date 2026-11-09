@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LockKeyhole, Mail, UserRound } from 'lucide-react';
@@ -16,6 +17,8 @@ import { Input } from '@/shared/presentation/ui/primitives/input';
 
 type LoginFormProps = {
   redirectTo: string;
+  // Set by the login page after a password reset (?reset=success).
+  notice?: 'password-reset';
 };
 
 const loginFormSchema = z.object({
@@ -25,10 +28,16 @@ const loginFormSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
-export function LoginForm({ redirectTo }: LoginFormProps) {
+export function LoginForm({ redirectTo, notice }: LoginFormProps) {
   const router = useRouter();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const noticeRef = useRef<HTMLParagraphElement>(null);
+
+  // A notice already present on load is usually not read out; focusing it is.
+  useEffect(() => {
+    noticeRef.current?.focus();
+  }, []);
 
   const {
     register,
@@ -92,6 +101,17 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                 Entre para continuar
               </p>
             </div>
+
+            {notice === 'password-reset' ? (
+              <p
+                ref={noticeRef}
+                tabIndex={-1}
+                role='status'
+                className='mt-6 rounded-lg bg-success-light px-4 py-3 text-center text-sm font-medium text-success-light-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+              >
+                Senha alterada. Entre com a nova senha.
+              </p>
+            ) : null}
 
             <form
               onSubmit={handleSubmit(handleLoginSubmit)}
@@ -184,12 +204,12 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
               </div>
 
               <div className='flex justify-end'>
-                <button
-                  type='button'
-                  className='cursor-default text-sm font-medium text-income'
+                <Link
+                  href='/forgot-password'
+                  className='rounded-sm text-sm font-medium text-income hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                 >
                   Esqueceu sua senha?
-                </button>
+                </Link>
               </div>
 
               <Button
