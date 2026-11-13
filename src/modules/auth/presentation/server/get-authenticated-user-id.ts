@@ -1,8 +1,10 @@
 import { AUTH_COOKIE_NAME } from '@/modules/auth/constants/auth.constants';
-import { makeTokenService } from '@/modules/auth/infra/factories/make-token-service';
+import { makeResolveSessionUseCase } from '@/modules/auth/infra/factories/make-resolve-session-use-case';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 
+// Cached per request: the layout and the page ask for it, the database is
+// checked once.
 export const getAuthenticatedUserId = cache(
   async (): Promise<string | null> => {
     const cookieStore = await cookies();
@@ -12,13 +14,6 @@ export const getAuthenticatedUserId = cache(
       return null;
     }
 
-    try {
-      const tokenService = makeTokenService();
-      const payload = await tokenService.verifyAccessToken(token);
-
-      return payload.sub;
-    } catch {
-      return null;
-    }
+    return makeResolveSessionUseCase().execute(token);
   },
 );

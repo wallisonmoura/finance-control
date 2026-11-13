@@ -5,8 +5,10 @@ jest.mock(
   }),
 );
 
-jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
-  JoseJwtTokenAdapter: jest.fn(),
+// The session check itself (token + password change) is covered by
+// resolve-session.use-case tests; here it only says who is signed in.
+jest.mock('@/modules/auth/infra/factories/make-resolve-session-use-case', () => ({
+  makeResolveSessionUseCase: jest.fn(),
 }));
 
 jest.mock(
@@ -19,7 +21,7 @@ jest.mock(
 import { PUT } from '@/app/api/auth/me/password/route';
 import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-credentials.error';
 import { makeChangePasswordUseCase } from '@/modules/auth/infra/factories/make-change-password-use-case';
-import { JoseJwtTokenAdapter } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
+import { makeResolveSessionUseCase } from '@/modules/auth/infra/factories/make-resolve-session-use-case';
 import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
 import { NextRequest } from 'next/server';
 
@@ -28,7 +30,11 @@ const makeChangePasswordUseCaseMock =
     typeof makeChangePasswordUseCase
   >;
 
-const JoseJwtTokenServiceMock = JoseJwtTokenAdapter as unknown as jest.Mock;
+const resolveSession = jest.fn();
+
+(makeResolveSessionUseCase as jest.Mock).mockImplementation(() => ({
+  execute: resolveSession,
+}));
 
 const getAuthTokenFromRequestMock =
   getAuthTokenFromRequest as jest.MockedFunction<
@@ -37,22 +43,16 @@ const getAuthTokenFromRequestMock =
 
 describe('PUT /api/auth/me/password', () => {
   afterEach(() => {
+    resolveSession.mockReset();
     jest.clearAllMocks();
   });
 
   it('should change the authenticated user password with a valid token', async () => {
     const execute = jest.fn().mockResolvedValue({ accessToken: 'new-token' });
 
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'wallison@financecontrol.com',
-    });
+    resolveSession.mockResolvedValue('user-1');
 
     makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -83,9 +83,7 @@ describe('PUT /api/auth/me/password', () => {
   it('should set a new auth cookie after changing the password', async () => {
     const execute = jest.fn().mockResolvedValue({ accessToken: 'new-token' });
     makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken: jest.fn().mockResolvedValue({ sub: 'user-1', email: 'a@b.com' }),
-    }));
+    resolveSession.mockResolvedValue('user-1');
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
     const response = await PUT(
@@ -121,14 +119,7 @@ describe('PUT /api/auth/me/password', () => {
   });
 
   it('should return 400 for a new password shorter than 8 characters', async () => {
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'wallison@financecontrol.com',
-    });
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
+    resolveSession.mockResolvedValue('user-1');
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -153,16 +144,9 @@ describe('PUT /api/auth/me/password', () => {
       .fn()
       .mockRejectedValue(new InvalidCredentialsError());
 
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'wallison@financecontrol.com',
-    });
+    resolveSession.mockResolvedValue('user-1');
 
     makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -185,9 +169,7 @@ describe('PUT /api/auth/me/password', () => {
   it('should not set a cookie when the current password is wrong', async () => {
     const execute = jest.fn().mockRejectedValue(new InvalidCredentialsError());
     makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken: jest.fn().mockResolvedValue({ sub: 'user-1', email: 'a@b.com' }),
-    }));
+    resolveSession.mockResolvedValue('user-1');
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
     const response = await PUT(

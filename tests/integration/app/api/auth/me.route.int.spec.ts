@@ -12,8 +12,10 @@ jest.mock(
   }),
 );
 
-jest.mock('@/modules/auth/infra/services/jose-jwt-token.adapter', () => ({
-  JoseJwtTokenAdapter: jest.fn(),
+// The session check itself (token + password change) is covered by
+// resolve-session.use-case tests; here it only says who is signed in.
+jest.mock('@/modules/auth/infra/factories/make-resolve-session-use-case', () => ({
+  makeResolveSessionUseCase: jest.fn(),
 }));
 
 jest.mock(
@@ -28,7 +30,7 @@ import { UserNotFoundError } from '@/modules/auth/domain/errors/user-not-found.e
 import { InvalidUserNameError } from '@/modules/auth/domain/errors/invalid-user-name.error';
 import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
 import { makeUpdateUserProfileUseCase } from '@/modules/auth/infra/factories/make-update-user-profile-use-case';
-import { JoseJwtTokenAdapter } from '@/modules/auth/infra/services/jose-jwt-token.adapter';
+import { makeResolveSessionUseCase } from '@/modules/auth/infra/factories/make-resolve-session-use-case';
 import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
 import { NextRequest } from 'next/server';
 
@@ -42,7 +44,11 @@ const makeUpdateUserProfileUseCaseMock =
     typeof makeUpdateUserProfileUseCase
   >;
 
-const JoseJwtTokenServiceMock = JoseJwtTokenAdapter as unknown as jest.Mock;
+const resolveSession = jest.fn();
+
+(makeResolveSessionUseCase as jest.Mock).mockImplementation(() => ({
+  execute: resolveSession,
+}));
 
 const getAuthTokenFromRequestMock =
   getAuthTokenFromRequest as jest.MockedFunction<
@@ -51,6 +57,7 @@ const getAuthTokenFromRequestMock =
 
 describe('GET /api/auth/me', () => {
   afterEach(() => {
+    resolveSession.mockReset();
     jest.clearAllMocks();
   });
 
@@ -63,18 +70,11 @@ describe('GET /api/auth/me', () => {
       },
     });
 
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'admin@financecontrol.com',
-    });
+    resolveSession.mockResolvedValue('user-1');
 
     makeGetCurrentUserUseCaseMock.mockReturnValue({
       execute,
     } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -86,7 +86,7 @@ describe('GET /api/auth/me', () => {
     const body = await response.json();
 
     expect(getAuthTokenFromRequestMock).toHaveBeenCalled();
-    expect(verifyAccessToken).toHaveBeenCalledWith('valid-token');
+    expect(resolveSession).toHaveBeenCalledWith('valid-token');
     expect(execute).toHaveBeenCalledWith({
       userId: 'user-1',
     });
@@ -118,17 +118,11 @@ describe('GET /api/auth/me', () => {
   it('should return 401 with an invalid token', async () => {
     const execute = jest.fn();
 
-    const verifyAccessToken = jest
-      .fn()
-      .mockRejectedValue(new Error('Invalid token'));
+    resolveSession.mockResolvedValue(null);
 
     makeGetCurrentUserUseCaseMock.mockReturnValue({
       execute,
     } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('invalid-token');
 
@@ -139,7 +133,7 @@ describe('GET /api/auth/me', () => {
     const response = await GET(request);
     const body = await response.json();
 
-    expect(verifyAccessToken).toHaveBeenCalledWith('invalid-token');
+    expect(resolveSession).toHaveBeenCalledWith('invalid-token');
     expect(response.status).toBe(401);
     expect(body).toHaveProperty('message');
   });
@@ -147,18 +141,11 @@ describe('GET /api/auth/me', () => {
   it('should return 401 when the token user does not exist', async () => {
     const execute = jest.fn().mockRejectedValue(new UserNotFoundError());
 
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'missing-user',
-      email: 'admin@financecontrol.com',
-    });
+    resolveSession.mockResolvedValue('missing-user');
 
     makeGetCurrentUserUseCaseMock.mockReturnValue({
       execute,
     } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -169,7 +156,7 @@ describe('GET /api/auth/me', () => {
     const response = await GET(request);
     const body = await response.json();
 
-    expect(verifyAccessToken).toHaveBeenCalledWith('valid-token');
+    expect(resolveSession).toHaveBeenCalledWith('valid-token');
     expect(execute).toHaveBeenCalledWith({
       userId: 'missing-user',
     });
@@ -180,6 +167,7 @@ describe('GET /api/auth/me', () => {
 
 describe('PUT /api/auth/me', () => {
   afterEach(() => {
+    resolveSession.mockReset();
     jest.clearAllMocks();
   });
 
@@ -192,18 +180,11 @@ describe('PUT /api/auth/me', () => {
       },
     });
 
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'wallison@financecontrol.com',
-    });
+    resolveSession.mockResolvedValue('user-1');
 
     makeUpdateUserProfileUseCaseMock.mockReturnValue({
       execute,
     } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -245,14 +226,7 @@ describe('PUT /api/auth/me', () => {
   });
 
   it('should return 400 for an empty name', async () => {
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'wallison@financecontrol.com',
-    });
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
+    resolveSession.mockResolvedValue('user-1');
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
@@ -269,18 +243,11 @@ describe('PUT /api/auth/me', () => {
   it('should return 400 when the use case throws InvalidUserNameError', async () => {
     const execute = jest.fn().mockRejectedValue(new InvalidUserNameError());
 
-    const verifyAccessToken = jest.fn().mockResolvedValue({
-      sub: 'user-1',
-      email: 'wallison@financecontrol.com',
-    });
+    resolveSession.mockResolvedValue('user-1');
 
     makeUpdateUserProfileUseCaseMock.mockReturnValue({
       execute,
     } as never);
-
-    JoseJwtTokenServiceMock.mockImplementation(() => ({
-      verifyAccessToken,
-    }));
 
     getAuthTokenFromRequestMock.mockReturnValue('valid-token');
 
