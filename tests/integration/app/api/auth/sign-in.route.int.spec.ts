@@ -47,7 +47,8 @@ describe('POST /api/auth/sign-in', () => {
     expect(response.status).toBe(200);
 
     expect(setCookie).toContain(`${AUTH_COOKIE_NAME}=fake-access-token`);
-    expect(setCookie).toContain('Max-Age=604800');
+    // 7-day login + 7 days so the login page can say the session ended.
+    expect(setCookie).toContain('Max-Age=1209600');
   });
 
   it('should return 401 with invalid credentials', async () => {

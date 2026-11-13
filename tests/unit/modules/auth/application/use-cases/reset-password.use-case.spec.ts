@@ -46,6 +46,16 @@ describe('ResetPasswordUseCase', () => {
     expect(tokens.tokens.every((token) => token.usedAt !== null)).toBe(true);
   });
 
+  // Signs out every device: logins issued before this moment stop working.
+  it('should record the password change moment', async () => {
+    const { useCase, users, tokens } = makeSut();
+    await tokens.create({ userId: 'user-1', tokenHash: 'hashed:link', expiresAt: LATER });
+
+    await useCase.execute({ token: 'link', newPassword: 'new-password' });
+
+    expect((await users.findById('user-1'))?.passwordChangedAt).toEqual(NOW);
+  });
+
   it('should refuse an unknown token', async () => {
     const { useCase, users } = makeSut();
 

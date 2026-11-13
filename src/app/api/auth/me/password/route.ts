@@ -2,6 +2,7 @@ import { getAuthenticatedUserIdFromRequest } from '@/modules/auth/presentation/h
 import { unauthorizedResponse } from '@/modules/auth/presentation/http/helpers/unauthorized-response';
 import { makeChangePasswordUseCase } from '@/modules/auth/infra/factories/make-change-password-use-case';
 import { ChangePasswordController } from '@/modules/auth/presentation/http/controllers/change-password.controller';
+import { setAuthCookie } from '@/modules/auth/presentation/http/helpers/auth-cookie';
 import { toErrorNextResponse } from '@/shared/presentation/http/to-error-next-response';
 import { toNextResponse } from '@/shared/presentation/http/to-next-response';
 import { NextRequest } from 'next/server';
@@ -21,7 +22,12 @@ export async function PUT(request: NextRequest) {
 
     const response = await controller.handle({ userId, body });
 
-    return toNextResponse(response);
+    const nextResponse = toNextResponse(response);
+
+    // The change signs out older logins, this device's included.
+    setAuthCookie(nextResponse, response.accessToken);
+
+    return nextResponse;
   } catch (error) {
     return toErrorNextResponse(error);
   }

@@ -4,6 +4,7 @@ import { ChangePasswordUseCase } from '../../application/use-cases/change-passwo
 import { PrismaPasswordResetTokenRepository } from '../repositories/prisma-password-reset-token.repository';
 import { PrismaUserRepository } from '../repositories/prisma-user.repository';
 import { BcryptPasswordHasherAdapter } from '../services/bcrypt-password-hasher.adapter';
+import { makeTokenService } from './make-token-service';
 
 // Transactional: the new password and dropping the pending reset links are
 // saved together, so a failure never leaves the password changed with an
@@ -16,6 +17,7 @@ export function makeChangePasswordUseCase(): Pick<ChangePasswordUseCase, 'execut
           new PrismaUserRepository(tx),
           new BcryptPasswordHasherAdapter(),
           new PrismaPasswordResetTokenRepository(tx),
+          makeTokenService(),
         ).execute(input),
       ),
   };

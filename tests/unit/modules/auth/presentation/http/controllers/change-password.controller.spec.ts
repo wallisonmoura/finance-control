@@ -16,7 +16,7 @@ describe('ChangePasswordController', () => {
   });
 
   it('should call ChangePasswordUseCase with the correct input', async () => {
-    useCase.execute.mockResolvedValue(undefined);
+    useCase.execute.mockResolvedValue({ accessToken: 'new-token' });
 
     const request: HttpRequest = {
       userId: 'user-1',
@@ -37,7 +37,7 @@ describe('ChangePasswordController', () => {
   });
 
   it('should return 200 with a success message', async () => {
-    useCase.execute.mockResolvedValue(undefined);
+    useCase.execute.mockResolvedValue({ accessToken: 'new-token' });
 
     const response = await controller.handle({
       userId: 'user-1',
@@ -50,7 +50,21 @@ describe('ChangePasswordController', () => {
     expect(response).toEqual({
       statusCode: 200,
       body: { message: 'Senha alterada com sucesso.' },
+      accessToken: 'new-token',
     });
+  });
+
+  // The route sets the cookie from it; the token itself never goes in the body.
+  it('should return the new access token outside the body', async () => {
+    useCase.execute.mockResolvedValue({ accessToken: 'new-token' });
+
+    const response = await controller.handle({
+      userId: 'user-1',
+      body: { currentPassword: 'current-password', newPassword: 'new-password-123' },
+    });
+
+    expect(response.accessToken).toBe('new-token');
+    expect(response.body).not.toHaveProperty('accessToken');
   });
 
   it('should throw an error when the payload is invalid', async () => {

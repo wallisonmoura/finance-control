@@ -41,7 +41,7 @@ describe('PUT /api/auth/me/password', () => {
   });
 
   it('should change the authenticated user password with a valid token', async () => {
-    const execute = jest.fn().mockResolvedValue(undefined);
+    const execute = jest.fn().mockResolvedValue({ accessToken: 'new-token' });
 
     const verifyAccessToken = jest.fn().mockResolvedValue({
       sub: 'user-1',
@@ -77,6 +77,26 @@ describe('PUT /api/auth/me/password', () => {
     });
     expect(response.status).toBe(200);
     expect(body).toEqual({ message: 'Senha alterada com sucesso.' });
+  });
+
+  // The change signs out older logins, this device included: it needs the new one.
+  it('should set a new auth cookie after changing the password', async () => {
+    const execute = jest.fn().mockResolvedValue({ accessToken: 'new-token' });
+    makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
+    JoseJwtTokenServiceMock.mockImplementation(() => ({
+      verifyAccessToken: jest.fn().mockResolvedValue({ sub: 'user-1', email: 'a@b.com' }),
+    }));
+    getAuthTokenFromRequestMock.mockReturnValue('valid-token');
+
+    const response = await PUT(
+      new NextRequest('http://localhost:3000/api/auth/me/password', {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword: 'current-password', newPassword: 'new-password-123' }),
+      }),
+    );
+
+    expect(response.cookies.get('fc_access_token')?.value).toBe('new-token');
+    expect(await response.json()).not.toHaveProperty('accessToken');
   });
 
   it('should return 401 without a token', async () => {
@@ -160,5 +180,24 @@ describe('PUT /api/auth/me/password', () => {
     const response = await PUT(request);
 
     expect(response.status).toBe(401);
+  });
+
+  it('should not set a cookie when the current password is wrong', async () => {
+    const execute = jest.fn().mockRejectedValue(new InvalidCredentialsError());
+    makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
+    JoseJwtTokenServiceMock.mockImplementation(() => ({
+      verifyAccessToken: jest.fn().mockResolvedValue({ sub: 'user-1', email: 'a@b.com' }),
+    }));
+    getAuthTokenFromRequestMock.mockReturnValue('valid-token');
+
+    const response = await PUT(
+      new NextRequest('http://localhost:3000/api/auth/me/password', {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword: 'wrong-password', newPassword: 'new-password-123' }),
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.cookies.get('fc_access_token')).toBeUndefined();
   });
 });

@@ -11,6 +11,11 @@ export type ChangePasswordResponseBody = {
   message: string;
 };
 
+export interface ChangePasswordHttpResponse
+  extends HttpResponse<ChangePasswordResponseBody> {
+  accessToken: string;
+}
+
 export class ChangePasswordController implements Controller<
   HttpRequest,
   ChangePasswordResponseBody
@@ -19,7 +24,7 @@ export class ChangePasswordController implements Controller<
 
   async handle(
     request: HttpRequest,
-  ): Promise<HttpResponse<ChangePasswordResponseBody>> {
+  ): Promise<ChangePasswordHttpResponse> {
     const { currentPassword, newPassword } = changePasswordSchema.parse(
       request.body,
     );
@@ -30,11 +35,12 @@ export class ChangePasswordController implements Controller<
       newPassword,
     };
 
-    await this.changePasswordUseCase.execute(input);
+    const { accessToken } = await this.changePasswordUseCase.execute(input);
 
     return {
       statusCode: 200,
       body: { message: 'Senha alterada com sucesso.' },
+      accessToken,
     };
   }
 }
