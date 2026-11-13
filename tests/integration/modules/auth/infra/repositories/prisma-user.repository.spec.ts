@@ -121,12 +121,29 @@ describe('PrismaUserRepository', () => {
       data: { name: 'Wallison', email, passwordHash },
     });
 
-    await repository.updatePassword(createdUser.id, newPasswordHash);
+    const changedAt = new Date('2026-11-12T12:00:00.500Z');
+
+    await repository.updatePassword(createdUser.id, newPasswordHash, changedAt);
 
     const persisted = await prisma.user.findUnique({
       where: { id: createdUser.id },
     });
     expect(persisted?.passwordHash).toBe(newPasswordHash);
+  });
+
+  it('should save the password change moment with the new password', async () => {
+    const email = `wallison-password-changed-at-${Date.now()}@email.com`;
+    const createdUser = await prisma.user.create({
+      data: { name: 'Wallison', email, passwordHash: 'old-hash' },
+    });
+    const changedAt = new Date('2026-11-12T12:00:00.500Z');
+
+    expect((await repository.findById(createdUser.id))?.passwordChangedAt).toBeNull();
+
+    await repository.updatePassword(createdUser.id, 'new-hash', changedAt);
+
+    const found = await repository.findById(createdUser.id);
+    expect(found?.passwordChangedAt).toEqual(changedAt);
   });
 
   describe('when the user no longer exists', () => {
@@ -137,7 +154,7 @@ describe('PrismaUserRepository', () => {
     });
 
     it('should throw not found when updating the password', async () => {
-      await expect(repository.updatePassword(missingId, 'hash')).rejects.toBeInstanceOf(UserNotFoundError);
+      await expect(repository.updatePassword(missingId, 'hash', new Date())).rejects.toBeInstanceOf(UserNotFoundError);
     });
   });
 });

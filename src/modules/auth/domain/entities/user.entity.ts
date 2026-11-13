@@ -8,6 +8,7 @@ export interface UserProps {
   passwordHash: string;
   createdAt: Date;
   updatedAt: Date;
+  passwordChangedAt?: Date | null;
 }
 
 export class User {
@@ -47,5 +48,23 @@ export class User {
 
   get updatedAt(): Date {
     return this.props.updatedAt;
+  }
+
+  get passwordChangedAt(): Date | null {
+    return this.props.passwordChangedAt ?? null;
+  }
+
+  // A login (JWT) issued before the last password change is no longer valid.
+  // `issuedAtSeconds` is the JWT `iat` (whole seconds), so the change moment is
+  // compared by its second: the login issued with the change in Account, in
+  // that same second, stays valid.
+  acceptsSessionIssuedAt(issuedAtSeconds: number): boolean {
+    const passwordChangedAt = this.passwordChangedAt;
+
+    if (!passwordChangedAt) {
+      return true;
+    }
+
+    return issuedAtSeconds >= Math.floor(passwordChangedAt.getTime() / 1000);
   }
 }

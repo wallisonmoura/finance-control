@@ -62,11 +62,11 @@ export class PrismaUserRepository implements UserRepository {
     return PrismaUserMapper.toDomain(user);
   }
 
-  async updatePassword(id: string, passwordHash: string): Promise<void> {
+  async updatePassword(id: string, passwordHash: string, changedAt: Date): Promise<void> {
     await orNotFound(
       this.client.user.update({
         where: { id },
-        data: { passwordHash },
+        data: { passwordHash, passwordChangedAt: changedAt },
       }),
       () => new UserNotFoundError(id),
     );

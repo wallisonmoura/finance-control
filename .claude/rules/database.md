@@ -9,11 +9,12 @@ paths: ["prisma/**", "src/modules/*/infra/repositories/**"]
 
 | Table | Purpose |
 |---|---|
-| `users` | Authenticated users |
+| `users` | Authenticated users. `password_changed_at` (null = never changed): a login (JWT) issued before it is refused — see `ResolveSessionUseCase` |
 | `wallets` | User financial position (bankBalance, cashBalance, receivableBalance) |
 | `expense_categories` | Categories for transactions |
 | `transactions` | Realized financial events — type: `INCOME` or `EXPENSE` |
 | `debts` | Financial commitments — type: `ONE_TIME` or `RECURRING`, status: `PENDING` or `PAID` |
+| `password_reset_tokens` | Reset links: only the SHA-256 hash of the token, 1-hour expiry, single use (`used_at`); RLS enabled |
 
 ## Key constraints
 

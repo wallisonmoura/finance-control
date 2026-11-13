@@ -31,8 +31,10 @@ export class ChangePasswordUseCase {
 
     const newPasswordHash = await this.passwordHasher.hash(input.newPassword);
 
-    await this.userRepository.updatePassword(input.userId, newPasswordHash);
+    const now = this.now();
+
+    await this.userRepository.updatePassword(input.userId, newPasswordHash, now);
     // A reset link asked before this change must not undo it later.
-    await this.tokenRepository.invalidatePending(input.userId, this.now());
+    await this.tokenRepository.invalidatePending(input.userId, now);
   }
 }
