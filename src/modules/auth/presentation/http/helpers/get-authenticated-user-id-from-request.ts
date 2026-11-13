@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getAuthTokenFromRequest } from './get-auth-token-from-request';
-import { makeTokenService } from '@/modules/auth/infra/factories/make-token-service';
+import { makeResolveSessionUseCase } from '@/modules/auth/infra/factories/make-resolve-session-use-case';
 
 export async function getAuthenticatedUserIdFromRequest(
   request: NextRequest,
@@ -11,12 +11,5 @@ export async function getAuthenticatedUserIdFromRequest(
     return null;
   }
 
-  try {
-    const tokenService = makeTokenService();
-    const payload = await tokenService.verifyAccessToken(token);
-
-    return payload.sub;
-  } catch {
-    return null;
-  }
+  return makeResolveSessionUseCase().execute(token);
 }

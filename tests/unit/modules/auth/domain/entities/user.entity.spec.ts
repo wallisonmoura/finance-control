@@ -63,4 +63,50 @@ describe('User Entity', () => {
       }),
     ).toThrow('Nome do usuário é obrigatório.');
   });
+
+  describe('acceptsSessionIssuedAt', () => {
+    function makeUser(passwordChangedAt: Date | null) {
+      return User.create({
+        id: 'user-1',
+        name: 'Wallison',
+        email: Email.create('wallison@email.com'),
+        passwordHash: 'hashed-password',
+        createdAt: new Date('2026-03-19T10:00:00.000Z'),
+        updatedAt: new Date('2026-03-19T10:00:00.000Z'),
+        passwordChangedAt,
+      });
+    }
+
+    const changedAt = new Date('2026-11-12T12:00:00.999Z');
+    const changedAtSecond = Math.floor(Date.parse('2026-11-12T12:00:00.000Z') / 1000);
+
+    it('should accept any session when the password was never changed', () => {
+      expect(makeUser(null).acceptsSessionIssuedAt(0)).toBe(true);
+    });
+
+    it('should reject a session issued in a second before the password change', () => {
+      expect(makeUser(changedAt).acceptsSessionIssuedAt(changedAtSecond - 1)).toBe(false);
+    });
+
+    it('should accept a session issued in the same second as the password change', () => {
+      expect(makeUser(changedAt).acceptsSessionIssuedAt(changedAtSecond)).toBe(true);
+    });
+
+    it('should accept a session issued after the password change', () => {
+      expect(makeUser(changedAt).acceptsSessionIssuedAt(changedAtSecond + 60)).toBe(true);
+    });
+
+    it('should default passwordChangedAt to null', () => {
+      const user = User.create({
+        id: 'user-1',
+        name: 'Wallison',
+        email: Email.create('wallison@email.com'),
+        passwordHash: 'hashed-password',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      expect(user.passwordChangedAt).toBeNull();
+    });
+  });
 });

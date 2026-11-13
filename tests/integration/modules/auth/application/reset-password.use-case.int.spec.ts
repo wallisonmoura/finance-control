@@ -38,6 +38,17 @@ describe('ResetPasswordUseCase (database)', () => {
     await prisma.$disconnect();
   });
 
+  it('should save passwordChangedAt when resetting', async () => {
+    const user = await createTestUser({ passwordHash: 'old-hash' });
+    const token = await createLink(user.id);
+    const before = Date.now();
+
+    await useCase.execute({ token, newPassword: 'new-password-123' });
+
+    const stored = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    expect(stored.passwordChangedAt?.getTime()).toBeGreaterThanOrEqual(before);
+  });
+
   it('should change the password only once when the same link is sent twice at the same time', async () => {
     const user = await createTestUser({ passwordHash: 'old-hash' });
     const token = await createLink(user.id);

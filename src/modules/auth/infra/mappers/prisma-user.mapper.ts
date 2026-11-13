@@ -11,6 +11,7 @@ export class PrismaUserMapper {
       passwordHash: raw.passwordHash,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
+      passwordChangedAt: raw.passwordChangedAt,
     });
   }
 }

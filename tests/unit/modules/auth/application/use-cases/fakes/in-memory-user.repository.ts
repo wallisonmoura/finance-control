@@ -42,6 +42,7 @@ export class InMemoryUserRepository implements UserRepository {
       passwordHash: existing.passwordHash,
       createdAt: existing.createdAt,
       updatedAt: new Date(),
+      passwordChangedAt: existing.passwordChangedAt,
     });
 
     this.users[index] = updated;
@@ -49,7 +50,7 @@ export class InMemoryUserRepository implements UserRepository {
     return updated;
   }
 
-  async updatePassword(id: string, passwordHash: string): Promise<void> {
+  async updatePassword(id: string, passwordHash: string, changedAt: Date): Promise<void> {
     const index = this.users.findIndex((user) => user.id === id);
     const existing = this.users[index];
 
@@ -60,6 +61,7 @@ export class InMemoryUserRepository implements UserRepository {
       passwordHash,
       createdAt: existing.createdAt,
       updatedAt: new Date(),
+      passwordChangedAt: changedAt,
     });
   }
 }

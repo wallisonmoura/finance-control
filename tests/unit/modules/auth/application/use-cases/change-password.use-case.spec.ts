@@ -7,15 +7,25 @@ import { Email } from '@/modules/auth/domain/value-objects/email.vo';
 import { InMemoryUserRepository } from './fakes/in-memory-user.repository';
 import { FakePasswordHasher } from './fakes/fake-password-hasher';
 import { InMemoryPasswordResetTokenRepository } from './fakes/in-memory-password-reset-token.repository';
+import { FakeTokenService } from './fakes/fake-token.service';
+
+const NOW = new Date('2026-11-12T12:00:00.500Z');
 
 describe('ChangePasswordUseCase', () => {
   function makeSut(users: User[] = []) {
     const userRepository = new InMemoryUserRepository(users);
     const passwordHasher = new FakePasswordHasher();
     const tokenRepository = new InMemoryPasswordResetTokenRepository();
-    const useCase = new ChangePasswordUseCase(userRepository, passwordHasher, tokenRepository);
+    const tokenService = new FakeTokenService();
+    const useCase = new ChangePasswordUseCase(
+      userRepository,
+      passwordHasher,
+      tokenRepository,
+      tokenService,
+      () => NOW,
+    );
 
-    return { useCase, userRepository, passwordHasher, tokenRepository };
+    return { useCase, userRepository, passwordHasher, tokenRepository, tokenService };
   }
 
   function makeExistingUser(): User {
@@ -41,6 +51,46 @@ describe('ChangePasswordUseCase', () => {
     const persisted = await userRepository.findById('user-1');
 
     expect(persisted?.passwordHash).toBe('hashed-new-password-123');
+  });
+
+  it('should record the password change moment', async () => {
+    const { useCase, userRepository } = makeSut([makeExistingUser()]);
+
+    await useCase.execute({
+      userId: 'user-1',
+      currentPassword: 'current-password',
+      newPassword: 'new-password-123',
+    });
+
+    expect((await userRepository.findById('user-1'))?.passwordChangedAt).toEqual(NOW);
+  });
+
+  // The other devices are signed out by the change; this one gets a new login.
+  it('should return a new access token for the current device', async () => {
+    const { useCase } = makeSut([makeExistingUser()]);
+
+    const output = await useCase.execute({
+      userId: 'user-1',
+      currentPassword: 'current-password',
+      newPassword: 'new-password-123',
+    });
+
+    expect(output).toEqual({ accessToken: 'token-user-1' });
+  });
+
+  it('should not return a token when the current password is wrong', async () => {
+    const { useCase, tokenService } = makeSut([makeExistingUser()]);
+    const generate = jest.spyOn(tokenService, 'generateAccessToken');
+
+    await expect(
+      useCase.execute({
+        userId: 'user-1',
+        currentPassword: 'wrong-password',
+        newPassword: 'new-password-123',
+      }),
+    ).rejects.toBeInstanceOf(InvalidCredentialsError);
+
+    expect(generate).not.toHaveBeenCalled();
   });
 
   // A reset link asked before the change must not undo it later.

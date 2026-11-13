@@ -65,7 +65,8 @@ describe('POST /api/auth/register', () => {
     expect(JSON.stringify(body)).not.toContain('accessToken');
 
     expect(setCookie).toContain(`${AUTH_COOKIE_NAME}=fake-access-token`);
-    expect(setCookie).toContain('Max-Age=604800');
+    // 7-day login + 7 days so the login page can say the session ended.
+    expect(setCookie).toContain('Max-Age=1209600');
   });
 
   it('should provision exactly one wallet and 27 expense categories for the new user', async () => {

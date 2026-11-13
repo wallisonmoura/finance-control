@@ -3,6 +3,7 @@ import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-cr
 import {
   TokenPayload,
   TokenPort,
+  VerifiedTokenPayload,
 } from '@/modules/auth/domain/services/token.port';
 import { PrismaUserRepository } from '@/modules/auth/infra/repositories/prisma-user.repository';
 import { BcryptPasswordHasherAdapter } from '@/modules/auth/infra/services/bcrypt-password-hasher.adapter';
@@ -14,10 +15,11 @@ class FakeTokenService implements TokenPort {
     return `token-for-${payload.sub}`;
   }
 
-  async verifyAccessToken(token: string): Promise<TokenPayload> {
+  async verifyAccessToken(token: string): Promise<VerifiedTokenPayload> {
     return {
       sub: token.replace('token-for-', ''),
       email: 'fake@email.com',
+      issuedAt: 0,
     };
   }
 }

@@ -12,6 +12,7 @@ export const AUTH_PUBLIC_API_PATHS = [
   '/api/auth/sign-in',
   '/api/auth/register',
   '/api/auth/password-reset',
+  '/api/auth/session-ended',
 ];
 
 export const AUTH_PUBLIC_PAGE_PATHS = [

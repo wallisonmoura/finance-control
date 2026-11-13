@@ -9,6 +9,7 @@ type LoginPageProps = {
   searchParams: Promise<{
     redirectTo?: string;
     reset?: string;
+    session?: string;
   }>;
 };
 
@@ -24,15 +25,27 @@ function normalizeRedirectTo(redirectTo?: string) {
   return redirectTo;
 }
 
+function getLoginNotice({ reset, session }: { reset?: string; session?: string }) {
+  if (reset === 'success') {
+    return 'password-reset';
+  }
+
+  if (session === 'expired') {
+    return 'session-ended';
+  }
+
+  return undefined;
+}
+
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { redirectTo, reset } = await searchParams;
+  const { redirectTo, reset, session } = await searchParams;
 
   const safeRedirectTo = normalizeRedirectTo(redirectTo);
 
   return (
     <LoginForm
       redirectTo={safeRedirectTo}
-      notice={reset === 'success' ? 'password-reset' : undefined}
+      notice={getLoginNotice({ reset, session })}
     />
   );
 }

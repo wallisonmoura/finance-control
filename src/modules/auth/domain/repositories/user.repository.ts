@@ -11,5 +11,7 @@ export interface UserRepository {
   findById(id: string): Promise<User | null>;
   create(data: CreateUserData): Promise<User>;
   updateName(id: string, name: string): Promise<User>;
-  updatePassword(id: string, passwordHash: string): Promise<void>;
+  // Saves the new hash together with the change moment (see
+  // User.acceptsSessionIssuedAt): every password change signs out older logins.
+  updatePassword(id: string, passwordHash: string, changedAt: Date): Promise<void>;
 }

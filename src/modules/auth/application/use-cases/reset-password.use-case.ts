@@ -27,7 +27,7 @@ export class ResetPasswordUseCase {
 
     const passwordHash = await this.passwordHasher.hash(input.newPassword);
 
-    await this.userRepository.updatePassword(userId, passwordHash);
+    await this.userRepository.updatePassword(userId, passwordHash, now);
     await this.tokenRepository.invalidatePending(userId, now);
   }
 }

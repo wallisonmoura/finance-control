@@ -1,4 +1,4 @@
-import { AUTH_COOKIE_NAME } from '@/modules/auth/constants/auth.constants';
+import { clearAuthCookie } from '@/modules/auth/presentation/http/helpers/auth-cookie';
 import { makeSignOutUseCase } from '@/modules/auth/infra/factories/make-sign-out-use-case';
 import { SignOutController } from '@/modules/auth/presentation/http/controllers/sign-out.controller';
 import { toErrorNextResponse } from '@/shared/presentation/http/to-error-next-response';
@@ -13,15 +13,7 @@ export async function POST() {
 
     const nextResponse = toNextResponse(response);
 
-    nextResponse.cookies.set({
-      name: AUTH_COOKIE_NAME,
-      value: '',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 0,
-    });
+    clearAuthCookie(nextResponse);
 
     return nextResponse;
   } catch (error) {

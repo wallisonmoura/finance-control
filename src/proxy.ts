@@ -7,6 +7,7 @@ import {
   AUTH_PUBLIC_PAGE_PATHS,
   AUTH_UNAUTHORIZED_MESSAGE,
 } from '@/modules/auth/constants/auth.constants';
+import { SESSION_ENDED_HEADER } from '@/shared/presentation/http/session-ended';
 
 const MUTATING_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
@@ -83,7 +84,7 @@ export function proxy(request: NextRequest) {
     if (pathname.startsWith('/api')) {
       return NextResponse.json(
         { message: AUTH_UNAUTHORIZED_MESSAGE },
-        { status: 401 },
+        { status: 401, headers: { [SESSION_ENDED_HEADER]: '1' } },
       );
     }
 
