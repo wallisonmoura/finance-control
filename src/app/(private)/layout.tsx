@@ -1,4 +1,5 @@
 import { getCurrentAuthenticatedUser } from '@/modules/auth/presentation/server/get-current-authenticated-user';
+import { requireActiveSession } from '@/modules/auth/presentation/server/require-active-session';
 import { CurrentUserMenu } from '@/modules/auth/presentation/ui/components/current-user-menu';
 import { SignOutButton } from '@/modules/auth/presentation/ui/components/sign-out-button';
 import { DebtsDueSoonBell } from '@/modules/debts/presentation/ui/components/debts-due-soon-bell';
@@ -12,6 +13,10 @@ type PrivateLayoutProps = {
 };
 
 export default async function PrivateLayout({ children }: PrivateLayoutProps) {
+  // A login signed out by a password change or expired goes to the login
+  // notice. Cached: the data helpers below reuse the same check.
+  await requireActiveSession();
+
   const [
     { data: currentUser, error: currentUserError },
     { data: pendingDebts, error: pendingDebtsError },

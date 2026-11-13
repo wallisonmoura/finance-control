@@ -17,8 +17,9 @@ import { Input } from '@/shared/presentation/ui/primitives/input';
 
 type LoginFormProps = {
   redirectTo: string;
-  // Set by the login page after a password reset (?reset=success).
-  notice?: 'password-reset';
+  // Set by the login page: after a password reset (?reset=success), or when a
+  // login was signed out or expired (?session=expired).
+  notice?: 'password-reset' | 'session-ended';
 };
 
 const loginFormSchema = z.object({
@@ -110,6 +111,17 @@ export function LoginForm({ redirectTo, notice }: LoginFormProps) {
                 className='mt-6 rounded-lg bg-success-light px-4 py-3 text-center text-sm font-medium text-success-light-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
               >
                 Senha alterada. Entre com a nova senha.
+              </p>
+            ) : null}
+
+            {notice === 'session-ended' ? (
+              <p
+                ref={noticeRef}
+                tabIndex={-1}
+                role='status'
+                className='mt-6 rounded-lg bg-muted px-4 py-3 text-center text-sm font-medium text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+              >
+                Sua sessão terminou. Entre novamente.
               </p>
             ) : null}
 

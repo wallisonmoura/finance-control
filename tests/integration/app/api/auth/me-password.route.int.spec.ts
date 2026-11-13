@@ -23,6 +23,7 @@ import { InvalidCredentialsError } from '@/modules/auth/domain/errors/invalid-cr
 import { makeChangePasswordUseCase } from '@/modules/auth/infra/factories/make-change-password-use-case';
 import { makeResolveSessionUseCase } from '@/modules/auth/infra/factories/make-resolve-session-use-case';
 import { getAuthTokenFromRequest } from '@/modules/auth/presentation/http/helpers/get-auth-token-from-request';
+import { SESSION_ENDED_HEADER } from '@/shared/presentation/http/session-ended';
 import { NextRequest } from 'next/server';
 
 const makeChangePasswordUseCaseMock =
@@ -181,5 +182,39 @@ describe('PUT /api/auth/me/password', () => {
 
     expect(response.status).toBe(401);
     expect(response.cookies.get('fc_access_token')).toBeUndefined();
+  });
+
+  // Signed out on another device: the app must take this one to the login.
+  it('should mark the 401 as session ended when the session is invalid', async () => {
+    resolveSession.mockResolvedValue(null);
+    getAuthTokenFromRequestMock.mockReturnValue('old-token');
+
+    const response = await PUT(
+      new NextRequest('http://localhost:3000/api/auth/me/password', {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword: 'current-password', newPassword: 'new-password-123' }),
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get(SESSION_ENDED_HEADER)).toBe('1');
+    expect(response.cookies.get('fc_access_token')).toMatchObject({ value: '', maxAge: 0 });
+  });
+
+  it('should not mark the 401 when the current password is wrong', async () => {
+    const execute = jest.fn().mockRejectedValue(new InvalidCredentialsError());
+    makeChangePasswordUseCaseMock.mockReturnValue({ execute } as never);
+    resolveSession.mockResolvedValue('user-1');
+    getAuthTokenFromRequestMock.mockReturnValue('valid-token');
+
+    const response = await PUT(
+      new NextRequest('http://localhost:3000/api/auth/me/password', {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword: 'wrong-password', newPassword: 'new-password-123' }),
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get(SESSION_ENDED_HEADER)).toBeNull();
   });
 });

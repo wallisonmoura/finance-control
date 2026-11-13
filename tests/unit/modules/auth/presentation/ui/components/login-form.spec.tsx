@@ -258,6 +258,14 @@ describe('LoginForm', () => {
     expect(screen.getByRole('status')).toHaveFocus();
   });
 
+  it('should show and focus the session ended notice', () => {
+    render(<LoginForm redirectTo='/' notice='session-ended' />);
+
+    const notice = screen.getByRole('status');
+    expect(notice).toHaveTextContent('Sua sessão terminou. Entre novamente.');
+    expect(notice).toHaveFocus();
+  });
+
   it('should show no notice on a normal visit', () => {
     render(<LoginForm redirectTo='/' />);
 

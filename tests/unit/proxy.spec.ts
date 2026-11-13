@@ -5,6 +5,7 @@ import {
   AUTH_COOKIE_NAME,
   AUTH_CSRF_ORIGIN_MISMATCH_MESSAGE,
 } from '@/modules/auth/constants/auth.constants';
+import { SESSION_ENDED_HEADER } from '@/shared/presentation/http/session-ended';
 
 function makeAuthedRequest(overrides: {
   method?: string;
@@ -180,5 +181,31 @@ describe('proxy — public page paths', () => {
 
     expect(response.headers.get('location')).toContain('/login');
     expect(response.headers.get('location')).not.toContain('/about');
+  });
+});
+
+describe('proxy — session ended', () => {
+  // The app sends the visitor to the login notice when its API calls get this.
+  it('should mark the 401 as session ended when an API call has no cookie', () => {
+    const request = new NextRequest('http://app.financecontrol.com/api/wallet', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get(SESSION_ENDED_HEADER)).toBe('1');
+  });
+
+  it('should treat the session-ended route as public', () => {
+    const request = new NextRequest('http://app.financecontrol.com/api/auth/session-ended', {
+      method: 'GET',
+      headers: { host: 'app.financecontrol.com' },
+    });
+
+    const response = proxy(request);
+
+    expect(response.status).toBe(200);
   });
 });
