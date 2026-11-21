@@ -55,7 +55,9 @@ export class RequestPasswordResetUseCase {
     await this.mailer.sendPasswordResetLink({
       to: user.email.getValue(),
       name: user.name,
-      resetUrl: `${this.resetUrlBase}/reset-password?token=${encodeURIComponent(token)}`,
+      // After the #: browsers never send it to the server, so the token stays
+      // out of request logs.
+      resetUrl: `${this.resetUrlBase}/reset-password#token=${encodeURIComponent(token)}`,
     });
   }
 }

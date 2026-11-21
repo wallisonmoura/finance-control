@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,7 +16,23 @@ import { Label } from '@/shared/presentation/ui/primitives/label';
 
 import { AuthPageShell } from './auth-page-shell';
 
-const INVALID_LINK_MESSAGE = 'Este link expirou ou já foi usado.';
+const INCOMPLETE_LINK_MESSAGE =
+  'Este link está incompleto. Abra o link direto do e-mail ou peça um novo.';
+
+// The token travels after the # (#token=...), which browsers never send to the
+// server. undefined while rendering on the server, where there is no hash yet.
+function subscribeToHash(onChange: () => void) {
+  window.addEventListener('hashchange', onChange);
+  return () => window.removeEventListener('hashchange', onChange);
+}
+
+function readTokenFromHash(): string | null {
+  return new URLSearchParams(window.location.hash.slice(1)).get('token') || null;
+}
+
+function useResetToken(): string | null | undefined {
+  return useSyncExternalStore(subscribeToHash, readTokenFromHash, () => undefined);
+}
 
 const resetPasswordFormSchema = z
   .object({
@@ -29,11 +45,6 @@ const resetPasswordFormSchema = z
   });
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordFormSchema>;
-
-type ResetPasswordFormProps = {
-  // From the e-mail link; null when the page was opened without one.
-  token: string | null;
-};
 
 type PasswordFieldProps = {
   id: 'newPassword' | 'confirmPassword';
@@ -115,11 +126,11 @@ function InvalidLink({ message }: { message: string }) {
   );
 }
 
-export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+export function ResetPasswordForm() {
   const router = useRouter();
-  const [invalidLinkMessage, setInvalidLinkMessage] = useState<string | null>(
-    token ? null : INVALID_LINK_MESSAGE,
-  );
+  const token = useResetToken();
+  const [expiredLinkMessage, setExpiredLinkMessage] = useState<string | null>(null);
+  const invalidLinkMessage = token === null ? INCOMPLETE_LINK_MESSAGE : expiredLinkMessage;
 
   const {
     register,
@@ -139,7 +150,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
     if (result.error) {
       if (result.invalidLink) {
-        setInvalidLinkMessage(result.error);
+        setExpiredLinkMessage(result.error);
         return;
       }
 
@@ -157,7 +168,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <p className='mt-3 text-sm text-muted-foreground'>Escolha uma senha com pelo menos 8 caracteres.</p>
       </div>
 
-      {invalidLinkMessage ? (
+      {token === undefined ? null : invalidLinkMessage ? (
         <InvalidLink message={invalidLinkMessage} />
       ) : (
         <form onSubmit={handleSubmit(handleResetPasswordSubmit)} className='mt-8 space-y-5' noValidate>

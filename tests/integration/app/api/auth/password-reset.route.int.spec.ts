@@ -87,7 +87,7 @@ describe('POST /api/auth/password-reset', () => {
       expect.objectContaining({
         to: 'ana@example.com',
         name: 'Ana',
-        resetUrl: expect.stringMatching(/\/reset-password\?token=[A-Za-z0-9_-]{43,}$/),
+        resetUrl: expect.stringMatching(/\/reset-password#token=[A-Za-z0-9_-]{43,}$/),
       }),
     );
     expect(await prisma.passwordResetToken.count()).toBe(1);
