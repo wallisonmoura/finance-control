@@ -18,6 +18,11 @@ export class InMemoryPasswordResetTokenRepository implements PasswordResetTokenR
     this.tokens.push({ ...data, createdAt: this.clock(), usedAt: null });
   }
 
+  async replacePending(data: CreatePasswordResetTokenData, now: Date): Promise<void> {
+    await this.invalidatePending(data.userId, now);
+    await this.create(data);
+  }
+
   async countCreatedSince(userId: string, since: Date): Promise<number> {
     return this.tokens.filter(
       (token) => token.userId === userId && token.createdAt >= since,

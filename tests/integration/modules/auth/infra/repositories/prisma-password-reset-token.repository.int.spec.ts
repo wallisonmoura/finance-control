@@ -75,4 +75,53 @@ describe('PrismaPasswordResetTokenRepository', () => {
     expect(await repository.countCreatedSince(user.id, anHourAgo)).toBe(2);
     expect(await repository.countCreatedSince(user.id, new Date(Date.now() + 60_000))).toBe(0);
   });
+
+  describe('replacePending', () => {
+    async function pendingHashesOf(userId: string) {
+      const rows = await prisma.passwordResetToken.findMany({ where: { userId, usedAt: null } });
+      return rows.map((row) => row.tokenHash).sort();
+    }
+
+    it('should leave only the new link pending', async () => {
+      const user = await createTestUser();
+      await repository.create({ userId: user.id, tokenHash: 'hash-old', expiresAt: IN_ONE_HOUR });
+
+      await repository.replacePending({ userId: user.id, tokenHash: 'hash-new', expiresAt: IN_ONE_HOUR }, NOW);
+
+      expect(await pendingHashesOf(user.id)).toEqual(['hash-new']);
+    });
+
+    // Two "forgot password" requests at the same time must not leave two
+    // valid links: the replacements run one after the other per account.
+    // The race is not guaranteed in one round, so it runs several: without
+    // the per-account lock some round ends with more than one pending link.
+    it('should keep exactly one pending link when several replace at the same time', async () => {
+      const user = await createTestUser();
+      const pendingCounts: number[] = [];
+
+      for (let round = 0; round < 10; round += 1) {
+        await Promise.all(
+          Array.from({ length: 20 }, (_, index) =>
+            repository.replacePending(
+              { userId: user.id, tokenHash: `hash-${round}-${index}`, expiresAt: IN_ONE_HOUR },
+              NOW,
+            ),
+          ),
+        );
+        pendingCounts.push((await pendingHashesOf(user.id)).length);
+      }
+
+      expect(pendingCounts).toEqual(Array(10).fill(1));
+    }, 30_000);
+
+    it("should not touch another user's pending link", async () => {
+      const user = await createTestUser();
+      const otherUser = await createTestUser();
+      await repository.create({ userId: otherUser.id, tokenHash: 'hash-other', expiresAt: IN_ONE_HOUR });
+
+      await repository.replacePending({ userId: user.id, tokenHash: 'hash-new', expiresAt: IN_ONE_HOUR }, NOW);
+
+      expect(await pendingHashesOf(otherUser.id)).toEqual(['hash-other']);
+    });
+  });
 });

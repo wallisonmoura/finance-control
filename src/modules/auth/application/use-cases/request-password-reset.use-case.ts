@@ -39,15 +39,18 @@ export class RequestPasswordResetUseCase {
       return;
     }
 
-    await this.tokenRepository.invalidatePending(user.id, now);
-
     const { token, tokenHash } = this.resetToken.generate();
 
-    await this.tokenRepository.create({
-      userId: user.id,
-      tokenHash,
-      expiresAt: new Date(now.getTime() + PASSWORD_RESET_TOKEN_TTL_MINUTES * MINUTE_IN_MS),
-    });
+    // Pending links of the account are invalidated in the same step, so
+    // simultaneous requests never leave two valid links.
+    await this.tokenRepository.replacePending(
+      {
+        userId: user.id,
+        tokenHash,
+        expiresAt: new Date(now.getTime() + PASSWORD_RESET_TOKEN_TTL_MINUTES * MINUTE_IN_MS),
+      },
+      now,
+    );
 
     await this.mailer.sendPasswordResetLink({
       to: user.email.getValue(),
