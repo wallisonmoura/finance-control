@@ -33,6 +33,8 @@ export function useCurrentUser(
       return;
     }
 
+    // Syncing from a new server prop is the point of this effect (see above).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUser(initialUser);
     setErrorMessage(initialError);
     setIsLoading(false);
