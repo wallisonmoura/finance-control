@@ -99,6 +99,9 @@ export function useFinanceHistory(initialFilters?: UseFinanceHistoryParams) {
       };
     }
 
+    // First load when the server sent nothing; useLatestRequest discards a
+    // response that arrives after the component left.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadHistory(filters);
 
     return () => {
