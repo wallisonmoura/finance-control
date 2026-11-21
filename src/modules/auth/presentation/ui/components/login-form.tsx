@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { PASSWORD_RESET_SUCCESS_MESSAGE } from '@/modules/auth/constants/auth.constants';
 import { signIn } from '@/modules/auth/presentation/ui/services/auth-api.service';
 import { Button } from '@/shared/presentation/ui/components/button';
 import { Label } from '@/shared/presentation/ui/primitives/label';
@@ -110,7 +111,7 @@ export function LoginForm({ redirectTo, notice }: LoginFormProps) {
                 role='status'
                 className='mt-6 rounded-lg bg-success-light px-4 py-3 text-center text-sm font-medium text-success-light-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
               >
-                Senha alterada. Entre com a nova senha.
+                {PASSWORD_RESET_SUCCESS_MESSAGE}
               </p>
             ) : null}
 

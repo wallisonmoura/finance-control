@@ -1,4 +1,5 @@
 import { ResetPasswordUseCase } from '@/modules/auth/application/use-cases/reset-password.use-case';
+import { PASSWORD_RESET_SUCCESS_MESSAGE } from '@/modules/auth/constants/auth.constants';
 import { Controller } from '@/shared/presentation/http/controller';
 import { HttpRequest, HttpResponse } from '@/shared/presentation/http/http.types';
 import { resetPasswordSchema } from '../schemas/reset-password.schema';
@@ -15,6 +16,6 @@ export class ResetPasswordController implements Controller<HttpRequest, ResetPas
 
     await this.resetPasswordUseCase.execute(input);
 
-    return { statusCode: 200, body: { message: 'Senha alterada. Entre com a nova senha.' } };
+    return { statusCode: 200, body: { message: PASSWORD_RESET_SUCCESS_MESSAGE } };
   }
 }
