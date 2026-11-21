@@ -99,10 +99,10 @@ describe('toErrorNextResponse', () => {
     expect(await readJson(response)).toEqual({ message });
   });
 
-  it('should return 400 with its message for InvalidPasswordResetTokenError', async () => {
+  it('should return 410 with its message for InvalidPasswordResetTokenError', async () => {
     const response = toErrorNextResponse(new InvalidPasswordResetTokenError());
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(410);
     await expect(response.json()).resolves.toEqual({
       message: 'Este link expirou ou já foi usado.',
     });

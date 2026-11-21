@@ -5,14 +5,8 @@ export const metadata: Metadata = {
   title: 'Criar nova senha',
 };
 
-type ResetPasswordPageProps = {
-  searchParams: Promise<{
-    token?: string | string[];
-  }>;
-};
-
-export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
-  const { token } = await searchParams;
-
-  return <ResetPasswordForm token={typeof token === 'string' && token ? token : null} />;
+// The token comes after the # in the e-mail link and is read in the browser:
+// it is never sent to the server, so it stays out of request logs.
+export default function ResetPasswordPage() {
+  return <ResetPasswordForm />;
 }

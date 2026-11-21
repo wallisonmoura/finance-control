@@ -17,6 +17,27 @@ export class PrismaPasswordResetTokenRepository implements PasswordResetTokenRep
     await this.client.passwordResetToken.create({ data });
   }
 
+  async replacePending(data: CreatePasswordResetTokenData, now: Date): Promise<void> {
+    const replace = async (tx: PrismaTransactionClient) => {
+      // Locks the account's row until the transaction ends: a second request
+      // waits here and then invalidates the link this one creates.
+      await tx.$queryRaw`SELECT id FROM users WHERE id = ${data.userId}::uuid FOR UPDATE`;
+      await tx.passwordResetToken.updateMany({
+        where: { userId: data.userId, usedAt: null },
+        data: { usedAt: now },
+      });
+      await tx.passwordResetToken.create({ data });
+    };
+
+    // Already inside a transaction (passed by a factory): just run in it.
+    if ('$transaction' in this.client) {
+      await this.client.$transaction(replace);
+      return;
+    }
+
+    await replace(this.client);
+  }
+
   async countCreatedSince(userId: string, since: Date): Promise<number> {
     return this.client.passwordResetToken.count({
       where: { userId, createdAt: { gte: since } },

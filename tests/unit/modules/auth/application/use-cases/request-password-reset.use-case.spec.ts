@@ -46,7 +46,8 @@ describe('RequestPasswordResetUseCase', () => {
       {
         to: 'ana@example.com',
         name: 'Ana',
-        resetUrl: 'https://app.example.com/reset-password?token=token-1',
+        // After the #: the token never reaches the server, so it stays out of logs.
+        resetUrl: 'https://app.example.com/reset-password#token=token-1',
       },
     ]);
     // Only the hash is stored, valid for 60 minutes.

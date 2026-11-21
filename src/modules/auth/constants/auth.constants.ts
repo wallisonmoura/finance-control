@@ -44,6 +44,9 @@ export const PASSWORD_RESET_TOKEN_TTL_MINUTES = 60;
 export const PASSWORD_RESET_MAX_PER_ACCOUNT_PER_HOUR = 3;
 
 // Always the same answer, whether the account exists or not.
+// Shown on the login page after a reset (and returned by the confirm route).
+export const PASSWORD_RESET_SUCCESS_MESSAGE = 'Senha alterada. Entre com a nova senha.';
+
 export const PASSWORD_RESET_REQUEST_MESSAGE =
   'Se esse e-mail estiver cadastrado, enviamos um link pra criar uma nova senha. Confira também a caixa de spam.';
 
