@@ -86,8 +86,13 @@ export function toErrorNextResponse(error: unknown) {
     );
   }
 
+  // 410 (gone) is only for the reset link, so the page can tell it from a
+  // validation error.
+  if (error instanceof InvalidPasswordResetTokenError) {
+    return NextResponse.json({ message: error.message }, { status: 410 });
+  }
+
   if (
-    error instanceof InvalidPasswordResetTokenError ||
     error instanceof InvalidEmailError ||
     error instanceof InvalidUserNameError
   ) {

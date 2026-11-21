@@ -55,10 +55,11 @@ describe('POST /api/auth/password-reset/confirm', () => {
     expect(stored.passwordHash).not.toBe('old-hash');
   });
 
-  it('should answer 400 with the expired message for an invalid link', async () => {
+  // 410 (gone) only for the link itself, so the page can tell it from other errors.
+  it('should answer 410 with the expired message for an invalid link', async () => {
     const response = await POST(makeRequest({ token: 'nope', newPassword: 'nova-senha-123' }));
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(410);
     await expect(response.json()).resolves.toEqual({ message: 'Este link expirou ou já foi usado.' });
   });
 

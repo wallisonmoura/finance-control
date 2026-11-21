@@ -1,6 +1,7 @@
 import {
   changePassword,
   getCurrentUser,
+  resetPassword,
   signIn,
   signOut,
   signUp,
@@ -345,6 +346,33 @@ describe('AuthApiService', () => {
       expect(result).toEqual({
         error: 'Credenciais inválidas.',
       });
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should flag the link as invalid only on 410', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 410,
+        json: jest.fn().mockResolvedValueOnce({ message: 'Este link expirou ou já foi usado.' }),
+      });
+
+      const result = await resetPassword({ token: 'abc', newPassword: 'nova-senha-123' });
+
+      expect(result).toEqual({ error: 'Este link expirou ou já foi usado.', invalidLink: true });
+    });
+
+    // A validation error is about the form, not the link.
+    it('should not flag the link as invalid on 400', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        json: jest.fn().mockResolvedValueOnce({ message: 'Erro de validação.' }),
+      });
+
+      const result = await resetPassword({ token: 'abc', newPassword: 'nova-senha-123' });
+
+      expect(result).toEqual({ error: 'Erro de validação.' });
     });
   });
 });

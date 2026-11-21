@@ -194,7 +194,7 @@ export async function resetPassword(input: ResetPasswordInput): Promise<ResetPas
   if (!response.ok) {
     return {
       error: await parseApiError(response),
-      ...(response.status === 400 ? { invalidLink: true } : {}),
+      ...(response.status === 410 ? { invalidLink: true } : {}),
     };
   }
 
