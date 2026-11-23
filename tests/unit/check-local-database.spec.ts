@@ -8,6 +8,9 @@ import { join } from 'node:path';
 // check refuses to start a local server on any database but a local one.
 const SCRIPT = join(__dirname, '../../scripts/check-local-database.mjs');
 
+// What `next start` runs with; nothing else from this shell leaks in.
+const BASE_ENV = { PATH: process.env.PATH ?? '', NODE_ENV: 'production' } as const;
+
 function runCheck(env: Record<string, string>) {
   // An empty folder: no .env file there, only the variables given here.
   const cwd = mkdtempSync(join(tmpdir(), 'check-local-database-'));
@@ -15,7 +18,7 @@ function runCheck(env: Record<string, string>) {
   try {
     return spawnSync(process.execPath, [SCRIPT], {
       cwd,
-      env: { PATH: process.env.PATH ?? '', ...env },
+      env: { ...BASE_ENV, ...env },
       encoding: 'utf8',
     });
   } finally {
@@ -62,7 +65,7 @@ describe('check-local-database (prestart)', () => {
       );
       const result = spawnSync(process.execPath, [SCRIPT], {
         cwd,
-        env: { PATH: process.env.PATH ?? '' },
+        env: BASE_ENV,
         encoding: 'utf8',
       });
 
