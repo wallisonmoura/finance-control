@@ -48,6 +48,8 @@ JWT_EXPIRES_IN="7d"
 
 **Production only** (Vercel env vars, not needed locally): in production, `DATABASE_URL` is Supabase's Supavisor pooler connection string in **transaction mode** (port 6543, with `?pgbouncer=true` appended) — used by the app at runtime (`src/shared/infra/database/prisma/client.ts`). A separate `DIRECT_URL` (session-mode/direct connection, port 5432) is used only by the Prisma CLI for migrations (`prisma.config.ts`), which falls back to `DATABASE_URL` when `DIRECT_URL` is unset — so locally, where there's no pooler, a single `DATABASE_URL` still covers both. This matches Prisma's and Supabase's documented convention for serverless deployments. See `.claude/rules/database.md` for why this split exists (Supavisor session mode holds a connection for the whole request lifetime and has a low connection cap; transaction mode releases it per-query).
 
+**Production-mode runs locally (`next build` / `next start`) load `.env.production*` files.** If one points at a remote database, a local server reads and writes real data. Keep no `.env.production*` file in the project folder; `npm run start` refuses a non-local `DATABASE_URL` (`scripts/check-local-database.mjs`, released only with `ALLOW_REMOTE_DB=1`). To run production mode against the local DB: `set -a; source .env; set +a; npm run start`. Prisma CLI is not affected — `prisma.config.ts` loads only `.env`.
+
 Create the test DB:
 ```bash
 docker exec finance-control-postgres createdb -U postgres finance_control_test

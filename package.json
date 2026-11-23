@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "prisma generate && next build --webpack",
+    "prestart": "node scripts/check-local-database.mjs",
     "start": "next start",
     "test:unit": "jest --selectProjects backend tests/unit",
     "test:integration": "jest --selectProjects integration --runInBand",
