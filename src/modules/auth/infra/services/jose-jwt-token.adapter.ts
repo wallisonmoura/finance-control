@@ -4,6 +4,7 @@ import {
   TokenPort,
   VerifiedTokenPayload,
 } from '../../domain/services/token.port';
+import { toVerifiedTokenPayload } from './to-verified-token-payload';
 
 export class JoseJwtTokenAdapter implements TokenPort {
   constructor(
@@ -29,16 +30,6 @@ export class JoseJwtTokenAdapter implements TokenPort {
 
     const { payload } = await jwtVerify(token, secretKey);
 
-    // `iat` is needed to compare with the last password change; every login
-    // issued here sets it (setIssuedAt).
-    if (!payload.sub || !payload.email || typeof payload.iat !== 'number') {
-      throw new Error('Token inválido.');
-    }
-
-    return {
-      sub: String(payload.sub),
-      email: String(payload.email),
-      issuedAt: payload.iat,
-    };
+    return toVerifiedTokenPayload(payload);
   }
 }
