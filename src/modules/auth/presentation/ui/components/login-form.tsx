@@ -210,6 +210,9 @@ export function LoginForm({ redirectTo, notice }: LoginFormProps) {
           {isSubmitting ? 'Entrando...' : 'Entrar'}
         </Button>
 
+        {/* Hidden until Google sign-in exists: the button did nothing.
+        Restore it together with the Google login (see the status doc).
+
         <div className='flex items-center gap-4 text-xs text-muted-foreground'>
           <div className='h-px flex-1 bg-border' />
           <span>ou continue com</span>
@@ -225,7 +228,11 @@ export function LoginForm({ redirectTo, notice }: LoginFormProps) {
           </span>
           Entrar com Google
         </button>
+        */}
       </form>
+
+      {/* Hidden until sign-up opens to everyone: the button did nothing.
+      When it opens, turn it into a link to /register (see the status doc).
 
       <div className='mt-8 text-center text-sm text-muted-foreground'>
         Ainda não tem uma conta?{' '}
@@ -236,6 +243,7 @@ export function LoginForm({ redirectTo, notice }: LoginFormProps) {
           Criar conta
         </button>
       </div>
+      */}
     </AuthPageShell>
   );
 }

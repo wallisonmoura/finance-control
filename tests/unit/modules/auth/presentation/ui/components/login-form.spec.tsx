@@ -244,6 +244,16 @@ describe('LoginForm', () => {
     );
   });
 
+  // Both were inert buttons; they come back when Google login and open sign-up exist.
+  it('should not show the Google and sign-up buttons', () => {
+    render(<LoginForm redirectTo='/' />);
+
+    expect(screen.queryByText('Entrar com Google')).not.toBeInTheDocument();
+    expect(screen.queryByText('ou continue com')).not.toBeInTheDocument();
+    expect(screen.queryByText('Criar conta')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Ainda não tem uma conta/)).not.toBeInTheDocument();
+  });
+
   it('should announce that the password was changed after a reset', () => {
     render(<LoginForm redirectTo='/' notice='password-reset' />);
 
