@@ -198,7 +198,10 @@ describe('PUT /api/auth/me/password', () => {
 
     expect(response.status).toBe(401);
     expect(response.headers.get(SESSION_ENDED_HEADER)).toBe('1');
-    expect(response.cookies.get('fc_access_token')).toMatchObject({ value: '', maxAge: 0 });
+    // The 401 leaves the cookie alone: a request sent before a password change
+    // in Account would otherwise erase the new login. The session-ended route
+    // clears it, after checking the session really ended.
+    expect(response.cookies.get('fc_access_token')).toBeUndefined();
   });
 
   it('should not mark the 401 when the current password is wrong', async () => {

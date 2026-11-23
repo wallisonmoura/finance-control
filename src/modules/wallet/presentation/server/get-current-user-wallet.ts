@@ -1,4 +1,4 @@
-import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
+import { requireActiveSession } from '@/modules/auth/presentation/server/require-active-session';
 import { makeGetWalletUseCase } from '@/modules/wallet/infra/factories/make-get-wallet-use-case';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 
@@ -18,13 +18,7 @@ function toWalletUi(wallet: Awaited<ReturnType<ReturnType<typeof makeGetWalletUs
 }
 
 export async function getCurrentUserWallet(): Promise<CurrentUserWalletResult> {
-  const userId = await getAuthenticatedUserId();
-
-  if (!userId) {
-    return {
-      error: 'Não autenticado',
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetWalletUseCase();

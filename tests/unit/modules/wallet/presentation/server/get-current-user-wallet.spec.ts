@@ -1,3 +1,13 @@
+// Without a valid session the helpers leave for the login notice (the private
+// layout does not run again on a menu navigation, so they must).
+jest.mock('next/navigation', () => ({
+  redirect: jest.fn(() => {
+    throw new Error('NEXT_REDIRECT');
+  }),
+}));
+
+import { redirect } from 'next/navigation';
+import { SESSION_ENDED_URL } from '@/shared/presentation/http/session-ended';
 import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
 import { makeGetWalletUseCase } from '@/modules/wallet/infra/factories/make-get-wallet-use-case';
 import { getCurrentUserWallet } from '@/modules/wallet/presentation/server/get-current-user-wallet';
@@ -18,12 +28,11 @@ describe('getCurrentUserWallet', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValueOnce(null);
 
-    await expect(getCurrentUserWallet()).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    await expect(getCurrentUserWallet()).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
 
     expect(makeGetWalletUseCaseMock).not.toHaveBeenCalled();
   });

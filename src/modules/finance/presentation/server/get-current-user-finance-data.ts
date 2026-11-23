@@ -1,4 +1,4 @@
-import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
+import { requireActiveSession } from '@/modules/auth/presentation/server/require-active-session';
 import { FULL_PERIOD_PAGE_SIZE } from '@/modules/finance/constants/finance.constants';
 import { FinancialEntryOutput } from '@/modules/finance/application/dtos/financial-entry.output';
 import { TransactionHistoryOutput } from '@/modules/finance/application/dtos/transaction-history.output';
@@ -85,20 +85,6 @@ function toFinancialEntryType(type?: FinanceEntryTypeUi): FinancialEntryType | u
   return type === 'INCOME' ? FinancialEntryType.INCOME : FinancialEntryType.EXPENSE;
 }
 
-async function getCurrentUserIdOrError(): Promise<
-  { userId: string; error?: never } | { userId?: never; error: string }
-> {
-  const userId = await getAuthenticatedUserId();
-
-  if (!userId) {
-    return {
-      error: 'Não autenticado',
-    };
-  }
-
-  return { userId };
-}
-
 type FinanceHistoryPagination = {
   page: number;
   pageSize: number;
@@ -113,18 +99,12 @@ export async function getCurrentUserFinanceHistory(
   filters: FinanceHistoryFiltersUi,
   pagination: FinanceHistoryPagination = FULL_PERIOD_PAGINATION,
 ): Promise<CurrentUserFinanceHistoryResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetTransactionHistoryUseCase();
     const history = await useCase.execute({
-      userId: auth.userId,
+      userId,
       startDate: parseDateFromQuery(filters.startDate),
       endDate: parseExclusiveEndDateFromQuery(filters.endDate),
       type: toFinancialEntryType(filters.type),
@@ -152,18 +132,12 @@ type CurrentUserRecentEntriesResult = {
 };
 
 export async function getCurrentUserRecentEntries(): Promise<CurrentUserRecentEntriesResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetRecentTransactionsUseCase();
     const entries = await useCase.execute({
-      userId: auth.userId,
+      userId,
       limit: RECENT_ENTRIES_LIMIT,
     });
 
@@ -178,17 +152,11 @@ export async function getCurrentUserRecentEntries(): Promise<CurrentUserRecentEn
 }
 
 export async function getCurrentUserExpenseCategories(): Promise<CurrentUserExpenseCategoriesResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeListExpenseCategoriesUseCase();
-    const categories = await useCase.execute({ userId: auth.userId });
+    const categories = await useCase.execute({ userId });
 
     return {
       data: categories,
@@ -203,13 +171,7 @@ export async function getCurrentUserExpenseCategories(): Promise<CurrentUserExpe
 export async function getCurrentUserOperationalSummary(
   filters: FinanceOperationalSummaryFilters,
 ): Promise<CurrentUserOperationalSummaryResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const period = getOperationalSummaryPeriod(filters);
@@ -218,12 +180,12 @@ export async function getCurrentUserOperationalSummary(
 
     const [monthlySummary, history] = await Promise.all([
       monthlySummaryUseCase.execute({
-        userId: auth.userId,
+        userId,
         year: filters.year,
         month: filters.month,
       }),
       historyUseCase.execute({
-        userId: auth.userId,
+        userId,
         startDate: parseDateFromQuery(period.startDate),
         endDate: parseExclusiveEndDateFromQuery(period.endDate),
         page: 1,
@@ -250,19 +212,13 @@ type CurrentUserMonthlyInsightsResult = {
 };
 
 export async function getCurrentUserMonthlyInsights(): Promise<CurrentUserMonthlyInsightsResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetMonthlyInsightsUseCase();
     // The output holds only numbers, strings and nulls, so it is already
     // serializable and structurally identical to MonthlyInsightsUi.
-    const insights = await useCase.execute({ userId: auth.userId });
+    const insights = await useCase.execute({ userId });
 
     return {
       data: insights,
@@ -280,19 +236,13 @@ type CurrentUserSpendingGoalsResult = {
 };
 
 export async function getCurrentUserSpendingGoals(): Promise<CurrentUserSpendingGoalsResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetSpendingGoalsUseCase();
     // The output holds only numbers, strings and nulls, so it is already
     // serializable and structurally identical to SpendingGoalsOverviewUi.
-    const overview = await useCase.execute({ userId: auth.userId });
+    const overview = await useCase.execute({ userId });
 
     return {
       data: overview,
@@ -310,19 +260,13 @@ type CurrentUserIncomeGoalsResult = {
 };
 
 export async function getCurrentUserIncomeGoals(): Promise<CurrentUserIncomeGoalsResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetIncomeGoalsUseCase();
     // The output holds only numbers, strings and nulls, so it is already
     // serializable and structurally identical to IncomeGoalsOverviewUi.
-    const overview = await useCase.execute({ userId: auth.userId });
+    const overview = await useCase.execute({ userId });
 
     return {
       data: overview,

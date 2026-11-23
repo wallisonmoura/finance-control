@@ -1,7 +1,7 @@
 import { makeGetCurrentUserUseCase } from '@/modules/auth/infra/factories/make-get-current-user-use-case';
 
 import { AuthenticatedUser } from '../ui/types/auth-ui.types';
-import { getAuthenticatedUserId } from './get-authenticated-user-id';
+import { requireActiveSession } from './require-active-session';
 
 type CurrentAuthenticatedUserResult = {
   data?: AuthenticatedUser | null;
@@ -9,13 +9,7 @@ type CurrentAuthenticatedUserResult = {
 };
 
 export async function getCurrentAuthenticatedUser(): Promise<CurrentAuthenticatedUserResult> {
-  const userId = await getAuthenticatedUserId();
-
-  if (!userId) {
-    return {
-      error: 'Não autenticado',
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetCurrentUserUseCase();
