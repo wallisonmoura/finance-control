@@ -1,3 +1,13 @@
+// Without a valid session the helpers leave for the login notice (the private
+// layout does not run again on a menu navigation, so they must).
+jest.mock('next/navigation', () => ({
+  redirect: jest.fn(() => {
+    throw new Error('NEXT_REDIRECT');
+  }),
+}));
+
+import { redirect } from 'next/navigation';
+import { SESSION_ENDED_URL } from '@/shared/presentation/http/session-ended';
 import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
 import { makeCalculateMonthlySummaryUseCase } from '@/modules/finance/infra/factories/make-calculate-monthly-summary-use-case';
 import { makeGetTransactionHistoryUseCase } from '@/modules/finance/infra/factories/make-get-transaction-history-use-case';
@@ -66,7 +76,7 @@ describe('getCurrentUserFinanceHistory', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValueOnce(null);
 
     await expect(
@@ -75,9 +85,8 @@ describe('getCurrentUserFinanceHistory', () => {
         endDate: '2026-05-31',
         page: 1,
       }),
-    ).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    ).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
 
     expect(makeGetTransactionHistoryUseCaseMock).not.toHaveBeenCalled();
   });
@@ -264,7 +273,7 @@ describe('getCurrentUserOperationalSummary', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValueOnce(null);
 
     await expect(
@@ -272,9 +281,8 @@ describe('getCurrentUserOperationalSummary', () => {
         year: 2026,
         month: 5,
       }),
-    ).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    ).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
 
     expect(makeCalculateMonthlySummaryUseCaseMock).not.toHaveBeenCalled();
     expect(makeGetTransactionHistoryUseCaseMock).not.toHaveBeenCalled();
@@ -436,12 +444,11 @@ describe('getCurrentUserMonthlyInsights', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValue(null);
 
-    await expect(getCurrentUserMonthlyInsights()).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    await expect(getCurrentUserMonthlyInsights()).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
     expect(makeGetMonthlyInsightsUseCaseMock).not.toHaveBeenCalled();
   });
 
@@ -490,12 +497,11 @@ describe('getCurrentUserSpendingGoals', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValue(null);
 
-    await expect(getCurrentUserSpendingGoals()).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    await expect(getCurrentUserSpendingGoals()).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
     expect(makeGetSpendingGoalsUseCaseMock).not.toHaveBeenCalled();
   });
 
@@ -552,12 +558,11 @@ describe('getCurrentUserIncomeGoals', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValue(null);
 
-    await expect(getCurrentUserIncomeGoals()).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    await expect(getCurrentUserIncomeGoals()).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
     expect(makeGetIncomeGoalsUseCaseMock).not.toHaveBeenCalled();
   });
 
@@ -601,12 +606,11 @@ describe('getCurrentUserRecentEntries', () => {
     jest.clearAllMocks();
   });
 
-  it('should return unauthenticated error when there is no current user', async () => {
+  it('should go to the session-ended notice when there is no valid session', async () => {
     getAuthenticatedUserIdMock.mockResolvedValue(null);
 
-    await expect(getCurrentUserRecentEntries()).resolves.toEqual({
-      error: 'Não autenticado',
-    });
+    await expect(getCurrentUserRecentEntries()).rejects.toThrow('NEXT_REDIRECT');
+    expect(redirect).toHaveBeenCalledWith(SESSION_ENDED_URL);
     expect(makeGetRecentTransactionsUseCaseMock).not.toHaveBeenCalled();
   });
 

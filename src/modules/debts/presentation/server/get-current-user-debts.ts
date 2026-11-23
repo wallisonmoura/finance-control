@@ -1,4 +1,4 @@
-import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
+import { requireActiveSession } from '@/modules/auth/presentation/server/require-active-session';
 import { DebtOutput } from '@/modules/debts/application/dtos/debt.output';
 import { makeListDebtsUseCase } from '@/modules/debts/infra/factories/make-list-debts-use-case';
 import { makeListPendingDebtsUseCase } from '@/modules/debts/infra/factories/make-list-pending-debts-use-case';
@@ -31,32 +31,12 @@ function toDebtUi(debt: DebtOutput): DebtUi {
   };
 }
 
-async function getCurrentUserIdOrError(): Promise<
-  { userId: string; error?: never } | { userId?: never; error: string }
-> {
-  const userId = await getAuthenticatedUserId();
-
-  if (!userId) {
-    return {
-      error: 'Não autenticado',
-    };
-  }
-
-  return { userId };
-}
-
 export async function getCurrentUserDebts(): Promise<CurrentUserDebtsResult> {
-  const auth = await getCurrentUserIdOrError();
-
-  if ('error' in auth) {
-    return {
-      error: auth.error,
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeListDebtsUseCase();
-    const debts = await useCase.execute({ userId: auth.userId });
+    const debts = await useCase.execute({ userId });
 
     return {
       data: debts.map(toDebtUi),
@@ -70,17 +50,11 @@ export async function getCurrentUserDebts(): Promise<CurrentUserDebtsResult> {
 
 export const getCurrentUserPendingDebts = cache(
   async (): Promise<CurrentUserDebtsResult> => {
-    const auth = await getCurrentUserIdOrError();
-
-    if ('error' in auth) {
-      return {
-        error: auth.error,
-      };
-    }
+    const userId = await requireActiveSession();
 
     try {
       const useCase = makeListPendingDebtsUseCase();
-      const debts = await useCase.execute({ userId: auth.userId });
+      const debts = await useCase.execute({ userId });
 
       return {
         data: debts.map(toDebtUi),

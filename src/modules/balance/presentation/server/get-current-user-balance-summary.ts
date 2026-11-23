@@ -1,4 +1,4 @@
-import { getAuthenticatedUserId } from '@/modules/auth/presentation/server/get-authenticated-user-id';
+import { requireActiveSession } from '@/modules/auth/presentation/server/require-active-session';
 import { makeGetBalanceSummaryUseCase } from '@/modules/balance/infra/factories/make-get-balance-summary-use-case';
 import { WalletNotFoundError } from '@/modules/wallet/domain/errors/wallet-not-found.error';
 
@@ -10,13 +10,7 @@ type CurrentUserBalanceSummaryResult = {
 };
 
 export async function getCurrentUserBalanceSummary(): Promise<CurrentUserBalanceSummaryResult> {
-  const userId = await getAuthenticatedUserId();
-
-  if (!userId) {
-    return {
-      error: 'Não autenticado',
-    };
-  }
+  const userId = await requireActiveSession();
 
   try {
     const useCase = makeGetBalanceSummaryUseCase();
